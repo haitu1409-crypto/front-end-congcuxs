@@ -144,7 +144,7 @@ export default function SEOOptimized({
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
             <link rel="preconnect" href="https://api.taodandewukong.pro" />
             
-            {/* ===== OPEN GRAPH - FACEBOOK ===== */}
+            {/* ===== OPEN GRAPH - FACEBOOK & TELEGRAM ===== */}
             <meta property="og:title" content={title} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={`${siteUrl}${pageImages.facebook}`} />
@@ -158,6 +158,11 @@ export default function SEOOptimized({
             <meta property="og:site_name" content={siteName} />
             <meta property="og:locale" content="vi_VN" />
             <meta property="og:updated_time" content={currentDate} />
+            
+            {/* ===== ADDITIONAL META FOR TELEGRAM ===== */}
+            <meta name="description" content={description} />
+            <meta name="image" content={`${siteUrl}${pageImages.facebook}`} />
+            <link rel="image_src" href={`${siteUrl}${pageImages.facebook}`} />
             
             {/* ===== TWITTER CARDS ===== */}
             <meta name="twitter:card" content="summary_large_image" />
@@ -177,10 +182,16 @@ export default function SEOOptimized({
             <meta property="telegram:title" content={title} />
             <meta property="telegram:description" content={description} />
             <meta property="telegram:image" content={`${siteUrl}${pageImages.telegram}`} />
+            <meta property="telegram:image:width" content="1200" />
+            <meta property="telegram:image:height" content="630" />
+            <meta property="telegram:image:alt" content={title} />
+            <meta property="telegram:url" content={fullUrl} />
+            <meta property="telegram:site_name" content={siteName} />
             <meta property="telegram:site" content="@taodandewukong" />
             <meta property="telegram:creator" content="@taodandewukong" />
             <meta name="telegram:channel" content="@taodandewukong" />
             <meta name="telegram:chat" content="@taodandewukong" />
+            <meta name="telegram:bot" content="@taodandewukong" />
             
             {/* ===== TIKTOK ===== */}
             <meta property="tiktok:title" content={title} />
