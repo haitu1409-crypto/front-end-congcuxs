@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback, Suspense, lazy } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
-import SEO from '../components/SEO';
+import SEOOptimized from '../components/SEOOptimized';
 // Tối ưu import icons - chỉ import những icon cần thiết
 import { BarChart3, RefreshCw, Filter, Download, ImageIcon, Settings, Save, FolderOpen, Plus, Check, X } from 'lucide-react';
 import styles from '../styles/ThongKe.module.css';
@@ -559,10 +559,26 @@ export default function ThongKePage() {
 
     return (
         <Layout>
-            <SEO
-                title="Thống Kê Xổ Số 3 Miền - Bảng Thống Kê Chính Xác | Miễn Phí 2024"
-                description="Xem thống kê kết quả xổ số 3 miền mới nhất. Theo dõi xu hướng và phân tích dữ liệu để tối ưu chiến lược chơi. Cập nhật realtime, chính xác 100%. Thương hiệu Tôn Ngộ Không."
-                keywords="thống kê xổ số 3 miền, bảng thống kê xổ số, thống kê miền bắc, thống kê miền nam, thống kê miền trung, kết quả xổ số, phân tích xổ số, xu hướng xổ số, thống kê lô đề, bảng thống kê chính xác, thống kê xổ số realtime, dàn đề Tôn Ngộ Không, thống kê xổ số miễn phí, công cụ thống kê xổ số, phân tích dữ liệu xổ số"
+            <SEOOptimized 
+                pageType="thong-ke"
+                breadcrumbs={[
+                    { name: 'Trang chủ', url: siteUrl },
+                    { name: 'Thống Kê', url: `${siteUrl}/thong-ke` }
+                ]}
+                faq={[
+                    {
+                        question: 'Thống kê được cập nhật như thế nào?',
+                        answer: 'Dữ liệu thống kê được cập nhật realtime từ nguồn chính thức của xổ số 3 miền.'
+                    },
+                    {
+                        question: 'Có thể xuất dữ liệu thống kê không?',
+                        answer: 'Có, bạn có thể xuất dữ liệu ra file Excel hoặc lưu vào bộ nhớ tạm.'
+                    },
+                    {
+                        question: 'Dữ liệu có chính xác không?',
+                        answer: 'Tất cả dữ liệu được kiểm tra và xác thực từ nguồn chính thức, đảm bảo tính chính xác 100%.'
+                    }
+                ]}
             />
 
             <div className={styles.container}>

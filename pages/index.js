@@ -9,21 +9,31 @@ import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone } f
 import styles from '../styles/Home.module.css';
 import DanDeGenerator from '../components/DanDeGenerator';
 import GuideSection from '../components/GuideSection';
-import SEO from '../components/SEO';
+import SEOOptimized from '../components/SEOOptimized';
 import SEOHead from '../components/SEOHead';
 import SEOAnalytics from '../components/SEOAnalytics';
 
 export default function Home() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    const seoData = {
-        title: 'Tạo Dàn Đề Online - Công Cụ #1 Việt Nam | Miễn Phí 2024',
-        description: 'Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam: Dàn 9x-0x, Dàn 2D, 3D, 4D, Dàn Đặc Biệt. Miễn phí 100%, nhanh chóng, chính xác tuyệt đối. Thuật toán Fisher-Yates chuẩn quốc tế. Được hàng ngàn người chơi lô đề tin dùng. Hỗ trợ mọi thiết bị.',
-        keywords: 'tạo dàn đề online, tạo dàn đề miễn phí, công cụ tạo dàn đề chuyên nghiệp, dàn đề 2D, dàn đề 3D, dàn đề 4D, dàn đề đặc biệt, dàn 9x-0x, lô đề online, xổ số 3 miền, thống kê xổ số, công cụ lô đề, tạo dàn lô đề, dàn đề Tôn Ngộ Không, xổ số Việt Nam, thống kê lô đề, bộ lọc số đặc biệt, dàn đề chính xác 100%',
-        url: siteUrl,
-        image: '/og-image.png',
-        type: 'website',
-    };
+    const breadcrumbs = [
+        { name: 'Trang chủ', url: siteUrl }
+    ];
+
+    const faqData = [
+        {
+            question: 'Công cụ tạo dàn đề có miễn phí không?',
+            answer: 'Có, công cụ tạo dàn đề Tôn Ngộ Không hoàn toàn miễn phí và không giới hạn số lần sử dụng.'
+        },
+        {
+            question: 'Dàn đề được tạo có chính xác không?',
+            answer: 'Công cụ sử dụng thuật toán Fisher-Yates hiện đại, đảm bảo tính ngẫu nhiên và chính xác 100%.'
+        },
+        {
+            question: 'Có thể lưu và xuất dàn đề không?',
+            answer: 'Có, bạn có thể lưu dàn đề vào bộ nhớ tạm và xuất ra file Excel để sử dụng sau này.'
+        }
+    ];
 
     const tools = [
         {
@@ -81,7 +91,11 @@ export default function Home() {
 
     return (
         <>
-            <SEO {...seoData} />
+            <SEOOptimized 
+            pageType="homepage"
+            breadcrumbs={breadcrumbs}
+            faq={faqData}
+        />
             <SEOHead {...seoData} />
             <SEOAnalytics />
 

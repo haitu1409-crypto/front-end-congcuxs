@@ -5,7 +5,7 @@
 
 import Link from 'next/link';
 import Layout from '../../components/Layout';
-import SEO from '../../components/SEO';
+import SEOOptimized from '../../components/SEOOptimized';
 import AOSWrapper from '../../components/AOSWrapper';
 import { Star, Zap, Target, CheckCircle, Rocket, BookOpen, Hash, Dice6, BarChart3, Home, Shield, Smartphone } from 'lucide-react';
 import styles from '../../styles/DanDacBiet.module.css';
@@ -27,22 +27,33 @@ const TaoDanBo = lazy(() => import('../../components/DanDe/TaoDanBo'));
 export default function DanDacBietPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    const seoData = {
-        title: 'Tạo Dàn Đặc Biệt Online - Bộ Lọc Thông Minh | Miễn Phí 2024',
-        description: 'Tạo dàn đề đặc biệt với bộ lọc thông minh: Lấy nhanh, Đầu-Đuôi, Chạm, Bộ, Kép. Thuật toán AI tiên tiến. Miễn phí không giới hạn. Được hàng ngàn người tin dùng.',
-        keywords: 'tạo dàn đặc biệt, bộ lọc dàn đề, lọc số đặc biệt, đầu đuôi số, chạm số, kép bằng, dàn đề đặc biệt, bộ lọc thông minh, tạo dàn đặc biệt online, dàn đề Tôn Ngộ Không, lọc dàn đề chuyên nghiệp, bộ lọc số chính xác, dàn đặc biệt miễn phí, công cụ lọc số, thuật toán lọc dàn đề',
-        url: `${siteUrl}/dan-dac-biet`,
-        image: '/images/dan-dac-biet-og.jpg',
-        type: 'article',
-        breadcrumbs: [
-            { name: 'Trang chủ', url: '/' },
-            { name: 'Tạo Dàn Đặc Biệt', url: '/dan-dac-biet' }
-        ],
-    };
+    const breadcrumbs = [
+        { name: 'Trang chủ', url: siteUrl },
+        { name: 'Dàn Đặc Biệt', url: `${siteUrl}/dan-dac-biet` }
+    ];
+
+    const faqData = [
+        {
+            question: 'Dàn đặc biệt là gì?',
+            answer: 'Dàn đặc biệt là bộ số được lọc theo các tiêu chí như đầu, đuôi, chạm, kép để tăng tỷ lệ trúng.'
+        },
+        {
+            question: 'Có thể lọc theo bao nhiêu tiêu chí?',
+            answer: 'Bạn có thể lọc theo nhiều tiêu chí cùng lúc: đầu số, đuôi số, chạm số, kép bằng, tổng số.'
+        },
+        {
+            question: 'Kết quả có chính xác không?',
+            answer: 'Thuật toán lọc được tối ưu dựa trên phân tích thống kê, đảm bảo tính chính xác cao.'
+        }
+    ];
 
     return (
         <>
-            <SEO {...seoData} />
+            <SEOOptimized 
+                pageType="dan-dac-biet"
+                breadcrumbs={breadcrumbs}
+                faq={faqData}
+            />
 
             <Layout>
                 <AOSWrapper>
