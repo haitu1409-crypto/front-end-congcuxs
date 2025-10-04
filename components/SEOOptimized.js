@@ -130,6 +130,12 @@ export default function SEOOptimized({
             <meta name="bingbot" content="index,follow" />
             <meta name="coccocbot" content="index,follow" />
             
+            {/* ===== SEARCH ENGINE VERIFICATION ===== */}
+            <meta name="google-site-verification" content="OniUNDUrgOZ4Fou_Thz9y9_TgDX4INuKAklFmpG-a6k" />
+            <meta name="msvalidate.01" content="" />
+            <meta name="yandex-verification" content="" />
+            <meta name="baidu-site-verification" content="" />
+            
             {/* ===== CANONICAL URL ===== */}
             <link rel="canonical" href={fullUrl} />
             
