@@ -30,11 +30,11 @@ const nextConfig = {
         minimumCacheTTL: 60,
     },
 
-    // i18n cho SEO đa ngôn ngữ (có thể mở rộng)
-    i18n: {
-        locales: ['vi', 'en'],
-        defaultLocale: 'vi',
-    },
+    // i18n cho SEO đa ngôn ngữ (tạm thời disable để fix build)
+    // i18n: {
+    //     locales: ['vi', 'en'],
+    //     defaultLocale: 'vi',
+    // },
 
     // Headers cho SEO và security - CRITICAL
     async headers() {
