@@ -120,7 +120,6 @@ export default function Home() {
                                     <Link
                                         href={tool.link}
                                         key={idx}
-                                        prefetch={true}
                                         className={styles.toolCard}
                                         aria-label={`Đi đến ${tool.title}`}
                                     >

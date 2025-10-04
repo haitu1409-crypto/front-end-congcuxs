@@ -94,7 +94,6 @@ export default function Layout({ children, className = '' }) {
                                     <Link
                                         key={link.href}
                                         href={link.href}
-                                        prefetch={true}
                                         className={`${styles.navLink} ${router.pathname === link.href ? styles.active : ''
                                             }`}
                                     >
@@ -127,7 +126,6 @@ export default function Layout({ children, className = '' }) {
                                     <Link
                                         key={link.href}
                                         href={link.href}
-                                        prefetch={true}
                                         className={`${styles.mobileNavLink} ${router.pathname === link.href ? styles.active : ''
                                             }`}
                                         onClick={() => setIsMenuOpen(false)}
