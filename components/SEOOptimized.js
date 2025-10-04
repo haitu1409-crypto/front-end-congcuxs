@@ -148,13 +148,16 @@ export default function SEOOptimized({
             <meta property="og:title" content={title} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={`${siteUrl}${pageImages.facebook}`} />
+            <meta property="og:image:secure_url" content={`${siteUrl}${pageImages.facebook}`} />
             <meta property="og:image:width" content="1200" />
             <meta property="og:image:height" content="630" />
             <meta property="og:image:alt" content={title} />
+            <meta property="og:image:type" content="image/png" />
             <meta property="og:url" content={fullUrl} />
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content={siteName} />
             <meta property="og:locale" content="vi_VN" />
+            <meta property="og:updated_time" content={currentDate} />
             
             {/* ===== TWITTER CARDS ===== */}
             <meta name="twitter:card" content="summary_large_image" />
