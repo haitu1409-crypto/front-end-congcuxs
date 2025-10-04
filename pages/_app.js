@@ -16,17 +16,6 @@ import { useEffect } from 'react';
 
 function MyApp({ Component, pageProps }) {
     useEffect(() => {
-        // Remove preloader after load
-        const preloader = document.getElementById('__next_preloader');
-        if (preloader) {
-            setTimeout(() => {
-                preloader.style.opacity = '0';
-                setTimeout(() => {
-                    preloader.style.display = 'none';
-                }, 300);
-            }, 500);
-        }
-
         // Log app version (optional)
         if (process.env.NODE_ENV === 'production') {
             console.log('%c🎲 Tạo Dàn Đề v1.0.0', 'font-size: 20px; font-weight: bold; color: #4F46E5;');

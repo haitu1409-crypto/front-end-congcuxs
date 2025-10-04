@@ -98,47 +98,6 @@ export default function Document() {
                 }} />
             </Head>
             <body>
-                {/* ===== PRELOADER ===== */}
-                <div id="__next_preloader" style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 9999,
-                    transition: 'opacity 0.3s ease-out',
-                }}>
-                    <div style={{
-                        width: '50px',
-                        height: '50px',
-                        border: '5px solid rgba(255,255,255,0.3)',
-                        borderTop: '5px solid white',
-                        borderRadius: '50%',
-                        animation: 'spin 1s linear infinite',
-                    }} />
-                    <p style={{
-                        color: 'white',
-                        marginTop: '20px',
-                        fontSize: '1.2rem',
-                        fontWeight: '600',
-                    }}>
-                        Đang tải...
-                    </p>
-                    <style dangerouslySetInnerHTML={{
-                        __html: `
-              @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-              }
-            `
-                    }} />
-                </div>
-
                 {/* ===== MAIN CONTENT ===== */}
                 <Main />
 
