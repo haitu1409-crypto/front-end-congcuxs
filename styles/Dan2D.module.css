@@ -1,0 +1,165 @@
+/**
+ * Dan2D Page Styles - Compact & Modern
+ */
+
+.pageContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-6) var(--spacing-4);
+}
+
+@media (min-width: 768px) {
+    .pageContainer {
+        padding: var(--spacing-8) var(--spacing-6);
+    }
+}
+
+/* ===== HEADER - COMPACT ===== */
+.pageHeader {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+    padding: var(--spacing-6) var(--spacing-4);
+    background: var(--color-white);
+    border-radius: var(--border-radius-xl);
+    border: 1px solid var(--color-gray-200);
+}
+
+@media (min-width: 768px) {
+    .pageHeader {
+        padding: var(--spacing-8) var(--spacing-6);
+    }
+}
+
+.pageTitle {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-extrabold);
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-2);
+    line-height: var(--line-height-tight);
+}
+
+@media (min-width: 768px) {
+    .pageTitle {
+        font-size: var(--text-3xl);
+    }
+}
+
+.pageDescription {
+    font-size: var(--text-sm);
+    color: var(--color-gray-600);
+    line-height: var(--line-height-normal);
+}
+
+@media (min-width: 768px) {
+    .pageDescription {
+        font-size: var(--text-base);
+    }
+}
+
+/* ===== MAIN CONTENT ===== */
+.mainContent {
+    margin-bottom: var(--spacing-6);
+}
+
+/* ===== GUIDE SECTION - COMPACT ===== */
+.guideSection {
+    padding: var(--spacing-6);
+    background: var(--color-white);
+    border-radius: var(--border-radius-xl);
+    border: 1px solid var(--color-gray-200);
+}
+
+@media (min-width: 768px) {
+    .guideSection {
+        padding: var(--spacing-8);
+    }
+}
+
+.guideTitle {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-5);
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .guideTitle {
+        font-size: var(--text-xl);
+    }
+}
+
+.guideGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+}
+
+@media (min-width: 768px) {
+    .guideGrid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-5);
+    }
+}
+
+.guideItem {
+    padding: var(--spacing-4);
+    background: var(--color-gray-50);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-gray-200);
+}
+
+.guideItem h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-2);
+}
+
+.guideItem p {
+    font-size: var(--text-sm);
+    color: var(--color-gray-600);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: 0;
+}
+
+.guideItem code {
+    background: var(--color-gray-200);
+    padding: 2px 6px;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.85em;
+    font-family: 'Courier New', monospace;
+    color: var(--color-gray-800);
+}
+
+/* ===== MOBILE OPTIMIZATIONS ===== */
+@media (max-width: 767px) {
+    .pageContainer {
+        padding: var(--spacing-4) var(--spacing-3);
+    }
+
+    .pageHeader {
+        padding: var(--spacing-5) var(--spacing-4);
+        margin-bottom: var(--spacing-5);
+    }
+
+    .guideSection {
+        padding: var(--spacing-5);
+    }
+
+    .guideItem {
+        padding: var(--spacing-3);
+    }
+}
+
+/* ===== REDUCE MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+
+    .pageContainer,
+    .pageHeader,
+    .guideSection,
+    .guideItem {
+        animation: none;
+        transition: none;
+    }
+}

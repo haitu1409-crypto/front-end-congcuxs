@@ -1,0 +1,111 @@
+/**
+ * Loading Spinner Styles
+ * Tối ưu cho performance với CSS animations
+ */
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.spinner {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #3b82f6, #8b5cf6, #06b6d4, #10b981, #3b82f6);
+    animation: spin 1s linear infinite;
+}
+
+.spinnerInner {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    background: white;
+    border-radius: 50%;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingMessage {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0;
+    text-align: center;
+}
+
+/* Size variants */
+.small .spinner {
+    width: 24px;
+    height: 24px;
+}
+
+.small .spinnerInner {
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+}
+
+.small .loadingMessage {
+    font-size: 0.75rem;
+}
+
+.medium .spinner {
+    width: 40px;
+    height: 40px;
+}
+
+.large .spinner {
+    width: 60px;
+    height: 60px;
+}
+
+.large .spinnerInner {
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+}
+
+.large .loadingMessage {
+    font-size: 1rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .spinnerInner {
+        background: #1f2937;
+    }
+
+    .loadingMessage {
+        color: #9ca3af;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .spinner {
+        animation: none;
+        background: #e5e7eb;
+    }
+
+    .spinnerInner {
+        background: #f3f4f6;
+    }
+}

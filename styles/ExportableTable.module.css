@@ -1,0 +1,750 @@
+/* Exportable Table Styles - Optimized for High Quality Image Export */
+
+.exportContainer {
+    max-width: 100%;
+    width: fit-content;
+    min-width: 600px;
+    background: #ffffff;
+    /* Sử dụng màu trắng tuyệt đối thay vì CSS variable */
+    padding: 12px;
+    /* Tăng padding để có không gian tốt hơn khi xuất ảnh */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Font rõ ràng cho xuất ảnh */
+    color: #1a1a1a;
+    /* Màu đen đậm để tương phản tốt */
+    box-sizing: border-box;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Tối ưu hóa cho việc render ảnh chất lượng cao */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header - Minimized */
+.exportHeader {
+    text-align: center;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--color-primary-600);
+    padding-bottom: 4px;
+}
+
+.exportTitle {
+    font-size: 16px;
+    /* Tăng từ 14px lên 16px để rõ hơn khi xuất ảnh */
+    font-weight: 700;
+    /* Sử dụng số thay vì CSS variable */
+    color: #1a1a1a;
+    /* Màu đen đậm */
+    margin: 0 0 6px 0;
+    letter-spacing: 0.8px;
+    /* Tăng letter-spacing để dễ đọc hơn */
+    text-transform: uppercase;
+    line-height: 1;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+    /* Thêm text shadow nhẹ để tăng độ sắc nét */
+}
+
+/* Export Info Container - Layout ngang */
+.exportInfo {
+    display: flex;
+    justify-content: space-between;
+    /* Căn đều 2 đầu */
+    align-items: center;
+    gap: 8px;
+    /* Khoảng cách giữa 2 phần */
+    margin-top: 1px;
+    flex-wrap: wrap;
+    /* Cho phép wrap nếu quá dài */
+}
+
+.exportUser {
+    font-size: 10px;
+    /* Giảm font size để vừa layout ngang */
+    color: #1565c0;
+    /* Màu xanh đậm thay vì CSS variable */
+    font-weight: 600;
+    /* Sử dụng số thay vì CSS variable */
+    padding: 2px 6px;
+    /* Giảm padding */
+    background: #e3f2fd;
+    /* Màu xanh nhạt thay vì CSS variable */
+    border-radius: 3px;
+    border: 1px solid #90caf9;
+    /* Màu border xanh */
+    white-space: nowrap;
+    /* Ngăn wrap */
+    flex-shrink: 0;
+    /* Không cho phép shrink */
+}
+
+.exportDate {
+    font-size: 9px;
+    color: #424242;
+    /* Màu xám đậm thay vì CSS variable */
+    font-weight: 500;
+    /* Sử dụng số thay vì CSS variable */
+    white-space: nowrap;
+    /* Ngăn wrap */
+    flex-shrink: 0;
+    /* Không cho phép shrink */
+}
+
+/* Table Wrapper */
+.tableWrapper {
+    width: fit-content;
+    margin: 0 auto;
+    overflow: visible;
+}
+
+/* Table */
+.exportTable {
+    width: auto;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-size: var(--text-sm);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    table-layout: fixed;
+    border-radius: 8px;
+    overflow: hidden;
+    /* Để border-radius hoạt động với table */
+}
+
+.exportTable th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #2d3748;
+    /* Màu xám đậm thay vì CSS variable */
+    font-weight: 700;
+    /* Sử dụng số thay vì CSS variable */
+    text-align: center;
+    vertical-align: middle;
+    padding: 6px 8px;
+    /* Giảm padding để giảm chiều cao */
+    border: 1px solid #d1d5db;
+    font-size: 12px;
+    /* Tăng từ 11px lên 12px */
+    letter-spacing: 0.5px;
+    /* Tăng letter-spacing */
+    text-transform: uppercase;
+    height: 32px;
+    /* Giảm chiều cao để gọn gàng hơn */
+    line-height: 1.3;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    /* Tăng độ đậm của text shadow */
+    /* Tối ưu hóa cho render chất lượng cao */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dateHeader {
+    background: #e9ecef !important;
+    color: var(--color-gray-900) !important;
+    min-width: 60px;
+}
+
+.regionHeader {
+    font-size: var(--text-sm);
+    letter-spacing: 0.025em;
+    font-weight: var(--font-bold);
+}
+
+/* Miền Nam - Xám xanh */
+.regionHeader:nth-child(2) {
+    background: #e3f2fd !important;
+    color: #1565c0 !important;
+}
+
+/* Miền Trung - Xám cam */
+.regionHeader:nth-child(3) {
+    background: #fff3e0 !important;
+    color: #ef6c00 !important;
+}
+
+/* Miền Bắc - Xám tím */
+.regionHeader:nth-child(4) {
+    background: #f3e5f5 !important;
+    color: #7b1fa2 !important;
+}
+
+.dbHeader {
+    background: #f8f9fa !important;
+    color: #dc3545 !important;
+    min-width: 80px;
+}
+
+.nhanHeader {
+    background: #f8f9fa !important;
+    color: #198754 !important;
+    min-width: 60px;
+}
+
+.exportTable td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 3px 6px;
+    /* Giảm padding thêm nữa để có chiều cao nhỏ hơn */
+    border: 1px solid #d1d5db;
+    font-weight: 600;
+    /* Sử dụng số thay vì CSS variable */
+    font-size: 12px;
+    /* Giảm font-size để phù hợp với chiều cao nhỏ hơn */
+    height: 22px;
+    /* Giảm chiều cao xuống thêm nữa */
+    line-height: 1.2;
+    transition: background-color 0.2s ease;
+    /* Tối ưu hóa cho render chất lượng cao */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Zebra striping - Màu sắc chẵn lẻ rõ ràng */
+.evenRow {
+    background: #f1f3f4 !important;
+    /* Màu xám nhạt cho hàng chẵn */
+}
+
+.evenRow .dateCell {
+    background: #e8eaed !important;
+    /* Màu xám đậm hơn cho cột ngày */
+}
+
+.evenRow .dbCell {
+    background: #f1f3f4 !important;
+}
+
+.evenRow .nhanCell {
+    background: #f1f3f4 !important;
+}
+
+.oddRow {
+    background: #ffffff !important;
+    /* Màu trắng cho hàng lẻ */
+}
+
+.oddRow .dateCell {
+    background: #f8f9fa !important;
+    /* Màu xám rất nhạt cho cột ngày */
+}
+
+.oddRow .dbCell {
+    background: #ffffff !important;
+}
+
+.oddRow .nhanCell {
+    background: #ffffff !important;
+}
+
+.dateCell {
+    font-weight: 700;
+    /* Sử dụng số thay vì CSS variable */
+    color: #1a1a1a;
+    /* Màu đen đậm thay vì CSS variable */
+    border-right: 3px solid #6c757d !important;
+    font-size: 11px;
+    /* Giảm từ 12px xuống 11px */
+}
+
+.dbCell {
+    color: #dc3545;
+    font-weight: 700;
+    /* Sử dụng số thay vì CSS variable */
+    font-size: 12px;
+    /* Giảm từ 13px xuống 12px */
+}
+
+.nhanCell {
+    color: #198754;
+    font-weight: 700;
+    /* Sử dụng số thay vì CSS variable */
+    font-size: 12px;
+    /* Giảm từ 13px xuống 12px */
+}
+
+/* Styles for empty cells and waiting status */
+.emptyCellX {
+    color: #dc3545 !important;
+    font-weight: var(--font-bold);
+    font-style: normal;
+}
+
+.waitingResult {
+    color: #fd7e14 !important;
+    font-weight: var(--font-medium);
+    font-style: italic;
+    font-size: 9px;
+}
+
+/* Summary - Minimized */
+.exportSummary {
+    margin-top: 1px;
+    padding: 2px;
+    /* Tăng padding */
+    background: #f8fafc;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    width: 100%;
+    /* Đảm bảo full width */
+    box-sizing: border-box;
+    /* Include padding trong width */
+}
+
+.exportSummary h3 {
+    margin: 0 0 4px 0;
+    font-size: 10px;
+    color: #1f2937;
+    text-align: center;
+}
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    /* Tăng gap để có thêm không gian */
+    min-width: 300px;
+    /* Đảm bảo width tối thiểu */
+}
+
+.summaryItem {
+    text-align: center;
+    font-size: 8px;
+    padding: 4px 6px;
+    /* Tăng padding ngang để có không gian cho layout ngang */
+    background: white;
+    border-radius: 2px;
+    border: 1px solid #e5e7eb;
+    position: relative;
+    white-space: nowrap;
+    /* Ngăn wrap để giữ trên 1 hàng */
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    /* Thay đổi thành row để layout ngang */
+    justify-content: space-between;
+    /* Căn đều 2 đầu */
+    align-items: center;
+    min-height: 28px;
+    /* Giảm chiều cao vì chỉ cần 1 hàng */
+    gap: 4px;
+    /* Khoảng cách giữa tên miền và % */
+}
+
+/* Colorful Hit Rate Styles */
+.regionName {
+    font-weight: bold;
+    color: #1f2937;
+    white-space: nowrap;
+    /* Ngăn wrap cho tên miền */
+    font-size: 7px;
+    /* Font size nhỏ để vừa trong layout ngang */
+    flex-shrink: 0;
+    /* Không cho phép shrink */
+}
+
+/* Hit rate percentage colors based on performance */
+.summaryItem:nth-child(1) {
+    /* Miền Nam - Blue theme */
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-color: #3b82f6;
+}
+
+.summaryItem:nth-child(1)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #3b82f6;
+    border-radius: 2px 2px 0 0;
+}
+
+.summaryItem:nth-child(2) {
+    /* Miền Trung - Orange theme */
+    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+    border-color: #f97316;
+}
+
+.summaryItem:nth-child(2)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #f97316;
+    border-radius: 2px 2px 0 0;
+}
+
+.summaryItem:nth-child(3) {
+    /* Miền Bắc - Purple theme */
+    background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
+    border-color: #a855f7;
+}
+
+.summaryItem:nth-child(3)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #a855f7;
+    border-radius: 2px 2px 0 0;
+}
+
+/* Performance-based colors */
+.highPerformance {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+    border-color: #22c55e !important;
+}
+
+.highPerformance::after {
+    background: #22c55e !important;
+}
+
+.highPerformance .hitRateNumber {
+    color: #15803d;
+    font-weight: bold;
+    text-shadow: 0 0 2px rgba(34, 197, 94, 0.3);
+}
+
+.mediumPerformance {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+    border-color: #f59e0b !important;
+}
+
+.mediumPerformance::after {
+    background: #f59e0b !important;
+}
+
+.mediumPerformance .hitRateNumber {
+    color: #d97706;
+    font-weight: bold;
+    text-shadow: 0 0 2px rgba(245, 158, 11, 0.3);
+}
+
+.lowPerformance {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+    border-color: #ef4444 !important;
+}
+
+.lowPerformance::after {
+    background: #ef4444 !important;
+}
+
+.lowPerformance .hitRateNumber {
+    color: #dc2626;
+    font-weight: bold;
+    text-shadow: 0 0 2px rgba(239, 68, 68, 0.3);
+}
+
+/* Hit Rate Number Styling */
+.hitRateNumber {
+    font-size: 8px;
+    /* Giảm font size để vừa layout ngang */
+    font-weight: bold;
+    padding: 1px 3px;
+    /* Giảm padding để gọn hơn */
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.9);
+    display: inline-block;
+    min-width: 20px;
+    /* Giảm min-width */
+    white-space: nowrap;
+    line-height: 1.2;
+    flex-shrink: 0;
+    /* Không cho phép shrink */
+}
+
+/* Footer - Minimized */
+.exportFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 4px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 8px;
+    color: #6b7280;
+}
+
+.footerItem {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Responsive adjustments for smaller data */
+@media (max-width: 800px) {
+    .exportContainer {
+        min-width: 500px;
+        max-width: 90vw;
+    }
+
+    .tableWrapper {
+        width: 100%;
+    }
+
+    .exportTable {
+        font-size: 12px;
+        width: 100%;
+    }
+
+    .exportTable th,
+    .exportTable td {
+        padding: 5px 6px;
+        /* Giảm padding trong responsive */
+    }
+
+    .exportTable th {
+        height: 28px;
+        /* Giảm height cho header trong responsive */
+    }
+
+    .exportTable td {
+        height: 20px;
+        /* Giảm height thêm nữa cho cell trong responsive */
+        font-size: 11px;
+        /* Giảm font-size trong responsive */
+        line-height: 1.1;
+        /* Tối ưu line-height cho responsive */
+    }
+
+    .exportTitle {
+        font-size: 24px;
+    }
+
+    .exportInfo {
+        gap: 6px;
+        /* Giảm gap trong responsive */
+        flex-direction: column;
+        /* Chuyển thành dọc nếu cần thiết */
+        align-items: center;
+        /* Căn giữa */
+    }
+
+    .exportUser {
+        font-size: 12px;
+        /* Tăng font size trong responsive */
+        padding: 3px 8px;
+        /* Tăng padding */
+    }
+
+    .exportDate {
+        font-size: 11px;
+        /* Tăng font size trong responsive */
+    }
+
+    .summaryGrid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        min-width: unset;
+        /* Bỏ min-width trong responsive */
+    }
+
+    .summaryItem {
+        font-size: 10px;
+        /* Tăng font size trong responsive */
+        padding: 4px 8px;
+        /* Tăng padding ngang cho layout ngang */
+        min-height: 32px;
+        /* Chiều cao cho layout ngang */
+        gap: 6px;
+        /* Tăng gap trong responsive */
+    }
+
+    .regionName {
+        font-size: 9px;
+        /* Tăng font size cho tên miền trong responsive */
+    }
+
+    /* Loại bỏ hitRateText vì không còn sử dụng trong layout ngang */
+
+    .hitRateNumber {
+        font-size: 9px;
+        /* Tăng font size */
+        min-width: 24px;
+        /* Tăng min-width */
+    }
+
+    .exportFooter {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+}
+
+/* Additional vertical alignment fixes for export */
+.exportTable th,
+.exportTable td {
+    display: table-cell !important;
+    vertical-align: middle !important;
+}
+
+/* Remove inline-block for child elements to ensure consistent vertical alignment */
+.exportTable th>*,
+.exportTable td>* {
+    display: block;
+    /* Change from inline-block to block */
+    line-height: normal;
+    /* Reset line-height for child elements */
+}
+
+/* Fallback for vertical centering using flexbox */
+.exportTable td,
+.exportTable th {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Print optimization và xuất ảnh chất lượng cao */
+@media print {
+    .exportContainer {
+        width: 100%;
+        padding: 10px;
+        box-shadow: none;
+        background: white !important;
+    }
+
+    .exportTable {
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    /* Đảm bảo màu sắc zebra striping hiện thị đúng khi in */
+    .evenRow {
+        background: #f1f3f4 !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    .oddRow {
+        background: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    .evenRow .dateCell {
+        background: #e8eaed !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    .oddRow .dateCell {
+        background: #f8f9fa !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+}
+
+/* Tối ưu hóa đặc biệt cho xuất ảnh chất lượng cao */
+.exportContainer * {
+    /* Đảm bảo tất cả text được render với chất lượng tốt nhất */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tối ưu hóa cho các thiết bị có DPI cao */
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+    .exportContainer {
+        /* Tăng độ sắc nét cho màn hình retina */
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+
+    .exportTable th,
+    .exportTable td {
+        /* Đảm bảo border sắc nét trên màn hình DPI cao */
+        border-width: 0.5px;
+    }
+}
+
+/* Tối ưu hóa cho xuất ảnh với kích thước lớn */
+.exportContainer[data-export-mode="ultra"] {
+    /* Khi ở chế độ xuất ảnh siêu chất lượng */
+    min-width: 800px;
+    padding: 20px;
+}
+
+.exportContainer[data-export-mode="ultra"] .exportTitle {
+    font-size: 20px;
+    letter-spacing: 1px;
+}
+
+.exportContainer[data-export-mode="ultra"] .exportInfo {
+    gap: 12px;
+    /* Tăng gap trong ultra mode */
+}
+
+.exportContainer[data-export-mode="ultra"] .exportUser {
+    font-size: 12px;
+    /* Tăng font size trong ultra mode */
+    padding: 3px 8px;
+    /* Tăng padding */
+}
+
+.exportContainer[data-export-mode="ultra"] .exportDate {
+    font-size: 11px;
+    /* Tăng font size trong ultra mode */
+}
+
+.exportContainer[data-export-mode="ultra"] .exportTable th {
+    font-size: 14px;
+    padding: 8px 10px;
+    /* Giảm padding từ 12px xuống 8px */
+    height: 36px;
+    /* Giảm height từ 48px xuống 36px */
+}
+
+.exportContainer[data-export-mode="ultra"] .exportTable td {
+    font-size: 14px;
+    /* Giảm từ 15px xuống 14px */
+    padding: 4px 8px;
+    /* Giảm padding thêm nữa */
+    height: 26px;
+    /* Giảm height từ 32px xuống 26px */
+    line-height: 1.2;
+    /* Thêm line-height tối ưu */
+}
+
+.exportContainer[data-export-mode="ultra"] .summaryGrid {
+    gap: 8px;
+    /* Tăng gap trong chế độ ultra */
+    min-width: 400px;
+    /* Tăng width tối thiểu */
+}
+
+.exportContainer[data-export-mode="ultra"] .summaryItem {
+    font-size: 10px;
+    /* Tăng font size */
+    padding: 6px 8px;
+    /* Tăng padding ngang cho layout ngang */
+    min-height: 36px;
+    /* Chiều cao cho layout ngang */
+    gap: 8px;
+    /* Tăng gap trong ultra mode */
+}
+
+.exportContainer[data-export-mode="ultra"] .regionName {
+    font-size: 10px;
+    /* Tăng font size cho tên miền */
+}
+
+/* Loại bỏ hitRateText trong ultra mode vì không còn sử dụng */
+
+.exportContainer[data-export-mode="ultra"] .hitRateNumber {
+    font-size: 10px;
+    /* Tăng font size cho hit rate */
+    padding: 2px 4px;
+    /* Padding phù hợp cho layout ngang */
+    min-width: 26px;
+    /* Min-width phù hợp */
+}

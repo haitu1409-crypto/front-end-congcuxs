@@ -1,0 +1,30 @@
+/* Inline Link Styles - Shared across all pages */
+
+.inlineLink {
+    color: #4F46E5;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid transparent;
+}
+
+.inlineLink:hover {
+    color: #4338CA;
+    border-bottom-color: #4338CA;
+}
+
+.inlineLink:active {
+    color: #3730A3;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .inlineLink {
+        color: #818CF8;
+    }
+
+    .inlineLink:hover {
+        color: #A5B4FC;
+        border-bottom-color: #A5B4FC;
+    }
+}
