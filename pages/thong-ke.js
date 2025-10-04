@@ -24,6 +24,7 @@ const ExportableTable = lazy(() => import('../components/ThongKe/ExportableTable
 
 export default function ThongKePage() {
     const router = useRouter();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
