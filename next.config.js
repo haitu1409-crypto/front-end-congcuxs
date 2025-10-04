@@ -42,15 +42,15 @@ const nextConfig = {
             {
                 source: '/:path*',
                 headers: [
-                    // DNS Prefetch
+                    // DNS Prefetch for SEO optimization
                     {
                         key: 'X-DNS-Prefetch-Control',
                         value: 'on'
                     },
-                    // Security Headers
+                    // Custom Domain Support & Security Headers
                     {
                         key: 'X-Frame-Options',
-                        value: 'SAMEORIGIN'
+                        value: 'DENY'
                     },
                     {
                         key: 'X-Content-Type-Options',
