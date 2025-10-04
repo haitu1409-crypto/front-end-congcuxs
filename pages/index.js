@@ -10,7 +10,6 @@ import styles from '../styles/Home.module.css';
 import DanDeGenerator from '../components/DanDeGenerator';
 import GuideSection from '../components/GuideSection';
 import SEOOptimized from '../components/SEOOptimized';
-import SEOHead from '../components/SEOHead';
 import SEOAnalytics from '../components/SEOAnalytics';
 
 export default function Home() {
@@ -96,7 +95,6 @@ export default function Home() {
             breadcrumbs={breadcrumbs}
             faq={faqData}
         />
-            <SEOHead {...seoData} />
             <SEOAnalytics />
 
             <Layout>
