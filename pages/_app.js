@@ -10,6 +10,7 @@ import Analytics from '../components/Analytics';
 import WebVitals from '../components/WebVitals';
 import WebVitalsMonitor from '../components/WebVitalsMonitor';
 import SEOAnalyticsEnhanced from '../components/SEOAnalyticsEnhanced';
+import GoogleAnalytics from '../components/GoogleAnalytics';
 import reportWebVitals from '../lib/reportWebVitals';
 import { useEffect } from 'react';
 
@@ -42,6 +43,7 @@ function MyApp({ Component, pageProps }) {
 
             {/* Google Analytics */}
             <Analytics />
+            <GoogleAnalytics />
 
             {/* Web Vitals Tracking */}
             <WebVitals />
