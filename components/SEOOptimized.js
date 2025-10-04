@@ -61,27 +61,27 @@ const PAGE_IMAGES = {
 // Cấu hình title và description cho từng page
 const PAGE_SEO_CONFIG = {
     homepage: {
-        title: 'Tạo Dàn Đề Tôn Ngộ Không - Công Cụ Chuyên Nghiệp Miễn Phí 2024',
-        description: 'Công cụ tạo dàn đề và thống kê xổ số 3 miền chuyên nghiệp - Thương hiệu Tôn Ngộ Không. Miễn phí, nhanh chóng, chính xác 100%. Tối ưu SEO 2024.',
+        title: 'Tạo Dàn Đề Tôn Ngộ Không - Công Cụ Chuyên Nghiệp Miễn Phí 2025',
+        description: 'Công cụ tạo dàn đề và thống kê xổ số 3 miền chuyên nghiệp - Thương hiệu Tôn Ngộ Không. Miễn phí, nhanh chóng, chính xác 100%. Tối ưu SEO 2025. Cập nhật mới nhất.',
         keywords: 'tạo dàn đề, tạo dàn đề miễn phí, công cụ tạo dàn đề chuyên nghiệp, dàn đề 2D, dàn đề 3D, dàn đề 4D, dàn đề đặc biệt, dàn 9x-0x, lô đề online, xổ số 3 miền, thống kê xổ số, công cụ lô đề, tạo dàn lô đề, dàn đề Tôn Ngộ Không, xổ số Việt Nam, thống kê lô đề, bộ lọc số đặc biệt, dàn đề chính xác 100%'
     },
     'dan-dac-biet': {
-        title: 'Tạo Dàn Đặc Biệt Online - Bộ Lọc Thông Minh | Miễn Phí 2024',
+        title: 'Tạo Dàn Đặc Biệt Online - Bộ Lọc Thông Minh | Miễn Phí 2025',
         description: 'Tạo dàn đề đặc biệt với bộ lọc thông minh: Lấy nhanh, Đầu-Đuôi, Chạm, Bộ, Kép. Thuật toán AI tiên tiến. Miễn phí không giới hạn. Được hàng ngàn người tin dùng.',
         keywords: 'tạo dàn đặc biệt, bộ lọc dàn đề, lọc số đặc biệt, đầu đuôi số, chạm số, kép bằng, dàn đề đặc biệt, bộ lọc thông minh, tạo dàn đặc biệt online, dàn đề Tôn Ngộ Không, lọc dàn đề chuyên nghiệp, bộ lọc số chính xác, dàn đặc biệt miễn phí, công cụ lọc số, thuật toán lọc dàn đề'
     },
     'dan-2d': {
-        title: 'Tạo Dàn 2D Online - Công Cụ Chuyên Nghiệp | Miễn Phí 2024',
+        title: 'Tạo Dàn 2D Online - Công Cụ Chuyên Nghiệp | Miễn Phí 2025',
         description: 'Tạo dàn đề 2D với thuật toán Fisher-Yates hiện đại. Hỗ trợ bộ lọc thông minh, lưu trữ kết quả, xuất file. Miễn phí 100%, không giới hạn.',
         keywords: 'tạo dàn 2D, dàn đề 2D, tạo dàn đề 2D online, công cụ dàn 2D, dàn 2D miễn phí, thuật toán Fisher-Yates, bộ lọc dàn 2D, xuất file dàn 2D, lưu dàn 2D'
     },
     'dan-3d4d': {
-        title: 'Tạo Dàn 3D 4D Online - Công Cụ Chuyên Nghiệp | Miễn Phí 2024',
+        title: 'Tạo Dàn 3D 4D Online - Công Cụ Chuyên Nghiệp | Miễn Phí 2025',
         description: 'Tạo dàn đề 3D và 4D với thuật toán tiên tiến. Hỗ trợ bộ lọc số, xuất file Excel, lưu trữ kết quả. Miễn phí, chính xác 100%.',
         keywords: 'tạo dàn 3D, tạo dàn 4D, dàn đề 3D, dàn đề 4D, tạo dàn đề 3D online, tạo dàn đề 4D online, công cụ dàn 3D, công cụ dàn 4D, dàn 3D miễn phí, dàn 4D miễn phí'
     },
     'thong-ke': {
-        title: 'Thống Kê Xổ Số 3 Miền - Bảng Thống Kê Chính Xác | Miễn Phí 2024',
+        title: 'Thống Kê Xổ Số 3 Miền - Bảng Thống Kê Chính Xác | Miễn Phí 2025',
         description: 'Xem thống kê kết quả xổ số 3 miền mới nhất. Theo dõi xu hướng và phân tích dữ liệu để tối ưu chiến lược chơi. Cập nhật realtime, chính xác 100%. Thương hiệu Tôn Ngộ Không.',
         keywords: 'thống kê xổ số 3 miền, bảng thống kê xổ số, thống kê miền bắc, thống kê miền nam, thống kê miền trung, kết quả xổ số, phân tích xổ số, xu hướng xổ số, thống kê lô đề, bảng thống kê chính xác, thống kê xổ số realtime, dàn đề Tôn Ngộ Không, thống kê xổ số miễn phí, công cụ thống kê xổ số, phân tích dữ liệu xổ số'
     },
@@ -177,6 +177,10 @@ export default function SEOOptimized({
             <meta property="telegram:title" content={title} />
             <meta property="telegram:description" content={description} />
             <meta property="telegram:image" content={`${siteUrl}${pageImages.telegram}`} />
+            <meta property="telegram:site" content="@taodandewukong" />
+            <meta property="telegram:creator" content="@taodandewukong" />
+            <meta name="telegram:channel" content="@taodandewukong" />
+            <meta name="telegram:chat" content="@taodandewukong" />
             
             {/* ===== TIKTOK ===== */}
             <meta property="tiktok:title" content={title} />

@@ -1,7 +1,7 @@
 /**
- * SEO Keywords Database - 2024
+ * SEO Keywords Database - 2025
  * Từ khóa SEO tối ưu cho ngành dàn đề, xổ số Việt Nam
- * Tham khảo xu hướng SEO hiện tại và chính sách trình duyệt
+ * Tham khảo xu hướng SEO 2025 và chính sách trình duyệt mới nhất
  */
 
 // Primary Keywords - High Volume, High Competition
@@ -99,7 +99,7 @@ export const SECONDARY_KEYWORDS = {
 // Long-tail Keywords - Low Competition, High Intent
 export const LONG_TAIL_KEYWORDS = [
     // High Intent Commercial
-    'tạo dàn đề online miễn phí 2024',
+    'tạo dàn đề online miễn phí 2025',
     'công cụ tạo dàn đề chuyên nghiệp nhất',
     'tạo dàn đề 2D nhanh nhất',
     'dàn đề 3D 4D chính xác 100%',
@@ -189,7 +189,7 @@ export const COMPETITOR_KEYWORDS = {
 // SEO Content Templates
 export const SEO_CONTENT_TEMPLATES = {
     title: {
-        primary: '{keyword} - {brand} | Miễn Phí 2024',
+        primary: '{keyword} - {brand} | Miễn Phí 2025',
         secondary: '{keyword} Chuyên Nghiệp | {brand}',
         longTail: '{longTailKeyword} | {brand} - Công Cụ #1 Việt Nam'
     },
@@ -206,7 +206,7 @@ export const PAGE_KEYWORDS = {
     home: {
         primary: 'tạo dàn đề online',
         secondary: ['dàn đề miễn phí', 'công cụ dàn đề', 'dàn đề chuyên nghiệp'],
-        longTail: ['tạo dàn đề online miễn phí 2024', 'công cụ tạo dàn đề chuyên nghiệp nhất'],
+        longTail: ['tạo dàn đề online miễn phí 2025', 'công cụ tạo dàn đề chuyên nghiệp nhất'],
         lsi: ['xổ số', 'lô đề', 'miễn phí', 'chính xác', 'nhanh chóng']
     },
 
@@ -239,16 +239,26 @@ export const PAGE_KEYWORDS = {
     }
 };
 
-// Trending Keywords 2024
-export const TRENDING_KEYWORDS_2024 = [
-    'AI tạo dàn đề',
+// Trending Keywords 2025
+export const TRENDING_KEYWORDS_2025 = [
+    'AI tạo dàn đề 2025',
     'dàn đề thông minh',
-    'công nghệ dàn đề',
-    'dàn đề hiện đại',
+    'công nghệ dàn đề mới nhất',
+    'dàn đề hiện đại 2025',
     'tự động tạo dàn đề',
     'dàn đề AI',
-    'thuật toán dàn đề',
-    'dàn đề machine learning'
+    'thuật toán dàn đề tiên tiến',
+    'dàn đề machine learning',
+    'xổ số miền bắc 2025',
+    'xổ số miền nam 2025', 
+    'xổ số miền trung 2025',
+    'dàn đề Tôn Ngộ Không',
+    'tạo dàn đề online 2025',
+    'công cụ dàn đề chuyên nghiệp 2025',
+    'dàn đề miễn phí không giới hạn',
+    'thống kê xổ số realtime 2025',
+    'soi cầu dàn đề chính xác',
+    'dự đoán dàn đề thông minh'
 ];
 
 // Export utility functions
