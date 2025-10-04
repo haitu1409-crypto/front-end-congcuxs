@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import SEO from '../components/SEO';
+import SEOOptimized from '../components/SEOOptimized';
 import { HelpCircle, Facebook, MessageCircle, Send } from 'lucide-react';
 import styles from '../styles/FAQ.module.css';
 
@@ -78,16 +78,19 @@ export default function FAQPage() {
         setOpenIndex(openIndex === index ? null : index);
     };
 
-    const seoData = {
-        title: 'Câu Hỏi Thường Gặp - FAQ | Tạo Dàn Đề',
-        description: 'Câu hỏi thường gặp về công cụ tạo dàn đề: Hướng dẫn sử dụng, tính năng, bảo mật, và mọi thông tin bạn cần biết.',
-        keywords: 'faq tạo dàn đề, hướng dẫn tạo dàn đề, câu hỏi thường gặp, hỗ trợ tạo dàn đề',
-        url: '/faq',
-    };
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    
+    const breadcrumbs = [
+        { name: 'Trang chủ', url: siteUrl },
+        { name: 'FAQ', url: `${siteUrl}/faq` }
+    ];
 
     return (
         <>
-            <SEO {...seoData} />
+            <SEOOptimized 
+                pageType="faq"
+                breadcrumbs={breadcrumbs}
+            />
 
             {/* FAQPage Schema */}
             <script

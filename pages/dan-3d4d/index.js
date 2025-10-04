@@ -8,7 +8,7 @@ import Link from 'next/link';
 import Layout from '../../components/Layout';
 import Dan3DGenerator from '../../components/DanDe/Dan3DGenerator';
 import Dan4DGenerator from '../../components/DanDe/Dan4DGenerator';
-import SEO from '../../components/SEO';
+import SEOOptimized from '../../components/SEOOptimized';
 import { BarChart3 } from 'lucide-react';
 import styles from '../../styles/Dan3D4D.module.css';
 
@@ -16,22 +16,17 @@ export default function Dan3D4DPage() {
     const [selectedType, setSelectedType] = useState('3D');
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    const seoData = {
-        title: `Tạo Dàn Đề ${selectedType} Online - Miễn Phí 2024`,
-        description: `Tạo dàn đề ${selectedType} ${selectedType === '3D' ? '(000-999)' : '(0000-9999)'} nhanh chóng với công cụ tự động. Phân loại theo mức độ xuất hiện.`,
-        keywords: `tạo dàn đề ${selectedType}, dàn đề ${selectedType} online, xổ số ${selectedType}`,
-        url: `${siteUrl}/dan-3d4d`,
-        image: '/images/dan-3d4d-og.jpg',
-        type: 'article',
-        breadcrumbs: [
-            { name: 'Trang chủ', url: '/' },
-            { name: `Tạo Dàn ${selectedType}`, url: '/dan-3d4d' }
-        ],
-    };
+    const breadcrumbs = [
+        { name: 'Trang chủ', url: siteUrl },
+        { name: 'Dàn Đề 3D/4D', url: `${siteUrl}/dan-3d4d` }
+    ];
 
     return (
         <>
-            <SEO {...seoData} />
+            <SEOOptimized 
+                pageType="dan-3d4d"
+                breadcrumbs={breadcrumbs}
+            />
 
             <Layout>
                 <div className={styles.pageContainer}>

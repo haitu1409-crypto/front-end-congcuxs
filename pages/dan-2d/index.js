@@ -6,29 +6,24 @@
 import Link from 'next/link';
 import Layout from '../../components/Layout';
 import Dan2DGenerator from '../../components/DanDe/Dan2DGenerator';
-import SEO from '../../components/SEO';
+import SEOOptimized from '../../components/SEOOptimized';
 import { Target } from 'lucide-react';
 import styles from '../../styles/Dan2D.module.css';
 
 export default function Dan2DPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    const seoData = {
-        title: 'Tạo Dàn Đề 2D Online - Miễn Phí 2024',
-        description: 'Tạo dàn đề 2D chuẩn xác với công cụ tự động. Hỗ trợ phân loại theo mức độ, tạo dàn 1D từ 2D. Miễn phí 100%.',
-        keywords: 'tạo dàn đề 2D, dàn đề 2D online, công cụ tạo dàn đề 2D miễn phí, dàn 2D, xổ số 2D',
-        url: `${siteUrl}/dan-2d`,
-        image: '/images/dan-2d-og.jpg',
-        type: 'article',
-        breadcrumbs: [
-            { name: 'Trang chủ', url: '/' },
-            { name: 'Tạo Dàn 2D', url: '/dan-2d' }
-        ],
-    };
+    const breadcrumbs = [
+        { name: 'Trang chủ', url: siteUrl },
+        { name: 'Dàn Đề 2D', url: `${siteUrl}/dan-2d` }
+    ];
 
     return (
         <>
-            <SEO {...seoData} />
+            <SEOOptimized 
+                pageType="dan-2d"
+                breadcrumbs={breadcrumbs}
+            />
 
             <Layout>
                 <div className={styles.pageContainer}>
