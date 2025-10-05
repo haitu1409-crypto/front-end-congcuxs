@@ -1,14 +1,40 @@
 /**
  * Dan4DGenerator Component
- * Component logic cho tạo dàn đề 4D
+ * Component logic cho tạo dàn đề 4D - Redesigned with 2D style
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Copy, Undo2, Clock, Edit3, BarChart3, Check } from 'lucide-react';
-import styles from '../../styles/Dan3D4DGenerator.module.css';
+import { Trash2, Copy, Undo2, Clock, Edit3, BarChart3, Check, Dice6 } from 'lucide-react';
+import styles from '../../styles/Dan4DGenerator.module.css';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+// Parse và chuẩn hóa input 4D
+const parseInput4D = (input) => {
+    if (!/^[0-9\s,;]*$/.test(input)) {
+        return { normalized: '', numbers: [], error: 'Vui lòng chỉ nhập số và các ký tự phân tách (, ; hoặc khoảng trắng)' };
+    }
+
+    const normalized = input.replace(/[;\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+    const nums = normalized.split(',').map(num => num.trim()).filter(n => n);
+    const validNumbers = [];
+
+    nums.forEach(num => {
+        const strNum = num.toString();
+        if (strNum.length >= 4 && !isNaN(parseInt(strNum))) {
+            // Tách thành các số 4D
+            for (let i = 0; i <= strNum.length - 4; i++) {
+                const fourDigit = strNum.slice(i, i + 4);
+                validNumbers.push(fourDigit);
+            }
+        } else if (strNum.length === 4) {
+            validNumbers.push(strNum);
+        }
+    });
+
+    return { normalized, numbers: validNumbers, error: null };
+};
 
 export default function Dan4DGenerator() {
     const [inputNumbers, setInputNumbers] = useState('');
@@ -26,33 +52,95 @@ export default function Dan4DGenerator() {
     const [levelCopyStatus, setLevelCopyStatus] = useState({});
     const [selectedLevels, setSelectedLevels] = useState({});
     const [copySelectedStatus, setCopySelectedStatus] = useState(false);
+    const [viewMode, setViewMode] = useState('4D');
+    const [lastApiCallTime, setLastApiCallTime] = useState(0);
+    const [offlineMode, setOfflineMode] = useState(false);
 
-    // Fetch levels from API
+    // Refs để cleanup setTimeout
+    const timeoutRefs = useRef([]);
+
+    // Cleanup timeouts khi component unmount
+    useEffect(() => {
+        return () => {
+            timeoutRefs.current.forEach(timeoutId => {
+                if (timeoutId) clearTimeout(timeoutId);
+            });
+            timeoutRefs.current = [];
+        };
+    }, []);
+
+    // Fetch levels from API với error handling tốt hơn
     const fetchLevels = useCallback(async (input) => {
-        if (!input) return;
+        if (!input || input.trim() === '') return;
 
         setLoading(true);
         setError('');
 
         try {
-            const response = await axios.post(`${API_URL}/api/dande/4d`, { input });
+            const response = await axios.post(`${API_URL}/api/dande/4d`, { input }, {
+                timeout: 5000,
+                headers: { 'Content-Type': 'application/json' }
+            });
 
             if (response.data.success) {
                 setLevels(response.data.data.levels);
                 setTotalSelected(response.data.data.totalSelected);
+                setOfflineMode(false);
             } else {
                 setError(response.data.message);
             }
         } catch (err) {
             console.error('API Error:', err);
-            setError('Không thể kết nối tới server. Vui lòng thử lại.');
+
+            if (err.response?.status === 429) {
+                setOfflineMode(true);
+                setError('Quá nhiều yêu cầu. Đang sử dụng tính toán offline.');
+                calculateLevelsLocal(input);
+            } else {
+                setOfflineMode(true);
+                setError('Không thể kết nối tới server. Đang sử dụng tính toán offline.');
+                calculateLevelsLocal(input);
+            }
         } finally {
             setLoading(false);
         }
     }, []);
 
-    // Handle input change
-    const handleInputChange = (e) => {
+    // Tính toán local nếu API lỗi
+    const calculateLevelsLocal = useCallback((input) => {
+        const { numbers } = parseInput4D(input);
+        const freq = {};
+        numbers.forEach(n => freq[n] = (freq[n] || 0) + 1);
+
+        const levels = {};
+        Object.entries(freq).forEach(([num, count]) => {
+            if (!levels[count]) levels[count] = [];
+            levels[count].push(num);
+        });
+
+        setLevels(levels);
+        setTotalSelected(numbers.length);
+    }, []);
+
+    // Calculate levels when input changes
+    useEffect(() => {
+        if (inputNumbers && inputNumbers.trim() !== '') {
+            calculateLevelsLocal(inputNumbers);
+
+            const timeoutId = setTimeout(() => {
+                const now = Date.now();
+                if (!offlineMode && now - lastApiCallTime > 3000) {
+                    setLastApiCallTime(now);
+                    fetchLevels(inputNumbers);
+                }
+            }, 2000);
+
+            timeoutRefs.current.push(timeoutId);
+        }
+    }, [inputNumbers, fetchLevels, lastApiCallTime, calculateLevelsLocal, offlineMode]);
+
+    // Handle input change - Optimized
+    const handleInputChange = useCallback((e) => {
         const value = e.target.value;
         if (value.length > 1000) {
             setError('Input quá dài (max 1000 ký tự)');
@@ -61,75 +149,69 @@ export default function Dan4DGenerator() {
 
         setDisplayInput(value);
         setError('');
+    }, []);
 
-        if (value.trim() === '') {
-            setLevels({});
-            setTotalSelected(0);
-            setInputNumbers('');
-        }
-    };
-
-    // Handle input blur
-    const handleInputBlur = () => {
-        if (!/^[0-9\s,;]*$/.test(displayInput)) {
-            setError('Vui lòng chỉ nhập số và các ký tự phân tách (, ; hoặc khoảng trắng)');
-            setDisplayInput('');
-            setInputNumbers('');
-            setLevels({});
-            setTotalSelected(0);
+    // Handle input blur - Optimized
+    const handleInputBlur = useCallback(() => {
+        const { normalized, error } = parseInput4D(displayInput);
+        if (error) {
+            setError(error);
             return;
         }
 
-        const nums = displayInput.split(/[,;\s]+/).map(num => num.trim()).filter(num => num);
-        const validNums = [];
-        const errors = [];
+        setInputNumbers(normalized);
+        setDisplayInput(normalized);
+    }, [displayInput]);
 
-        nums.forEach(num => {
-            if (!/^\d+$/.test(num)) {
-                errors.push(`"${num}" không phải là số hợp lệ`);
-            } else if (num.length < 4) {
-                errors.push(`"${num}" quá ngắn (cần ít nhất 4 chữ số)`);
-            } else {
-                validNums.push(num);
-            }
-        });
-
-        const normalizedValue = validNums.join(',');
-        setDisplayInput(normalizedValue);
-        setInputNumbers(normalizedValue);
-
-        if (normalizedValue) {
-            fetchLevels(normalizedValue);
+    // Handle generate dan
+    const handleGenerateDan = useCallback(() => {
+        const { normalized, error } = parseInput4D(displayInput);
+        if (error) {
+            setError(error);
+            return;
         }
 
-        if (errors.length > 0) {
-            setError(errors.join('; '));
+        if (!normalized || normalized.trim() === '') {
+            setError('Vui lòng nhập số để tạo dàn');
+            return;
         }
-    };
+
+        setInputNumbers(normalized);
+        setDisplayInput(normalized);
+    }, [displayInput]);
+
+    // Handle retry online mode
+    const handleRetryOnline = useCallback(() => {
+        setOfflineMode(false);
+        setError('');
+        setLastApiCallTime(0);
+        if (inputNumbers && inputNumbers.trim() !== '') {
+            fetchLevels(inputNumbers);
+        }
+    }, [inputNumbers, fetchLevels]);
 
     // Xóa tất cả
-    const handleXoaDan = () => {
-        if (inputNumbers || totalSelected > 0) {
-            setPreviousState({
-                inputNumbers,
-                displayInput,
-                levels,
-                totalSelected
-            });
-            setShowUndo(true);
-        }
+    const handleClear = useCallback(() => {
+        setPreviousState({
+            inputNumbers,
+            displayInput,
+            levels,
+            totalSelected
+        });
 
         setInputNumbers('');
         setDisplayInput('');
         setLevels({});
         setTotalSelected(0);
-        setError('');
-        setModalMessage('Đã xóa tất cả dàn số');
-        setShowModal(true);
-    };
+        setSelectedLevels({});
+        setShowUndo(true);
+        setDeleteStatus(true);
+        const timeoutId = setTimeout(() => setDeleteStatus(false), 2000);
+        timeoutRefs.current.push(timeoutId);
+    }, [inputNumbers, displayInput, levels, totalSelected]);
 
     // Hoàn tác
-    const handleUndo = () => {
+    const handleUndo = useCallback(() => {
         if (previousState) {
             setInputNumbers(previousState.inputNumbers);
             setDisplayInput(previousState.displayInput);
@@ -138,10 +220,10 @@ export default function Dan4DGenerator() {
             setShowUndo(false);
             setPreviousState(null);
         }
-    };
+    }, [previousState]);
 
     // Copy dàn 4D
-    const handleCopy = () => {
+    const handleCopy = useCallback(() => {
         if (Object.keys(levels).length === 0) {
             setModalMessage('Chưa có dàn số để copy');
             setShowModal(true);
@@ -159,23 +241,24 @@ export default function Dan4DGenerator() {
 
         navigator.clipboard.writeText(copyText.trim()).then(() => {
             setCopyStatus(true);
-            setTimeout(() => setCopyStatus(false), 2000);
+            const timeoutId = setTimeout(() => setCopyStatus(false), 2000);
+            timeoutRefs.current.push(timeoutId);
         }).catch(() => {
-            setModalMessage('Lỗi khi copy. Vui lòng thử lại.');
+            setModalMessage('Lỗi khi sao chép');
             setShowModal(true);
         });
-    };
+    }, [levels]);
 
     // Handle level selection
-    const handleLevelSelect = (level) => {
+    const handleLevelSelect = useCallback((level) => {
         setSelectedLevels(prev => ({
             ...prev,
             [level]: !prev[level]
         }));
-    };
+    }, []);
 
     // Copy selected levels
-    const handleCopySelected = () => {
+    const handleCopySelected = useCallback(() => {
         const selectedTexts = [];
 
         Object.entries(levels)
@@ -196,72 +279,129 @@ export default function Dan4DGenerator() {
 
         navigator.clipboard.writeText(copyText.trim()).then(() => {
             setCopySelectedStatus(true);
-            setTimeout(() => setCopySelectedStatus(false), 2000);
+            const timeoutId = setTimeout(() => setCopySelectedStatus(false), 2000);
+            timeoutRefs.current.push(timeoutId);
         }).catch(() => {
             setModalMessage('Lỗi khi sao chép');
             setShowModal(true);
         });
-    };
+    }, [levels, selectedLevels]);
 
-    // Handle clear with success state
-    const handleClear = () => {
-        setPreviousState({
-            inputNumbers,
-            displayInput,
-            levels
-        });
-
-        setInputNumbers('');
-        setDisplayInput('');
-        setLevels({});
-        setSelectedLevels({});
-        setShowUndo(true);
-        setDeleteStatus(true);
-        setTimeout(() => setDeleteStatus(false), 2000);
-    };
-
-    const closeModal = () => {
+    const closeModal = useCallback(() => {
         setShowModal(false);
         setModalMessage('');
-    };
+    }, []);
+
+    // Generate result text for textarea
+    const generateResultText = useCallback(() => {
+        if (totalSelected === 0) {
+            return "Chưa có dàn số nào. Nhấn 'Tạo Dàn' để bắt đầu.";
+        }
+
+        let resultText = '';
+        resultText += 'DÀN 4D\n';
+        resultText += '='.repeat(7) + '\n';
+
+        if (Object.keys(levels).length > 0) {
+            Object.entries(levels)
+                .sort(([a], [b]) => parseInt(b) - parseInt(a))
+                .forEach(([level, nums]) => {
+                    if (nums.length > 0) {
+                        resultText += `\nMức ${level} (${nums.length} số):\n`;
+                        resultText += nums.join(', ');
+                    }
+                });
+        } else {
+            resultText += '\nChưa có số nào được chọn';
+        }
+
+        return resultText.trim();
+    }, [totalSelected, levels]);
 
     return (
         <div className={styles.container}>
-            {/* Input Section */}
-            <div className={styles.section}>
-                <h3 className={styles.sectionTitle}><Edit3 size={16} style={{ display: 'inline', marginRight: '8px' }} />Nhập Dàn Số 4D</h3>
-                <textarea
-                    value={displayInput}
-                    onChange={handleInputChange}
-                    onBlur={handleInputBlur}
-                    placeholder="Ví dụ: 1234,5678,9012 hoặc 123456789012 (tự động tách)"
-                    className={styles.textarea}
-                    disabled={loading}
-                />
-                {error && <p className={styles.errorText}>{error}</p>}
-                <p className={styles.helpText}>
-                    Nhập số có 4 chữ số trở lên. Hệ thống sẽ tự động tách thành các số 4 chữ số.
-                </p>
-            </div>
-
-            {/* Stats */}
-            <div className={styles.statsBar}>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Tổng số:</span>
-                    <span className={styles.statValue}>{totalSelected}</span>
+            {/* Top Section - 2 Textareas */}
+            <div className={styles.textareaSection}>
+                {/* Left Column - Input */}
+                <div className={styles.leftColumn}>
+                    <div className={styles.inputSection}>
+                        <h3 className={styles.sectionTitle}>📝 Nhập Dàn Số 4D</h3>
+                        <textarea
+                            value={displayInput}
+                            onChange={handleInputChange}
+                            onBlur={handleInputBlur}
+                            placeholder="Ví dụ: 1234,5678,9012 hoặc 123456789012 (tự động tách)"
+                            className={styles.inputTextarea}
+                            disabled={loading}
+                        />
+                        {error && (
+                            <div className={styles.errorContainer}>
+                                <p className={styles.errorText}>{error}</p>
+                                {offlineMode && (
+                                    <button
+                                        onClick={handleRetryOnline}
+                                        className={styles.retryButton}
+                                    >
+                                        Thử lại Online
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
-                {loading && <span className={styles.loadingBadge}><Clock size={12} style={{ display: 'inline', marginRight: '4px' }} />Đang xử lý...</span>}
+
+                {/* Right Column - Results */}
+                <div className={styles.rightColumn}>
+                    <div className={styles.resultsSection}>
+                        <div className={styles.resultsHeader}>
+                            <h2 className={styles.resultsTitle}>Kết quả:</h2>
+                            <div className={styles.tabGroup}>
+                                <button
+                                    className={`${styles.tab} ${styles.activeTab}`}
+                                >
+                                    Dàn 4D
+                                </button>
+                            </div>
+                        </div>
+
+                        {loading && <p className={styles.loadingText}><Clock size={16} style={{ display: 'inline', marginRight: '4px' }} />Đang xử lý...</p>}
+
+                        <textarea
+                            value={generateResultText()}
+                            readOnly
+                            className={styles.resultTextarea}
+                            placeholder="Kết quả sẽ hiển thị ở đây..."
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Action Buttons */}
-            <div className={styles.section}>
+            <div className={styles.buttonSection}>
                 <div className={styles.buttonGroup}>
                     <button
+                        onClick={handleGenerateDan}
+                        className={`${styles.button} ${styles.primaryButton}`}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <>
+                                <Clock size={16} />
+                                Đang tạo...
+                            </>
+                        ) : (
+                            <>
+                                <Dice6 size={16} />
+                                Tạo Dàn
+                            </>
+                        )}
+                    </button>
+                    <button
                         onClick={handleClear}
-                        className={`${styles.button} ${styles.deleteButton} ${deleteStatus ? styles.successButton : ''}`}
+                        className={`${styles.button} ${styles.dangerButton} ${deleteStatus ? styles.successButton : ''}`}
                         disabled={totalSelected === 0 || loading}
                     >
-                        {deleteStatus ? <Check size={14} /> : <Trash2 size={14} />}
+                        {deleteStatus ? <Check size={16} /> : <Trash2 size={16} />}
                         <span className={styles.buttonText}>
                             {deleteStatus ? 'Đã Xóa!' : 'Xóa Tất Cả'}
                         </span>
@@ -272,16 +412,17 @@ export default function Dan4DGenerator() {
                             onClick={handleUndo}
                             className={`${styles.button} ${styles.undoButton}`}
                         >
-                            <Undo2 size={14} style={{ marginRight: '4px' }} />Hoàn Tác
+                            <Undo2 size={16} />
+                            Hoàn Tác
                         </button>
                     )}
 
                     <button
                         onClick={handleCopy}
-                        className={`${styles.button} ${styles.copyButton} ${copyStatus ? styles.successButton : ''}`}
+                        className={`${styles.button} ${styles.secondaryButton} ${copyStatus ? styles.successButton : ''}`}
                         disabled={totalSelected === 0 || loading}
                     >
-                        {copyStatus ? <Check size={14} /> : <Copy size={14} />}
+                        {copyStatus ? <Check size={16} /> : <Copy size={16} />}
                         <span className={styles.buttonText}>
                             {copyStatus ? 'Đã Copy!' : 'Copy Dàn 4D'}
                         </span>
@@ -292,7 +433,7 @@ export default function Dan4DGenerator() {
                         className={`${styles.button} ${styles.infoButton} ${copySelectedStatus ? styles.successButton : ''}`}
                         disabled={loading || Object.values(selectedLevels).every(v => !v)}
                     >
-                        {copySelectedStatus ? <Check size={14} /> : <Copy size={14} />}
+                        {copySelectedStatus ? <Check size={16} /> : <Copy size={16} />}
                         <span className={styles.buttonText}>
                             {copySelectedStatus ? 'Đã Copy!' : 'Copy Đã Chọn'}
                         </span>
@@ -300,32 +441,29 @@ export default function Dan4DGenerator() {
                 </div>
             </div>
 
-            {/* Results */}
-            <div className={styles.section}>
-                <h3 className={styles.sectionTitle}><BarChart3 size={16} style={{ display: 'inline', marginRight: '8px' }} />Kết Quả</h3>
-
-                {totalSelected > 0 && Object.keys(levels).length > 0 ? (
-                    <div className={styles.resultsContainer}>
+            {/* Results Table - Below textareas */}
+            {totalSelected > 0 && Object.keys(levels).length > 0 && (
+                <div className={`${styles.section} ${styles.resultsTableSection}`}>
+                    <h3 className={styles.sectionTitle}>Bảng kết quả chi tiết</h3>
+                    <div className={styles.resultsTable}>
                         {Object.entries(levels)
                             .sort(([a], [b]) => parseInt(b) - parseInt(a))
                             .map(([level, nums]) => (
                                 nums.length > 0 && (
-                                    <div key={level} className={styles.levelBox}>
+                                    <div key={level} className={styles.levelRow}>
                                         <div className={styles.levelHeader}>
-                                            <div className={styles.levelTitleContainer}>
-                                                <input
-                                                    type="checkbox"
-                                                    id={`level-4d-${level}`}
-                                                    checked={selectedLevels[level] || false}
-                                                    onChange={() => handleLevelSelect(level)}
-                                                    className={styles.levelCheckbox}
-                                                />
-                                                <label htmlFor={`level-4d-${level}`} className={styles.levelTitle}>
-                                                    Mức {level} ({nums.length} số)
-                                                </label>
-                                            </div>
+                                            <input
+                                                type="checkbox"
+                                                id={`level-4d-${level}`}
+                                                checked={selectedLevels[level] || false}
+                                                onChange={() => handleLevelSelect(level)}
+                                                className={styles.levelCheckbox}
+                                            />
+                                            <label htmlFor={`level-4d-${level}`} className={styles.levelTitle}>
+                                                Mức {level} ({nums.length} số)
+                                            </label>
                                         </div>
-                                        <div className={styles.numbersList}>
+                                        <div className={styles.numbersGrid}>
                                             {nums.map((num, idx) => (
                                                 <span key={idx} className={styles.numberBadge}>
                                                     {num}
@@ -336,12 +474,8 @@ export default function Dan4DGenerator() {
                                 )
                             ))}
                     </div>
-                ) : (
-                    <p className={styles.noResults}>
-                        {loading ? <><Clock size={12} style={{ display: 'inline', marginRight: '4px' }} />Đang xử lý...</> : 'Chưa có số nào được nhập'}
-                    </p>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* Modal */}
             {showModal && (

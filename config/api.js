@@ -4,7 +4,7 @@
  */
 
 export const API_CONFIG = {
-    BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.yourdomain.com',
+    BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.taodandewukong.pro',
     ENDPOINTS: {
         THONG_KE: {
             THREE_REGIONS: '/api/thongke/3-mien',
