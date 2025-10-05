@@ -23,11 +23,7 @@ const SEOAnalytics = () => {
             gtag('js', new Date());
             gtag('config', process.env.NEXT_PUBLIC_GA_ID, {
                 page_title: document.title,
-                page_location: window.location.href,
-                custom_map: {
-                    'custom_parameter_1': 'dan_de_generator',
-                    'custom_parameter_2': 'dan_de_filter'
-                }
+                page_location: window.location.href
             });
 
             // Track custom events for SEO

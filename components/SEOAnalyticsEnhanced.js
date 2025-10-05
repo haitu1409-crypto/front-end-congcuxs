@@ -27,11 +27,8 @@ export default function SEOAnalyticsEnhanced() {
             // Enhanced ecommerce tracking
             gtag('config', process.env.NEXT_PUBLIC_GA_ID || 'GA_MEASUREMENT_ID', {
                 // SEO specific configuration
-                custom_map: {
-                    'custom_parameter_1': 'seo_page_type',
-                    'custom_parameter_2': 'seo_keyword_group',
-                    'custom_parameter_3': 'seo_content_category'
-                },
+                page_title: document.title,
+                page_location: window.location.href,
                 // Enhanced measurement
                 enhanced_measurements: {
                     scrolls: true,

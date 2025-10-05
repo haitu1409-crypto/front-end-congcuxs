@@ -52,9 +52,7 @@ export default function WebVitalsMonitor() {
             gtag('event', metricName, {
                 event_category: 'Web Vitals',
                 value: Math.round(value),
-                custom_map: {
-                    metric_rating: rating
-                }
+                metric_rating: rating
             });
         }
 
