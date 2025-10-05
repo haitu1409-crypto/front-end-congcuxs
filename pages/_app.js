@@ -10,14 +10,30 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-// Lazy load heavy components
-const Analytics = dynamic(() => import('../components/Analytics'), { ssr: false });
-const WebVitals = dynamic(() => import('../components/WebVitals'), { ssr: false });
-const WebVitalsMonitor = dynamic(() => import('../components/WebVitalsMonitor'), { ssr: false });
-const SEOAnalyticsEnhanced = dynamic(() => import('../components/SEOAnalyticsEnhanced'), { ssr: false });
-const GoogleAnalytics = dynamic(() => import('../components/GoogleAnalytics'), { ssr: false });
-import reportWebVitals from '../lib/reportWebVitals';
 import dynamic from 'next/dynamic';
+import reportWebVitals from '../lib/reportWebVitals';
+
+// Lazy load heavy components with proper error handling
+const Analytics = dynamic(() => import('../components/Analytics'), { 
+    ssr: false,
+    loading: () => null
+});
+const WebVitals = dynamic(() => import('../components/WebVitals'), { 
+    ssr: false,
+    loading: () => null
+});
+const WebVitalsMonitor = dynamic(() => import('../components/WebVitalsMonitor'), { 
+    ssr: false,
+    loading: () => null
+});
+const SEOAnalyticsEnhanced = dynamic(() => import('../components/SEOAnalyticsEnhanced'), { 
+    ssr: false,
+    loading: () => null
+});
+const GoogleAnalytics = dynamic(() => import('../components/GoogleAnalytics'), { 
+    ssr: false,
+    loading: () => null
+});
 
 function MyApp({ Component, pageProps }) {
     const router = useRouter();

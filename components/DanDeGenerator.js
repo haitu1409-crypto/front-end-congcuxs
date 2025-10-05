@@ -9,8 +9,8 @@ import styles from '../styles/DanDeGenerator.module.css';
 import axios from 'axios';
 import { getAllSpecialSets, getCombinedSpecialSetNumbers } from '../utils/specialSets';
 
-// Lazy load DanDeFilter for better performance
-const DanDeFilter = lazy(() => import('./DanDeFilter'));
+// Lazy load DanDeFilter for better performance with error handling
+const DanDeFilter = lazy(() => import('./DanDeFilter').catch(() => ({ default: () => null })));
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
