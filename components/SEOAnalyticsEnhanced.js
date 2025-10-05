@@ -185,8 +185,8 @@ export default function SEOAnalyticsEnhanced() {
             }).catch(err => console.log('Analytics error:', err));
         }
 
-        // Console logging for development
-        if (process.env.NODE_ENV === 'development') {
+        // Console logging for development (reduced frequency)
+        if (process.env.NODE_ENV === 'development' && Math.random() < 0.1) {
             console.log(`📊 SEO Analytics: ${eventName}`, parameters);
         }
     };
