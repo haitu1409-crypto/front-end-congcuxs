@@ -14,7 +14,7 @@ export const API_CONFIG = {
             UPDATE: '/api/thongke',
             DELETE: '/api/thongke',
             SAVE: '/api/thongke/save',
-            LOAD: '/api/thongke/load'
+            LOAD: '/api/thongke/save' // Use save endpoint for loading
         },
         DAN_DE: {
             GENERATE: '/api/dande/generate',

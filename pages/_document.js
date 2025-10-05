@@ -27,11 +27,7 @@ export default function Document() {
                         gtag('js', new Date());
                         gtag('config', 'G-RLCH8J3MHR', {
                             page_title: document.title,
-                            page_location: window.location.href,
-                            custom_map: {
-                                'custom_parameter_1': 'dande_tool',
-                                'custom_parameter_2': 'vietnam_lottery'
-                            }
+                            page_location: window.location.href
                         });
                     `
                 }} />
