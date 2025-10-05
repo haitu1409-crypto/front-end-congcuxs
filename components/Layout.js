@@ -41,7 +41,9 @@ export default function Layout({ children, className = '' }) {
         const href = e.target.closest('a')?.href;
         if (href && href !== window.location.href) {
             // Prefetch the page
-            router.prefetch(href);
+            router.prefetch(href).catch(err => {
+                console.log('Prefetch failed:', err);
+            });
         }
     }, [router]);
 

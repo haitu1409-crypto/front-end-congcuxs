@@ -166,7 +166,7 @@ export default function ThongKePage() {
     // Load dữ liệu khi component mount
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     // Chuyển đổi tháng - được memoize
     const switchMonth = useCallback((month) => {
