@@ -3,7 +3,7 @@
  * Hiển thị bảng thống kê kết quả xổ số 3 miền
  */
 
-import { useState, useEffect, useRef, useMemo, useCallback, Suspense, lazy } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import SEOOptimized from '../components/SEOOptimized';
@@ -20,7 +20,7 @@ import {
     DefaultLoadingSpinner
 } from '../components/LazyComponents';
 // Lazy load components để tối ưu bundle size - chỉ load khi cần
-const ExportableTable = lazy(() => import('../components/ThongKe/ExportableTable'));
+// const ExportableTable = lazy(() => import('../components/ThongKe/ExportableTable')); // Không còn cần thiết
 
 export default function ThongKePage() {
     const router = useRouter();
@@ -56,7 +56,6 @@ export default function ThongKePage() {
     const [showAddDateInput, setShowAddDateInput] = useState(false);
 
     // Refs
-    const exportTableRef = useRef(null);
     const [isExporting, setIsExporting] = useState(false);
 
     // Facebook size presets - được memoize để tránh tạo lại object
@@ -242,21 +241,122 @@ export default function ThongKePage() {
         }
     }, []); // Không phụ thuộc vào gì
 
-    // Xuất ảnh - Simplified version
+    // Xuất ảnh - Fixed version
     const exportToImage = async () => {
-        if (!data || !exportTableRef.current) return;
+        if (!data) {
+            alert('Không có dữ liệu để xuất ảnh');
+            return;
+        }
 
         try {
             setIsExporting(true);
 
-            // Simple export using html2canvas
+            // Tìm bảng thống kê hiển thị trên trang
+            const statisticsTable = document.querySelector('[data-testid="statistics-table"]') || 
+                                   document.querySelector('.statisticsTable') ||
+                                   document.querySelector('table');
+
+            if (!statisticsTable) {
+                alert('Không tìm thấy bảng thống kê để xuất ảnh');
+                return;
+            }
+
+            // Tạo một container tạm thời để chứa bảng export
+            const tempContainer = document.createElement('div');
+            tempContainer.style.cssText = `
+                position: fixed;
+                top: -9999px;
+                left: -9999px;
+                width: ${exportWidth}px;
+                background: white;
+                padding: 20px;
+                font-family: Arial, sans-serif;
+                z-index: -1;
+            `;
+
+            // Tạo bảng export với dữ liệu hiện tại
+            const exportHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="font-size: 24px; margin: 0 0 10px 0; color: #333;">
+                        THỐNG KÊ 3 MIỀN - ${data.title || 'TÔN NGỘ KHÔNG'}
+                    </h1>
+                    ${userName.trim() ? `<p style="margin: 0; color: #666;">Thuộc về: <strong>${userName.trim()}</strong></p>` : ''}
+                    <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
+                        Ngày xuất: ${new Date().toLocaleDateString('vi-VN')}
+                    </p>
+                </div>
+                
+                <table style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 0 auto;
+                    background: white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                ">
+                    <thead>
+                        <tr style="background: #f8f9fa;">
+                            <th style="border: 1px solid #ddd; padding: 12px; font-weight: bold; background: #e9ecef;">Ngày</th>
+                            <th colspan="2" style="border: 1px solid #ddd; padding: 12px; font-weight: bold; background: #e3f2fd; color: #1565c0;">Miền Nam</th>
+                            <th colspan="2" style="border: 1px solid #ddd; padding: 12px; font-weight: bold; background: #fff3e0; color: #ef6c00;">Miền Trung</th>
+                            <th colspan="2" style="border: 1px solid #ddd; padding: 12px; font-weight: bold; background: #f3e5f5; color: #7b1fa2;">Miền Bắc</th>
+                        </tr>
+                        <tr style="background: #f8f9fa;">
+                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #dc3545;">Đặc Biệt</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #198754;">Nhận</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #dc3545;">Đặc Biệt</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #198754;">Nhận</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #dc3545;">Đặc Biệt</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #198754;">Nhận</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.statistics.map((row, index) => `
+                            <tr style="background: ${index % 2 === 0 ? '#f1f3f4' : 'white'};">
+                                <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: ${index % 2 === 0 ? '#e8eaed' : '#f8f9fa'};">
+                                    ${row.displayDate}
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #dc3545; font-weight: bold;">
+                                    ${row.mienNam?.db || 'X'}
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #198754; font-weight: bold;">
+                                    ${row.mienNam?.nhan || 'X'}
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #dc3545; font-weight: bold;">
+                                    ${row.mienTrung?.db || 'X'}
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #198754; font-weight: bold;">
+                                    ${row.mienTrung?.nhan || 'X'}
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #dc3545; font-weight: bold;">
+                                    ${row.mienBac?.db || 'X'}
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #198754; font-weight: bold;">
+                                    ${row.mienBac?.nhan || 'X'}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                
+                <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #666;">
+                    <p>Dàn Đề Tôn Ngộ Không - Công cụ chuyên nghiệp</p>
+                    <p>Tổng số ngày thống kê: ${data.metadata?.totalRecords || 0}</p>
+                </div>
+            `;
+
+            tempContainer.innerHTML = exportHTML;
+            document.body.appendChild(tempContainer);
+
+            // Export using html2canvas
             const html2canvas = (await import('html2canvas')).default;
-            const canvas = await html2canvas(exportTableRef.current, {
+            const canvas = await html2canvas(tempContainer, {
                 width: exportWidth,
                 height: 'auto',
-                scale: 1,
+                scale: 2, // Tăng scale để có chất lượng cao hơn
                 useCORS: true,
-                allowTaint: true
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                logging: false
             });
 
             // Download image
@@ -269,8 +369,12 @@ export default function ThongKePage() {
             link.href = canvas.toDataURL('image/png');
             link.click();
 
+            // Cleanup
+            document.body.removeChild(tempContainer);
+
             alert(`Xuất ảnh thành công! Kích thước: ${canvas.width}x${canvas.height}px`);
         } catch (error) {
+            console.error('Lỗi khi xuất ảnh:', error);
             alert('Lỗi khi xuất ảnh: ' + error.message);
         } finally {
             setIsExporting(false);
@@ -857,27 +961,6 @@ export default function ThongKePage() {
                     />
                 </div>
 
-                {/* Hidden Export Table - Lazy loaded */}
-                <div style={{
-                    position: 'fixed',
-                    left: '-100vw',
-                    top: '0',
-                    width: 'max-content',
-                    height: 'max-content',
-                    visibility: 'hidden',
-                    opacity: '0',
-                    pointerEvents: 'none',
-                    zIndex: '-1'
-                }}>
-                    <Suspense fallback={<div>Loading export table...</div>}>
-                        <ExportableTable
-                            ref={exportTableRef}
-                            data={data}
-                            title={`THỐNG KÊ 3 MIỀN - ${data?.title || ''}`}
-                            userDisplayName={userName}
-                        />
-                    </Suspense>
-                </div>
 
                 {/* Auth Modal */}
                 {showAuthModal && (
