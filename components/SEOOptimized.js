@@ -61,9 +61,9 @@ const PAGE_IMAGES = {
 // Cấu hình title và description cho từng page
 const PAGE_SEO_CONFIG = {
     homepage: {
-        title: 'Tạo Dàn Đề Tôn Ngộ Không - Công Cụ Chuyên Nghiệp Miễn Phí 2025',
-        description: 'Công cụ tạo dàn đề và thống kê xổ số 3 miền chuyên nghiệp - Thương hiệu Tôn Ngộ Không. Miễn phí, nhanh chóng, chính xác 100%. Tối ưu SEO 2025. Cập nhật mới nhất.',
-        keywords: 'tạo dàn đề, tạo dàn đề miễn phí, công cụ tạo dàn đề chuyên nghiệp, dàn đề 2D, dàn đề 3D, dàn đề 4D, dàn đề đặc biệt, dàn 9x-0x, lô đề online, xổ số 3 miền, thống kê xổ số, công cụ lô đề, tạo dàn lô đề, dàn đề Tôn Ngộ Không, xổ số Việt Nam, thống kê lô đề, bộ lọc số đặc biệt, dàn đề chính xác 100%'
+        title: 'Tạo Dàn Đề 9x-0x Online - Công Cụ Chuyên Nghiệp Miễn Phí 2025',
+        description: 'Tạo dàn đề 9x-0x chuyên nghiệp với thuật toán Fisher-Yates chuẩn quốc tế. Công cụ tạo dàn đề 2D, 3D, 4D, dàn đặc biệt miễn phí 100%. Nhanh chóng, chính xác tuyệt đối. Thương hiệu Tôn Ngộ Không.',
+        keywords: 'tạo dàn đề, tạo dàn 9x-0x, công cụ tạo dàn đề chuyên nghiệp, dàn đề 9x-0x online, tạo dàn đề miễn phí, dàn đề 2D, dàn đề 3D, dàn đề 4D, dàn đề đặc biệt, lô đề online, xổ số 3 miền, thống kê xổ số, công cụ lô đề, tạo dàn lô đề, dàn đề Tôn Ngộ Không, xổ số Việt Nam, thống kê lô đề, bộ lọc số đặc biệt, dàn đề chính xác 100%, thuật toán Fisher-Yates'
     },
     'dan-dac-biet': {
         title: 'Tạo Dàn Đặc Biệt Online - Bộ Lọc Thông Minh | Miễn Phí 2025',
@@ -71,24 +71,24 @@ const PAGE_SEO_CONFIG = {
         keywords: 'tạo dàn đặc biệt, bộ lọc dàn đề, lọc số đặc biệt, đầu đuôi số, chạm số, kép bằng, dàn đề đặc biệt, bộ lọc thông minh, tạo dàn đặc biệt online, dàn đề Tôn Ngộ Không, lọc dàn đề chuyên nghiệp, bộ lọc số chính xác, dàn đặc biệt miễn phí, công cụ lọc số, thuật toán lọc dàn đề'
     },
     'dan-2d': {
-        title: 'Tạo Dàn 2D Online - Công Cụ Chuyên Nghiệp | Miễn Phí 2025',
-        description: 'Tạo dàn đề 2D với thuật toán Fisher-Yates hiện đại. Hỗ trợ bộ lọc thông minh, lưu trữ kết quả, xuất file. Miễn phí 100%, không giới hạn.',
-        keywords: 'tạo dàn 2D, dàn đề 2D, tạo dàn đề 2D online, công cụ dàn 2D, dàn 2D miễn phí, thuật toán Fisher-Yates, bộ lọc dàn 2D, xuất file dàn 2D, lưu dàn 2D'
+        title: 'Tạo Dàn Đề 2D (00-99) Online - Bộ Lọc Thông Minh | Miễn Phí 2025',
+        description: 'Tạo dàn đề 2D từ 00-99 với bộ lọc thông minh, phân loại theo mức độ xuất hiện. Hỗ trợ chuyển đổi 1D, lưu trữ kết quả, xuất file Excel. Thuật toán Fisher-Yates chuẩn quốc tế.',
+        keywords: 'tạo dàn 2D, dàn đề 2D, tạo dàn đề 2D online, công cụ dàn 2D, dàn 2D miễn phí, thuật toán Fisher-Yates, bộ lọc dàn 2D, xuất file dàn 2D, lưu dàn 2D, dàn đề 00-99, chuyển đổi 1D, phân loại mức độ, dàn 2D chuyên nghiệp'
     },
     'dan-3d4d': {
-        title: 'Tạo Dàn 3D 4D Online - Công Cụ Chuyên Nghiệp | Miễn Phí 2025',
-        description: 'Tạo dàn đề 3D và 4D với thuật toán tiên tiến. Hỗ trợ bộ lọc số, xuất file Excel, lưu trữ kết quả. Miễn phí, chính xác 100%.',
-        keywords: 'tạo dàn 3D, tạo dàn 4D, dàn đề 3D, dàn đề 4D, tạo dàn đề 3D online, tạo dàn đề 4D online, công cụ dàn 3D, công cụ dàn 4D, dàn 3D miễn phí, dàn 4D miễn phí'
+        title: 'Tạo Dàn Đề 3D/4D (000-999/0000-9999) Online - Công Cụ Chuyên Nghiệp | Miễn Phí 2025',
+        description: 'Tạo dàn đề 3D (000-999) và 4D (0000-9999) với thuật toán tiên tiến. Dành cho cao thủ, tối ưu chiến lược chơi. Hỗ trợ bộ lọc số, xuất file Excel, lưu trữ kết quả. Miễn phí, chính xác 100%.',
+        keywords: 'tạo dàn 3D, tạo dàn 4D, dàn đề 3D, dàn đề 4D, tạo dàn đề 3D online, tạo dàn đề 4D online, công cụ dàn 3D, công cụ dàn 4D, dàn 3D miễn phí, dàn 4D miễn phí, dàn đề 000-999, dàn đề 0000-9999, cao thủ lô đề, chiến lược chơi'
     },
     'thong-ke': {
-        title: 'Thống Kê Xổ Số 3 Miền - Bảng Thống Kê Chính Xác | Miễn Phí 2025',
-        description: 'Xem thống kê kết quả xổ số 3 miền mới nhất. Theo dõi xu hướng và phân tích dữ liệu để tối ưu chiến lược chơi. Cập nhật realtime, chính xác 100%. Thương hiệu Tôn Ngộ Không.',
-        keywords: 'thống kê xổ số 3 miền, bảng thống kê xổ số, thống kê miền bắc, thống kê miền nam, thống kê miền trung, kết quả xổ số, phân tích xổ số, xu hướng xổ số, thống kê lô đề, bảng thống kê chính xác, thống kê xổ số realtime, dàn đề Tôn Ngộ Không, thống kê xổ số miễn phí, công cụ thống kê xổ số, phân tích dữ liệu xổ số'
+        title: 'Thống Kê Xổ Số 3 Miền (Bắc-Nam-Trung) - Bảng Thống Kê Chính Xác | Miễn Phí 2025',
+        description: 'Xem thống kê kết quả xổ số 3 miền (miền Bắc, miền Nam, miền Trung) mới nhất. Theo dõi xu hướng và phân tích dữ liệu để tối ưu chiến lược chơi dàn đề. Cập nhật realtime, chính xác 100%. Thương hiệu Tôn Ngộ Không.',
+        keywords: 'thống kê xổ số 3 miền, bảng thống kê xổ số, thống kê miền bắc, thống kê miền nam, thống kê miền trung, kết quả xổ số, phân tích xổ số, xu hướng xổ số, thống kê lô đề, bảng thống kê chính xác, thống kê xổ số realtime, dàn đề Tôn Ngộ Không, thống kê xổ số miễn phí, công cụ thống kê xổ số, phân tích dữ liệu xổ số, xổ số miền bắc, xổ số miền nam, xổ số miền trung'
     },
     'faq': {
-        title: 'Câu Hỏi Thường Gặp - Tạo Dàn Đề Tôn Ngộ Không | Hỗ Trợ 24/7',
-        description: 'Giải đáp mọi thắc mắc về công cụ tạo dàn đề. Hướng dẫn sử dụng, mẹo chơi, chiến lược tối ưu. Hỗ trợ 24/7, cập nhật thường xuyên.',
-        keywords: 'câu hỏi thường gặp dàn đề, hướng dẫn sử dụng dàn đề, cách chơi dàn đề, mẹo chơi lô đề, giải đáp thắc mắc lô đề, hỗ trợ dàn đề, FAQ dàn đề'
+        title: 'FAQ - Câu Hỏi Thường Gặp Về Tạo Dàn Đề 9x-0x | Hỗ Trợ 24/7',
+        description: 'FAQ - Giải đáp mọi thắc mắc về tạo dàn đề 9x-0x, công cụ tạo dàn đề chuyên nghiệp. Hướng dẫn sử dụng, mẹo chơi, chiến lược tối ưu. Hỗ trợ 24/7, cập nhật thường xuyên.',
+        keywords: 'câu hỏi thường gặp dàn đề, hướng dẫn sử dụng dàn đề, cách chơi dàn đề, mẹo chơi lô đề, giải đáp thắc mắc lô đề, hỗ trợ dàn đề, FAQ dàn đề, tạo dàn 9x-0x, công cụ tạo dàn đề'
     }
 };
 
@@ -222,7 +222,6 @@ export default function SEOOptimized({
             
             {/* ===== SECURITY HEADERS ===== */}
             <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-            <meta httpEquiv="X-Frame-Options" content="DENY" />
             <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
             <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
             

@@ -1,0 +1,110 @@
+{
+  "vi": {
+    "common": {
+      "loading": "Đang tải...",
+      "error": "Có lỗi xảy ra",
+      "success": "Thành công",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận",
+      "close": "Đóng",
+      "save": "Lưu",
+      "delete": "Xóa",
+      "edit": "Sửa",
+      "view": "Xem",
+      "download": "Tải xuống",
+      "copy": "Sao chép",
+      "share": "Chia sẻ"
+    },
+    "navigation": {
+      "home": "Trang chủ",
+      "dan2d": "Dàn 2D",
+      "dan3d4d": "Dàn 3D/4D", 
+      "danDacBiet": "Dàn Đặc Biệt",
+      "thongKe": "Thống Kê",
+      "faq": "FAQ"
+    },
+    "dande": {
+      "generate": "Tạo dàn đề",
+      "dande9x0x": "Dàn đề 9x-0x",
+      "dande2d": "Dàn đề 2D (00-99)",
+      "dande3d": "Dàn đề 3D (000-999)",
+      "dande4d": "Dàn đề 4D (0000-9999)",
+      "dandeDacBiet": "Dàn đề đặc biệt",
+      "filter": "Bộ lọc",
+      "result": "Kết quả",
+      "export": "Xuất file",
+      "save": "Lưu dàn đề"
+    },
+    "thongke": {
+      "title": "Thống kê xổ số 3 miền",
+      "mienBac": "Miền Bắc",
+      "mienNam": "Miền Nam", 
+      "mienTrung": "Miền Trung",
+      "dateRange": "Khoảng thời gian",
+      "fromDate": "Từ ngày",
+      "toDate": "Đến ngày",
+      "loadData": "Tải dữ liệu",
+      "exportExcel": "Xuất Excel"
+    },
+    "faq": {
+      "title": "Câu hỏi thường gặp",
+      "question": "Câu hỏi",
+      "answer": "Trả lời",
+      "contact": "Liên hệ hỗ trợ"
+    }
+  },
+  "en": {
+    "common": {
+      "loading": "Loading...",
+      "error": "An error occurred",
+      "success": "Success",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "close": "Close",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "view": "View",
+      "download": "Download",
+      "copy": "Copy",
+      "share": "Share"
+    },
+    "navigation": {
+      "home": "Home",
+      "dan2d": "2D Numbers",
+      "dan3d4d": "3D/4D Numbers",
+      "danDacBiet": "Special Numbers",
+      "thongKe": "Statistics",
+      "faq": "FAQ"
+    },
+    "dande": {
+      "generate": "Generate numbers",
+      "dande9x0x": "9x-0x numbers",
+      "dande2d": "2D numbers (00-99)",
+      "dande3d": "3D numbers (000-999)",
+      "dande4d": "4D numbers (0000-9999)",
+      "dandeDacBiet": "Special numbers",
+      "filter": "Filter",
+      "result": "Result",
+      "export": "Export file",
+      "save": "Save numbers"
+    },
+    "thongke": {
+      "title": "3 regions lottery statistics",
+      "mienBac": "North",
+      "mienNam": "South",
+      "mienTrung": "Central",
+      "dateRange": "Date range",
+      "fromDate": "From date",
+      "toDate": "To date",
+      "loadData": "Load data",
+      "exportExcel": "Export Excel"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "question": "Question",
+      "answer": "Answer",
+      "contact": "Contact support"
+    }
+  }
+}

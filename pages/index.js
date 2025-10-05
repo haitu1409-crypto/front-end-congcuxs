@@ -122,6 +122,7 @@ export default function Home() {
                                         key={idx}
                                         className={styles.toolCard}
                                         aria-label={`Đi đến ${tool.title}`}
+                                        prefetch={false} // Disable prefetch for better performance
                                     >
                                         {tool.badge && (
                                             <span className={styles.toolBadge}>{tool.badge}</span>

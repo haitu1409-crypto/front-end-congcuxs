@@ -4,7 +4,7 @@
  * Tối ưu cho UX/UI và Accessibility
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Home, Target, BarChart3, Star, HelpCircle, Menu, X, CheckCircle, Zap, Heart, TrendingUp } from 'lucide-react';
@@ -29,6 +29,21 @@ export default function Layout({ children, className = '' }) {
     useEffect(() => {
         setIsMenuOpen(false);
     }, [router.pathname]);
+
+    // Optimize navigation - prevent default behavior for smooth transitions
+    const handleLinkClick = useCallback((e) => {
+        // Don't prevent default for external links or special cases
+        if (e.target.closest('a[href^="http"]') || e.target.closest('a[download]')) {
+            return;
+        }
+        
+        // Preload the page for faster navigation
+        const href = e.target.closest('a')?.href;
+        if (href && href !== window.location.href) {
+            // Prefetch the page
+            router.prefetch(href);
+        }
+    }, [router]);
 
     // Prevent scroll when mobile menu is open
     useEffect(() => {
@@ -76,8 +91,7 @@ export default function Layout({ children, className = '' }) {
                                     height={32}
                                     className={styles.logoImage}
                                     priority
-                                    placeholder="blur"
-                                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                    sizes="32px"
                                 />
                             </div>
                             <span className={styles.logoText}>
@@ -87,7 +101,7 @@ export default function Layout({ children, className = '' }) {
                         </Link>
 
                         {/* Desktop Navigation */}
-                        <div className={styles.desktopNav}>
+                        <div className={styles.desktopNav} onClick={handleLinkClick}>
                             {navLinks.map((link) => {
                                 const IconComponent = link.icon;
                                 return (
@@ -96,6 +110,7 @@ export default function Layout({ children, className = '' }) {
                                         href={link.href}
                                         className={`${styles.navLink} ${router.pathname === link.href ? styles.active : ''
                                             }`}
+                                        prefetch={false} // Disable automatic prefetch
                                     >
                                         <IconComponent size={16} className={styles.navIcon} />
                                         <span>{link.label}</span>
@@ -119,7 +134,7 @@ export default function Layout({ children, className = '' }) {
 
                     {/* Mobile Navigation */}
                     <div className={`${styles.mobileNav} ${isMenuOpen ? styles.mobileNavOpen : ''}`}>
-                        <div className={styles.mobileNavContent}>
+                        <div className={styles.mobileNavContent} onClick={handleLinkClick}>
                             {navLinks.map((link) => {
                                 const IconComponent = link.icon;
                                 return (
@@ -129,6 +144,7 @@ export default function Layout({ children, className = '' }) {
                                         className={`${styles.mobileNavLink} ${router.pathname === link.href ? styles.active : ''
                                             }`}
                                         onClick={() => setIsMenuOpen(false)}
+                                        prefetch={false} // Disable automatic prefetch
                                     >
                                         <IconComponent size={20} className={styles.mobileNavIcon} />
                                         <span>{link.label}</span>

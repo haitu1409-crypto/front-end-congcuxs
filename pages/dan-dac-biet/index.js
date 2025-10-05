@@ -122,7 +122,7 @@ export default function DanDacBietPage() {
                                 <p className={styles.quickLinksSubtitle}>Khám phá thêm các tính năng hữu ích</p>
                             </div>
                             <div className={styles.quickLinksGrid}>
-                                <Link href="/dan-2d" className={styles.quickLink} data-aos="zoom-in" data-aos-delay="100">
+                                <Link href="/dan-2d" className={styles.quickLink} data-aos="zoom-in" data-aos-delay="100" prefetch={false}>
                                     <div className={styles.quickLinkIcon}><Target size={20} /></div>
                                     <div className={styles.quickLinkContent}>
                                         <span className={styles.quickLinkText}>Tạo Dàn 2D</span>
@@ -130,7 +130,7 @@ export default function DanDacBietPage() {
                                     </div>
                                     <div className={styles.quickLinkArrow}>→</div>
                                 </Link>
-                                <Link href="/dan-3d4d" className={styles.quickLink} data-aos="zoom-in" data-aos-delay="200">
+                                <Link href="/dan-3d4d" className={styles.quickLink} data-aos="zoom-in" data-aos-delay="200" prefetch={false}>
                                     <div className={styles.quickLinkIcon}><BarChart3 size={20} /></div>
                                     <div className={styles.quickLinkContent}>
                                         <span className={styles.quickLinkText}>Tạo Dàn 3D-4D</span>
@@ -138,7 +138,7 @@ export default function DanDacBietPage() {
                                     </div>
                                     <div className={styles.quickLinkArrow}>→</div>
                                 </Link>
-                                <Link href="/" className={styles.quickLink} data-aos="zoom-in" data-aos-delay="300">
+                                <Link href="/" className={styles.quickLink} data-aos="zoom-in" data-aos-delay="300" prefetch={false}>
                                     <div className={styles.quickLinkIcon}><Home size={20} /></div>
                                     <div className={styles.quickLinkContent}>
                                         <span className={styles.quickLinkText}>Trang chủ</span>

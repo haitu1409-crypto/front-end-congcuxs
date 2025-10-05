@@ -76,6 +76,30 @@ const nextConfig = {
                     },
                 ],
             },
+            // Handle Chrome DevTools requests
+            {
+                source: '/.well-known/appspecific/com.chrome.devtools.json',
+                headers: [
+                    {
+                        key: 'Content-Type',
+                        value: 'application/json'
+                    },
+                    {
+                        key: 'Cache-Control',
+                        value: 'no-cache, no-store, must-revalidate'
+                    }
+                ],
+            },
+            // Handle source maps requests
+            {
+                source: '/_next/static/chunks/:path*.js.map',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'no-cache, no-store, must-revalidate'
+                    }
+                ],
+            },
             // Specific headers for static assets
             {
                 source: '/fonts/:path*',
@@ -202,6 +226,8 @@ const nextConfig = {
 
     // Production optimizations
     productionBrowserSourceMaps: false,
+    generateEtags: false, // Disable ETags for better performance
+    compress: true, // Enable compression
 
     // Experimental features for better performance
     experimental: {
@@ -220,6 +246,10 @@ const nextConfig = {
         },
         // Optimize memory usage
         memoryBasedWorkersCount: true,
+        // Disable source maps in development for faster builds
+        webVitalsAttribution: ['CLS', 'LCP'],
+        // Optimize package imports
+        optimizePackageImports: ['lucide-react', 'html2canvas'],
     },
 
     // Bundle analyzer (uncomment to analyze)

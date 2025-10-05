@@ -204,17 +204,17 @@ export const SEO_CONTENT_TEMPLATES = {
 // Page-specific Keywords
 export const PAGE_KEYWORDS = {
     home: {
-        primary: 'tạo dàn đề online',
-        secondary: ['dàn đề miễn phí', 'công cụ dàn đề', 'dàn đề chuyên nghiệp'],
-        longTail: ['tạo dàn đề online miễn phí 2025', 'công cụ tạo dàn đề chuyên nghiệp nhất'],
-        lsi: ['xổ số', 'lô đề', 'miễn phí', 'chính xác', 'nhanh chóng']
+        primary: 'tạo dàn đề 9x-0x online',
+        secondary: ['tạo dàn đề miễn phí', 'công cụ dàn đề chuyên nghiệp', 'dàn đề 9x-0x', 'dàn đề Tôn Ngộ Không'],
+        longTail: ['tạo dàn đề 9x-0x online miễn phí 2025', 'công cụ tạo dàn đề chuyên nghiệp nhất', 'tạo dàn đề Fisher-Yates', 'dàn đề 9x-0x chính xác 100%'],
+        lsi: ['xổ số', 'lô đề', 'miễn phí', 'chính xác', 'nhanh chóng', 'thuật toán Fisher-Yates', 'dàn đề online']
     },
 
     'dan-2d': {
-        primary: 'tạo dàn 2D',
-        secondary: ['dàn đề 2D', 'dàn 2D miễn phí', 'công cụ dàn 2D'],
-        longTail: ['tạo dàn 2D online miễn phí', 'dàn đề 2D chính xác 100%'],
-        lsi: ['00-99', '2 chữ số', 'rút dần', 'cấp độ']
+        primary: 'tạo dàn đề 2D (00-99)',
+        secondary: ['dàn đề 2D', 'dàn 2D miễn phí', 'công cụ dàn 2D', 'dàn đề 00-99'],
+        longTail: ['tạo dàn 2D online miễn phí', 'dàn đề 2D chính xác 100%', 'dàn đề 00-99 chuyên nghiệp', 'chuyển đổi 1D từ 2D'],
+        lsi: ['00-99', '2 chữ số', 'rút dần', 'cấp độ', 'Fisher-Yates', 'bộ lọc thông minh']
     },
 
     'dan-3d4d': {
