@@ -21,16 +21,20 @@ export default function Home() {
 
     const faqData = [
         {
-            question: 'Công cụ tạo dàn đề có miễn phí không?',
-            answer: 'Có, công cụ tạo dàn đề Tôn Ngộ Không hoàn toàn miễn phí và không giới hạn số lần sử dụng.'
+            question: 'Công cụ tạo dàn đề 9x-0x ngẫu nhiên có miễn phí không?',
+            answer: 'Có, công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp Tôn Ngộ Không hoàn toàn miễn phí và không giới hạn số lần sử dụng.'
         },
         {
-            question: 'Dàn đề được tạo có chính xác không?',
-            answer: 'Công cụ sử dụng thuật toán Fisher-Yates hiện đại, đảm bảo tính ngẫu nhiên và chính xác 100%.'
+            question: 'Dàn đề 9x-0x được tạo có chính xác không?',
+            answer: 'Công cụ sử dụng thuật toán Fisher-Yates hiện đại, đảm bảo tính ngẫu nhiên và chính xác 100% cho dàn đề 9x-0x.'
+        },
+        {
+            question: 'Bộ lọc dàn đề tổng hợp hoạt động như thế nào?',
+            answer: 'Bộ lọc dàn đề tổng hợp sử dụng AI thông minh để phân tích và lọc các số có khả năng trúng cao nhất từ dàn đề 9x-0x.'
         },
         {
             question: 'Có thể lưu và xuất dàn đề không?',
-            answer: 'Có, bạn có thể lưu dàn đề vào bộ nhớ tạm và xuất ra file Excel để sử dụng sau này.'
+            answer: 'Có, bạn có thể lưu dàn đề 9x-0x và kết quả lọc vào bộ nhớ tạm và xuất ra file Excel để sử dụng sau này.'
         }
     ];
 
@@ -102,10 +106,10 @@ export default function Home() {
                     {/* Hero Section - Compact */}
                     <header className={styles.header}>
                         <h1 className={styles.mainTitle}>
-                            Tạo Dàn Đề Chuyên Nghiệp
+                            Tạo Dàn Đề 9x-0x Ngẫu Nhiên & Lọc Dàn Đề Tổng Hợp
                         </h1>
                         <p className={styles.subtitle}>
-                            Miễn phí • Nhanh chóng • Chính xác 100%
+                            Công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp thông minh • Miễn phí • Nhanh chóng • Chính xác 100%
                         </p>
                     </header>
 
@@ -147,9 +151,9 @@ export default function Home() {
                         <div className={styles.mainGeneratorHeader}>
                             <h2>
                                 <Dice6 size={20} style={{ display: 'inline', marginRight: '8px' }} />
-                                Tạo Dàn 9x-0x Ngẫu Nhiên
+                                Tạo Dàn 9x-0x Ngẫu Nhiên & Lọc Dàn Đề Tổng Hợp
                             </h2>
-                            <p>Công cụ tạo dàn đề 9x-0x với 10 cấp độ rút dần từ 95 số xuống 8 số. Phù hợp cho người mới bắt đầu.</p>
+                            <p>Công cụ tạo dàn đề 9x-0x ngẫu nhiên với 10 cấp độ rút dần từ 95 số xuống 8 số. Kèm theo bộ lọc dàn đề tổng hợp thông minh để tối ưu kết quả. Phù hợp cho người mới bắt đầu và cao thủ.</p>
                         </div>
                         <DanDeGenerator />
                     </main>

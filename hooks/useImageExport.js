@@ -82,8 +82,19 @@ const useImageExport = () => {
         setIsExporting(true);
 
         try {
-            // Dynamic import html2canvas để tránh lỗi SSR
-            const html2canvas = (await import('html2canvas')).default;
+            // Dynamic import html2canvas với error handling
+            let html2canvas;
+            try {
+                const html2canvasModule = await import('html2canvas');
+                html2canvas = html2canvasModule.default;
+            } catch (importError) {
+                console.error('Failed to import html2canvas:', importError);
+                throw new Error('Không thể tải thư viện xuất ảnh. Vui lòng thử lại sau.');
+            }
+
+            if (!html2canvas) {
+                throw new Error('Thư viện xuất ảnh không khả dụng');
+            }
 
             // Lấy element và đảm bảo nó visible để render
             const element = elementRef.current;

@@ -50,7 +50,7 @@ const nextConfig = {
                     // Custom Domain Support & Security Headers
                     {
                         key: 'X-Frame-Options',
-                        value: 'DENY'
+                        value: 'SAMEORIGIN'
                     },
                     {
                         key: 'X-Content-Type-Options',
@@ -69,11 +69,34 @@ const nextConfig = {
                         key: 'Permissions-Policy',
                         value: 'camera=(), microphone=(), geolocation=()'
                     },
-                    // Cache Control for better performance
+                ],
+            },
+            // Fix MIME types for JavaScript files
+            {
+                source: '/_next/static/chunks/:path*',
+                headers: [
+                    {
+                        key: 'Content-Type',
+                        value: 'application/javascript; charset=utf-8'
+                    },
                     {
                         key: 'Cache-Control',
                         value: 'public, max-age=31536000, immutable'
+                    }
+                ],
+            },
+            // Fix MIME types for CSS files
+            {
+                source: '/_next/static/css/:path*',
+                headers: [
+                    {
+                        key: 'Content-Type',
+                        value: 'text/css; charset=utf-8'
                     },
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=31536000, immutable'
+                    }
                 ],
             },
             // Handle Chrome DevTools requests
@@ -187,13 +210,14 @@ const nextConfig = {
                             priority: 35,
                             enforce: true,
                         },
-                        // HTML2Canvas
+                        // HTML2Canvas - Fixed chunk splitting
                         html2canvas: {
                             name: 'html2canvas',
-                            chunks: 'async',
+                            chunks: 'all',
                             test: /[\\/]node_modules[\\/]html2canvas[\\/]/,
                             priority: 30,
                             enforce: true,
+                            reuseExistingChunk: true,
                         },
                         // Commons bundle
                         commons: {

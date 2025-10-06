@@ -61,9 +61,9 @@ const PAGE_IMAGES = {
 // Cấu hình title và description cho từng page
 const PAGE_SEO_CONFIG = {
     homepage: {
-        title: 'Tạo Dàn Đề 9x-0x Online - Công Cụ Chuyên Nghiệp Miễn Phí 2025',
-        description: 'Tạo dàn đề 9x-0x chuyên nghiệp với thuật toán Fisher-Yates chuẩn quốc tế. Công cụ tạo dàn đề 2D, 3D, 4D, dàn đặc biệt miễn phí 100%. Nhanh chóng, chính xác tuyệt đối. Thương hiệu Tôn Ngộ Không.',
-        keywords: 'tạo dàn đề, tạo dàn 9x-0x, công cụ tạo dàn đề chuyên nghiệp, dàn đề 9x-0x online, tạo dàn đề miễn phí, dàn đề 2D, dàn đề 3D, dàn đề 4D, dàn đề đặc biệt, lô đề online, xổ số 3 miền, thống kê xổ số, công cụ lô đề, tạo dàn lô đề, dàn đề Tôn Ngộ Không, xổ số Việt Nam, thống kê lô đề, bộ lọc số đặc biệt, dàn đề chính xác 100%, thuật toán Fisher-Yates'
+        title: 'Tạo Dàn Đề 9x-0x Ngẫu Nhiên & Lọc Dàn Đề Tổng Hợp - Miễn Phí 2025',
+        description: 'Tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế. Công cụ lọc dàn đề tổng hợp thông minh, tạo dàn 2D, 3D, 4D, dàn đặc biệt miễn phí 100%. Nhanh chóng, chính xác tuyệt đối. Thương hiệu Tôn Ngộ Không.',
+        keywords: 'tạo dàn đề 9x-0x ngẫu nhiên, lọc dàn đề tổng hợp, công cụ tạo dàn đề chuyên nghiệp, dàn đề 9x-0x online, tạo dàn đề miễn phí, dàn đề 2D, dàn đề 3D, dàn đề 4D, dàn đề đặc biệt, lô đề online, xổ số 3 miền, thống kê xổ số, công cụ lô đề, tạo dàn lô đề, dàn đề Tôn Ngộ Không, xổ số Việt Nam, thống kê lô đề, bộ lọc số đặc biệt, dàn đề chính xác 100%, thuật toán Fisher-Yates, lọc dàn đề thông minh'
     },
     'dan-dac-biet': {
         title: 'Tạo Dàn Đặc Biệt Online - Bộ Lọc Thông Minh | Miễn Phí 2025',
@@ -81,9 +81,9 @@ const PAGE_SEO_CONFIG = {
         keywords: 'tạo dàn 3D, tạo dàn 4D, dàn đề 3D, dàn đề 4D, tạo dàn đề 3D online, tạo dàn đề 4D online, công cụ dàn 3D, công cụ dàn 4D, dàn 3D miễn phí, dàn 4D miễn phí, dàn đề 000-999, dàn đề 0000-9999, cao thủ lô đề, chiến lược chơi'
     },
     'thong-ke': {
-        title: 'Thống Kê Xổ Số 3 Miền (Bắc-Nam-Trung) - Bảng Thống Kê Chính Xác | Miễn Phí 2025',
-        description: 'Xem thống kê kết quả xổ số 3 miền (miền Bắc, miền Nam, miền Trung) mới nhất. Theo dõi xu hướng và phân tích dữ liệu để tối ưu chiến lược chơi dàn đề. Cập nhật realtime, chính xác 100%. Thương hiệu Tôn Ngộ Không.',
-        keywords: 'thống kê xổ số 3 miền, bảng thống kê xổ số, thống kê miền bắc, thống kê miền nam, thống kê miền trung, kết quả xổ số, phân tích xổ số, xu hướng xổ số, thống kê lô đề, bảng thống kê chính xác, thống kê xổ số realtime, dàn đề Tôn Ngộ Không, thống kê xổ số miễn phí, công cụ thống kê xổ số, phân tích dữ liệu xổ số, xổ số miền bắc, xổ số miền nam, xổ số miền trung'
+        title: 'Lập Bảng Thống Kê Chốt Dàn 3 Miền - Công Cụ Chuyên Nghiệp | Miễn Phí 2025',
+        description: 'Lập bảng thống kê chốt dàn 3 miền (Bắc-Nam-Trung) chuyên nghiệp. Công cụ theo dõi xu hướng và phân tích dữ liệu xổ số để tối ưu chiến lược chơi dàn đề. Cập nhật realtime, chính xác 100%. Thương hiệu Tôn Ngộ Không.',
+        keywords: 'lập bảng thống kê chốt dàn 3 miền, thống kê chốt dàn, bảng thống kê xổ số, thống kê miền bắc, thống kê miền nam, thống kê miền trung, kết quả xổ số, phân tích xổ số, xu hướng xổ số, thống kê lô đề, bảng thống kê chính xác, thống kê xổ số realtime, dàn đề Tôn Ngộ Không, thống kê xổ số miễn phí, công cụ thống kê xổ số, phân tích dữ liệu xổ số, xổ số miền bắc, xổ số miền nam, xổ số miền trung, chốt dàn đề'
     },
     'faq': {
         title: 'FAQ - Câu Hỏi Thường Gặp Về Tạo Dàn Đề 9x-0x | Hỗ Trợ 24/7',

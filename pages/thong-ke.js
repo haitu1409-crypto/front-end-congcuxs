@@ -3,7 +3,7 @@
  * Hiển thị bảng thống kê kết quả xổ số 3 miền
  */
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback, Suspense, lazy, memo } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import SEOOptimized from '../components/SEOOptimized';
@@ -20,9 +20,9 @@ import {
     DefaultLoadingSpinner
 } from '../components/LazyComponents';
 // Lazy load components để tối ưu bundle size - chỉ load khi cần
-// const ExportableTable = lazy(() => import('../components/ThongKe/ExportableTable')); // Không còn cần thiết
+const ExportableTable = lazy(() => import('../components/ThongKe/ExportableTable'));
 
-export default function ThongKePage() {
+function ThongKePage() {
     const router = useRouter();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     const [data, setData] = useState(null);
@@ -56,6 +56,7 @@ export default function ThongKePage() {
     const [showAddDateInput, setShowAddDateInput] = useState(false);
 
     // Refs
+    const exportTableRef = useRef(null);
     const [isExporting, setIsExporting] = useState(false);
 
     // Facebook size presets - được memoize để tránh tạo lại object
@@ -63,26 +64,32 @@ export default function ThongKePage() {
         'facebook-post': {
             width: 1200,
             name: 'Facebook Post',
-            description: '1200px - Tối ưu cho bài đăng Facebook',
-            ratio: 'Tự động'
+            description: '1200x630px - Kích thước chuẩn Facebook (1.91:1)',
+            ratio: '1.91:1'
         },
         'facebook-story': {
             width: 1080,
             name: 'Facebook Story',
-            description: '1080px - Phù hợp cho Story Facebook',
+            description: '1080x1920px - Kích thước chuẩn Story (9:16)',
             ratio: '9:16'
         },
         'facebook-cover': {
-            width: 1640,
+            width: 1200,
             name: 'Facebook Cover',
-            description: '1640px - Ảnh bìa Facebook',
-            ratio: '16:9'
+            description: '1200x630px - Kích thước chuẩn Cover (1.91:1)',
+            ratio: '1.91:1'
         },
         'facebook-event': {
-            width: 1920,
+            width: 1200,
             name: 'Facebook Event',
-            description: '1920px - Ảnh sự kiện Facebook',
-            ratio: '16:9'
+            description: '1200x630px - Kích thước chuẩn Event (1.91:1)',
+            ratio: '1.91:1'
+        },
+        'instagram-post': {
+            width: 1080,
+            name: 'Instagram Post',
+            description: '1080x1080px - Kích thước chuẩn Instagram (1:1)',
+            ratio: '1:1'
         },
         'custom': {
             width: exportWidth,
@@ -127,12 +134,27 @@ export default function ThongKePage() {
             limit: 31 // Tối đa 31 ngày trong tháng
         };
 
-        const result = await apiService.getThongKe3Mien(params);
+        try {
+            const result = await apiService.getThongKe3Mien(params);
 
-        if (result.success) {
-            return { ...result.data, title: monthRange.title };
-        } else {
-            throw new Error(result.message || 'Lỗi không xác định');
+            if (result.success) {
+                return { ...result.data, title: monthRange.title };
+            } else {
+                throw new Error(result.message || 'Lỗi không xác định');
+            }
+        } catch (error) {
+            console.error('API Error:', error);
+            // Return fallback data if API fails
+            return {
+                statistics: [],
+                summary: {
+                    mienNam: { hitRate: 0 },
+                    mienTrung: { hitRate: 0 },
+                    mienBac: { hitRate: 0 }
+                },
+                metadata: { totalRecords: 0 },
+                title: monthRange.title
+            };
         }
     }, []); // Không phụ thuộc vào gì, chỉ tạo một lần
 
@@ -156,7 +178,7 @@ export default function ThongKePage() {
 
         } catch (err) {
             console.error('Lỗi khi tải thống kê:', err);
-            setError(err.message);
+            setError(err.message || 'Lỗi khi tải dữ liệu thống kê');
         } finally {
             setLoading(false);
         }
@@ -178,27 +200,27 @@ export default function ThongKePage() {
     }, [currentMonthData, previousMonthData]); // Phụ thuộc vào dữ liệu tháng
 
     // Xử lý thay đổi filter
-    const handleFilterChange = (field, value) => {
+    const handleFilterChange = useCallback((field, value) => {
         setFilters(prev => ({
             ...prev,
             [field]: value
         }));
-    };
+    }, []);
 
     // Áp dụng filter
-    const applyFilters = () => {
+    const applyFilters = useCallback(() => {
         fetchData();
         setShowFilters(false);
-    };
+    }, [fetchData]);
 
     // Reset filter
-    const resetFilters = () => {
+    const resetFilters = useCallback(() => {
         setFilters({
             startDate: '',
             endDate: '',
             limit: 30
         });
-    };
+    }, []);
 
     // Lưu dữ liệu thống kê - sử dụng apiService
     const saveStatistics = useCallback(async (date, updateData) => {
@@ -243,7 +265,7 @@ export default function ThongKePage() {
 
     // Xuất ảnh - Fixed version
     const exportToImage = async () => {
-        if (!data) {
+        if (!data || !exportTableRef.current) {
             alert('Không có dữ liệu để xuất ảnh');
             return;
         }
@@ -251,113 +273,205 @@ export default function ThongKePage() {
         try {
             setIsExporting(true);
 
-            // Tìm bảng thống kê hiển thị trên trang
-            const statisticsTable = document.querySelector('[data-testid="statistics-table"]') || 
-                                   document.querySelector('.statisticsTable') ||
-                                   document.querySelector('table');
-
-            if (!statisticsTable) {
-                alert('Không tìm thấy bảng thống kê để xuất ảnh');
-                return;
+            // Dynamic import html2canvas with error handling
+            let html2canvas;
+            try {
+                const html2canvasModule = await import('html2canvas');
+                html2canvas = html2canvasModule.default;
+            } catch (importError) {
+                console.error('Failed to import html2canvas:', importError);
+                throw new Error('Không thể tải thư viện xuất ảnh. Vui lòng thử lại sau.');
             }
 
-            // Tạo một container tạm thời để chứa bảng export
-            const tempContainer = document.createElement('div');
-            tempContainer.style.cssText = `
-                position: fixed;
-                top: -9999px;
-                left: -9999px;
-                width: ${exportWidth}px;
-                background: white;
-                padding: 20px;
-                font-family: Arial, sans-serif;
-                z-index: -1;
+            if (!html2canvas) {
+                throw new Error('Thư viện xuất ảnh không khả dụng');
+            }
+
+            // Show loading message
+            const loadingMessage = document.createElement('div');
+            loadingMessage.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8); color: white; padding: 20px;
+                border-radius: 8px; z-index: 10000; font-size: 16px;
             `;
+            loadingMessage.textContent = 'Đang tạo ảnh...';
+            document.body.appendChild(loadingMessage);
 
-            // Tạo bảng export với dữ liệu hiện tại
-            const exportHTML = `
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h1 style="font-size: 24px; margin: 0 0 10px 0; color: #333;">
-                        THỐNG KÊ 3 MIỀN - ${data.title || 'TÔN NGỘ KHÔNG'}
-                    </h1>
-                    ${userName.trim() ? `<p style="margin: 0; color: #666;">Thuộc về: <strong>${userName.trim()}</strong></p>` : ''}
-                    <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
-                        Ngày xuất: ${new Date().toLocaleDateString('vi-VN')}
-                    </p>
-                </div>
-                
-                <table style="
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 0 auto;
-                    background: white;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                ">
-                    <thead>
-                        <tr style="background: #f8f9fa;">
-                            <th style="border: 1px solid #ddd; padding: 12px; font-weight: bold; background: #e9ecef;">Ngày</th>
-                            <th colspan="2" style="border: 1px solid #ddd; padding: 12px; font-weight: bold; background: #e3f2fd; color: #1565c0;">Miền Nam</th>
-                            <th colspan="2" style="border: 1px solid #ddd; padding: 12px; font-weight: bold; background: #fff3e0; color: #ef6c00;">Miền Trung</th>
-                            <th colspan="2" style="border: 1px solid #ddd; padding: 12px; font-weight: bold; background: #f3e5f5; color: #7b1fa2;">Miền Bắc</th>
-                        </tr>
-                        <tr style="background: #f8f9fa;">
-                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #dc3545;">Đặc Biệt</th>
-                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #198754;">Nhận</th>
-                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #dc3545;">Đặc Biệt</th>
-                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #198754;">Nhận</th>
-                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #dc3545;">Đặc Biệt</th>
-                            <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #f8f9fa; color: #198754;">Nhận</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data.statistics.map((row, index) => `
-                            <tr style="background: ${index % 2 === 0 ? '#f1f3f4' : 'white'};">
-                                <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: ${index % 2 === 0 ? '#e8eaed' : '#f8f9fa'};">
-                                    ${row.displayDate}
-                                </td>
-                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #dc3545; font-weight: bold;">
-                                    ${row.mienNam?.db || 'X'}
-                                </td>
-                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #198754; font-weight: bold;">
-                                    ${row.mienNam?.nhan || 'X'}
-                                </td>
-                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #dc3545; font-weight: bold;">
-                                    ${row.mienTrung?.db || 'X'}
-                                </td>
-                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #198754; font-weight: bold;">
-                                    ${row.mienTrung?.nhan || 'X'}
-                                </td>
-                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #dc3545; font-weight: bold;">
-                                    ${row.mienBac?.db || 'X'}
-                                </td>
-                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #198754; font-weight: bold;">
-                                    ${row.mienBac?.nhan || 'X'}
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-                
-                <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #666;">
-                    <p>Dàn Đề Tôn Ngộ Không - Công cụ chuyên nghiệp</p>
-                    <p>Tổng số ngày thống kê: ${data.metadata?.totalRecords || 0}</p>
-                </div>
-            `;
+            // Get element and calculate dimensions
+            const element = exportTableRef.current;
 
-            tempContainer.innerHTML = exportHTML;
-            document.body.appendChild(tempContainer);
+            // First, get natural dimensions of the element
+            const originalStyle = {
+                position: element.style.position,
+                left: element.style.left,
+                top: element.style.top,
+                visibility: element.style.visibility,
+                opacity: element.style.opacity,
+                width: element.style.width,
+                height: element.style.height,
+                transform: element.style.transform,
+                zIndex: element.style.zIndex,
+                margin: element.style.margin,
+                padding: element.style.padding,
+                boxSizing: element.style.boxSizing
+            };
 
-            // Export using html2canvas
-            const html2canvas = (await import('html2canvas')).default;
-            const canvas = await html2canvas(tempContainer, {
-                width: exportWidth,
-                height: 'auto',
-                scale: 2, // Tăng scale để có chất lượng cao hơn
+            // Temporarily make element visible for measurement
+            element.style.position = 'static';
+            element.style.left = 'auto';
+            element.style.top = 'auto';
+            element.style.transform = 'none';
+            element.style.visibility = 'visible';
+            element.style.opacity = '1';
+            element.style.width = 'auto';
+            element.style.height = 'auto';
+            element.style.zIndex = '1000';
+            element.style.backgroundColor = '#ffffff';
+            element.style.margin = '0';
+            element.style.padding = '20px';
+            element.style.boxSizing = 'border-box';
+
+            // Force reflow
+            element.offsetHeight;
+
+            const rect = element.getBoundingClientRect();
+            const elementWidth = Math.max(rect.width, exportWidth * 0.8);
+            const elementHeight = Math.max(rect.height, 400);
+
+            // Calculate final dimensions based on preset - Auto height based on data
+            let finalWidth = exportWidth;
+            let finalHeight;
+
+            // Calculate auto height based on number of days in data with multi-column support
+            const numberOfDays = data?.statistics?.length || 0;
+            const maxDaysPerColumn = 15;
+            const numberOfColumns = Math.ceil(numberOfDays / maxDaysPerColumn);
+            const actualDaysPerColumn = Math.min(numberOfDays, maxDaysPerColumn);
+
+            const baseRowHeight = 28; // Height per row (from CSS)
+            const headerHeight = 60; // Header height
+            const summaryHeight = 80; // Summary section height
+            const padding = 40; // Container padding
+            const tableHeaderHeight = 60; // Table header height
+
+            const autoHeight = Math.max(
+                headerHeight + tableHeaderHeight + (actualDaysPerColumn * baseRowHeight) + summaryHeight + padding,
+                400 // Minimum height
+            );
+
+            // Set exact dimensions for each preset with auto height
+            if (exportPreset === 'facebook-post') {
+                finalWidth = 1200;
+                finalHeight = Math.max(autoHeight, 630); // Use auto height or Facebook minimum
+            } else if (exportPreset === 'facebook-story') {
+                finalWidth = 1080;
+                finalHeight = 1920; // Facebook story size - keep fixed
+            } else if (exportPreset === 'facebook-cover') {
+                finalWidth = 1200;
+                finalHeight = Math.max(autoHeight, 630); // Use auto height or Facebook minimum
+            } else if (exportPreset === 'facebook-event') {
+                finalWidth = 1200;
+                finalHeight = Math.max(autoHeight, 630); // Use auto height or Facebook minimum
+            } else if (exportPreset === 'instagram-post') {
+                finalWidth = 1080;
+                finalHeight = 1080; // Instagram square - keep fixed
+            } else {
+                // Custom size - use auto height
+                finalHeight = autoHeight;
+            }
+
+            // Now position element in center with final dimensions
+            element.style.position = 'fixed';
+            element.style.left = '50%';
+            element.style.top = '50%';
+            element.style.transform = 'translate(-50%, -50%)';
+            element.style.width = finalWidth + 'px';
+            element.style.height = finalHeight + 'px';
+            element.style.zIndex = '9999';
+
+            // Calculate scale for better quality - Fixed scale for consistent results
+            const scale = 2; // Fixed scale for consistent quality
+
+            console.log('Export dimensions:', {
+                elementWidth: elementWidth,
+                elementHeight: elementHeight,
+                finalWidth: finalWidth,
+                finalHeight: finalHeight,
+                scale: scale,
+                preset: exportPreset,
+                numberOfDays: numberOfDays,
+                numberOfColumns: numberOfColumns,
+                actualDaysPerColumn: actualDaysPerColumn,
+                autoHeight: autoHeight
+            });
+
+            const canvas = await html2canvas(element, {
+                width: finalWidth,
+                height: finalHeight,
+                scale: scale,
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: '#ffffff',
-                logging: false
+                logging: false,
+                removeContainer: true,
+                foreignObjectRendering: false, // Disable to avoid SVG issues
+                imageTimeout: 15000,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: window.innerWidth,
+                windowHeight: window.innerHeight,
+                x: 0,
+                y: 0,
+                // Optimize for high quality export
+                letterRendering: true,
+                onclone: (clonedDoc) => {
+                    // Fix any SVG elements that might have NaN attributes
+                    const svgElements = clonedDoc.querySelectorAll('svg');
+                    svgElements.forEach(svg => {
+                        if (!svg.getAttribute('width') || svg.getAttribute('width') === 'NaN') {
+                            svg.setAttribute('width', '16');
+                        }
+                        if (!svg.getAttribute('height') || svg.getAttribute('height') === 'NaN') {
+                            svg.setAttribute('height', '16');
+                        }
+                        if (!svg.getAttribute('viewBox')) {
+                            svg.setAttribute('viewBox', '0 0 16 16');
+                        }
+                    });
+
+                    // Ensure fonts are loaded in cloned document
+                    const clonedElement = clonedDoc.querySelector('[data-export-mode]');
+                    if (clonedElement) {
+                        clonedElement.style.fontFamily = 'Inter, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif';
+                        clonedElement.style.color = '#1e293b';
+                        clonedElement.style.backgroundColor = '#ffffff';
+                        clonedElement.style.position = 'fixed';
+                        clonedElement.style.left = '50%';
+                        clonedElement.style.top = '50%';
+                        clonedElement.style.transform = 'translate(-50%, -50%)';
+                        clonedElement.style.width = finalWidth + 'px';
+                        clonedElement.style.height = finalHeight + 'px';
+                        clonedElement.style.zIndex = '9999';
+                        // Optimize for export quality
+                        clonedElement.style.imageRendering = 'crisp-edges';
+                        clonedElement.style.textRendering = 'optimizeLegibility';
+                    }
+                }
             });
+
+            // Restore original styles
+            Object.keys(originalStyle).forEach(key => {
+                element.style[key] = originalStyle[key];
+            });
+
+            // Remove loading message
+            if (document.body.contains(loadingMessage)) {
+                document.body.removeChild(loadingMessage);
+            }
+
+            if (!canvas || canvas.width === 0 || canvas.height === 0) {
+                throw new Error('Không thể tạo ảnh từ bảng dữ liệu - Canvas rỗng');
+            }
 
             // Download image
             const link = document.createElement('a');
@@ -366,16 +480,57 @@ export default function ThongKePage() {
             const filename = `${userPrefix}thong-ke-3-mien-${dateStr}.png`;
 
             link.download = filename;
-            link.href = canvas.toDataURL('image/png');
+            link.href = canvas.toDataURL('image/png', 1.0); // Maximum quality for Facebook
+            document.body.appendChild(link); // Required for Firefox
             link.click();
+            document.body.removeChild(link);
 
-            // Cleanup
-            document.body.removeChild(tempContainer);
+            // Success message
+            const successMessage = document.createElement('div');
+            successMessage.style.cssText = `
+                position: fixed; top: 20px; right: 20px;
+                background: #10b981; color: white; padding: 12px 20px;
+                border-radius: 8px; z-index: 10000; font-size: 14px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            successMessage.textContent = `✅ Xuất ảnh thành công! (${canvas.width}x${canvas.height}px)`;
+            document.body.appendChild(successMessage);
 
-            alert(`Xuất ảnh thành công! Kích thước: ${canvas.width}x${canvas.height}px`);
+            // Auto remove success message
+            setTimeout(() => {
+                if (document.body.contains(successMessage)) {
+                    document.body.removeChild(successMessage);
+                }
+            }, 3000);
+
         } catch (error) {
-            console.error('Lỗi khi xuất ảnh:', error);
-            alert('Lỗi khi xuất ảnh: ' + error.message);
+            console.error('Export error:', error);
+
+            // Remove loading message if exists
+            const loadingMessages = document.querySelectorAll('div[style*="position: fixed"]');
+            loadingMessages.forEach(msg => {
+                if (document.body.contains(msg)) {
+                    document.body.removeChild(msg);
+                }
+            });
+
+            // Error message
+            const errorMessage = document.createElement('div');
+            errorMessage.style.cssText = `
+                position: fixed; top: 20px; right: 20px;
+                background: #ef4444; color: white; padding: 12px 20px;
+                border-radius: 8px; z-index: 10000; font-size: 14px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            errorMessage.textContent = `❌ Lỗi xuất ảnh: ${error.message}`;
+            document.body.appendChild(errorMessage);
+
+            // Auto remove error message
+            setTimeout(() => {
+                if (document.body.contains(errorMessage)) {
+                    document.body.removeChild(errorMessage);
+                }
+            }, 5000);
         } finally {
             setIsExporting(false);
         }
@@ -417,18 +572,18 @@ export default function ThongKePage() {
     };
 
     // Mở modal lưu dữ liệu
-    const openSaveModal = () => {
+    const openSaveModal = useCallback(() => {
         setAuthMode('save');
         setAuthData({ username: '', password: '' });
         setShowAuthModal(true);
-    };
+    }, []);
 
     // Mở modal tải dữ liệu
-    const openLoadModal = () => {
+    const openLoadModal = useCallback(() => {
         setAuthMode('load');
         setAuthData({ username: '', password: '' });
         setShowAuthModal(true);
-    };
+    }, []);
 
     // Đóng modal - được memoize
     const closeAuthModal = useCallback(() => {
@@ -438,12 +593,12 @@ export default function ThongKePage() {
     }, []);
 
     // Xử lý thay đổi input trong modal
-    const handleAuthInputChange = (field, value) => {
+    const handleAuthInputChange = useCallback((field, value) => {
         setAuthData(prev => ({
             ...prev,
             [field]: value
         }));
-    };
+    }, []);
 
     // Lưu dữ liệu thống kê - sử dụng apiService
     const saveStatisticsData = useCallback(async () => {
@@ -523,13 +678,13 @@ export default function ThongKePage() {
     }, [authData, closeAuthModal]); // Phụ thuộc vào authData và closeAuthModal
 
     // Xử lý submit modal
-    const handleAuthSubmit = () => {
+    const handleAuthSubmit = useCallback(() => {
         if (authMode === 'save') {
             saveStatisticsData();
         } else {
             loadStatisticsData();
         }
-    };
+    }, [authMode, saveStatisticsData, loadStatisticsData]);
 
     // Parse date input (supports DD/MM or DD-MM format)
     const parseDateInput = (input) => {
@@ -621,17 +776,17 @@ export default function ThongKePage() {
     };
 
     // Handle add date input key press
-    const handleAddDateKeyPress = (e) => {
+    const handleAddDateKeyPress = useCallback((e) => {
         if (e.key === 'Enter') {
             addNewDateRow();
         } else if (e.key === 'Escape') {
             setAddDateInput('');
             setShowAddDateInput(false);
         }
-    };
+    }, [addNewDateRow]);
 
     // Delete date row
-    const deleteDateRow = (dateToDelete, displayDate) => {
+    const deleteDateRow = useCallback((dateToDelete, displayDate) => {
         if (!data || !data.statistics) {
             alert('Không có dữ liệu thống kê để xóa');
             return;
@@ -660,28 +815,226 @@ export default function ThongKePage() {
         }));
 
         alert(`Đã xóa dữ liệu ngày ${displayDate}`);
-    };
+    }, [data]);
+
+    // Memoized export options component
+    const ExportOptions = memo(({
+        showExportOptions,
+        userName,
+        setUserName,
+        exportPreset,
+        exportWidth,
+        facebookPresets,
+        handlePresetChange,
+        setExportWidth,
+        exportToImage,
+        exportToCSV,
+        isExporting,
+        data
+    }) => {
+        if (!showExportOptions) return null;
+
+        return (
+            <div className={styles.exportOptions}>
+                {/* Compact Header with User Input */}
+                <div className={styles.exportHeader}>
+                    <div className={styles.exportGroup}>
+                        <label>Tên người dùng:</label>
+                        <input
+                            type="text"
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
+                            placeholder="VD: Nguyễn Văn A"
+                            className={styles.exportInput}
+                            maxLength={100}
+                        />
+                    </div>
+                    <div className={styles.exportGroup}>
+                        <label>Kích thước:</label>
+                        <select
+                            value={exportPreset}
+                            onChange={(e) => handlePresetChange(e.target.value)}
+                            className={styles.exportSelect}
+                        >
+                            {Object.entries(facebookPresets).map(([key, preset]) => (
+                                <option key={key} value={key}>
+                                    {preset.name} - {preset.description}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    {exportPreset === 'custom' && (
+                        <div className={styles.exportGroup}>
+                            <label>Độ rộng (px):</label>
+                            <input
+                                type="number"
+                                value={exportWidth}
+                                onChange={(e) => setExportWidth(parseInt(e.target.value) || 800)}
+                                min="400"
+                                max="2000"
+                                step="50"
+                                className={styles.exportInput}
+                                style={{ width: '120px' }}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* Compact Actions */}
+                <div className={styles.exportActions}>
+                    <button
+                        onClick={exportToImage}
+                        disabled={isExporting || !data}
+                        className={styles.imageButton}
+                    >
+                        <ImageIcon size={16} />
+                        {isExporting ? 'Đang xuất...' : 'Xuất ảnh'}
+                    </button>
+                    <button
+                        onClick={exportToCSV}
+                        disabled={!data}
+                        className={styles.csvButton}
+                    >
+                        <Download size={16} />
+                        CSV
+                    </button>
+                    <div className={styles.exportInfo}>
+                        {(() => {
+                            const numberOfDays = data?.statistics?.length || 0;
+                            const numberOfColumns = Math.ceil(numberOfDays / 15);
+                            const columnInfo = numberOfColumns > 1 ? `, ${numberOfColumns} cột` : '';
+
+                            if (exportPreset === 'facebook-post') return `1200px × Auto (Min: 630px, ${numberOfDays} ngày${columnInfo})`;
+                            if (exportPreset === 'facebook-story') return '1080px × 1920px (9:16)';
+                            if (exportPreset === 'facebook-cover') return `1200px × Auto (Min: 630px, ${numberOfDays} ngày${columnInfo})`;
+                            if (exportPreset === 'facebook-event') return `1200px × Auto (Min: 630px, ${numberOfDays} ngày${columnInfo})`;
+                            if (exportPreset === 'instagram-post') return '1080px × 1080px (1:1)';
+                            return `${exportWidth}px × Auto (${numberOfDays} ngày${columnInfo})`;
+                        })()}
+                    </div>
+                </div>
+            </div>
+        );
+    });
+
+    ExportOptions.displayName = 'ExportOptions';
+
+    // Memoized Auth Modal component
+    const AuthModal = memo(({
+        showAuthModal,
+        closeAuthModal,
+        authMode,
+        authData,
+        authLoading,
+        handleAuthInputChange,
+        handleAuthSubmit
+    }) => {
+        if (!showAuthModal) return null;
+
+        return (
+            <div className={styles.modalOverlay} onClick={closeAuthModal}>
+                <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                    <div className={styles.modalHeader}>
+                        <h3 className={styles.modalTitle}>
+                            {authMode === 'save' ? 'Lưu dữ liệu thống kê' : 'Mở file đã lưu'}
+                        </h3>
+                        <button
+                            className={styles.modalCloseButton}
+                            onClick={closeAuthModal}
+                            disabled={authLoading}
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    <div className={styles.modalBody}>
+                        <div className={styles.modalDescription}>
+                            {authMode === 'save'
+                                ? 'Nhập tên tài khoản và mật khẩu 6 số để lưu dữ liệu thống kê hiện tại'
+                                : 'Nhập tên tài khoản và mật khẩu để tải dữ liệu thống kê đã lưu'
+                            }
+                        </div>
+
+                        <div className={styles.modalInputGroup}>
+                            <label>Tên tài khoản:</label>
+                            <input
+                                type="text"
+                                value={authData.username}
+                                onChange={(e) => handleAuthInputChange('username', e.target.value)}
+                                placeholder="VD: nguyenvana"
+                                className={styles.modalInput}
+                                disabled={authLoading}
+                                maxLength={50}
+                            />
+                        </div>
+
+                        <div className={styles.modalInputGroup}>
+                            <label>Mật khẩu (6 chữ số):</label>
+                            <input
+                                type="password"
+                                value={authData.password}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                                    handleAuthInputChange('password', value);
+                                }}
+                                placeholder="123456"
+                                className={styles.modalInput}
+                                disabled={authLoading}
+                                maxLength={6}
+                            />
+                            <small className={styles.modalHint}>
+                                Chỉ nhập 6 chữ số (0-9)
+                            </small>
+                        </div>
+                    </div>
+
+                    <div className={styles.modalFooter}>
+                        <button
+                            className={styles.modalCancelButton}
+                            onClick={closeAuthModal}
+                            disabled={authLoading}
+                        >
+                            Hủy
+                        </button>
+                        <button
+                            className={styles.modalSubmitButton}
+                            onClick={handleAuthSubmit}
+                            disabled={authLoading || !authData.username.trim() || authData.password.length !== 6}
+                        >
+                            {authLoading ? 'Đang xử lý...' : (authMode === 'save' ? 'Lưu' : 'Tải')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    });
+
+    AuthModal.displayName = 'AuthModal';
 
     return (
         <Layout>
-            <SEOOptimized 
+            <SEOOptimized
                 pageType="thong-ke"
                 breadcrumbs={[
                     { name: 'Trang chủ', url: siteUrl },
-                    { name: 'Thống Kê', url: `${siteUrl}/thong-ke` }
+                    { name: 'Lập Bảng Thống Kê Chốt Dàn 3 Miền', url: `${siteUrl}/thong-ke` }
                 ]}
                 faq={[
                     {
-                        question: 'Thống kê được cập nhật như thế nào?',
-                        answer: 'Dữ liệu thống kê được cập nhật realtime từ nguồn chính thức của xổ số 3 miền.'
+                        question: 'Bảng thống kê chốt dàn 3 miền được cập nhật như thế nào?',
+                        answer: 'Dữ liệu bảng thống kê chốt dàn 3 miền được cập nhật realtime từ nguồn chính thức của xổ số 3 miền.'
                     },
                     {
-                        question: 'Có thể xuất dữ liệu thống kê không?',
-                        answer: 'Có, bạn có thể xuất dữ liệu ra file Excel hoặc lưu vào bộ nhớ tạm.'
+                        question: 'Có thể xuất dữ liệu bảng thống kê chốt dàn không?',
+                        answer: 'Có, bạn có thể xuất dữ liệu bảng thống kê chốt dàn ra file Excel, CSV hoặc xuất ảnh để chia sẻ.'
                     },
                     {
-                        question: 'Dữ liệu có chính xác không?',
-                        answer: 'Tất cả dữ liệu được kiểm tra và xác thực từ nguồn chính thức, đảm bảo tính chính xác 100%.'
+                        question: 'Dữ liệu thống kê chốt dàn có chính xác không?',
+                        answer: 'Tất cả dữ liệu bảng thống kê chốt dàn được kiểm tra và xác thực từ nguồn chính thức, đảm bảo tính chính xác 100%.'
+                    },
+                    {
+                        question: 'Làm thế nào để lập bảng thống kê chốt dàn hiệu quả?',
+                        answer: 'Sử dụng công cụ lập bảng thống kê chốt dàn 3 miền để theo dõi xu hướng và phân tích dữ liệu, từ đó tối ưu chiến lược chơi dàn đề.'
                     }
                 ]}
             />
@@ -693,9 +1046,9 @@ export default function ThongKePage() {
                         <div className={styles.headerLeft}>
                             <BarChart3 className={styles.headerIcon} />
                             <div>
-                                <h1 className={styles.title}>Bảng Thống Kê 3 Miền - Tôn Ngộ Không</h1>
+                                <h1 className={styles.title}>Lập Bảng Thống Kê Chốt Dàn 3 Miền - Tôn Ngộ Không</h1>
                                 <p className={styles.subtitle}>
-                                    Theo dõi kết quả và xu hướng xổ số 3 miền - Thương hiệu Tôn Ngộ Không
+                                    Công cụ lập bảng thống kê chốt dàn 3 miền chuyên nghiệp - Theo dõi kết quả và xu hướng xổ số - Thương hiệu Tôn Ngộ Không
                                 </p>
                             </div>
                         </div>
@@ -877,77 +1230,21 @@ export default function ThongKePage() {
                     </div>
                 )}
 
-                {/* Export Options - Compact Design */}
-                {showExportOptions && (
-                    <div className={styles.exportOptions}>
-                        {/* Compact Header with User Input */}
-                        <div className={styles.exportHeader}>
-                            <div className={styles.exportGroup}>
-                                <label>Tên người dùng:</label>
-                                <input
-                                    type="text"
-                                    value={userName}
-                                    onChange={(e) => setUserName(e.target.value)}
-                                    placeholder="VD: Nguyễn Văn A"
-                                    className={styles.exportInput}
-                                    maxLength={100}
-                                />
-                            </div>
-                            <div className={styles.exportGroup}>
-                                <label>Kích thước:</label>
-                                <select
-                                    value={exportPreset}
-                                    onChange={(e) => handlePresetChange(e.target.value)}
-                                    className={styles.exportSelect}
-                                >
-                                    {Object.entries(facebookPresets).map(([key, preset]) => (
-                                        <option key={key} value={key}>
-                                            {preset.name} ({preset.width}px)
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            {exportPreset === 'custom' && (
-                                <div className={styles.exportGroup}>
-                                    <label>Độ rộng (px):</label>
-                                    <input
-                                        type="number"
-                                        value={exportWidth}
-                                        onChange={(e) => setExportWidth(parseInt(e.target.value) || 800)}
-                                        min="400"
-                                        max="2000"
-                                        step="50"
-                                        className={styles.exportInput}
-                                        style={{ width: '120px' }}
-                                    />
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Compact Actions */}
-                        <div className={styles.exportActions}>
-                            <button
-                                onClick={exportToImage}
-                                disabled={isExporting || !data}
-                                className={styles.imageButton}
-                            >
-                                <ImageIcon size={16} />
-                                {isExporting ? 'Đang xuất...' : 'Xuất ảnh'}
-                            </button>
-                            <button
-                                onClick={exportToCSV}
-                                disabled={!data}
-                                className={styles.csvButton}
-                            >
-                                <Download size={16} />
-                                CSV
-                            </button>
-                            <div className={styles.exportInfo}>
-                                {exportWidth}px × Auto
-                            </div>
-                        </div>
-                    </div>
-                )}
+                {/* Export Options - Memoized Component */}
+                <ExportOptions
+                    showExportOptions={showExportOptions}
+                    userName={userName}
+                    setUserName={setUserName}
+                    exportPreset={exportPreset}
+                    exportWidth={exportWidth}
+                    facebookPresets={facebookPresets}
+                    handlePresetChange={handlePresetChange}
+                    setExportWidth={setExportWidth}
+                    exportToImage={exportToImage}
+                    exportToCSV={exportToCSV}
+                    isExporting={isExporting}
+                    data={data}
+                />
 
                 {/* Main Content - Safe lazy loaded */}
                 <div className={styles.content}>
@@ -961,85 +1258,50 @@ export default function ThongKePage() {
                     />
                 </div>
 
+                {/* Hidden Export Table - Lazy loaded */}
+                <div style={{
+                    position: 'absolute',
+                    left: '-9999px',
+                    top: '0',
+                    width: '1200px', // Fixed width for consistent export
+                    height: 'auto',
+                    visibility: 'hidden',
+                    opacity: '0',
+                    pointerEvents: 'none',
+                    zIndex: '-1',
+                    backgroundColor: '#ffffff',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <Suspense fallback={<div>Loading export table...</div>}>
+                        {data && (
+                            <ExportableTable
+                                ref={exportTableRef}
+                                data={data}
+                                title={`THỐNG KÊ 3 MIỀN - ${data?.title || ''}`}
+                                userDisplayName={userName}
+                                exportMode="image"
+                            />
+                        )}
+                    </Suspense>
+                </div>
 
-                {/* Auth Modal */}
-                {showAuthModal && (
-                    <div className={styles.modalOverlay} onClick={closeAuthModal}>
-                        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                            <div className={styles.modalHeader}>
-                                <h3 className={styles.modalTitle}>
-                                    {authMode === 'save' ? 'Lưu dữ liệu thống kê' : 'Mở file đã lưu'}
-                                </h3>
-                                <button
-                                    className={styles.modalCloseButton}
-                                    onClick={closeAuthModal}
-                                    disabled={authLoading}
-                                >
-                                    ×
-                                </button>
-                            </div>
-
-                            <div className={styles.modalBody}>
-                                <div className={styles.modalDescription}>
-                                    {authMode === 'save'
-                                        ? 'Nhập tên tài khoản và mật khẩu 6 số để lưu dữ liệu thống kê hiện tại'
-                                        : 'Nhập tên tài khoản và mật khẩu để tải dữ liệu thống kê đã lưu'
-                                    }
-                                </div>
-
-                                <div className={styles.modalInputGroup}>
-                                    <label>Tên tài khoản:</label>
-                                    <input
-                                        type="text"
-                                        value={authData.username}
-                                        onChange={(e) => handleAuthInputChange('username', e.target.value)}
-                                        placeholder="VD: nguyenvana"
-                                        className={styles.modalInput}
-                                        disabled={authLoading}
-                                        maxLength={50}
-                                    />
-                                </div>
-
-                                <div className={styles.modalInputGroup}>
-                                    <label>Mật khẩu (6 chữ số):</label>
-                                    <input
-                                        type="password"
-                                        value={authData.password}
-                                        onChange={(e) => {
-                                            const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                            handleAuthInputChange('password', value);
-                                        }}
-                                        placeholder="123456"
-                                        className={styles.modalInput}
-                                        disabled={authLoading}
-                                        maxLength={6}
-                                    />
-                                    <small className={styles.modalHint}>
-                                        Chỉ nhập 6 chữ số (0-9)
-                                    </small>
-                                </div>
-                            </div>
-
-                            <div className={styles.modalFooter}>
-                                <button
-                                    className={styles.modalCancelButton}
-                                    onClick={closeAuthModal}
-                                    disabled={authLoading}
-                                >
-                                    Hủy
-                                </button>
-                                <button
-                                    className={styles.modalSubmitButton}
-                                    onClick={handleAuthSubmit}
-                                    disabled={authLoading || !authData.username.trim() || authData.password.length !== 6}
-                                >
-                                    {authLoading ? 'Đang xử lý...' : (authMode === 'save' ? 'Lưu' : 'Tải')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                {/* Auth Modal - Memoized Component */}
+                <AuthModal
+                    showAuthModal={showAuthModal}
+                    closeAuthModal={closeAuthModal}
+                    authMode={authMode}
+                    authData={authData}
+                    authLoading={authLoading}
+                    handleAuthInputChange={handleAuthInputChange}
+                    handleAuthSubmit={handleAuthSubmit}
+                />
             </div>
         </Layout>
     );
 }
+
+// Wrap with memo for performance optimization
+export default memo(ThongKePage);

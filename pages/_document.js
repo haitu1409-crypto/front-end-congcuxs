@@ -34,24 +34,15 @@ export default function Document() {
 
                 {/* ===== SYSTEM FONTS ONLY - No external font loading ===== */}
 
-                {/* ===== FAVICONS - Đầy đủ các kích thước cho Google Search ===== */}
-                <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+                {/* ===== FAVICONS - Sử dụng ảnh từ thư mục imgs ===== */}
                 <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-                <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-                <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-                <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
                 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
                 <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
-                <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+                <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png" />
                 <link rel="shortcut icon" href="/favicon.ico" />
-                
-                {/* ===== FAVICON FOR GOOGLE SEARCH - Experimental ===== */}
-                <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-                <link rel="mask-icon" href="/favicon.svg" color="#667eea" />
 
                 {/* ===== PWA ICONS ===== */}
-                <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-                <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+                <link rel="apple-touch-icon" href="/icon-192.png" />
                 <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
                 <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
 
@@ -62,12 +53,6 @@ export default function Document() {
                 <meta name="theme-color" content="#667eea" />
                 <meta name="msapplication-TileColor" content="#667eea" />
                 <meta name="msapplication-TileImage" content="/icon-192.png" />
-                
-                {/* ===== FAVICON META TAGS FOR GOOGLE SEARCH ===== */}
-                <meta name="favicon" content="/favicon.ico" />
-                <meta name="favicon-16x16" content="/favicon-16x16.png" />
-                <meta name="favicon-32x32" content="/favicon-32x32.png" />
-                <meta name="apple-touch-icon" content="/apple-touch-icon.png" />
 
                 {/* ===== APPLE MOBILE WEB APP ===== */}
                 <meta name="apple-mobile-web-app-capable" content="yes" />

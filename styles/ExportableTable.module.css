@@ -2,51 +2,67 @@
 
 .exportContainer {
     max-width: 100%;
-    width: fit-content;
-    min-width: 600px;
+    width: 100%;
+    min-width: 900px;
     background: #ffffff;
-    /* Sử dụng màu trắng tuyệt đối thay vì CSS variable */
-    padding: 12px;
-    /* Tăng padding để có không gian tốt hơn khi xuất ảnh */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Font rõ ràng cho xuất ảnh */
+    padding: 8px;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     color: #1a1a1a;
-    /* Màu đen đậm để tương phản tốt */
     box-sizing: border-box;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Tối ưu hóa cho việc render ảnh chất lượng cao */
+    justify-content: center;
+    /* Optimize for image export */
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Enhanced styling for professional look */
+    font-size: 18px;
+    line-height: 1.3;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Header - Minimized */
+/* Multi-column layout */
+.multiColumnTable {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+}
+
+.tableColumn {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Header - Enhanced */
 .exportHeader {
     text-align: center;
-    margin-bottom: 8px;
-    border-bottom: 1px solid var(--color-primary-600);
+    margin-bottom: 6px;
+    border-bottom: 2px solid #3b82f6;
     padding-bottom: 4px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 6px;
+    border-radius: 4px;
+    margin-bottom: 8px;
 }
 
 .exportTitle {
-    font-size: 16px;
-    /* Tăng từ 14px lên 16px để rõ hơn khi xuất ảnh */
-    font-weight: 700;
-    /* Sử dụng số thay vì CSS variable */
-    color: #1a1a1a;
-    /* Màu đen đậm */
-    margin: 0 0 6px 0;
-    letter-spacing: 0.8px;
-    /* Tăng letter-spacing để dễ đọc hơn */
+    font-size: 24px;
+    font-weight: 900;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    line-height: 1;
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
-    /* Thêm text shadow nhẹ để tăng độ sắc nét */
+    line-height: 1.1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Export Info Container - Layout ngang */
@@ -96,54 +112,57 @@
 
 /* Table Wrapper */
 .tableWrapper {
-    width: fit-content;
+    width: 100%;
+    max-width: 100%;
     margin: 0 auto;
+    overflow: visible;
     overflow: visible;
 }
 
 /* Table */
 .exportTable {
-    width: auto;
+    width: 100%;
     border-collapse: collapse;
-    margin-bottom: 8px;
-    font-size: var(--text-sm);
+    margin-bottom: 16px;
+    font-size: 14px;
+    /* Increased for better readability */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    table-layout: fixed;
+    table-layout: auto;
+    /* Changed to auto for better content fitting */
     border-radius: 8px;
     overflow: hidden;
-    /* Để border-radius hoạt động với table */
+    background: #ffffff;
 }
 
 .exportTable th {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    color: #2d3748;
-    /* Màu xám đậm thay vì CSS variable */
-    font-weight: 700;
-    /* Sử dụng số thay vì CSS variable */
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+    font-weight: 900;
     text-align: center;
-    vertical-align: middle;
-    padding: 6px 8px;
-    /* Giảm padding để giảm chiều cao */
-    border: 1px solid #d1d5db;
-    font-size: 12px;
-    /* Tăng từ 11px lên 12px */
+    vertical-align: middle !important;
+    padding: 6px 4px;
+    border: 1px solid #2563eb;
+    font-size: 16px;
     letter-spacing: 0.5px;
-    /* Tăng letter-spacing */
     text-transform: uppercase;
-    height: 32px;
-    /* Giảm chiều cao để gọn gàng hơn */
-    line-height: 1.3;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-    /* Tăng độ đậm của text shadow */
-    /* Tối ưu hóa cho render chất lượng cao */
+    height: 36px;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .dateHeader {
-    background: #e9ecef !important;
-    color: var(--color-gray-900) !important;
-    min-width: 60px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    color: #ffffff !important;
+    min-width: 45px;
+    width: 45px;
+    font-weight: 900;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .regionHeader {
@@ -152,205 +171,200 @@
     font-weight: var(--font-bold);
 }
 
-/* Miền Nam - Xám xanh */
+/* Miền Nam - Xanh dương */
 .regionHeader:nth-child(2) {
-    background: #e3f2fd !important;
-    color: #1565c0 !important;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
 }
 
-/* Miền Trung - Xám cam */
+/* Miền Trung - Cam */
 .regionHeader:nth-child(3) {
-    background: #fff3e0 !important;
-    color: #ef6c00 !important;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    color: #ffffff !important;
 }
 
-/* Miền Bắc - Xám tím */
+/* Miền Bắc - Tím */
 .regionHeader:nth-child(4) {
-    background: #f3e5f5 !important;
-    color: #7b1fa2 !important;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+    color: #ffffff !important;
 }
 
 .dbHeader {
     background: #f8f9fa !important;
     color: #dc3545 !important;
-    min-width: 80px;
+    min-width: 35px;
+    width: 35px;
 }
 
 .nhanHeader {
     background: #f8f9fa !important;
     color: #198754 !important;
-    min-width: 60px;
+    min-width: 30px;
+    width: 30px;
 }
 
 .exportTable td {
     text-align: center;
-    vertical-align: middle;
-    padding: 3px 6px;
-    /* Giảm padding thêm nữa để có chiều cao nhỏ hơn */
-    border: 1px solid #d1d5db;
-    font-weight: 600;
-    /* Sử dụng số thay vì CSS variable */
-    font-size: 12px;
-    /* Giảm font-size để phù hợp với chiều cao nhỏ hơn */
-    height: 22px;
-    /* Giảm chiều cao xuống thêm nữa */
+    vertical-align: middle !important;
+    padding: 4px 6px;
+    border: 1px solid #e5e7eb;
+    font-weight: 900;
+    font-size: 18px;
+    height: 28px;
     line-height: 1.2;
     transition: background-color 0.2s ease;
-    /* Tối ưu hóa cho render chất lượng cao */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-/* Zebra striping - Màu sắc chẵn lẻ rõ ràng */
+/* Zebra striping - Enhanced colors */
 .evenRow {
-    background: #f1f3f4 !important;
-    /* Màu xám nhạt cho hàng chẵn */
+    background: #f8fafc !important;
 }
 
 .evenRow .dateCell {
-    background: #e8eaed !important;
-    /* Màu xám đậm hơn cho cột ngày */
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+    font-weight: 800 !important;
 }
 
 .evenRow .dbCell {
-    background: #f1f3f4 !important;
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
 }
 
 .evenRow .nhanCell {
-    background: #f1f3f4 !important;
+    background: #f0fdf4 !important;
+    color: #16a34a !important;
 }
 
 .oddRow {
     background: #ffffff !important;
-    /* Màu trắng cho hàng lẻ */
 }
 
 .oddRow .dateCell {
-    background: #f8f9fa !important;
-    /* Màu xám rất nhạt cho cột ngày */
+    background: #f8fafc !important;
+    color: #1e293b !important;
+    font-weight: 800 !important;
 }
 
 .oddRow .dbCell {
     background: #ffffff !important;
+    color: #dc2626 !important;
 }
 
 .oddRow .nhanCell {
     background: #ffffff !important;
+    color: #16a34a !important;
 }
 
 .dateCell {
-    font-weight: 700;
-    /* Sử dụng số thay vì CSS variable */
-    color: #1a1a1a;
-    /* Màu đen đậm thay vì CSS variable */
-    border-right: 3px solid #6c757d !important;
-    font-size: 11px;
-    /* Giảm từ 12px xuống 11px */
+    font-weight: 900;
+    color: #1e293b;
+    border-right: 2px solid #f59e0b !important;
+    font-size: 16px;
+    background: #fef3c7 !important;
 }
 
 .dbCell {
-    color: #dc3545;
-    font-weight: 700;
-    /* Sử dụng số thay vì CSS variable */
-    font-size: 12px;
-    /* Giảm từ 13px xuống 12px */
+    color: #dc2626;
+    font-weight: 900;
+    font-size: 18px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .nhanCell {
-    color: #198754;
-    font-weight: 700;
-    /* Sử dụng số thay vì CSS variable */
-    font-size: 12px;
-    /* Giảm từ 13px xuống 12px */
+    color: #16a34a;
+    font-weight: 900;
+    font-size: 18px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Styles for empty cells and waiting status */
 .emptyCellX {
-    color: #dc3545 !important;
-    font-weight: var(--font-bold);
+    color: #dc2626 !important;
+    font-weight: 900;
     font-style: normal;
+    font-size: 22px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .waitingResult {
-    color: #fd7e14 !important;
-    font-weight: var(--font-medium);
+    color: #f59e0b !important;
+    font-weight: 700;
     font-style: italic;
-    font-size: 9px;
+    font-size: 16px;
 }
 
-/* Summary - Minimized */
+/* Summary - Enhanced */
 .exportSummary {
-    margin-top: 1px;
-    padding: 2px;
-    /* Tăng padding */
-    background: #f8fafc;
-    border-radius: 4px;
+    margin-top: 8px;
+    padding: 8px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 6px;
     border: 1px solid #e2e8f0;
     width: 100%;
-    /* Đảm bảo full width */
     box-sizing: border-box;
-    /* Include padding trong width */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .exportSummary h3 {
-    margin: 0 0 4px 0;
-    font-size: 10px;
-    color: #1f2937;
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    color: #1e293b;
     text-align: center;
+    font-weight: 900;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .summaryGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    /* Tăng gap để có thêm không gian */
+    gap: 6px;
     min-width: 300px;
-    /* Đảm bảo width tối thiểu */
 }
 
 .summaryItem {
     text-align: center;
-    font-size: 8px;
-    padding: 4px 6px;
-    /* Tăng padding ngang để có không gian cho layout ngang */
+    font-size: 18px;
+    padding: 8px 12px;
     background: white;
-    border-radius: 2px;
+    border-radius: 6px;
     border: 1px solid #e5e7eb;
     position: relative;
     white-space: nowrap;
-    /* Ngăn wrap để giữ trên 1 hàng */
     min-width: 0;
     overflow: hidden;
     display: flex;
     flex-direction: row;
-    /* Thay đổi thành row để layout ngang */
     justify-content: space-between;
-    /* Căn đều 2 đầu */
     align-items: center;
-    min-height: 28px;
-    /* Giảm chiều cao vì chỉ cần 1 hàng */
-    gap: 4px;
-    /* Khoảng cách giữa tên miền và % */
+    min-height: 36px;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-weight: 900;
 }
 
 /* Colorful Hit Rate Styles */
 .regionName {
-    font-weight: bold;
-    color: #1f2937;
+    font-weight: 900;
+    color: #1e293b;
     white-space: nowrap;
-    /* Ngăn wrap cho tên miền */
-    font-size: 7px;
-    /* Font size nhỏ để vừa trong layout ngang */
+    font-size: 16px;
     flex-shrink: 0;
-    /* Không cho phép shrink */
 }
 
 /* Hit rate percentage colors based on performance */
 .summaryItem:nth-child(1) {
     /* Miền Nam - Blue theme */
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border-color: #3b82f6;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border-color: #15803d;
+    color: #ffffff;
 }
 
 .summaryItem:nth-child(1)::after {
@@ -359,15 +373,16 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: #3b82f6;
-    border-radius: 2px 2px 0 0;
+    height: 3px;
+    background: #15803d;
+    border-radius: 8px 8px 0 0;
 }
 
 .summaryItem:nth-child(2) {
     /* Miền Trung - Orange theme */
-    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
-    border-color: #f97316;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border-color: #15803d;
+    color: #ffffff;
 }
 
 .summaryItem:nth-child(2)::after {
@@ -376,15 +391,16 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: #f97316;
-    border-radius: 2px 2px 0 0;
+    height: 3px;
+    background: #15803d;
+    border-radius: 8px 8px 0 0;
 }
 
 .summaryItem:nth-child(3) {
-    /* Miền Bắc - Purple theme */
-    background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
-    border-color: #a855f7;
+    /* Miền Bắc - Red theme */
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-color: #b91c1c;
+    color: #ffffff;
 }
 
 .summaryItem:nth-child(3)::after {
@@ -393,9 +409,9 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: #a855f7;
-    border-radius: 2px 2px 0 0;
+    height: 3px;
+    background: #b91c1c;
+    border-radius: 8px 8px 0 0;
 }
 
 /* Performance-based colors */
@@ -446,20 +462,16 @@
 
 /* Hit Rate Number Styling */
 .hitRateNumber {
-    font-size: 8px;
-    /* Giảm font size để vừa layout ngang */
-    font-weight: bold;
-    padding: 1px 3px;
-    /* Giảm padding để gọn hơn */
-    border-radius: 3px;
+    font-size: 20px;
+    font-weight: 900;
+    padding: 3px 6px;
+    border-radius: 6px;
     background: rgba(255, 255, 255, 0.9);
     display: inline-block;
-    min-width: 20px;
-    /* Giảm min-width */
+    min-width: 36px;
     white-space: nowrap;
-    line-height: 1.2;
+    line-height: 1.1;
     flex-shrink: 0;
-    /* Không cho phép shrink */
 }
 
 /* Footer - Minimized */
@@ -566,10 +578,8 @@
     /* Loại bỏ hitRateText vì không còn sử dụng trong layout ngang */
 
     .hitRateNumber {
-        font-size: 9px;
-        /* Tăng font size */
-        min-width: 24px;
-        /* Tăng min-width */
+        font-size: 16px;
+        min-width: 28px;
     }
 
     .exportFooter {
@@ -741,10 +751,7 @@
 /* Loại bỏ hitRateText trong ultra mode vì không còn sử dụng */
 
 .exportContainer[data-export-mode="ultra"] .hitRateNumber {
-    font-size: 10px;
-    /* Tăng font size cho hit rate */
+    font-size: 18px;
     padding: 2px 4px;
-    /* Padding phù hợp cho layout ngang */
-    min-width: 26px;
-    /* Min-width phù hợp */
+    min-width: 32px;
 }

@@ -4,8 +4,6 @@
  */
 
 import { forwardRef, memo, useMemo } from 'react';
-// Sử dụng optimized icons import
-import { Calendar, BarChart3 } from '../../utils/icons';
 import styles from '../../styles/ExportableTable.module.css';
 
 // Helper functions - định nghĩa trước tất cả để tránh lỗi hoisting
@@ -120,10 +118,68 @@ const ExportableTable = forwardRef(({ data, title = "THỐNG KÊ 3 MIỀN - TÔN
         ];
     }, [data?.summary]);
 
+    // Multi-column layout logic
+    const { tableColumns, maxDaysPerColumn } = useMemo(() => {
+        const numberOfDays = processedData?.length || 0;
+        const maxDaysPerColumn = 15;
+
+        if (numberOfDays <= maxDaysPerColumn) {
+            // Single column
+            return {
+                tableColumns: [processedData],
+                maxDaysPerColumn
+            };
+        } else {
+            // Multiple columns
+            const columns = [];
+            for (let i = 0; i < processedData.length; i += maxDaysPerColumn) {
+                columns.push(processedData.slice(i, i + maxDaysPerColumn));
+            }
+            return {
+                tableColumns: columns,
+                maxDaysPerColumn
+            };
+        }
+    }, [processedData]);
+
     // Early return sau khi tất cả hooks đã được gọi
     if (!processedData) {
         return null;
     }
+
+    const renderTable = (columnData, columnIndex) => (
+        <table key={columnIndex} className={styles.exportTable}>
+            <thead>
+                <tr>
+                    <th rowSpan={2} className={styles.dateHeader}>Ngày</th>
+                    <th colSpan={2} className={styles.regionHeader}>Miền Nam</th>
+                    <th colSpan={2} className={styles.regionHeader}>Miền Trung</th>
+                    <th colSpan={2} className={styles.regionHeader}>Miền Bắc</th>
+                </tr>
+                <tr>
+                    <th className={styles.dbHeader}>Đặc Biệt</th>
+                    <th className={styles.nhanHeader}>Nhận</th>
+                    <th className={styles.dbHeader}>Đặc Biệt</th>
+                    <th className={styles.nhanHeader}>Nhận</th>
+                    <th className={styles.dbHeader}>Đặc Biệt</th>
+                    <th className={styles.nhanHeader}>Nhận</th>
+                </tr>
+            </thead>
+            <tbody>
+                {columnData.map((row, index) => (
+                    <tr key={row.date} className={row.isEven ? styles.evenRow : styles.oddRow}>
+                        <td className={styles.dateCell}>{row.displayDate}</td>
+                        <td className={`${styles.dbCell} ${row.cells.mienNam.db.className ? styles[row.cells.mienNam.db.className] : ''}`}>{row.cells.mienNam.db.value}</td>
+                        <td className={`${styles.nhanCell} ${row.cells.mienNam.nhan.className ? styles[row.cells.mienNam.nhan.className] : ''}`}>{row.cells.mienNam.nhan.value}</td>
+                        <td className={`${styles.dbCell} ${row.cells.mienTrung.db.className ? styles[row.cells.mienTrung.db.className] : ''}`}>{row.cells.mienTrung.db.value}</td>
+                        <td className={`${styles.nhanCell} ${row.cells.mienTrung.nhan.className ? styles[row.cells.mienTrung.nhan.className] : ''}`}>{row.cells.mienTrung.nhan.value}</td>
+                        <td className={`${styles.dbCell} ${row.cells.mienBac.db.className ? styles[row.cells.mienBac.db.className] : ''}`}>{row.cells.mienBac.db.value}</td>
+                        <td className={`${styles.nhanCell} ${row.cells.mienBac.nhan.className ? styles[row.cells.mienBac.nhan.className] : ''}`}>{row.cells.mienBac.nhan.value}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
 
     return (
         <div
@@ -146,41 +202,21 @@ const ExportableTable = forwardRef(({ data, title = "THỐNG KÊ 3 MIỀN - TÔN
                 </div>
             </div>
 
-            {/* Table Container */}
+            {/* Table Container - Multi-column if needed */}
             <div className={styles.tableWrapper}>
-
-                {/* Table */}
-                <table className={styles.exportTable}>
-                    <thead>
-                        <tr>
-                            <th rowSpan={2} className={styles.dateHeader}>Ngày</th>
-                            <th colSpan={2} className={styles.regionHeader}>Miền Nam</th>
-                            <th colSpan={2} className={styles.regionHeader}>Miền Trung</th>
-                            <th colSpan={2} className={styles.regionHeader}>Miền Bắc</th>
-                        </tr>
-                        <tr>
-                            <th className={styles.dbHeader}>Đặc Biệt</th>
-                            <th className={styles.nhanHeader}>Nhận</th>
-                            <th className={styles.dbHeader}>Đặc Biệt</th>
-                            <th className={styles.nhanHeader}>Nhận</th>
-                            <th className={styles.dbHeader}>Đặc Biệt</th>
-                            <th className={styles.nhanHeader}>Nhận</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {processedData.map((row) => (
-                            <tr key={row.date} className={row.isEven ? styles.evenRow : styles.oddRow}>
-                                <td className={styles.dateCell}>{row.displayDate}</td>
-                                <td className={`${styles.dbCell} ${row.cells.mienNam.db.className ? styles[row.cells.mienNam.db.className] : ''}`}>{row.cells.mienNam.db.value}</td>
-                                <td className={`${styles.nhanCell} ${row.cells.mienNam.nhan.className ? styles[row.cells.mienNam.nhan.className] : ''}`}>{row.cells.mienNam.nhan.value}</td>
-                                <td className={`${styles.dbCell} ${row.cells.mienTrung.db.className ? styles[row.cells.mienTrung.db.className] : ''}`}>{row.cells.mienTrung.db.value}</td>
-                                <td className={`${styles.nhanCell} ${row.cells.mienTrung.nhan.className ? styles[row.cells.mienTrung.nhan.className] : ''}`}>{row.cells.mienTrung.nhan.value}</td>
-                                <td className={`${styles.dbCell} ${row.cells.mienBac.db.className ? styles[row.cells.mienBac.db.className] : ''}`}>{row.cells.mienBac.db.value}</td>
-                                <td className={`${styles.nhanCell} ${row.cells.mienBac.nhan.className ? styles[row.cells.mienBac.nhan.className] : ''}`}>{row.cells.mienBac.nhan.value}</td>
-                            </tr>
+                {tableColumns.length === 1 ? (
+                    // Single column
+                    renderTable(tableColumns[0], 0)
+                ) : (
+                    // Multi-column layout
+                    <div className={styles.multiColumnTable}>
+                        {tableColumns.map((columnData, index) => (
+                            <div key={index} className={styles.tableColumn}>
+                                {renderTable(columnData, index)}
+                            </div>
                         ))}
-                    </tbody>
-                </table>
+                    </div>
+                )}
             </div>
 
             {/* Summary */}
@@ -201,12 +237,10 @@ const ExportableTable = forwardRef(({ data, title = "THỐNG KÊ 3 MIỀN - TÔN
             {/* Footer */}
             <div className={styles.exportFooter}>
                 <div className={styles.footerItem}>
-                    <Calendar size={16} />
-                    <span>Tổng số ngày thống kê: {data.metadata?.totalRecords || 0}</span>
+                    <span>📅 Tổng số ngày thống kê: {data.metadata?.totalRecords || 0}</span>
                 </div>
                 <div className={styles.footerItem}>
-                    <BarChart3 size={16} />
-                    <span>Dàn Đề Tôn Ngộ Không - Công cụ chuyên nghiệp</span>
+                    <span>📊 Dàn Đề Tôn Ngộ Không - Công cụ chuyên nghiệp</span>
                 </div>
             </div>
         </div>
