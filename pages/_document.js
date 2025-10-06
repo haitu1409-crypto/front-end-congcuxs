@@ -17,7 +17,7 @@ export default function Document() {
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link rel="preconnect" href="https://www.googletagmanager.com" />
-                
+
                 {/* ===== GOOGLE ANALYTICS (gtag.js) ===== */}
                 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RLCH8J3MHR"></script>
                 <script dangerouslySetInnerHTML={{
@@ -29,6 +29,35 @@ export default function Document() {
                             page_title: document.title,
                             page_location: window.location.href
                         });
+                    `
+                }} />
+
+                {/* ===== WHOS.AMUNG.US TRACKING ===== */}
+                <script dangerouslySetInnerHTML={{
+                    __html: `
+                        (function() {
+                            console.log('Initializing whos.amung.us tracking...');
+                            
+                            // Initialize whos.amung.us with your widget ID
+                            var _wau = _wau || [];
+                            _wau.push(["dynamic", "7aijsjfwyp", "o34", "c4302bffffff", "small"]);
+                            
+                            // Load the tracking script
+                            var script = document.createElement('script');
+                            script.type = 'text/javascript';
+                            script.async = true;
+                            script.src = '//waust.at/d.js';
+                            
+                            script.onload = function() {
+                                console.log('whos.amung.us script loaded successfully');
+                            };
+                            
+                            script.onerror = function(error) {
+                                console.error('Failed to load whos.amung.us script:', error);
+                            };
+                            
+                            document.getElementsByTagName('head')[0].appendChild(script);
+                        })();
                     `
                 }} />
 

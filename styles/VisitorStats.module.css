@@ -1,0 +1,295 @@
+/**
+ * Visitor Stats Styles
+ * Modern analytics dashboard design
+ */
+
+.container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin: 20px 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.lastUpdate {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.statCard {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s ease;
+}
+
+.statCard:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+.statIcon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.statContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.statNumber {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.statLabel {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.detailSection {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.detailTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 12px 0;
+}
+
+.countryList,
+.pageList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.countryItem,
+.pageItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.countryName,
+.pageName {
+    font-size: 0.875rem;
+    color: #374151;
+    font-weight: 500;
+}
+
+.countryCount,
+.pageCount {
+    font-size: 0.875rem;
+    color: #667eea;
+    font-weight: 600;
+    background: #f0f4ff;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.noData {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 20px;
+    margin: 0;
+}
+
+.footer {
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.note {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+    text-align: center;
+}
+
+.link {
+    color: #667eea;
+    text-decoration: none;
+    margin-left: 4px;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px;
+    color: #6b7280;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+        margin: 16px 0;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .statCard {
+        padding: 16px;
+    }
+
+    .statNumber {
+        font-size: 1.5rem;
+    }
+
+    .details {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .detailSection {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .statCard {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .statIcon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .statNumber {
+        font-size: 1.25rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .container {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+
+    .title {
+        color: #f9fafb;
+    }
+
+    .statCard {
+        background: #374151;
+        border-color: #4b5563;
+    }
+
+    .statCard:hover {
+        background: #4b5563;
+    }
+
+    .statNumber {
+        color: #f9fafb;
+    }
+
+    .detailSection {
+        background: #374151;
+    }
+
+    .countryItem,
+    .pageItem {
+        background: #4b5563;
+        border-color: #6b7280;
+    }
+
+    .countryName,
+    .pageName {
+        color: #f9fafb;
+    }
+}

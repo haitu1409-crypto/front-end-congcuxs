@@ -7,8 +7,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp } from 'lucide-react';
+import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings } from 'lucide-react';
 import Image from 'next/image';
+import OnlineCounter from './OnlineCounter';
 import styles from '../styles/Layout.module.css';
 
 export default function Layout({ children, className = '' }) {
@@ -70,7 +71,8 @@ export default function Layout({ children, className = '' }) {
         { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star },
         { href: '/thong-ke', label: 'Lập Thống Kê', icon: TrendingUp },
         { href: '/content', label: 'Hướng dẫn & Mẹo chơi', icon: HelpCircle },
-        { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper }
+        { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper },
+        { href: '/admin/thong-ke', label: 'Admin', icon: Settings }
     ];
 
     return (
@@ -272,6 +274,14 @@ export default function Layout({ children, className = '' }) {
                     aria-hidden="true"
                 />
             )}
+
+            {/* Online Counter Widget */}
+            <OnlineCounter 
+                position="bottom-right"
+                theme="gradient"
+                size="medium"
+                showLabel={true}
+            />
         </div>
     );
 }
