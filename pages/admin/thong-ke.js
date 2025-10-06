@@ -7,8 +7,6 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Layout from '../../components/Layout';
 import VisitorStats from '../../components/VisitorStats';
-import WhosAmungUsTest from '../../components/WhosAmungUsTest';
-import WhosAmungUsEmbed from '../../components/WhosAmungUsEmbed';
 import SEOOptimized from '../../components/SEOOptimized';
 import { BarChart3, Users, Eye, TrendingUp, Globe, Clock } from 'lucide-react';
 import styles from '../../styles/AdminStats.module.css';
@@ -114,14 +112,6 @@ export default function AdminStats() {
                     </div>
                 </div>
 
-                <div className={styles.statsSection}>
-                    <div className={styles.sectionHeader}>
-                        <TrendingUp size={24} />
-                        <h2>Debug Widget</h2>
-                    </div>
-
-                    <WhosAmungUsTest />
-                </div>
 
                 <div className={styles.statsSection}>
                     <div className={styles.sectionHeader}>
@@ -136,14 +126,6 @@ export default function AdminStats() {
                     />
                 </div>
 
-                <div className={styles.widgetSection}>
-                    <div className={styles.sectionHeader}>
-                        <Globe size={24} />
-                        <h2>Widget whos.amung.us</h2>
-                    </div>
-
-                    <WhosAmungUsEmbed widgetId="7aijsjfwyp" />
-                </div>
 
                 <div className={styles.featuresSection}>
                     <div className={styles.sectionHeader}>

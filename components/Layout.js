@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings } from 'lucide-react';
 import Image from 'next/image';
-import OnlineCounter from './OnlineCounter';
+import SimpleOnlineWidget from './SimpleOnlineWidget';
 import styles from '../styles/Layout.module.css';
 
 export default function Layout({ children, className = '' }) {
@@ -275,13 +275,8 @@ export default function Layout({ children, className = '' }) {
                 />
             )}
 
-            {/* Online Counter Widget */}
-            <OnlineCounter 
-                position="bottom-right"
-                theme="gradient"
-                size="medium"
-                showLabel={true}
-            />
+            {/* Simple Online Widget */}
+            <SimpleOnlineWidget />
         </div>
     );
 }

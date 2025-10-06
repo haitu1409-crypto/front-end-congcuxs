@@ -32,34 +32,6 @@ export default function Document() {
                     `
                 }} />
 
-                {/* ===== WHOS.AMUNG.US TRACKING ===== */}
-                <script dangerouslySetInnerHTML={{
-                    __html: `
-                        (function() {
-                            console.log('Initializing whos.amung.us tracking...');
-                            
-                            // Initialize whos.amung.us with your widget ID
-                            var _wau = _wau || [];
-                            _wau.push(["dynamic", "7aijsjfwyp", "o34", "c4302bffffff", "small"]);
-                            
-                            // Load the tracking script
-                            var script = document.createElement('script');
-                            script.type = 'text/javascript';
-                            script.async = true;
-                            script.src = '//waust.at/d.js';
-                            
-                            script.onload = function() {
-                                console.log('whos.amung.us script loaded successfully');
-                            };
-                            
-                            script.onerror = function(error) {
-                                console.error('Failed to load whos.amung.us script:', error);
-                            };
-                            
-                            document.getElementsByTagName('head')[0].appendChild(script);
-                        })();
-                    `
-                }} />
 
                 {/* ===== SYSTEM FONTS ONLY - No external font loading ===== */}
 
