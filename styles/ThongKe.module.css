@@ -465,7 +465,8 @@
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
-    animation: modalSlideIn 0.3s ease;
+    /* Removed animation to prevent flicker on re-render */
+    /* animation: modalSlideIn 0.3s ease; */
 }
 
 @keyframes modalSlideIn {
@@ -550,7 +551,7 @@
     border: 1px solid var(--color-gray-300);
     border-radius: var(--border-radius-md);
     font-size: var(--text-sm);
-    transition: all var(--transition-fast) ease;
+    transition: border-color var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
     box-sizing: border-box;
 }
 

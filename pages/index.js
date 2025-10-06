@@ -13,7 +13,7 @@ import SEOOptimized from '../components/SEOOptimized';
 import SEOAnalytics from '../components/SEOAnalytics';
 
 export default function Home() {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
     const breadcrumbs = [
         { name: 'Trang chủ', url: siteUrl }
@@ -22,19 +22,27 @@ export default function Home() {
     const faqData = [
         {
             question: 'Công cụ tạo dàn đề 9x-0x ngẫu nhiên có miễn phí không?',
-            answer: 'Có, công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp Tôn Ngộ Không hoàn toàn miễn phí và không giới hạn số lần sử dụng.'
+            answer: 'Có, công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp hoàn toàn miễn phí 100%, không giới hạn số lần sử dụng, không cần đăng ký tài khoản.'
         },
         {
             question: 'Dàn đề 9x-0x được tạo có chính xác không?',
-            answer: 'Công cụ sử dụng thuật toán Fisher-Yates hiện đại, đảm bảo tính ngẫu nhiên và chính xác 100% cho dàn đề 9x-0x.'
+            answer: 'Công cụ sử dụng thuật toán Fisher-Yates chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối và chính xác 100% cho dàn đề 9x-0x. Đây là thuật toán được sử dụng rộng rãi trong các ứng dụng chuyên nghiệp.'
         },
         {
             question: 'Bộ lọc dàn đề tổng hợp hoạt động như thế nào?',
-            answer: 'Bộ lọc dàn đề tổng hợp sử dụng AI thông minh để phân tích và lọc các số có khả năng trúng cao nhất từ dàn đề 9x-0x.'
+            answer: 'Bộ lọc dàn đề tổng hợp sử dụng thuật toán thông minh để phân tích và lọc các số có khả năng trúng cao nhất từ dàn đề 9x-0x, dựa trên thống kê và xu hướng xổ số 3 miền.'
         },
         {
             question: 'Có thể lưu và xuất dàn đề không?',
-            answer: 'Có, bạn có thể lưu dàn đề 9x-0x và kết quả lọc vào bộ nhớ tạm và xuất ra file Excel để sử dụng sau này.'
+            answer: 'Có, bạn có thể lưu dàn đề 9x-0x và kết quả lọc vào bộ nhớ tạm, xuất ra file Excel, hoặc chia sẻ qua mạng xã hội. Tất cả hoàn toàn miễn phí.'
+        },
+        {
+            question: 'Dàn đề 9x-0x phù hợp cho loại xổ số nào?',
+            answer: 'Dàn đề 9x-0x phù hợp cho tất cả loại xổ số 3 miền (miền Bắc, miền Nam, miền Trung), lô đề 2 số, 3 số, và các hình thức chơi khác. Có thể tùy chỉnh số lượng dàn theo nhu cầu.'
+        },
+        {
+            question: 'Tại sao nên chọn công cụ tạo dàn đề này?',
+            answer: 'Công cụ được thiết kế chuyên nghiệp với giao diện thân thiện, tốc độ xử lý nhanh (0.1 giây), thuật toán chuẩn quốc tế, hoàn toàn miễn phí và không có quảng cáo phiền phức.'
         }
     ];
 
@@ -94,11 +102,11 @@ export default function Home() {
 
     return (
         <>
-            <SEOOptimized 
-            pageType="homepage"
-            breadcrumbs={breadcrumbs}
-            faq={faqData}
-        />
+            <SEOOptimized
+                pageType="homepage"
+                breadcrumbs={breadcrumbs}
+                faq={faqData}
+            />
             <SEOAnalytics />
 
             <Layout>
@@ -107,9 +115,10 @@ export default function Home() {
                     <header className={styles.header}>
                         <h1 className={styles.mainTitle}>
                             Tạo Dàn Đề 9x-0x Ngẫu Nhiên & Lọc Dàn Đề Tổng Hợp
+                            {/* Công Cụ Chuyên Nghiệp */}
                         </h1>
                         <p className={styles.subtitle}>
-                            Công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp thông minh • Miễn phí • Nhanh chóng • Chính xác 100%
+                            Công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp thông minh • Thuật toán Fisher-Yates chuẩn quốc tế • Miễn phí 100% • Nhanh chóng 0.1 giây • Chính xác tuyệt đối
                         </p>
                     </header>
 
@@ -151,9 +160,9 @@ export default function Home() {
                         <div className={styles.mainGeneratorHeader}>
                             <h2>
                                 <Dice6 size={20} style={{ display: 'inline', marginRight: '8px' }} />
-                                Tạo Dàn 9x-0x Ngẫu Nhiên & Lọc Dàn Đề Tổng Hợp
+                                Tạo Dàn 9x-0x Ngẫu Nhiên & Lọc Dàn Đề Tổng Hợp Chuyên Nghiệp
                             </h2>
-                            <p>Công cụ tạo dàn đề 9x-0x ngẫu nhiên với 10 cấp độ rút dần từ 95 số xuống 8 số. Kèm theo bộ lọc dàn đề tổng hợp thông minh để tối ưu kết quả. Phù hợp cho người mới bắt đầu và cao thủ.</p>
+                            <p>Công cụ tạo dàn đề 9x-0x ngẫu nhiên với 10 cấp độ rút dần từ 95 số xuống 8 số. Kèm theo bộ lọc dàn đề tổng hợp thông minh để tối ưu kết quả. Sử dụng thuật toán Fisher-Yates chuẩn quốc tế, phù hợp cho người mới bắt đầu và cao thủ chơi xổ số 3 miền.</p>
                         </div>
                         <DanDeGenerator />
                     </main>

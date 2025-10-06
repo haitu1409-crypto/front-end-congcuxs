@@ -7,7 +7,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Home, Target, BarChart3, Star, HelpCircle, Menu, X, CheckCircle, Zap, Heart, TrendingUp } from 'lucide-react';
+import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 import styles from '../styles/Layout.module.css';
 
@@ -36,7 +36,7 @@ export default function Layout({ children, className = '' }) {
         if (e.target.closest('a[href^="http"]') || e.target.closest('a[download]')) {
             return;
         }
-        
+
         // Preload the page for faster navigation
         const href = e.target.closest('a')?.href;
         if (href && href !== window.location.href) {
@@ -69,7 +69,8 @@ export default function Layout({ children, className = '' }) {
         { href: '/dan-3d4d', label: 'Dàn 3D/4D', icon: BarChart3 },
         { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star },
         { href: '/thong-ke', label: 'Lập Thống Kê', icon: TrendingUp },
-        { href: '/faq', label: 'FAQ', icon: HelpCircle }
+        { href: '/content', label: 'Hướng dẫn & Mẹo chơi', icon: HelpCircle },
+        { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper }
     ];
 
     return (
@@ -238,8 +239,8 @@ export default function Layout({ children, className = '' }) {
                             <h4 className={styles.footerSectionTitle}>Hỗ trợ</h4>
                             <ul className={styles.footerLinks}>
                                 <li>
-                                    <Link href="/faq" className={styles.footerLink}>
-                                        Câu hỏi thường gặp
+                                    <Link href="/content" className={styles.footerLink}>
+                                        Hướng dẫn & Mẹo chơi
                                     </Link>
                                 </li>
                                 <li>

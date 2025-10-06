@@ -88,6 +88,9 @@ module.exports = {
             '/dan-2d',
             '/dan-3d4d',
             '/dan-dac-biet',
+            '/thong-ke',
+            '/content',
+            '/tin-tuc',
         ];
 
         for (const path of customPaths) {

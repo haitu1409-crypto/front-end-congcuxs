@@ -25,7 +25,7 @@ const TaoDanCham = lazy(() => import('../../components/DanDe/TaoDanCham'));
 const TaoDanBo = lazy(() => import('../../components/DanDe/TaoDanBo'));
 
 export default function DanDacBietPage() {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003';
 
     const breadcrumbs = [
         { name: 'Trang chủ', url: siteUrl },
@@ -34,23 +34,34 @@ export default function DanDacBietPage() {
 
     const faqData = [
         {
-            question: 'Dàn đặc biệt là gì?',
-            answer: 'Dàn đặc biệt là bộ số được lọc theo các tiêu chí như đầu, đuôi, chạm, kép để tăng tỷ lệ trúng.'
+            question: 'Dàn đề đặc biệt là gì và có gì khác biệt?',
+            answer: 'Dàn đề đặc biệt là bộ số được lọc thông minh theo các tiêu chí như đầu, đuôi, chạm, kép, tổng để tăng tỷ lệ trúng. Khác với dàn đề thông thường, dàn đặc biệt được tối ưu hóa dựa trên thống kê và xu hướng xổ số.'
         },
         {
-            question: 'Có thể lọc theo bao nhiêu tiêu chí?',
-            answer: 'Bạn có thể lọc theo nhiều tiêu chí cùng lúc: đầu số, đuôi số, chạm số, kép bằng, tổng số.'
+            question: 'Có thể lọc dàn đề đặc biệt theo bao nhiêu tiêu chí?',
+            answer: 'Bạn có thể lọc theo nhiều tiêu chí cùng lúc: đầu số (chẵn/lẻ/bé/lớn), đuôi số, chạm số, kép bằng, kép lệch, kép âm, sát kép, tổng số. Mỗi tiêu chí đều được tối ưu hóa riêng biệt.'
         },
         {
-            question: 'Kết quả có chính xác không?',
-            answer: 'Thuật toán lọc được tối ưu dựa trên phân tích thống kê, đảm bảo tính chính xác cao.'
+            question: 'Kết quả dàn đề đặc biệt có chính xác không?',
+            answer: 'Thuật toán lọc dàn đề đặc biệt được tối ưu dựa trên phân tích thống kê xổ số 3 miền, đảm bảo tính chính xác cao. Sử dụng dữ liệu realtime và AI để dự đoán xu hướng.'
+        },
+        {
+            question: 'Dàn đề đặc biệt phù hợp cho loại xổ số nào?',
+            answer: 'Dàn đề đặc biệt phù hợp cho tất cả loại xổ số 3 miền, lô đề 2 số, 3 số, 4 số. Đặc biệt hiệu quả cho người chơi có kinh nghiệm và muốn tối ưu hóa chiến lược.'
+        },
+        {
+            question: 'Cách sử dụng dàn đề đặc biệt hiệu quả nhất?',
+            answer: 'Kết hợp nhiều tiêu chí lọc, theo dõi thống kê xu hướng, sử dụng kết hợp với bảng thống kê chốt dàn 3 miền để đưa ra quyết định chính xác nhất.'
         }
     ];
 
     return (
         <>
-            <SEOOptimized 
+            <SEOOptimized
                 pageType="dan-dac-biet"
+                customTitle="Tạo Dàn Đề Đặc Biệt Chuyên Nghiệp - Bộ Lọc Thông Minh 2024"
+                customDescription="Tạo dàn đề đặc biệt với bộ lọc thông minh theo đầu, đuôi, chạm, kép, tổng. Công cụ chuyên nghiệp, thuật toán AI, tăng tỷ lệ trúng cho xổ số 3 miền. Miễn phí 100%."
+                customKeywords="tạo dàn đề đặc biệt, dàn đề đặc biệt, bộ lọc dàn đề, lọc dàn đề theo đầu đuôi, lọc dàn đề theo chạm, lọc dàn đề theo kép, dàn đề kép bằng, dàn đề kép lệch, dàn đề kép âm, sát kép, tổng số, xổ số đặc biệt"
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
             />

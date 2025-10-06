@@ -48,6 +48,22 @@ const PAGE_IMAGES = {
         telegram: '/imgs/chemical-weapon.png',
         tiktok: '/imgs/chemical-weapon.png'
     },
+    'content': {
+        og: '/imgs/wukong.png',
+        twitter: '/imgs/wukong.png',
+        facebook: '/imgs/wukong.png',
+        zalo: '/imgs/wukong.png',
+        telegram: '/imgs/wukong.png',
+        tiktok: '/imgs/wukong.png'
+    },
+    'tin-tuc': {
+        og: '/imgs/wukong.png',
+        twitter: '/imgs/wukong.png',
+        facebook: '/imgs/wukong.png',
+        zalo: '/imgs/wukong.png',
+        telegram: '/imgs/wukong.png',
+        tiktok: '/imgs/wukong.png'
+    },
     'faq': {
         og: '/imgs/monkey.png',
         twitter: '/imgs/monkey.png',
@@ -85,6 +101,16 @@ const PAGE_SEO_CONFIG = {
         description: 'Lập bảng thống kê chốt dàn 3 miền (Bắc-Nam-Trung) chuyên nghiệp. Công cụ theo dõi xu hướng và phân tích dữ liệu xổ số để tối ưu chiến lược chơi dàn đề. Cập nhật realtime, chính xác 100%. Thương hiệu Tôn Ngộ Không.',
         keywords: 'lập bảng thống kê chốt dàn 3 miền, thống kê chốt dàn, bảng thống kê xổ số, thống kê miền bắc, thống kê miền nam, thống kê miền trung, kết quả xổ số, phân tích xổ số, xu hướng xổ số, thống kê lô đề, bảng thống kê chính xác, thống kê xổ số realtime, dàn đề Tôn Ngộ Không, thống kê xổ số miễn phí, công cụ thống kê xổ số, phân tích dữ liệu xổ số, xổ số miền bắc, xổ số miền nam, xổ số miền trung, chốt dàn đề'
     },
+    'content': {
+        title: 'Hướng Dẫn Chơi Xổ Số & Mẹo Tăng Tỷ Lệ Trúng - Công Cụ Chuyên Nghiệp 2024',
+        description: 'Hướng dẫn chi tiết cách chơi xổ số hiệu quả, mẹo tăng tỷ lệ trúng, thống kê xổ số 3 miền, soi cầu chính xác. Công cụ tạo dàn đề chuyên nghiệp, bảng thống kê chốt dàn, phương pháp soi cầu hiệu quả nhất 2024.',
+        keywords: 'hướng dẫn chơi xổ số, mẹo tăng tỷ lệ trúng xổ số, thống kê xổ số 3 miền, soi cầu xổ số, cách tạo dàn đề hiệu quả, bảng thống kê chốt dàn, phương pháp soi cầu, mẹo chơi lô đề, chiến lược chơi xổ số, công cụ xổ số chuyên nghiệp, dự đoán xổ số, phân tích xổ số, xu hướng xổ số, số may mắn, cao thủ xổ số'
+    },
+    'tin-tuc': {
+        title: 'Tin Tức Xổ Số & Lô Đề - Cập Nhật Mới Nhất 2024',
+        description: 'Tin tức xổ số mới nhất, giải mã giấc mơ, kinh nghiệm chơi lô đề, thống kê xổ số 3 miền. Cập nhật hàng ngày với thông tin chính xác và mẹo chơi hiệu quả từ chuyên gia.',
+        keywords: 'tin tức xổ số, giải mã giấc mơ, kinh nghiệm chơi lô đề, thống kê xổ số, mẹo vặt xổ số, phương pháp soi cầu, dàn đề chuyên nghiệp, xu hướng xổ số, số may mắn, tin tức lô đề, cập nhật xổ số, tin tức miền bắc, tin tức miền nam, tin tức miền trung'
+    },
     'faq': {
         title: 'FAQ - Câu Hỏi Thường Gặp Về Tạo Dàn Đề 9x-0x | Hỗ Trợ 24/7',
         description: 'FAQ - Giải đáp mọi thắc mắc về tạo dàn đề 9x-0x, công cụ tạo dàn đề chuyên nghiệp. Hướng dẫn sử dụng, mẹo chơi, chiến lược tối ưu. Hỗ trợ 24/7, cập nhật thường xuyên.',
@@ -101,20 +127,21 @@ export default function SEOOptimized({
     noindex = false,
     structuredData = null,
     breadcrumbs = null,
-    faq = null
+    faq = null,
+    articleData = null
 }) {
     const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Dàn Đề Tôn Ngộ Không';
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
-    
+
     // Lấy cấu hình SEO cho page
     const pageConfig = PAGE_SEO_CONFIG[pageType] || PAGE_SEO_CONFIG.homepage;
     const pageImages = PAGE_IMAGES[pageType] || PAGE_IMAGES.homepage;
-    
+
     // Sử dụng custom hoặc default
     const title = customTitle || pageConfig.title;
     const description = customDescription || pageConfig.description;
     const keywords = customKeywords || pageConfig.keywords;
-    
+
     const fullUrl = canonical || siteUrl;
     const currentDate = new Date().toISOString();
 
@@ -129,61 +156,74 @@ export default function SEOOptimized({
             <meta name="googlebot" content="index,follow" />
             <meta name="bingbot" content="index,follow" />
             <meta name="coccocbot" content="index,follow" />
-            
+
             {/* ===== SEARCH ENGINE VERIFICATION ===== */}
             <meta name="google-site-verification" content="OniUNDUrgOZ4Fou_Thz9y9_TgDX4INuKAklFmpG-a6k" />
             <meta name="msvalidate.01" content="" />
             <meta name="yandex-verification" content="" />
             <meta name="baidu-site-verification" content="" />
-            
+
             {/* ===== CANONICAL URL ===== */}
             <link rel="canonical" href={fullUrl} />
-            
+
             {/* ===== DNS PREFETCH FOR PERFORMANCE ===== */}
             <link rel="dns-prefetch" href="//fonts.googleapis.com" />
             <link rel="dns-prefetch" href="//www.google-analytics.com" />
             <link rel="dns-prefetch" href="//fonts.gstatic.com" />
             <link rel="dns-prefetch" href="//api.taodandewukong.pro" />
-            
+
             {/* ===== PRECONNECT FOR CRITICAL RESOURCES ===== */}
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
             <link rel="preconnect" href="https://api.taodandewukong.pro" />
-            
+
             {/* ===== OPEN GRAPH - FACEBOOK & TELEGRAM ===== */}
             <meta property="og:title" content={title} />
             <meta property="og:description" content={description} />
-            <meta property="og:image" content={`${siteUrl}${pageImages.facebook}`} />
-            <meta property="og:image:secure_url" content={`${siteUrl}${pageImages.facebook}`} />
+            <meta property="og:image" content={pageImages.og ? `${siteUrl}${pageImages.og}` : pageImages.facebook} />
+            <meta property="og:image:secure_url" content={pageImages.og ? `${siteUrl}${pageImages.og}` : pageImages.facebook} />
             <meta property="og:image:width" content="1200" />
             <meta property="og:image:height" content="630" />
             <meta property="og:image:alt" content={title} />
             <meta property="og:image:type" content="image/png" />
             <meta property="og:url" content={fullUrl} />
-            <meta property="og:type" content="website" />
+            <meta property="og:type" content={articleData ? "article" : "website"} />
             <meta property="og:site_name" content={siteName} />
             <meta property="og:locale" content="vi_VN" />
             <meta property="og:updated_time" content={currentDate} />
-            
+
+            {/* Article specific OG tags */}
+            {articleData && (
+                <>
+                    <meta property="article:published_time" content={articleData.publishedTime} />
+                    <meta property="article:modified_time" content={articleData.modifiedTime} />
+                    <meta property="article:author" content={articleData.author} />
+                    <meta property="article:section" content={articleData.section} />
+                    {articleData.tags && articleData.tags.map(tag => (
+                        <meta key={tag} property="article:tag" content={tag} />
+                    ))}
+                </>
+            )}
+
             {/* ===== ADDITIONAL META FOR TELEGRAM ===== */}
             <meta name="description" content={description} />
             <meta name="image" content={`${siteUrl}${pageImages.facebook}`} />
             <link rel="image_src" href={`${siteUrl}${pageImages.facebook}`} />
-            
+
             {/* ===== TWITTER CARDS ===== */}
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={title} />
             <meta name="twitter:description" content={description} />
-            <meta name="twitter:image" content={`${siteUrl}${pageImages.twitter}`} />
+            <meta name="twitter:image" content={pageImages.og ? `${siteUrl}${pageImages.og}` : pageImages.twitter} />
             <meta name="twitter:image:alt" content={title} />
             <meta name="twitter:site" content="@taodandewukong" />
             <meta name="twitter:creator" content="@taodandewukong" />
-            
+
             {/* ===== ZALO ===== */}
             <meta property="zalo:title" content={title} />
             <meta property="zalo:description" content={description} />
             <meta property="zalo:image" content={`${siteUrl}${pageImages.zalo}`} />
-            
+
             {/* ===== TELEGRAM ===== */}
             <meta property="telegram:title" content={title} />
             <meta property="telegram:description" content={description} />
@@ -198,38 +238,38 @@ export default function SEOOptimized({
             <meta name="telegram:channel" content="@taodandewukong" />
             <meta name="telegram:chat" content="@taodandewukong" />
             <meta name="telegram:bot" content="@taodandewukong" />
-            
+
             {/* ===== TIKTOK ===== */}
             <meta property="tiktok:title" content={title} />
             <meta property="tiktok:description" content={description} />
             <meta property="tiktok:image" content={`${siteUrl}${pageImages.tiktok}`} />
-            
+
             {/* ===== MOBILE OPTIMIZATION ===== */}
             <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
             <meta name="mobile-web-app-capable" content="yes" />
             <meta name="apple-mobile-web-app-capable" content="yes" />
             <meta name="apple-mobile-web-app-status-bar-style" content="default" />
             <meta name="apple-mobile-web-app-title" content="Tạo Dàn Đề" />
-            
+
             {/* ===== THEME COLOR ===== */}
             <meta name="theme-color" content="#4F46E5" />
             <meta name="msapplication-TileColor" content="#4F46E5" />
             <meta name="msapplication-config" content="/browserconfig.xml" />
-            
+
             {/* ===== PERFORMANCE HINTS ===== */}
             <meta httpEquiv="Accept-CH" content="DPR, Viewport-Width, Width" />
             <meta name="preload" content="true" />
-            
+
             {/* ===== SECURITY HEADERS ===== */}
             <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
             <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
             <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
-            
+
             {/* ===== PWA ===== */}
             <link rel="manifest" href="/manifest.json" />
             <link rel="icon" href="/favicon.ico" />
             <link rel="apple-touch-icon" href="/icon-192.png" />
-            
+
             {/* ===== STRUCTURED DATA - WEB APPLICATION ===== */}
             <script
                 type="application/ld+json"
@@ -288,7 +328,7 @@ export default function SEOOptimized({
                     }),
                 }}
             />
-            
+
             {/* ===== BREADCRUMB SCHEMA ===== */}
             {breadcrumbs && (
                 <script
@@ -307,7 +347,7 @@ export default function SEOOptimized({
                     }}
                 />
             )}
-            
+
             {/* ===== ORGANIZATION SCHEMA ===== */}
             <script
                 type="application/ld+json"
@@ -332,7 +372,7 @@ export default function SEOOptimized({
                     }),
                 }}
             />
-            
+
             {/* ===== FAQ SCHEMA ===== */}
             {faq && (
                 <script
@@ -353,7 +393,7 @@ export default function SEOOptimized({
                     }}
                 />
             )}
-            
+
             {/* ===== CUSTOM STRUCTURED DATA ===== */}
             {structuredData && (
                 <script

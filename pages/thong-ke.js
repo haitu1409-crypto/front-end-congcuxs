@@ -24,7 +24,7 @@ const ExportableTable = lazy(() => import('../components/ThongKe/ExportableTable
 
 function ThongKePage() {
     const router = useRouter();
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003';
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -51,6 +51,9 @@ function ThongKePage() {
     });
     const [authLoading, setAuthLoading] = useState(false);
 
+    // Stable authData object to prevent re-renders
+    const stableAuthData = useMemo(() => authData, [authData.username, authData.password]);
+
     // Add date states
     const [addDateInput, setAddDateInput] = useState('');
     const [showAddDateInput, setShowAddDateInput] = useState(false);
@@ -58,6 +61,10 @@ function ThongKePage() {
     // Refs
     const exportTableRef = useRef(null);
     const [isExporting, setIsExporting] = useState(false);
+
+    // Refs for modal inputs to prevent focus loss
+    const usernameRef = useRef(null);
+    const passwordRef = useRef(null);
 
     // Facebook size presets - được memoize để tránh tạo lại object
     const facebookPresets = useMemo(() => ({
@@ -585,29 +592,52 @@ function ThongKePage() {
         setShowAuthModal(true);
     }, []);
 
-    // Đóng modal - được memoize
+    // Đóng modal - được memoize và tối ưu
     const closeAuthModal = useCallback(() => {
         setShowAuthModal(false);
         setAuthData({ username: '', password: '' });
         setAuthLoading(false);
+        // Clear refs
+        if (usernameRef.current) usernameRef.current.value = '';
+        if (passwordRef.current) passwordRef.current.value = '';
     }, []);
 
-    // Xử lý thay đổi input trong modal
+    // Xử lý thay đổi input trong modal - tối ưu để tránh re-render
     const handleAuthInputChange = useCallback((field, value) => {
-        setAuthData(prev => ({
-            ...prev,
-            [field]: value
-        }));
+        setAuthData(prev => {
+            // Chỉ update nếu value thực sự thay đổi
+            if (prev[field] === value) return prev;
+            return {
+                ...prev,
+                [field]: value
+            };
+        });
+    }, []); // Empty dependency array để tránh re-create function
+
+    // Xử lý input password với validation - Sử dụng ref để tránh re-render
+    const handlePasswordChange = useCallback((e) => {
+        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+        e.target.value = value; // Update input value directly
+        setAuthData(prev => ({ ...prev, password: value }));
     }, []);
 
-    // Lưu dữ liệu thống kê - sử dụng apiService
+    // Xử lý input username - Sử dụng ref để tránh re-render
+    const handleUsernameChange = useCallback((e) => {
+        const value = e.target.value;
+        setAuthData(prev => ({ ...prev, username: value }));
+    }, []);
+
+    // Lưu dữ liệu thống kê - sử dụng apiService với refs
     const saveStatisticsData = useCallback(async () => {
-        if (!data || !authData.username.trim() || !authData.password.trim()) {
+        const username = usernameRef.current?.value?.trim() || '';
+        const password = passwordRef.current?.value?.trim() || '';
+
+        if (!data || !username || !password) {
             alert('Vui lòng nhập đầy đủ tên tài khoản và mật khẩu');
             return;
         }
 
-        if (authData.password.length !== 6 || !/^\d{6}$/.test(authData.password)) {
+        if (password.length !== 6 || !/^\d{6}$/.test(password)) {
             alert('Mật khẩu phải là 6 chữ số');
             return;
         }
@@ -616,8 +646,8 @@ function ThongKePage() {
             setAuthLoading(true);
 
             const saveData = {
-                username: authData.username.trim(),
-                password: authData.password,
+                username: username,
+                password: password,
                 data: data,
                 userDisplayName: userName,
                 savedAt: new Date().toISOString()
@@ -627,7 +657,12 @@ function ThongKePage() {
 
             if (result.success) {
                 alert('Lưu dữ liệu thành công!');
-                closeAuthModal();
+                setShowAuthModal(false);
+                setAuthData({ username: '', password: '' });
+                // Clear refs
+                if (usernameRef.current) usernameRef.current.value = '';
+                if (passwordRef.current) passwordRef.current.value = '';
+                setAuthLoading(false);
             } else {
                 throw new Error(result.message || 'Lỗi không xác định');
             }
@@ -637,16 +672,19 @@ function ThongKePage() {
         } finally {
             setAuthLoading(false);
         }
-    }, [data, authData, userName, closeAuthModal]); // Phụ thuộc vào các giá trị cần thiết
+    }, [data, userName]); // Removed authData dependency
 
-    // Tải dữ liệu thống kê - sử dụng apiService
+    // Tải dữ liệu thống kê - sử dụng apiService với refs
     const loadStatisticsData = useCallback(async () => {
-        if (!authData.username.trim() || !authData.password.trim()) {
+        const username = usernameRef.current?.value?.trim() || '';
+        const password = passwordRef.current?.value?.trim() || '';
+
+        if (!username || !password) {
             alert('Vui lòng nhập đầy đủ tên tài khoản và mật khẩu');
             return;
         }
 
-        if (authData.password.length !== 6 || !/^\d{6}$/.test(authData.password)) {
+        if (password.length !== 6 || !/^\d{6}$/.test(password)) {
             alert('Mật khẩu phải là 6 chữ số');
             return;
         }
@@ -655,8 +693,8 @@ function ThongKePage() {
             setAuthLoading(true);
 
             const credentials = {
-                username: authData.username.trim(),
-                password: authData.password
+                username: username,
+                password: password
             };
 
             const result = await apiService.loadStatistics(credentials);
@@ -665,7 +703,12 @@ function ThongKePage() {
                 setData(result.data.data);
                 setUserName(result.data.userDisplayName || '');
                 alert('Tải dữ liệu thành công!');
-                closeAuthModal();
+                setShowAuthModal(false);
+                setAuthData({ username: '', password: '' });
+                // Clear refs
+                if (usernameRef.current) usernameRef.current.value = '';
+                if (passwordRef.current) passwordRef.current.value = '';
+                setAuthLoading(false);
             } else {
                 throw new Error(result.message || 'Tài khoản hoặc mật khẩu không đúng');
             }
@@ -675,7 +718,7 @@ function ThongKePage() {
         } finally {
             setAuthLoading(false);
         }
-    }, [authData, closeAuthModal]); // Phụ thuộc vào authData và closeAuthModal
+    }, []); // No dependencies
 
     // Xử lý submit modal
     const handleAuthSubmit = useCallback(() => {
@@ -919,21 +962,17 @@ function ThongKePage() {
 
     ExportOptions.displayName = 'ExportOptions';
 
-    // Memoized Auth Modal component
-    const AuthModal = memo(({
-        showAuthModal,
-        closeAuthModal,
-        authMode,
-        authData,
-        authLoading,
-        handleAuthInputChange,
-        handleAuthSubmit
-    }) => {
+    // Separate AuthModal component to prevent re-render issues
+    const AuthModal = useMemo(() => {
         if (!showAuthModal) return null;
 
         return (
             <div className={styles.modalOverlay} onClick={closeAuthModal}>
-                <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                <div
+                    className={styles.modal}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
                     <div className={styles.modalHeader}>
                         <h3 className={styles.modalTitle}>
                             {authMode === 'save' ? 'Lưu dữ liệu thống kê' : 'Mở file đã lưu'}
@@ -958,29 +997,32 @@ function ThongKePage() {
                         <div className={styles.modalInputGroup}>
                             <label>Tên tài khoản:</label>
                             <input
+                                ref={usernameRef}
                                 type="text"
-                                value={authData.username}
-                                onChange={(e) => handleAuthInputChange('username', e.target.value)}
+                                defaultValue={authData.username}
+                                onChange={handleUsernameChange}
                                 placeholder="VD: nguyenvana"
                                 className={styles.modalInput}
                                 disabled={authLoading}
                                 maxLength={50}
+                                autoComplete="username"
+                                autoFocus={authMode === 'save'}
                             />
                         </div>
 
                         <div className={styles.modalInputGroup}>
                             <label>Mật khẩu (6 chữ số):</label>
                             <input
+                                ref={passwordRef}
                                 type="password"
-                                value={authData.password}
-                                onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                    handleAuthInputChange('password', value);
-                                }}
+                                defaultValue={authData.password}
+                                onChange={handlePasswordChange}
                                 placeholder="123456"
                                 className={styles.modalInput}
                                 disabled={authLoading}
                                 maxLength={6}
+                                autoComplete="current-password"
+                                autoFocus={authMode === 'load'}
                             />
                             <small className={styles.modalHint}>
                                 Chỉ nhập 6 chữ số (0-9)
@@ -999,7 +1041,7 @@ function ThongKePage() {
                         <button
                             className={styles.modalSubmitButton}
                             onClick={handleAuthSubmit}
-                            disabled={authLoading || !authData.username.trim() || authData.password.length !== 6}
+                            disabled={authLoading}
                         >
                             {authLoading ? 'Đang xử lý...' : (authMode === 'save' ? 'Lưu' : 'Tải')}
                         </button>
@@ -1007,9 +1049,7 @@ function ThongKePage() {
                 </div>
             </div>
         );
-    });
-
-    AuthModal.displayName = 'AuthModal';
+    }, [showAuthModal, authMode, authLoading, closeAuthModal, handleUsernameChange, handlePasswordChange, handleAuthSubmit]);
 
     return (
         <Layout>
@@ -1022,19 +1062,27 @@ function ThongKePage() {
                 faq={[
                     {
                         question: 'Bảng thống kê chốt dàn 3 miền được cập nhật như thế nào?',
-                        answer: 'Dữ liệu bảng thống kê chốt dàn 3 miền được cập nhật realtime từ nguồn chính thức của xổ số 3 miền.'
+                        answer: 'Dữ liệu bảng thống kê chốt dàn 3 miền được cập nhật realtime từ nguồn chính thức của xổ số miền Bắc, miền Nam, miền Trung. Hệ thống tự động đồng bộ dữ liệu mỗi khi có kết quả xổ số mới.'
                     },
                     {
                         question: 'Có thể xuất dữ liệu bảng thống kê chốt dàn không?',
-                        answer: 'Có, bạn có thể xuất dữ liệu bảng thống kê chốt dàn ra file Excel, CSV hoặc xuất ảnh để chia sẻ.'
+                        answer: 'Có, bạn có thể xuất dữ liệu bảng thống kê chốt dàn ra file Excel, CSV, PDF hoặc xuất ảnh chất lượng cao để chia sẻ trên mạng xã hội. Hỗ trợ nhiều định dạng khác nhau.'
                     },
                     {
                         question: 'Dữ liệu thống kê chốt dàn có chính xác không?',
-                        answer: 'Tất cả dữ liệu bảng thống kê chốt dàn được kiểm tra và xác thực từ nguồn chính thức, đảm bảo tính chính xác 100%.'
+                        answer: 'Tất cả dữ liệu bảng thống kê chốt dàn được kiểm tra và xác thực từ nguồn chính thức của xổ số 3 miền, đảm bảo tính chính xác 100%. Dữ liệu được cập nhật liên tục và kiểm tra tự động.'
                     },
                     {
                         question: 'Làm thế nào để lập bảng thống kê chốt dàn hiệu quả?',
-                        answer: 'Sử dụng công cụ lập bảng thống kê chốt dàn 3 miền để theo dõi xu hướng và phân tích dữ liệu, từ đó tối ưu chiến lược chơi dàn đề.'
+                        answer: 'Sử dụng công cụ lập bảng thống kê chốt dàn 3 miền để theo dõi xu hướng, phân tích tần suất xuất hiện, xác định số nóng/lạnh, từ đó tối ưu chiến lược chơi dàn đề và tăng tỷ lệ trúng.'
+                    },
+                    {
+                        question: 'Thống kê chốt dàn 3 miền có khác nhau không?',
+                        answer: 'Có, mỗi miền có đặc điểm riêng: Miền Bắc xổ hàng ngày, Miền Nam 3 lần/tuần, Miền Trung 2 lần/tuần. Bảng thống kê phân tích riêng từng miền và so sánh tổng thể.'
+                    },
+                    {
+                        question: 'Có thể lưu trữ bảng thống kê chốt dàn không?',
+                        answer: 'Có, bạn có thể lưu trữ bảng thống kê chốt dàn vào tài khoản cá nhân, xuất file để lưu trữ offline, hoặc chia sẻ với bạn bè. Dữ liệu được bảo mật và đồng bộ trên mọi thiết bị.'
                     }
                 ]}
             />
@@ -1289,15 +1337,7 @@ function ThongKePage() {
                 </div>
 
                 {/* Auth Modal - Memoized Component */}
-                <AuthModal
-                    showAuthModal={showAuthModal}
-                    closeAuthModal={closeAuthModal}
-                    authMode={authMode}
-                    authData={authData}
-                    authLoading={authLoading}
-                    handleAuthInputChange={handleAuthInputChange}
-                    handleAuthSubmit={handleAuthSubmit}
-                />
+                {AuthModal}
             </div>
         </Layout>
     );

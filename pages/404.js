@@ -45,8 +45,8 @@ export default function Custom404() {
                         <Link href="/dan-dac-biet" className={styles.secondaryButton}>
                             ⭐ Dàn Đặc Biệt
                         </Link>
-                        <Link href="/faq" className={styles.secondaryButton}>
-                            ❓ FAQ
+                        <Link href="/content" className={styles.secondaryButton}>
+                            📚 Hướng dẫn & Mẹo chơi
                         </Link>
                     </div>
                 </div>

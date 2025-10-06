@@ -23,7 +23,15 @@ const nextConfig = {
 
     // Tối ưu hóa images
     images: {
-        domains: [],
+        domains: ['localhost'],
+        remotePatterns: [
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+                port: '5000',
+                pathname: '/uploads/**',
+            },
+        ],
         formats: ['image/avif', 'image/webp'],
         deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
         imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -154,6 +162,12 @@ const nextConfig = {
                 destination: '/',
                 permanent: true,
             },
+            // Redirect old FAQ page to new Content page
+            {
+                source: '/faq',
+                destination: '/content',
+                permanent: true,
+            },
         ];
     },
 
@@ -175,11 +189,9 @@ const nextConfig = {
                 ignored: /node_modules/,
             };
 
-            // Skip type checking in development for faster builds
+            // Fix development overlay issues
             config.resolve.alias = {
                 ...config.resolve.alias,
-                'react-dom$': 'react-dom/profiling',
-                'scheduler/tracing': 'scheduler/tracing-profiling',
             };
         }
 
