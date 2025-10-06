@@ -15,26 +15,62 @@ const OnlineCounter = ({
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        // Check if whos.amung.us script is loaded
-        const checkScript = () => {
-            console.log('Checking whos.amung.us script...', {
-                window_wau: !!window._wau,
-                document_ready: document.readyState,
-                widget_elements: document.querySelectorAll('[id*="wau"]')
-            });
-
-            // Check for whos.amung.us elements (they use dynamic IDs)
-            const wauElements = document.querySelectorAll('[id*="wau"], .wau-counter, [class*="wau"]');
-            if (window._wau || wauElements.length > 0) {
-                console.log('whos.amung.us script loaded successfully');
-                setIsLoaded(true);
+        // Initialize whos.amung.us widget directly
+        const initWidget = () => {
+            console.log('Initializing whos.amung.us widget...');
+            
+            // Initialize _wau array if not exists
+            if (!window._wau) {
+                window._wau = [];
+            }
+            
+            // Push widget configuration
+            window._wau.push(["dynamic", "7aijsjfwyp", "o34", "c4302bffffff", "small"]);
+            
+            // Load script if not already loaded
+            if (!document.querySelector('script[src*="waust.at"]')) {
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.async = true;
+                script.src = '//waust.at/d.js';
+                script.onload = () => {
+                    console.log('whos.amung.us script loaded');
+                    setIsLoaded(true);
+                };
+                script.onerror = (error) => {
+                    console.error('Failed to load whos.amung.us script:', error);
+                };
+                document.head.appendChild(script);
             } else {
-                setTimeout(checkScript, 500);
+                console.log('whos.amung.us script already loaded');
+                setIsLoaded(true);
             }
         };
-
-        // Start checking after a short delay
-        setTimeout(checkScript, 1000);
+        
+        // Initialize widget
+        initWidget();
+        
+        // Check for widget content periodically
+        const checkWidget = () => {
+            const widgetElement = document.getElementById('_wauo34');
+            const wauElements = document.querySelectorAll('[id*="wau"], .wau-counter, [class*="wau"]');
+            
+            console.log('Widget check:', {
+                widgetElement: !!widgetElement,
+                widgetContent: widgetElement ? widgetElement.innerHTML : 'No content',
+                wauElements: wauElements.length,
+                allElements: document.querySelectorAll('*').length
+            });
+            
+            if (widgetElement && widgetElement.innerHTML.trim()) {
+                setIsLoaded(true);
+            }
+        };
+        
+        // Check every 2 seconds
+        const interval = setInterval(checkWidget, 2000);
+        
+        return () => clearInterval(interval);
     }, []);
 
     // Don't render if script not loaded yet
@@ -58,8 +94,13 @@ const OnlineCounter = ({
                     </span>
                 )}
                 <div className={styles.counterNumber}>
-                    {/* whos.amung.us will create its own elements */}
-                    <div id="_wauo34"></div>
+                    {/* whos.amung.us widget */}
+                    <div id="_wauo34" style={{ 
+                        display: 'inline-block', 
+                        minWidth: '20px',
+                        color: 'inherit',
+                        fontWeight: 'inherit'
+                    }}></div>
                 </div>
             </div>
         </div>
