@@ -26,7 +26,7 @@ import {
     Lightbulb,
     BarChart3
 } from 'lucide-react';
-import styles from '../styles/TinTuc.module.css';
+import styles from '../styles/tintuc-old.module.css';
 
 export default function TinTucPage() {
     const router = useRouter();
