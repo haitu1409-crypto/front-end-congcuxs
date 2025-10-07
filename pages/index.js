@@ -1,16 +1,16 @@
 /**
- * Homepage - Tạo Dàn Đề
- * Redesigned với Layout mới, improved content depth, better SEO
+ * Homepage - Landing Page
+ * Trang chủ mới với navigation tốt hơn và giới thiệu các công cụ
  */
 
 import Link from 'next/link';
 import Layout from '../components/Layout';
-import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone } from 'lucide-react';
+import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, ArrowRight, Sparkles } from 'lucide-react';
 import styles from '../styles/Home.module.css';
-import DanDeGenerator from '../components/DanDeGenerator';
-import GuideSection from '../components/GuideSection';
 import SEOOptimized from '../components/SEOOptimized';
 import SEOAnalytics from '../components/SEOAnalytics';
+import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
+import WukongSlider from '../components/WukongSlider';
 
 export default function Home() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
@@ -21,20 +21,20 @@ export default function Home() {
 
     const faqData = [
         {
-            question: 'Công cụ tạo dàn đề 9x-0x ngẫu nhiên có miễn phí không?',
-            answer: 'Có, công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp hoàn toàn miễn phí 100%, không giới hạn số lần sử dụng, không cần đăng ký tài khoản.'
+            question: 'Dàn Đề Tôn Ngộ Không có những công cụ gì?',
+            answer: 'Chúng tôi cung cấp đầy đủ bộ công cụ tạo dàn đề chuyên nghiệp: Dàn đề 9x-0x, Dàn 2D, Dàn 3D/4D, Dàn đặc biệt, Thống kê xổ số 3 miền, và nhiều công cụ hỗ trợ khác. Tất cả đều miễn phí 100%.'
         },
         {
-            question: 'Dàn đề 9x-0x được tạo có chính xác không?',
-            answer: 'Công cụ sử dụng thuật toán Fisher-Yates chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối và chính xác 100% cho dàn đề 9x-0x. Đây là thuật toán được sử dụng rộng rãi trong các ứng dụng chuyên nghiệp.'
+            question: 'Các công cụ có chính xác và đáng tin cậy không?',
+            answer: 'Tất cả công cụ sử dụng thuật toán Fisher-Yates chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối và chính xác 100%. Đây là thuật toán được sử dụng rộng rãi trong các ứng dụng chuyên nghiệp.'
         },
         {
-            question: 'Bộ lọc dàn đề tổng hợp hoạt động như thế nào?',
-            answer: 'Bộ lọc dàn đề tổng hợp sử dụng thuật toán thông minh để phân tích và lọc các số có khả năng trúng cao nhất từ dàn đề 9x-0x, dựa trên thống kê và xu hướng xổ số 3 miền.'
+            question: 'Có cần đăng ký tài khoản để sử dụng không?',
+            answer: 'Không, tất cả công cụ đều hoàn toàn miễn phí, không cần đăng ký tài khoản, không giới hạn số lần sử dụng. Bạn có thể sử dụng ngay lập tức.'
         },
         {
-            question: 'Có thể lưu và xuất dàn đề không?',
-            answer: 'Có, bạn có thể lưu dàn đề 9x-0x và kết quả lọc vào bộ nhớ tạm, xuất ra file Excel, hoặc chia sẻ qua mạng xã hội. Tất cả hoàn toàn miễn phí.'
+            question: 'Công cụ phù hợp cho loại xổ số nào?',
+            answer: 'Các công cụ phù hợp cho tất cả loại xổ số 3 miền (miền Bắc, miền Nam, miền Trung), lô đề, và các hình thức chơi xổ số khác. Được thiết kế chuyên nghiệp cho người chơi Việt Nam.'
         },
         {
             question: 'Dàn đề 9x-0x phù hợp cho loại xổ số nào?',
@@ -51,7 +51,7 @@ export default function Home() {
             icon: Dice6,
             title: 'Dàn 9x-0x',
             description: 'Tạo dàn đề 9x-0x ngẫu nhiên với 10 cấp độ rút dần từ 95 xuống 8 số',
-            link: '#generator',
+            link: '/dan-9x0x',
             badge: 'Phổ biến'
         },
         {
@@ -103,24 +103,47 @@ export default function Home() {
     return (
         <>
             <SEOOptimized
-                pageType="homepage"
+                pageType="home"
+                customTitle="Dàn Đề Tôn Ngộ Không - Công Cụ Tạo Dàn Đề Chuyên Nghiệp Miễn Phí 2024"
+                customDescription="Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam. Dàn đề 9x-0x, Dàn 2D, Dàn 3D/4D, Dàn đặc biệt, Thống kê xổ số 3 miền. Miễn phí 100%, thuật toán Fisher-Yates chuẩn quốc tế."
+                customKeywords="dàn đề tôn ngộ không, tạo dàn đề, công cụ dàn đề, dàn đề 9x-0x, dàn đề 2D, dàn đề 3D, thống kê xổ số, xổ số 3 miền, lô đề, tạo dàn đề miễn phí, công cụ xổ số chuyên nghiệp"
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
             />
             <SEOAnalytics />
+            <PageSpeedOptimizer />
 
             <Layout>
                 <div className={styles.container}>
-                    {/* Hero Section - Compact */}
+                    {/* Hero Section - Landing Page */}
                     <header className={styles.header}>
+                        <div className={styles.heroBadge}>
+                            <Sparkles className={styles.heroBadgeIcon} />
+                            <span>Bộ công cụ chuyên nghiệp</span>
+                        </div>
                         <h1 className={styles.mainTitle}>
-                            Tạo Dàn Đề 9x-0x Ngẫu Nhiên & Lọc Dàn Đề Tổng Hợp
-                            {/* Công Cụ Chuyên Nghiệp */}
+                            Dàn Đề <span className={styles.heroTitleHighlight}>Tôn Ngộ Không</span>
                         </h1>
                         <p className={styles.subtitle}>
-                            Công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp thông minh • Thuật toán Fisher-Yates chuẩn quốc tế • Miễn phí 100% • Nhanh chóng 0.1 giây • Chính xác tuyệt đối
+                            Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam.
+                            Dàn đề 9x-0x, Dàn 2D, Dàn 3D/4D, Dàn đặc biệt, Thống kê xổ số 3 miền.
+                            Miễn phí 100%, thuật toán Fisher-Yates chuẩn quốc tế.
                         </p>
+                        <div className={styles.heroActions}>
+                            <Link href="/dan-9x0x" className={styles.heroPrimaryButton}>
+                                <Dice6 className={styles.heroButtonIcon} />
+                                <span>Tạo Dàn Đề 9x-0x</span>
+                                <ArrowRight className={styles.heroButtonArrow} />
+                            </Link>
+                            <Link href="/dan-2d" className={styles.heroSecondaryButton}>
+                                <Target className={styles.heroButtonIcon} />
+                                <span>Dàn 2D</span>
+                            </Link>
+                        </div>
                     </header>
+
+                    {/* Wukong Slider */}
+                    <WukongSlider />
 
                     {/* Tools Grid */}
                     <section className={styles.toolsSection} aria-label="Các công cụ tạo dàn đề">
@@ -155,17 +178,31 @@ export default function Home() {
                         </div>
                     </section>
 
-                    {/* Main Generator (9x-0x) */}
-                    <main className={styles.main} id="generator">
-                        <div className={styles.mainGeneratorHeader}>
-                            <h2>
-                                <Dice6 size={20} style={{ display: 'inline', marginRight: '8px' }} />
-                                Tạo Dàn 9x-0x Ngẫu Nhiên & Lọc Dàn Đề Tổng Hợp Chuyên Nghiệp
-                            </h2>
-                            <p>Công cụ tạo dàn đề 9x-0x ngẫu nhiên với 10 cấp độ rút dần từ 95 số xuống 8 số. Kèm theo bộ lọc dàn đề tổng hợp thông minh để tối ưu kết quả. Sử dụng thuật toán Fisher-Yates chuẩn quốc tế, phù hợp cho người mới bắt đầu và cao thủ chơi xổ số 3 miền.</p>
+                    {/* Quick Access Section */}
+                    <section className={styles.quickAccess}>
+                        <div className={styles.quickAccessHeader}>
+                            <h2>Bắt Đầu Ngay</h2>
+                            <p>Chọn công cụ phù hợp với nhu cầu của bạn</p>
                         </div>
-                        <DanDeGenerator />
-                    </main>
+                        <div className={styles.quickAccessGrid}>
+                            <Link href="/dan-9x0x" className={styles.quickAccessCard}>
+                                <Dice6 className={styles.quickAccessIcon} />
+                                <h3>Tạo Dàn Đề 9x-0x</h3>
+                                <p>Công cụ phổ biến nhất với 10 cấp độ rút dần</p>
+                                <div className={styles.quickAccessBadge}>Phổ biến</div>
+                            </Link>
+                            <Link href="/thong-ke" className={styles.quickAccessCard}>
+                                <BarChart3 className={styles.quickAccessIcon} />
+                                <h3>Thống Kê Xổ Số</h3>
+                                <p>Phân tích dữ liệu xổ số 3 miền chi tiết</p>
+                            </Link>
+                            <Link href="/content" className={styles.quickAccessCard}>
+                                <Heart className={styles.quickAccessIcon} />
+                                <h3>Hướng Dẫn Chơi</h3>
+                                <p>Mẹo và chiến thuật chơi xổ số hiệu quả</p>
+                            </Link>
+                        </div>
+                    </section>
 
                     {/* Features Section - Compact */}
                     <section className={styles.features} aria-label="Tính năng nổi bật">
@@ -185,8 +222,27 @@ export default function Home() {
                         </div>
                     </section>
 
-                    {/* Guide Section */}
-                    <GuideSection />
+                    {/* News Section */}
+                    <section className={styles.newsSection}>
+                        <div className={styles.newsHeader}>
+                            <h2>Tin Tức Mới Nhất</h2>
+                            <Link href="/tin-tuc" className={styles.newsLink}>
+                                Xem tất cả →
+                            </Link>
+                        </div>
+                        <div className={styles.newsGrid}>
+                            <div className={styles.newsCard}>
+                                <h3>Hướng dẫn sử dụng công cụ tạo dàn đề hiệu quả</h3>
+                                <p>Khám phá các mẹo và chiến thuật để tối ưu hóa việc sử dụng công cụ tạo dàn đề...</p>
+                                <Link href="/content" className={styles.newsReadMore}>Đọc thêm</Link>
+                            </div>
+                            <div className={styles.newsCard}>
+                                <h3>Thống kê xổ số 3 miền tháng gần đây</h3>
+                                <p>Phân tích chi tiết xu hướng và tần suất xuất hiện của các số trong xổ số...</p>
+                                <Link href="/thong-ke" className={styles.newsReadMore}>Xem thống kê</Link>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </Layout>
         </>

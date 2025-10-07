@@ -7,19 +7,25 @@ import { useState, useEffect, useRef, useMemo, useCallback, Suspense, lazy, memo
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import SEOOptimized from '../components/SEOOptimized';
+import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 // Tối ưu import icons - chỉ import những icon cần thiết
 import { BarChart3, RefreshCw, Filter, Download, ImageIcon, Settings, Save, FolderOpen, Plus, Check, X } from 'lucide-react';
 import styles from '../styles/ThongKe.module.css';
 import { API_CONFIG } from '../config/api';
 import apiService from '../services/apiService';
-// Import safe lazy components với Error Boundary
-import {
-    SafeStatisticsTable,
-    SafeSummaryCards,
-    ComponentLoader,
-    DefaultLoadingSpinner
-} from '../components/LazyComponents';
-// Lazy load components để tối ưu bundle size - chỉ load khi cần
+import dynamic from 'next/dynamic';
+
+// Lazy load heavy components for better PageSpeed
+const SafeStatisticsTable = dynamic(() => import('../components/LazyComponents').then(mod => ({ default: mod.SafeStatisticsTable })), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải bảng thống kê...</div>,
+    ssr: false
+});
+
+const SafeSummaryCards = dynamic(() => import('../components/LazyComponents').then(mod => ({ default: mod.SafeSummaryCards })), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải thẻ tóm tắt...</div>,
+    ssr: false
+});
+
 const ExportableTable = lazy(() => import('../components/ThongKe/ExportableTable'));
 
 function ThongKePage() {
@@ -1052,7 +1058,7 @@ function ThongKePage() {
     }, [showAuthModal, authMode, authLoading, closeAuthModal, handleUsernameChange, handlePasswordChange, handleAuthSubmit]);
 
     return (
-        <Layout>
+        <>
             <SEOOptimized
                 pageType="thong-ke"
                 breadcrumbs={[
@@ -1086,8 +1092,10 @@ function ThongKePage() {
                     }
                 ]}
             />
+            <PageSpeedOptimizer />
 
-            <div className={styles.container}>
+            <Layout>
+                <div className={styles.container}>
                 {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.headerContent}>
@@ -1339,7 +1347,8 @@ function ThongKePage() {
                 {/* Auth Modal - Memoized Component */}
                 {AuthModal}
             </div>
-        </Layout>
+            </Layout>
+        </>
     );
 }
 

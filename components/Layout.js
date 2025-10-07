@@ -9,7 +9,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings } from 'lucide-react';
 import Image from 'next/image';
-import SimpleOnlineWidget from './SimpleOnlineWidget';
 import styles from '../styles/Layout.module.css';
 
 export default function Layout({ children, className = '' }) {
@@ -52,11 +51,14 @@ export default function Layout({ children, className = '' }) {
     useEffect(() => {
         if (isMenuOpen) {
             document.body.style.overflow = 'hidden';
+            document.body.classList.add('mobile-menu-open');
         } else {
             document.body.style.overflow = '';
+            document.body.classList.remove('mobile-menu-open');
         }
         return () => {
             document.body.style.overflow = '';
+            document.body.classList.remove('mobile-menu-open');
         };
     }, [isMenuOpen]);
 
@@ -65,14 +67,15 @@ export default function Layout({ children, className = '' }) {
     };
 
     const navLinks = [
-        { href: '/', label: 'Trang chủ', icon: Home },
-        { href: '/dan-2d', label: 'Dàn 2D', icon: Target },
-        { href: '/dan-3d4d', label: 'Dàn 3D/4D', icon: BarChart3 },
-        { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star },
-        { href: '/thong-ke', label: 'Lập Thống Kê', icon: TrendingUp },
-        { href: '/content', label: 'Hướng dẫn & Mẹo chơi', icon: HelpCircle },
-        { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper },
-        { href: '/admin/thong-ke', label: 'Admin', icon: Settings }
+        { href: '/', label: 'Trang chủ', icon: Home, description: 'Trang chủ chính' },
+        { href: '/dan-9x0x', label: 'Dàn 9x-0x', icon: Target, description: 'Tạo dàn đề 9x-0x chuyên nghiệp', isNew: true },
+        { href: '/dan-2d', label: 'Dàn 2D', icon: Target, description: 'Dàn đề 2 chữ số (00-99)' },
+        { href: '/dan-3d4d', label: 'Dàn 3D/4D', icon: BarChart3, description: 'Dàn đề 3-4 chữ số' },
+        { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star, description: 'Bộ lọc dàn đề thông minh' },
+        { href: '/thong-ke', label: 'Lập Thống Kê', icon: TrendingUp, description: 'Thống kê xổ số 3 miền' },
+        { href: '/content', label: 'Hướng dẫn & Mẹo chơi', icon: HelpCircle, description: 'Hướng dẫn chơi xổ số' },
+        { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper, description: 'Tin tức xổ số mới nhất' },
+        { href: '/admin/thong-ke', label: 'Admin', icon: Settings, description: 'Quản trị hệ thống' }
     ];
 
     return (
@@ -116,9 +119,11 @@ export default function Layout({ children, className = '' }) {
                                         className={`${styles.navLink} ${router.pathname === link.href ? styles.active : ''
                                             }`}
                                         prefetch={false} // Disable automatic prefetch
+                                        title={link.description}
                                     >
                                         <IconComponent size={16} className={styles.navIcon} />
                                         <span>{link.label}</span>
+                                        {link.isNew && <span className={styles.newBadge}>NEW</span>}
                                     </Link>
                                 );
                             })}
@@ -138,26 +143,44 @@ export default function Layout({ children, className = '' }) {
                     </div>
 
                     {/* Mobile Navigation */}
-                    <div className={`${styles.mobileNav} ${isMenuOpen ? styles.mobileNavOpen : ''}`}>
-                        <div className={styles.mobileNavContent} onClick={handleLinkClick}>
-                            {navLinks.map((link) => {
-                                const IconComponent = link.icon;
-                                return (
-                                    <Link
-                                        key={link.href}
-                                        href={link.href}
-                                        className={`${styles.mobileNavLink} ${router.pathname === link.href ? styles.active : ''
-                                            }`}
-                                        onClick={() => setIsMenuOpen(false)}
-                                        prefetch={false} // Disable automatic prefetch
-                                    >
-                                        <IconComponent size={20} className={styles.mobileNavIcon} />
-                                        <span>{link.label}</span>
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    </div>
+                    {isMenuOpen && (
+                        <>
+                            {/* Mobile Overlay */}
+                            <div
+                                className={styles.mobileOverlay}
+                                onClick={() => setIsMenuOpen(false)}
+                                aria-hidden="true"
+                            />
+
+                            {/* Mobile Navigation */}
+                            <div className={`${styles.mobileNav} ${isMenuOpen ? styles.mobileNavOpen : ''}`}>
+                                <div className={styles.mobileNavContent} onClick={handleLinkClick}>
+                                    {navLinks.map((link) => {
+                                        const IconComponent = link.icon;
+                                        return (
+                                            <Link
+                                                key={link.href}
+                                                href={link.href}
+                                                className={`${styles.mobileNavLink} ${router.pathname === link.href ? styles.active : ''
+                                                    }`}
+                                                onClick={() => setIsMenuOpen(false)}
+                                                prefetch={false} // Disable automatic prefetch
+                                            >
+                                                <div className={styles.mobileNavLinkContent}>
+                                                    <div className={styles.mobileNavLinkHeader}>
+                                                        <IconComponent size={20} className={styles.mobileNavIcon} />
+                                                        <span className={styles.mobileNavLinkLabel}>{link.label}</span>
+                                                        {link.isNew && <span className={styles.mobileNewBadge}>NEW</span>}
+                                                    </div>
+                                                    <span className={styles.mobileNavLinkDescription}>{link.description}</span>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </nav>
             </header>
 
@@ -265,18 +288,6 @@ export default function Layout({ children, className = '' }) {
                     </div>
                 </div>
             </footer>
-
-            {/* Mobile Menu Overlay */}
-            {isMenuOpen && (
-                <div
-                    className={styles.mobileOverlay}
-                    onClick={() => setIsMenuOpen(false)}
-                    aria-hidden="true"
-                />
-            )}
-
-            {/* Simple Online Widget */}
-            <SimpleOnlineWidget />
         </div>
     );
 }

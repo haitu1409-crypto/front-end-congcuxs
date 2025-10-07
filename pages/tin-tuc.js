@@ -9,14 +9,16 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Layout from '../components/Layout';
 import SEOOptimized from '../components/SEOOptimized';
+import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import styles from '../styles/tintuc.module.css';
 
 // API functions with caching and error handling
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-// Simple in-memory cache
+// Enhanced in-memory cache with better performance
 const cache = new Map();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes for better caching
+const MAX_CACHE_SIZE = 100; // Limit cache size
 
 const fetchWithCache = async (url, cacheKey) => {
     const now = Date.now();
@@ -29,7 +31,8 @@ const fetchWithCache = async (url, cacheKey) => {
     try {
         const response = await fetch(url, {
             headers: {
-                'Cache-Control': 'max-age=300', // 5 minutes
+                'Cache-Control': 'max-age=600', // 10 minutes
+                'Accept': 'application/json',
             }
         });
 
@@ -38,6 +41,13 @@ const fetchWithCache = async (url, cacheKey) => {
         }
 
         const data = await response.json();
+
+        // Clean cache if it's too large
+        if (cache.size >= MAX_CACHE_SIZE) {
+            const firstKey = cache.keys().next().value;
+            cache.delete(firstKey);
+        }
+
         cache.set(cacheKey, { data, timestamp: now });
         return data;
     } catch (error) {
@@ -123,6 +133,11 @@ const getCategoryLabel = (category) => {
 // Optimized blur placeholder for better image loading
 const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==';
 
+// Image optimization settings
+const IMAGE_QUALITY = 75;
+const IMAGE_PLACEHOLDER = 'blur';
+const IMAGE_LOADING_STRATEGY = 'lazy';
+
 // Enhanced Loading Components
 const LoadingSkeleton = React.memo(() => (
     <div className={styles.loading}>
@@ -161,15 +176,22 @@ const HeroArticle = React.memo(({ article }) => {
         <Link href={`/tin-tuc/${article.slug}`} className={styles.heroPost}>
             <div className={styles.heroImageContainer}>
                 <Image
-                    src={article.featuredImage?.url || '/images/default-news.jpg'}
+                    src={article.featuredImage?.url || '/imgs/wukong.png'}
                     alt={article.featuredImage?.alt || article.title}
                     width={800}
                     height={400}
                     className={styles.heroImage}
                     priority
-                    placeholder="blur"
+                    quality={IMAGE_QUALITY}
+                    placeholder={IMAGE_PLACEHOLDER}
                     blurDataURL={blurDataURL}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 800px"
+                    onError={(e) => {
+                        e.target.src = '/imgs/wukong.png';
+                    }}
+                    onLoad={() => {
+                        // Image loaded successfully
+                    }}
                 />
                 <div className={styles.heroOverlay}>
                     <div className={styles.heroCategory}>
@@ -201,15 +223,22 @@ const FeaturedCard = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.featuredCard}>
         <div className={styles.featuredImageContainer}>
             <Image
-                src={article.featuredImage?.url || '/images/default-news.jpg'}
+                src={article.featuredImage?.url || '/imgs/wukong.png'}
                 alt={article.featuredImage?.alt || article.title}
                 width={300}
                 height={200}
                 className={styles.featuredImage}
                 loading={index < 2 ? "eager" : "lazy"}
-                placeholder="blur"
+                quality={IMAGE_QUALITY}
+                placeholder={IMAGE_PLACEHOLDER}
                 blurDataURL={blurDataURL}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
+                onError={(e) => {
+                    e.target.src = '/imgs/wukong.png';
+                }}
+                onLoad={() => {
+                    // Image loaded successfully
+                }}
             />
             <div className={styles.featuredOverlay}>
                 <span
@@ -240,15 +269,22 @@ const ArticleCard = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.articleCard}>
         <div className={styles.articleImageContainer}>
             <Image
-                src={article.featuredImage?.url || '/images/default-news.jpg'}
+                src={article.featuredImage?.url || '/imgs/wukong.png'}
                 alt={article.featuredImage?.alt || article.title}
                 width={200}
                 height={120}
                 className={styles.articleImage}
                 loading="lazy"
-                placeholder="blur"
+                quality={IMAGE_QUALITY}
+                placeholder={IMAGE_PLACEHOLDER}
                 blurDataURL={blurDataURL}
                 sizes="(max-width: 768px) 100vw, 200px"
+                onError={(e) => {
+                    e.target.src = '/imgs/wukong.png';
+                }}
+                onLoad={() => {
+                    // Image loaded successfully
+                }}
             />
             <div className={styles.articleOverlay}>
                 <span
@@ -279,15 +315,22 @@ const SidebarItem = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.sidebarItem}>
         <div className={styles.sidebarItemImage}>
             <Image
-                src={article.featuredImage?.url || '/images/default-news.jpg'}
+                src={article.featuredImage?.url || '/imgs/wukong.png'}
                 alt={article.featuredImage?.alt || article.title}
                 width={60}
                 height={60}
                 className={styles.sidebarItemImage}
                 loading="lazy"
-                placeholder="blur"
+                quality={IMAGE_QUALITY}
+                placeholder={IMAGE_PLACEHOLDER}
                 blurDataURL={blurDataURL}
                 sizes="60px"
+                onError={(e) => {
+                    e.target.src = '/imgs/wukong.png';
+                }}
+                onLoad={() => {
+                    // Image loaded successfully
+                }}
             />
         </div>
         <div className={styles.sidebarItemContent}>
@@ -320,20 +363,22 @@ export default function NewsPage() {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
 
-    // Enhanced data loading with better error handling
+    // Enhanced data loading with better error handling and performance optimization
     const loadData = useCallback(async () => {
         try {
             setState(prev => ({ ...prev, loading: true, error: null }));
 
+            // Optimize API calls with better caching and error handling
             const [articlesRes, featuredRes, trendingRes, categoriesRes] = await Promise.allSettled([
                 fetchArticles({
                     page: state.currentPage,
                     category: state.selectedCategory,
                     sort: state.sortBy,
-                    search: state.searchQuery
+                    search: state.searchQuery,
+                    limit: 12 // Limit articles for better performance
                 }),
-                fetchFeaturedArticles(6),
-                fetchTrendingArticles(8),
+                fetchFeaturedArticles(4), // Reduce featured articles
+                fetchTrendingArticles(6), // Reduce trending articles
                 fetchCategories()
             ]);
 
@@ -377,11 +422,11 @@ export default function NewsPage() {
 
     // Enhanced SEO Data
     const seoData = useMemo(() => ({
-        title: 'Tin Tức Xổ Số & Lô Đề - Cập Nhật Mới Nhất 2024 | Tạo Dàn Đề',
+        title: 'Tin Tức Xổ Số & Lô Đề - Cập Nhật Mới Nhất 2025 | Tạo Dàn Đề',
         description: 'Tin tức xổ số, lô đề mới nhất, kinh nghiệm chơi, thống kê số nóng lạnh, mẹo vặt và hướng dẫn chuyên nghiệp từ các chuyên gia. Cập nhật 24/7.',
         keywords: 'tin tức xổ số, lô đề, thống kê xổ số, kinh nghiệm chơi, mẹo vặt xổ số, soi cầu, dàn đề, xổ số miền bắc, xổ số miền nam, xổ số miền trung',
         canonical: `${siteUrl}/tin-tuc`,
-        ogImage: `${siteUrl}/images/og-news.jpg`,
+        ogImage: `${siteUrl}/imgs/wukong.png`,
         ogType: 'website'
     }), [siteUrl]);
 
@@ -397,7 +442,7 @@ export default function NewsPage() {
             name: 'Tạo Dàn Đề - Công Cụ Xổ Số Chuyên Nghiệp',
             logo: {
                 '@type': 'ImageObject',
-                url: `${siteUrl}/logo.png`
+                url: `${siteUrl}/imgs/monkey.png`
             }
         },
         mainEntity: {
@@ -488,6 +533,7 @@ export default function NewsPage() {
                 breadcrumbs={breadcrumbs}
                 structuredData={structuredData}
             />
+            <PageSpeedOptimizer />
 
             <Layout>
                 {/* Enhanced Page Header */}
@@ -562,14 +608,14 @@ export default function NewsPage() {
                                 </div>
                             )}
 
-                            {/* Featured Articles */}
+                            {/* Featured Articles - Optimized rendering */}
                             {state.featuredArticles.length > 0 && (
                                 <div className={styles.articlesSection}>
                                     <h2 className={styles.sectionTitle}>
                                         ⭐ Bài Viết Nổi Bật
                                     </h2>
                                     <div className={styles.featuredGrid}>
-                                        {state.featuredArticles.map((article, index) => (
+                                        {state.featuredArticles.slice(0, 4).map((article, index) => (
                                             <FeaturedCard key={article._id} article={article} index={index} />
                                         ))}
                                     </div>
@@ -643,14 +689,14 @@ export default function NewsPage() {
 
                         {/* Enhanced Sidebar */}
                         <aside className={styles.sidebar}>
-                            {/* Trending Articles */}
+                            {/* Trending Articles - Optimized rendering */}
                             {state.trendingArticles.length > 0 && (
                                 <div className={styles.sidebarCard}>
                                     <h3 className={styles.sidebarTitle}>
                                         🔥 Tin Nổi Bật
                                     </h3>
                                     <div className={styles.sidebarList}>
-                                        {state.trendingArticles.map((article, index) => (
+                                        {state.trendingArticles.slice(0, 6).map((article, index) => (
                                             <SidebarItem key={article._id} article={article} index={index} />
                                         ))}
                                     </div>

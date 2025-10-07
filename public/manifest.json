@@ -12,37 +12,31 @@
   "scope": "/",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/imgs/monkey.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/imgs/monkey.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/imgs/monkey.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/imgs/monkey.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
       "src": "/imgs/monkey.png",
-      "sizes": "any",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/imgs/chemical-weapon.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "any"

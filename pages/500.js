@@ -4,6 +4,7 @@
 
 import Link from 'next/link';
 import Head from 'next/head';
+import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import styles from '../styles/Error.module.css';
 
 export default function Custom500() {
@@ -14,6 +15,7 @@ export default function Custom500() {
                 <meta name="description" content="Đã có lỗi xảy ra. Vui lòng thử lại sau." />
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
+            <PageSpeedOptimizer />
 
             <div className={styles.errorContainer}>
                 <div className={styles.errorContent}>

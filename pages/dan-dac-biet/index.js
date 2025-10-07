@@ -6,6 +6,7 @@
 import Link from 'next/link';
 import Layout from '../../components/Layout';
 import SEOOptimized from '../../components/SEOOptimized';
+import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import AOSWrapper from '../../components/AOSWrapper';
 import { Star, Zap, Target, CheckCircle, Rocket, BookOpen, Hash, Dice6, BarChart3, Home, Shield, Smartphone } from 'lucide-react';
 import styles from '../../styles/DanDacBiet.module.css';
@@ -65,6 +66,7 @@ export default function DanDacBietPage() {
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
             />
+            <PageSpeedOptimizer />
 
             <Layout>
                 <AOSWrapper>

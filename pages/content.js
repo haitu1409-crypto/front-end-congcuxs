@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import SEOOptimized from '../components/SEOOptimized';
+import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import {
     BookOpen,
     Target,
@@ -262,6 +263,7 @@ export default function ContentPage() {
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
             />
+            <PageSpeedOptimizer />
 
             <div className={styles.pageContainer}>
                 <header className={styles.pageHeader}>

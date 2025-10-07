@@ -9,6 +9,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Layout from '../../components/Layout';
 import SEOOptimized from '../../components/SEOOptimized';
+import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import styles from '../../styles/PostEditor.module.css';
 
@@ -834,6 +835,7 @@ export default function PostEditor() {
                 canonical={seoData.canonical}
                 breadcrumbs={breadcrumbs}
             />
+            <PageSpeedOptimizer />
 
             <Layout>
                 {/* Page Header */}

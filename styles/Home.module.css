@@ -12,6 +12,285 @@
     padding-bottom: 40px;
 }
 
+/* Loading skeleton for lazy components */
+.loadingSkeleton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 8px;
+    margin: 1rem 0;
+    color: #666;
+    font-weight: 500;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Hero Badge */
+.heroBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.heroBadgeIcon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Hero Title Highlight */
+.heroTitleHighlight {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Hero Actions */
+.heroActions {
+    display: flex;
+    gap: 16px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+}
+
+.heroPrimaryButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.heroPrimaryButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.heroSecondaryButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: #667eea;
+    padding: 16px 24px;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.heroSecondaryButton:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.heroButtonIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.heroButtonArrow {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+}
+
+.heroPrimaryButton:hover .heroButtonArrow {
+    transform: translateX(4px);
+}
+
+/* Quick Access Section */
+.quickAccess {
+    margin: 60px 0;
+    padding: 40px 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 20px;
+}
+
+.quickAccessHeader {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.quickAccessHeader h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin-bottom: 16px;
+}
+
+.quickAccessHeader p {
+    font-size: 1.125rem;
+    color: var(--color-gray-600);
+}
+
+.quickAccessGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.quickAccessCard {
+    background: white;
+    padding: 32px 24px;
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-gray-200);
+    position: relative;
+    overflow: hidden;
+}
+
+.quickAccessCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.quickAccessIcon {
+    width: 48px;
+    height: 48px;
+    color: #667eea;
+    margin-bottom: 16px;
+}
+
+.quickAccessCard h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin-bottom: 12px;
+}
+
+.quickAccessCard p {
+    color: var(--color-gray-600);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.quickAccessBadge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* News Section */
+.newsSection {
+    margin: 60px 0;
+    padding: 40px 0;
+}
+
+.newsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.newsHeader h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-gray-900);
+}
+
+.newsLink {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.newsLink:hover {
+    color: #5a67d8;
+}
+
+.newsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+.newsCard {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--color-gray-200);
+    transition: all 0.3s ease;
+}
+
+.newsCard:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.newsCard h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.newsCard p {
+    color: var(--color-gray-600);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.newsReadMore {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.newsReadMore:hover {
+    color: #5a67d8;
+}
+
 @media (min-width: 768px) {
     .container {
         padding: 0 var(--spacing-6);

@@ -1,0 +1,206 @@
+/**
+ * Dàn Đề 9x-0x Page
+ * Chuyển toàn bộ logic từ trang chủ sang page chuyên dụng
+ */
+
+import Link from 'next/link';
+import Layout from '../components/Layout';
+import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone } from 'lucide-react';
+import styles from '../styles/Dan9x0x.module.css';
+import SEOOptimized from '../components/SEOOptimized';
+import SEOAnalytics from '../components/SEOAnalytics';
+import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
+// import WukongSlider from '../components/WukongSlider';
+import dynamic from 'next/dynamic';
+
+// Lazy load heavy components for better PageSpeed
+const DanDeGenerator = dynamic(() => import('../components/DanDeGenerator'), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải công cụ...</div>,
+    ssr: false
+});
+
+const GuideSection = dynamic(() => import('../components/GuideSection'), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải hướng dẫn...</div>,
+    ssr: false
+});
+
+export default function Dan9x0xPage() {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+    const breadcrumbs = [
+        { name: 'Trang chủ', url: siteUrl },
+        { name: 'Dàn Đề 9x-0x', url: `${siteUrl}/dan-9x0x` }
+    ];
+
+    const faqData = [
+        {
+            question: 'Công cụ tạo dàn đề 9x-0x ngẫu nhiên có miễn phí không?',
+            answer: 'Có, công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp hoàn toàn miễn phí 100%, không giới hạn số lần sử dụng, không cần đăng ký tài khoản.'
+        },
+        {
+            question: 'Dàn đề 9x-0x được tạo có chính xác không?',
+            answer: 'Công cụ sử dụng thuật toán Fisher-Yates chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối và chính xác 100% cho dàn đề 9x-0x. Đây là thuật toán được sử dụng rộng rãi trong các ứng dụng chuyên nghiệp.'
+        },
+        {
+            question: 'Bộ lọc dàn đề tổng hợp hoạt động như thế nào?',
+            answer: 'Bộ lọc dàn đề tổng hợp sử dụng thuật toán thông minh để phân tích và lọc các số có khả năng trúng cao nhất từ dàn đề 9x-0x, dựa trên thống kê và xu hướng xổ số 3 miền.'
+        },
+        {
+            question: 'Có thể lưu và xuất dàn đề không?',
+            answer: 'Có, bạn có thể lưu dàn đề 9x-0x và kết quả lọc vào bộ nhớ tạm, xuất ra file Excel, hoặc chia sẻ qua mạng xã hội. Tất cả hoàn toàn miễn phí.'
+        },
+        {
+            question: 'Dàn đề 9x-0x phù hợp cho loại xổ số nào?',
+            answer: 'Dàn đề 9x-0x phù hợp cho tất cả loại xổ số 3 miền (miền Bắc, miền Nam, miền Trung), lô đề, và các hình thức chơi xổ số khác. Đây là loại dàn đề phổ biến và hiệu quả nhất.'
+        },
+        {
+            question: 'Cách sử dụng công cụ tạo dàn đề 9x-0x hiệu quả?',
+            answer: 'Chọn số lượng dàn phù hợp (10-20 dàn), sử dụng bộ lọc tổng hợp để tối ưu kết quả, kết hợp với thống kê xổ số 3 miền để tăng tỷ lệ trúng. Công cụ hỗ trợ nhiều tùy chọn lọc thông minh.'
+        }
+    ];
+
+    return (
+        <>
+            <SEOOptimized
+                pageType="dan-9x0x"
+                customTitle="Tạo Dàn Đề 9x-0x Chuyên Nghiệp - Công Cụ Miễn Phí 2024"
+                customDescription="Tạo dàn đề 9x-0x ngẫu nhiên chuyên nghiệp với thuật toán Fisher-Yates chuẩn quốc tế. Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%, chính xác cho xổ số 3 miền."
+                customKeywords="tạo dàn đề 9x-0x, dàn đề 9x-0x, công cụ tạo dàn đề, dàn đề ngẫu nhiên, bộ lọc dàn đề, thuật toán Fisher-Yates, xổ số 3 miền, lô đề, tạo dàn đề miễn phí, dàn đề chuyên nghiệp"
+                breadcrumbs={breadcrumbs}
+                faq={faqData}
+            />
+            <PageSpeedOptimizer />
+
+            <Layout>
+                <div className={styles.container}>
+                    {/* Hero Section */}
+                    <section className={styles.hero}>
+                        <div className={styles.heroContent}>
+                            <div className={styles.heroBadge}>
+                                <Star className={styles.heroBadgeIcon} />
+                                <span>Công cụ chuyên nghiệp</span>
+                            </div>
+                            <h1 className={styles.heroTitle}>
+                                Tạo Dàn Đề <span className={styles.heroTitleHighlight}>9x-0x</span> Chuyên Nghiệp
+                            </h1>
+                            <p className={styles.heroDescription}>
+                                Công cụ tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế.
+                                Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%, chính xác cho xổ số 3 miền.
+                            </p>
+                            <div className={styles.heroFeatures}>
+                                <div className={styles.heroFeature}>
+                                    <CheckCircle className={styles.heroFeatureIcon} />
+                                    <span>Miễn phí 100%</span>
+                                </div>
+                                <div className={styles.heroFeature}>
+                                    <Zap className={styles.heroFeatureIcon} />
+                                    <span>Nhanh chóng</span>
+                                </div>
+                                <div className={styles.heroFeature}>
+                                    <Target className={styles.heroFeatureIcon} />
+                                    <span>Chính xác</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Wukong Slider */}
+                    {/* <WukongSlider /> */}
+
+                    {/* Main Generator Section */}
+                    <main className={styles.main} id="generator">
+                        <h2 className={styles.sectionTitles} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
+                            {/* <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} /> */}
+                            Tạo Dàn Đề 9X-0X Ngẫu Nhiên
+                        </h2>
+                        <p className={styles.sectionTitle} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
+
+                            Đặc biệt có thể thêm các điều kiện tạo dàn như: chọn bộ số từ 00-99, bỏ đi kép bằng , bỏ qua các số mong muốn hoặc thêm các số mong muốn
+                        </p>
+                        <DanDeGenerator />
+                    </main>
+
+                    {/* Guide Section */}
+                    <GuideSection />
+
+                    {/* Features Section */}
+                    <section className={styles.features}>
+                        <div className={styles.featuresHeader}>
+                            <h2 className={styles.featuresTitle}>Tại sao chọn công cụ của chúng tôi?</h2>
+                            <p className={styles.featuresDescription}>
+                                Công cụ tạo dàn đề 9x-0x được thiết kế chuyên nghiệp với các tính năng tiên tiến
+                            </p>
+                        </div>
+                        <div className={styles.featuresGrid}>
+                            <div className={styles.featureCard}>
+                                <div className={styles.featureIcon}>
+                                    <Dice6 />
+                                </div>
+                                <h3 className={styles.featureTitle}>Thuật toán Fisher-Yates</h3>
+                                <p className={styles.featureDescription}>
+                                    Sử dụng thuật toán chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối cho dàn đề 9x-0x
+                                </p>
+                            </div>
+                            <div className={styles.featureCard}>
+                                <div className={styles.featureIcon}>
+                                    <BarChart3 />
+                                </div>
+                                <h3 className={styles.featureTitle}>Bộ lọc thông minh</h3>
+                                <p className={styles.featureDescription}>
+                                    Bộ lọc dàn đề tổng hợp phân tích và tối ưu kết quả dựa trên thống kê xổ số 3 miền
+                                </p>
+                            </div>
+                            <div className={styles.featureCard}>
+                                <div className={styles.featureIcon}>
+                                    <Smartphone />
+                                </div>
+                                <h3 className={styles.featureTitle}>Responsive Design</h3>
+                                <p className={styles.featureDescription}>
+                                    Giao diện tối ưu cho mọi thiết bị, từ desktop đến mobile, trải nghiệm mượt mà
+                                </p>
+                            </div>
+                            <div className={styles.featureCard}>
+                                <div className={styles.featureIcon}>
+                                    <Heart />
+                                </div>
+                                <h3 className={styles.featureTitle}>Hoàn toàn miễn phí</h3>
+                                <p className={styles.featureDescription}>
+                                    Không giới hạn số lần sử dụng, không cần đăng ký, hoàn toàn miễn phí 100%
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Quick Links Section */}
+                    <section className={styles.quickLinks}>
+                        <h2 className={styles.quickLinksTitle}>Công cụ khác</h2>
+                        <div className={styles.quickLinksGrid}>
+                            <Link href="/dan-2d" className={styles.quickLinkCard}>
+                                <Target className={styles.quickLinkIcon} />
+                                <h3>Dàn 2D</h3>
+                                <p>Dàn đề 2 chữ số (00-99)</p>
+                            </Link>
+                            <Link href="/dan-3d4d" className={styles.quickLinkCard}>
+                                <BarChart3 className={styles.quickLinkIcon} />
+                                <h3>Dàn 3D/4D</h3>
+                                <p>Dàn đề 3-4 chữ số</p>
+                            </Link>
+                            <Link href="/dan-dac-biet" className={styles.quickLinkCard}>
+                                <Star className={styles.quickLinkIcon} />
+                                <h3>Dàn Đặc Biệt</h3>
+                                <p>Bộ lọc dàn đề thông minh</p>
+                            </Link>
+                            <Link href="/thong-ke" className={styles.quickLinkCard}>
+                                <BarChart3 className={styles.quickLinkIcon} />
+                                <h3>Thống Kê</h3>
+                                <p>Thống kê xổ số 3 miền</p>
+                            </Link>
+                        </div>
+                    </section>
+                </div>
+            </Layout>
+
+            <SEOAnalytics />
+        </>
+    );
+}

@@ -21,9 +21,9 @@ const nextConfig = {
         pagesBufferLength: 5, // Tăng từ 2 lên 5
     },
 
-    // Tối ưu hóa images
+    // Tối ưu hóa images cho PageSpeed
     images: {
-        domains: ['localhost'],
+        domains: ['localhost', 'api.taodandewukong.pro'],
         remotePatterns: [
             {
                 protocol: 'http',
@@ -31,11 +31,20 @@ const nextConfig = {
                 port: '5000',
                 pathname: '/uploads/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'api.taodandewukong.pro',
+                pathname: '/uploads/**',
+            },
         ],
         formats: ['image/avif', 'image/webp'],
         deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
         imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-        minimumCacheTTL: 60,
+        minimumCacheTTL: 31536000, // 1 year cache
+        dangerouslyAllowSVG: true,
+        contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+        unoptimized: false, // Enable optimization
+        loader: 'default', // Use Next.js optimized loader
     },
 
     // i18n cho SEO đa ngôn ngữ (tạm thời disable để fix build)
@@ -286,6 +295,13 @@ const nextConfig = {
         webVitalsAttribution: ['CLS', 'LCP'],
         // Optimize package imports
         optimizePackageImports: ['lucide-react', 'html2canvas'],
+        // PageSpeed optimizations
+        esmExternals: true,
+        serverMinification: true,
+        // New optimizations for PageSpeed
+        optimizeServerReact: true,
+        serverSourceMaps: false,
+        largePageDataBytes: 128 * 1000, // 128KB
     },
 
     // Bundle analyzer (uncomment to analyze)

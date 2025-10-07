@@ -5,10 +5,17 @@
 
 import Link from 'next/link';
 import Layout from '../../components/Layout';
-import Dan2DGenerator from '../../components/DanDe/Dan2DGenerator';
 import SEOOptimized from '../../components/SEOOptimized';
+import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import { Target } from 'lucide-react';
 import styles from '../../styles/Dan2D.module.css';
+import dynamic from 'next/dynamic';
+
+// Lazy load heavy component for better PageSpeed
+const Dan2DGenerator = dynamic(() => import('../../components/DanDe/Dan2DGenerator'), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải công cụ dàn 2D...</div>,
+    ssr: false
+});
 
 export default function Dan2DPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003';
@@ -47,6 +54,7 @@ export default function Dan2DPage() {
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
             />
+            <PageSpeedOptimizer />
 
             <Layout>
                 <div className={styles.pageContainer}>

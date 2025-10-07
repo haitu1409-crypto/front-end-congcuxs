@@ -6,10 +6,17 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Layout from '../../components/Layout';
-import VisitorStats from '../../components/VisitorStats';
 import SEOOptimized from '../../components/SEOOptimized';
+import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import { BarChart3, Users, Eye, TrendingUp, Globe, Clock } from 'lucide-react';
 import styles from '../../styles/AdminStats.module.css';
+import dynamic from 'next/dynamic';
+
+// Lazy load heavy component for better PageSpeed
+const VisitorStats = dynamic(() => import('../../components/VisitorStats'), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải thống kê...</div>,
+    ssr: false
+});
 
 export default function AdminStats() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -95,6 +102,7 @@ export default function AdminStats() {
                 keywords="admin, thống kê, analytics, dashboard, whos.amung.us"
                 noIndex={true}
             />
+            <PageSpeedOptimizer />
 
             <div className={styles.adminContainer}>
                 <div className={styles.adminHeader}>

@@ -4,6 +4,7 @@
  */
 
 @import './design-system.css';
+@import './mobile-fixes.css';
 
 /* ===== MODERN CSS RESET ===== */
 *,
@@ -76,6 +77,9 @@ body {
   /* Enable font kerning */
   font-feature-settings: "kern" 1;
   font-kerning: normal;
+  /* Prevent horizontal scroll on all devices */
+  max-width: 100vw;
+  position: relative;
 }
 
 /* ===== TYPOGRAPHY ===== */
@@ -304,6 +308,14 @@ code {
 
 /* ===== UTILITY CLASSES ===== */
 
+/* Body scroll lock for mobile menu */
+body.mobile-menu-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 /* Text Truncation */
 .truncate {
   overflow: hidden;
@@ -374,6 +386,19 @@ code {
 
 /* ===== MOBILE OPTIMIZATIONS ===== */
 @media (max-width: 767px) {
+
+  /* Prevent horizontal scroll on mobile */
+  html,
+  body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+
+  /* Ensure all containers don't exceed viewport width */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 
   /* Increase touch target sizes for better mobile UX */
   button,

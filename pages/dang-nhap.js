@@ -9,6 +9,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../components/Layout';
 import SEOOptimized from '../components/SEOOptimized';
+import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import styles from '../styles/LoginPage.module.css';
 
 // API functions
@@ -186,6 +187,7 @@ export default function LoginPage() {
                 canonical={seoData.canonical}
                 breadcrumbs={breadcrumbs}
             />
+            <PageSpeedOptimizer />
 
             <Layout>
                 <div className={styles.pageWrapper}>

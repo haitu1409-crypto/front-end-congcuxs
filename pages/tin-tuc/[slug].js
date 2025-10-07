@@ -9,7 +9,9 @@ import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
 import SEOOptimized from '../../components/SEOOptimized';
+import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import Layout from '../../components/Layout';
+import dynamic from 'next/dynamic';
 import {
     Calendar,
     Eye,
@@ -35,6 +37,19 @@ import {
     X
 } from 'lucide-react';
 import styles from '../../styles/ArticleDetail.module.css';
+
+// Lazy load heavy components for better PageSpeed
+// Note: These components will be created when needed
+// For now, we'll use simple fallback components
+const RelatedArticles = dynamic(() => Promise.resolve(() => <div className={styles.loadingSkeleton}>Bài viết liên quan</div>), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải bài viết liên quan...</div>,
+    ssr: false
+});
+
+const SocialShare = dynamic(() => Promise.resolve(() => <div className={styles.loadingSkeleton}>Chia sẻ</div>), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải chia sẻ...</div>,
+    ssr: false
+});
 
 export default function ArticleDetailPage() {
     const router = useRouter();
@@ -98,7 +113,7 @@ export default function ArticleDetailPage() {
     // Fetch article data with error handling and caching
     const fetchArticle = useCallback(async () => {
         if (!slug) return;
-        
+
         try {
             setLoading(true);
             setError(null);
@@ -109,13 +124,13 @@ export default function ArticleDetailPage() {
             if (result.success) {
                 setArticle(result.data);
                 setViewCount(result.data.views || 0);
-                
+
                 // Fetch related articles
                 const relatedResponse = await fetch(
                     `${apiUrl}/api/articles?category=${result.data.category}&limit=5&exclude=${result.data._id}`
                 );
                 const relatedResult = await relatedResponse.json();
-                
+
                 if (relatedResult.success) {
                     setRelatedArticles(relatedResult.data.articles || []);
                 }
@@ -135,7 +150,7 @@ export default function ArticleDetailPage() {
 
     // Effects
     useEffect(() => {
-            fetchArticle();
+        fetchArticle();
     }, [fetchArticle]);
 
     // Reading progress tracking
@@ -228,7 +243,7 @@ export default function ArticleDetailPage() {
         if (!article) return null;
 
         const readingTime = Math.max(1, Math.ceil((article.content?.length || 0) / 1000));
-        
+
         return {
             title: `${article.title} | Tin Tức Xổ Số & Lô Đề`,
             description: article.metaDescription || article.excerpt || `Đọc bài viết "${article.title}" về xổ số và lô đề. ${article.excerpt}`,
@@ -331,6 +346,7 @@ export default function ArticleDetailPage() {
                 structuredData={structuredData}
                 articleData={seoData.articleData}
             />
+            <PageSpeedOptimizer />
 
             <Layout>
                 {/* Reading Progress Bar */}
@@ -341,42 +357,42 @@ export default function ArticleDetailPage() {
 
                 <div className={styles.pageContainer}>
                     <main className={styles.mainContent}>
-                    {/* Breadcrumb */}
+                        {/* Breadcrumb */}
                         <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-                        <Link href="/tin-tuc" className={styles.breadcrumbLink}>
-                            <ArrowLeft size={16} />
-                            Quay lại tin tức
-                        </Link>
-                        <div className={styles.breadcrumbPath}>
-                            {breadcrumbs.map((crumb, index) => (
-                                <span key={index} className={styles.breadcrumbItem}>
-                                    {index > 0 && <span className={styles.separator}>/</span>}
-                                    {index === breadcrumbs.length - 1 ? (
-                                        <span className={styles.current}>{crumb.name}</span>
-                                    ) : (
-                                        <Link href={crumb.url} className={styles.breadcrumbLink}>
-                                            {crumb.name}
-                                        </Link>
-                                    )}
-                                </span>
-                            ))}
-                        </div>
-                    </nav>
+                            <Link href="/tin-tuc" className={styles.breadcrumbLink}>
+                                <ArrowLeft size={16} />
+                                Quay lại tin tức
+                            </Link>
+                            <div className={styles.breadcrumbPath}>
+                                {breadcrumbs.map((crumb, index) => (
+                                    <span key={index} className={styles.breadcrumbItem}>
+                                        {index > 0 && <span className={styles.separator}>/</span>}
+                                        {index === breadcrumbs.length - 1 ? (
+                                            <span className={styles.current}>{crumb.name}</span>
+                                        ) : (
+                                            <Link href={crumb.url} className={styles.breadcrumbLink}>
+                                                {crumb.name}
+                                            </Link>
+                                        )}
+                                    </span>
+                                ))}
+                            </div>
+                        </nav>
 
                         <article className={styles.articleContainer} itemScope itemType="https://schema.org/Article">
-                        {/* Article Header */}
-                        <header className={styles.articleHeader}>
-                            <div className={styles.articleCategory}>
-                                {getCategoryLabel(article.category)}
-                            </div>
+                            {/* Article Header */}
+                            <header className={styles.articleHeader}>
+                                <div className={styles.articleCategory}>
+                                    {getCategoryLabel(article.category)}
+                                </div>
                                 <h1 className={styles.articleTitle} itemProp="headline">
                                     {article.title}
                                 </h1>
-                            <div className={styles.articleMeta}>
+                                <div className={styles.articleMeta}>
                                     <div className={styles.metaItem}>
                                         <Calendar size={16} />
                                         <time dateTime={article.publishedAt} itemProp="datePublished">
-                                        {formatDate(article.publishedAt)}
+                                            {formatDate(article.publishedAt)}
                                         </time>
                                     </div>
                                     <div className={styles.metaItem}>
@@ -392,19 +408,19 @@ export default function ArticleDetailPage() {
                                         <span itemProp="author" itemScope itemType="https://schema.org/Person">
                                             <span itemProp="name">{article.author}</span>
                                         </span>
+                                    </div>
                                 </div>
-                            </div>
-                        </header>
+                            </header>
 
-                        {/* Featured Image */}
+                            {/* Featured Image */}
                             {article.featuredImage?.url && (
-                            <div className={styles.featuredImageContainer}>
+                                <div className={styles.featuredImageContainer}>
                                     <Image
-                                    src={article.featuredImage.url}
-                                    alt={article.featuredImage.alt || article.title}
+                                        src={article.featuredImage.url}
+                                        alt={article.featuredImage.alt || article.title}
                                         width={800}
                                         height={400}
-                                    className={styles.featuredImage}
+                                        className={styles.featuredImage}
                                         style={{
                                             width: '100%',
                                             height: 'auto',
@@ -412,9 +428,9 @@ export default function ArticleDetailPage() {
                                         }}
                                         priority
                                         itemProp="image"
-                                />
-                            </div>
-                        )}
+                                    />
+                                </div>
+                            )}
 
                             {/* Table of Contents */}
                             {tableOfContents.length > 0 && (
@@ -457,7 +473,7 @@ export default function ArticleDetailPage() {
                                 </div>
                             )}
 
-                        {/* Article Content */}
+                            {/* Article Content */}
                             <div
                                 className={styles.articleContent}
                                 itemProp="articleBody"
@@ -469,7 +485,7 @@ export default function ArticleDetailPage() {
                                 <div className={styles.additionalImages}>
                                     <h3 className={styles.additionalImagesTitle}>
                                         Hình ảnh bổ sung
-                                </h3>
+                                    </h3>
                                     <div className={styles.additionalImagesGrid}>
                                         {article.images.map((image, index) => (
                                             <div key={index} className={styles.additionalImageItem}>
@@ -487,10 +503,10 @@ export default function ArticleDetailPage() {
                                                     loading="lazy"
                                                 />
                                             </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
                             {/* Social Sharing */}
                             <div className={styles.socialSharing}>
@@ -536,21 +552,21 @@ export default function ArticleDetailPage() {
                                         <Link2 size={16} />
                                         Sao chép
                                     </button>
+                                </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    {/* Related Articles */}
-                    {relatedArticles.length > 0 && (
+                        {/* Related Articles */}
+                        {relatedArticles.length > 0 && (
                             <section className={styles.relatedArticles}>
                                 <h2 className={styles.relatedTitle}>Bài viết liên quan</h2>
-                            <div className={styles.relatedGrid}>
-                                {relatedArticles.map((relatedArticle) => (
-                                    <Link
-                                        key={relatedArticle._id}
-                                        href={`/tin-tuc/${relatedArticle.slug}`}
-                                        className={styles.relatedCard}
-                                    >
+                                <div className={styles.relatedGrid}>
+                                    {relatedArticles.map((relatedArticle) => (
+                                        <Link
+                                            key={relatedArticle._id}
+                                            href={`/tin-tuc/${relatedArticle.slug}`}
+                                            className={styles.relatedCard}
+                                        >
                                             <Image
                                                 src={relatedArticle.featuredImage?.url || '/images/default-news.jpg'}
                                                 alt={relatedArticle.title}
@@ -575,19 +591,19 @@ export default function ArticleDetailPage() {
                                                     >
                                                         {getCategoryLabel(relatedArticle.category)}
                                                     </span>
-                                        </div>
+                                                </div>
                                                 <h3 className={styles.relatedTitle}>
-                                                {relatedArticle.title}
-                                            </h3>
-                                            <p className={styles.relatedExcerpt}>
-                                                {relatedArticle.excerpt}
-                                            </p>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </section>
-                    )}
+                                                    {relatedArticle.title}
+                                                </h3>
+                                                <p className={styles.relatedExcerpt}>
+                                                    {relatedArticle.excerpt}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
                     </main>
 
                     {/* Sidebar */}

@@ -3,62 +3,7 @@
  * Quản lý các script tracking và analytics
  */
 
-// whos.amung.us configuration
-export const WHOS_AMUNG_US_CONFIG = {
-    widgetId: '7aijsjfwyp',
-    scriptUrl: '//waust.at/d.js',
-    dashboardUrl: 'https://whos.amung.us/stats/7aijsjfwyp'
-};
-
-/**
- * Load whos.amung.us tracking script
- * @param {string} widgetId - Widget ID từ whos.amung.us
- */
-export const loadWhosAmungUs = (widgetId = WHOS_AMUNG_US_CONFIG.widgetId) => {
-    // Check if script is already loaded
-    if (window._wau || document.querySelector('script[src*="waust.at"]')) {
-        console.log('whos.amung.us script already loaded');
-        return Promise.resolve();
-    }
-
-    return new Promise((resolve, reject) => {
-        try {
-            // Initialize whos.amung.us
-            window._wau = window._wau || [];
-            window._wau.push(["dynamic", widgetId, "o34", "c4302bffffff", "small"]);
-
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.async = true;
-            script.src = WHOS_AMUNG_US_CONFIG.scriptUrl;
-
-            script.onload = () => {
-                console.log('whos.amung.us script loaded successfully');
-                resolve();
-            };
-
-            script.onerror = (error) => {
-                console.error('Failed to load whos.amung.us script:', error);
-                reject(error);
-            };
-
-            document.head.appendChild(script);
-        } catch (error) {
-            console.error('Error creating whos.amung.us script:', error);
-            reject(error);
-        }
-    });
-};
-
-/**
- * Initialize analytics on page load
- */
-export const initAnalytics = () => {
-    // Load whos.amung.us
-    loadWhosAmungUs().catch(error => {
-        console.error('Analytics initialization failed:', error);
-    });
-};
+import { initTrackingErrorHandling } from './trackingErrorHandler';
 
 /**
  * Track page view (for manual tracking if needed)
@@ -77,18 +22,6 @@ export const trackPageView = (page, title) => {
     console.log(`Page view tracked: ${page} - ${title}`);
 };
 
-/**
- * Get current online count (if available)
- * @returns {number|null} Current online count or null if not available
- */
-export const getOnlineCount = () => {
-    const widgetElement = document.getElementById('_wauo34');
-    if (widgetElement && widgetElement.textContent) {
-        const count = parseInt(widgetElement.textContent);
-        return isNaN(count) ? null : count;
-    }
-    return null;
-};
 
 /**
  * Analytics event tracking
@@ -128,11 +61,15 @@ export const trackPerformance = (metric, value, unit = 'ms') => {
 };
 
 // Auto-initialize analytics when module is imported
-if (typeof window !== 'undefined') {
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initAnalytics);
-    } else {
-        initAnalytics();
-    }
-}
+// DISABLED: Widget được quản lý bởi SimpleOnlineWidget component
+// if (typeof window !== 'undefined') {
+//     // Initialize tracking error handling first
+//     initTrackingErrorHandling();
+//     
+//     // Wait for DOM to be ready
+//     if (document.readyState === 'loading') {
+//         document.addEventListener('DOMContentLoaded', initAnalytics);
+//     } else {
+//         initAnalytics();
+//     }
+// }

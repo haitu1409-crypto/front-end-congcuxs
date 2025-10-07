@@ -4,6 +4,7 @@
 
 import Link from 'next/link';
 import Head from 'next/head';
+import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import styles from '../styles/Error.module.css';
 
 export default function Custom404() {
@@ -14,6 +15,7 @@ export default function Custom404() {
                 <meta name="description" content="Trang bạn tìm kiếm không tồn tại. Quay lại trang chủ để sử dụng công cụ tạo dàn đề." />
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
+            <PageSpeedOptimizer />
 
             <div className={styles.errorContainer}>
                 <div className={styles.errorContent}>

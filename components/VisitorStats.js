@@ -92,7 +92,7 @@ const VisitorStats = ({
                         <Users size={24} />
                     </div>
                     <div className={styles.statContent}>
-                        <div className={styles.statNumber} id="amung_us_widget_7p3pwa">
+                        <div className={styles.statNumber}>
                             {stats.online || '...'}
                         </div>
                         <div className={styles.statLabel}>Đang online</div>

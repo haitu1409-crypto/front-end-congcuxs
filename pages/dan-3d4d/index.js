@@ -6,11 +6,22 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Layout from '../../components/Layout';
-import Dan3DGenerator from '../../components/DanDe/Dan3DGenerator';
-import Dan4DGenerator from '../../components/DanDe/Dan4DGenerator';
 import SEOOptimized from '../../components/SEOOptimized';
+import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import { BarChart3 } from 'lucide-react';
 import styles from '../../styles/Dan3D4D.module.css';
+import dynamic from 'next/dynamic';
+
+// Lazy load heavy components for better PageSpeed
+const Dan3DGenerator = dynamic(() => import('../../components/DanDe/Dan3DGenerator'), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải công cụ dàn 3D...</div>,
+    ssr: false
+});
+
+const Dan4DGenerator = dynamic(() => import('../../components/DanDe/Dan4DGenerator'), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải công cụ dàn 4D...</div>,
+    ssr: false
+});
 
 export default function Dan3D4DPage() {
     const [selectedType, setSelectedType] = useState('3D');
@@ -50,6 +61,7 @@ export default function Dan3D4DPage() {
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
             />
+            <PageSpeedOptimizer />
 
             <Layout>
                 <div className={styles.pageContainer}>

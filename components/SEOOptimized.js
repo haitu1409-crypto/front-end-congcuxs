@@ -77,37 +77,37 @@ const PAGE_IMAGES = {
 // Cấu hình title và description cho từng page
 const PAGE_SEO_CONFIG = {
     homepage: {
-        title: 'Tạo Dàn Đề 9x-0x Ngẫu Nhiên & Lọc Dàn Đề Tổng Hợp - Miễn Phí 2025',
-        description: 'Tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế. Công cụ lọc dàn đề tổng hợp thông minh, tạo dàn 2D, 3D, 4D, dàn đặc biệt miễn phí 100%. Nhanh chóng, chính xác tuyệt đối. Thương hiệu Tôn Ngộ Không.',
-        keywords: 'tạo dàn đề 9x-0x ngẫu nhiên, lọc dàn đề tổng hợp, công cụ tạo dàn đề chuyên nghiệp, dàn đề 9x-0x online, tạo dàn đề miễn phí, dàn đề 2D, dàn đề 3D, dàn đề 4D, dàn đề đặc biệt, lô đề online, xổ số 3 miền, thống kê xổ số, công cụ lô đề, tạo dàn lô đề, dàn đề Tôn Ngộ Không, xổ số Việt Nam, thống kê lô đề, bộ lọc số đặc biệt, dàn đề chính xác 100%, thuật toán Fisher-Yates, lọc dàn đề thông minh'
+        title: 'Tạo Dàn Đề | Tạo Dàn Xổ Số 2D 3D 4D | Ghép Dàn Xiên, Lotto - Miễn Phí 2025',
+        description: 'Tạo dàn đề, tạo dàn xổ số 2D 3D 4D chuyên nghiệp. Ghép dàn xiên, dàn theo tổng, dàn theo chạm, dàn kép bằng. Phần mềm AI, trí tuệ nhân tạo. Xem kết quả xổ số nhanh nhất. Miễn phí 100%.',
+        keywords: 'tạo dàn đề, tạo dàn xổ số, công cụ dàn đề, dàn đề 2D, dàn đề 3D, dàn đề 4D, ghép dàn đặc biệt, lọc dàn đặc biệt, tạo dàn xiên, ghép dàn xiên, dàn theo tổng, dàn theo chạm, dàn kép bằng, cắt dàn, lọc dàn, công cụ mức số, tạo dàn số, tạo dàn 3 càng, xổ số 3 miền, lô đề, tạo dàn đề miễn phí, công cụ xổ số chuyên nghiệp, taodande, dàn đề 9x-0x ngẫu nhiên, lọc dàn đề tổng hợp, thuật toán Fisher-Yates, phần mềm AI, AI Tools, trí tuệ nhân tạo, xem kết quả xổ số, kết quả xổ số nhanh nhất, ứng dụng tạo mức số, tạo mức số miễn phí, lotto'
     },
     'dan-dac-biet': {
-        title: 'Tạo Dàn Đặc Biệt Online - Bộ Lọc Thông Minh | Miễn Phí 2025',
-        description: 'Tạo dàn đề đặc biệt với bộ lọc thông minh: Lấy nhanh, Đầu-Đuôi, Chạm, Bộ, Kép. Thuật toán AI tiên tiến. Miễn phí không giới hạn. Được hàng ngàn người tin dùng.',
-        keywords: 'tạo dàn đặc biệt, bộ lọc dàn đề, lọc số đặc biệt, đầu đuôi số, chạm số, kép bằng, dàn đề đặc biệt, bộ lọc thông minh, tạo dàn đặc biệt online, dàn đề Tôn Ngộ Không, lọc dàn đề chuyên nghiệp, bộ lọc số chính xác, dàn đặc biệt miễn phí, công cụ lọc số, thuật toán lọc dàn đề'
+        title: 'Ghép Dàn Đặc Biệt | Lọc Dàn Đặc Biệt | Dàn Theo Tổng, Chạm, Kép Bằng - Miễn Phí 2025',
+        description: 'Ghép dàn đặc biệt, lọc dàn đặc biệt với bộ lọc thông minh: Lấy nhanh, Đầu-Đuôi, Chạm, Bộ, Kép. Dàn theo tổng, dàn theo chạm, dàn kép bằng. Cắt dàn, lọc dàn. Thuật toán AI tiên tiến. Miễn phí không giới hạn.',
+        keywords: 'ghép dàn đặc biệt, lọc dàn đặc biệt, tạo dàn xiên, tạo dàn 3 càng, tạo dàn đặc biệt, bộ lọc dàn đề, lọc số đặc biệt, đầu đuôi số, chạm số, kép bằng, dàn đề đặc biệt, bộ lọc thông minh, tạo dàn đặc biệt online, dàn đề Tôn Ngộ Không, lọc dàn đề chuyên nghiệp, bộ lọc số chính xác, dàn đặc biệt miễn phí, công cụ lọc số, thuật toán lọc dàn đề, dàn theo tổng, dàn theo chạm, dàn kép bằng, cắt dàn, lọc dàn, phần mềm AI, AI Tools, trí tuệ nhân tạo'
     },
     'dan-2d': {
-        title: 'Tạo Dàn Đề 2D (00-99) Online - Bộ Lọc Thông Minh | Miễn Phí 2025',
-        description: 'Tạo dàn đề 2D từ 00-99 với bộ lọc thông minh, phân loại theo mức độ xuất hiện. Hỗ trợ chuyển đổi 1D, lưu trữ kết quả, xuất file Excel. Thuật toán Fisher-Yates chuẩn quốc tế.',
-        keywords: 'tạo dàn 2D, dàn đề 2D, tạo dàn đề 2D online, công cụ dàn 2D, dàn 2D miễn phí, thuật toán Fisher-Yates, bộ lọc dàn 2D, xuất file dàn 2D, lưu dàn 2D, dàn đề 00-99, chuyển đổi 1D, phân loại mức độ, dàn 2D chuyên nghiệp'
+        title: 'Tạo Dàn Số 2D | Tạo Dàn Đề 2D (00-99) | Ứng Dụng Tạo Mức Số - Miễn Phí 2025',
+        description: 'Tạo dàn số 2D, tạo dàn đề 2D từ 00-99 với bộ lọc thông minh, phân loại theo mức độ xuất hiện. Ứng dụng tạo mức số, tạo mức số miễn phí. Hỗ trợ chuyển đổi 1D, lưu trữ kết quả, xuất file Excel.',
+        keywords: 'tạo dàn số 2D, tạo dàn 2D, dàn đề 2D, tạo dàn đề 2D online, công cụ dàn 2D, công cụ mức số, ứng dụng tạo mức số, tạo mức số miễn phí, dàn 2D miễn phí, thuật toán Fisher-Yates, bộ lọc dàn 2D, xuất file dàn 2D, lưu dàn 2D, dàn đề 00-99, chuyển đổi 1D, phân loại mức độ, dàn 2D chuyên nghiệp'
     },
     'dan-3d4d': {
-        title: 'Tạo Dàn Đề 3D/4D (000-999/0000-9999) Online - Công Cụ Chuyên Nghiệp | Miễn Phí 2025',
-        description: 'Tạo dàn đề 3D (000-999) và 4D (0000-9999) với thuật toán tiên tiến. Dành cho cao thủ, tối ưu chiến lược chơi. Hỗ trợ bộ lọc số, xuất file Excel, lưu trữ kết quả. Miễn phí, chính xác 100%.',
-        keywords: 'tạo dàn 3D, tạo dàn 4D, dàn đề 3D, dàn đề 4D, tạo dàn đề 3D online, tạo dàn đề 4D online, công cụ dàn 3D, công cụ dàn 4D, dàn 3D miễn phí, dàn 4D miễn phí, dàn đề 000-999, dàn đề 0000-9999, cao thủ lô đề, chiến lược chơi'
+        title: 'Tạo Dàn Xổ Số 3D/4D | Tạo Dàn Đề 3D/4D (000-999/0000-9999) | Phần Mềm AI - Miễn Phí 2025',
+        description: 'Tạo dàn xổ số 3D/4D, tạo dàn đề 3D (000-999) và 4D (0000-9999) với thuật toán tiên tiến. Phần mềm AI, trí tuệ nhân tạo. Dành cho cao thủ, tối ưu chiến lược chơi. Hỗ trợ bộ lọc số, xuất file Excel, lưu trữ kết quả. Miễn phí, chính xác 100%.',
+        keywords: 'tạo dàn xổ số 3D, tạo dàn xổ số 4D, tạo dàn 3D, tạo dàn 4D, dàn đề 3D, dàn đề 4D, tạo dàn đề 3D online, tạo dàn đề 4D online, công cụ dàn 3D, công cụ dàn 4D, dàn 3D miễn phí, dàn 4D miễn phí, dàn đề 000-999, dàn đề 0000-9999, cao thủ lô đề, chiến lược chơi, phần mềm AI, AI Tools, trí tuệ nhân tạo'
     },
     'thong-ke': {
-        title: 'Lập Bảng Thống Kê Chốt Dàn 3 Miền - Công Cụ Chuyên Nghiệp | Miễn Phí 2025',
-        description: 'Lập bảng thống kê chốt dàn 3 miền (Bắc-Nam-Trung) chuyên nghiệp. Công cụ theo dõi xu hướng và phân tích dữ liệu xổ số để tối ưu chiến lược chơi dàn đề. Cập nhật realtime, chính xác 100%. Thương hiệu Tôn Ngộ Không.',
-        keywords: 'lập bảng thống kê chốt dàn 3 miền, thống kê chốt dàn, bảng thống kê xổ số, thống kê miền bắc, thống kê miền nam, thống kê miền trung, kết quả xổ số, phân tích xổ số, xu hướng xổ số, thống kê lô đề, bảng thống kê chính xác, thống kê xổ số realtime, dàn đề Tôn Ngộ Không, thống kê xổ số miễn phí, công cụ thống kê xổ số, phân tích dữ liệu xổ số, xổ số miền bắc, xổ số miền nam, xổ số miền trung, chốt dàn đề'
+        title: 'Xem Kết Quả Xổ Số | Kết Quả Xổ Số Nhanh Nhất | Thống Kê Xổ Số 3 Miền - Miễn Phí 2025',
+        description: 'Xem kết quả xổ số, kết quả xổ số nhanh nhất tại Việt Nam. Thống kê xổ số 3 miền (Bắc-Nam-Trung) chuyên nghiệp. Lập bảng thống kê chốt dàn, công cụ theo dõi xu hướng và phân tích dữ liệu xổ số để tối ưu chiến lược chơi dàn đề. Cập nhật realtime, chính xác 100%.',
+        keywords: 'xem kết quả xổ số, kết quả xổ số, kết quả xổ số nhanh nhất, thống kê xổ số, lập bảng thống kê chốt dàn 3 miền, thống kê chốt dàn, bảng thống kê xổ số, thống kê miền bắc, thống kê miền nam, thống kê miền trung, phân tích xổ số, xu hướng xổ số, thống kê lô đề, bảng thống kê chính xác, thống kê xổ số realtime, dàn đề Tôn Ngộ Không, thống kê xổ số miễn phí, công cụ thống kê xổ số, phân tích dữ liệu xổ số, xổ số miền bắc, xổ số miền nam, xổ số miền trung, chốt dàn đề'
     },
     'content': {
-        title: 'Hướng Dẫn Chơi Xổ Số & Mẹo Tăng Tỷ Lệ Trúng - Công Cụ Chuyên Nghiệp 2024',
-        description: 'Hướng dẫn chi tiết cách chơi xổ số hiệu quả, mẹo tăng tỷ lệ trúng, thống kê xổ số 3 miền, soi cầu chính xác. Công cụ tạo dàn đề chuyên nghiệp, bảng thống kê chốt dàn, phương pháp soi cầu hiệu quả nhất 2024.',
+        title: 'Hướng Dẫn Chơi Xổ Số & Mẹo Tăng Tỷ Lệ Trúng - Công Cụ Chuyên Nghiệp 2025',
+        description: 'Hướng dẫn chi tiết cách chơi xổ số hiệu quả, mẹo tăng tỷ lệ trúng, thống kê xổ số 3 miền, soi cầu chính xác. Công cụ tạo dàn đề chuyên nghiệp, bảng thống kê chốt dàn, phương pháp soi cầu hiệu quả nhất 2025.',
         keywords: 'hướng dẫn chơi xổ số, mẹo tăng tỷ lệ trúng xổ số, thống kê xổ số 3 miền, soi cầu xổ số, cách tạo dàn đề hiệu quả, bảng thống kê chốt dàn, phương pháp soi cầu, mẹo chơi lô đề, chiến lược chơi xổ số, công cụ xổ số chuyên nghiệp, dự đoán xổ số, phân tích xổ số, xu hướng xổ số, số may mắn, cao thủ xổ số'
     },
     'tin-tuc': {
-        title: 'Tin Tức Xổ Số & Lô Đề - Cập Nhật Mới Nhất 2024',
+        title: 'Tin Tức Xổ Số & Lô Đề - Cập Nhật Mới Nhất 2025',
         description: 'Tin tức xổ số mới nhất, giải mã giấc mơ, kinh nghiệm chơi lô đề, thống kê xổ số 3 miền. Cập nhật hàng ngày với thông tin chính xác và mẹo chơi hiệu quả từ chuyên gia.',
         keywords: 'tin tức xổ số, giải mã giấc mơ, kinh nghiệm chơi lô đề, thống kê xổ số, mẹo vặt xổ số, phương pháp soi cầu, dàn đề chuyên nghiệp, xu hướng xổ số, số may mắn, tin tức lô đề, cập nhật xổ số, tin tức miền bắc, tin tức miền nam, tin tức miền trung'
     },
@@ -115,6 +115,11 @@ const PAGE_SEO_CONFIG = {
         title: 'FAQ - Câu Hỏi Thường Gặp Về Tạo Dàn Đề 9x-0x | Hỗ Trợ 24/7',
         description: 'FAQ - Giải đáp mọi thắc mắc về tạo dàn đề 9x-0x, công cụ tạo dàn đề chuyên nghiệp. Hướng dẫn sử dụng, mẹo chơi, chiến lược tối ưu. Hỗ trợ 24/7, cập nhật thường xuyên.',
         keywords: 'câu hỏi thường gặp dàn đề, hướng dẫn sử dụng dàn đề, cách chơi dàn đề, mẹo chơi lô đề, giải đáp thắc mắc lô đề, hỗ trợ dàn đề, FAQ dàn đề, tạo dàn 9x-0x, công cụ tạo dàn đề'
+    },
+    'dan-9x0x': {
+        title: 'Tạo Dàn Đề 9x-0x Chuyên Nghiệp | Phần Mềm AI, Trí Tuệ Nhân Tạo - Miễn Phí 2025',
+        description: 'Tạo dàn đề 9x-0x ngẫu nhiên chuyên nghiệp với thuật toán Fisher-Yates chuẩn quốc tế. Phần mềm AI, trí tuệ nhân tạo. Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%, chính xác cho xổ số 3 miền.',
+        keywords: 'tạo dàn đề 9x-0x, dàn đề 9x-0x, công cụ tạo dàn đề, dàn đề ngẫu nhiên, bộ lọc dàn đề, thuật toán Fisher-Yates, xổ số 3 miền, lô đề, tạo dàn đề miễn phí, dàn đề chuyên nghiệp, taodande, phần mềm AI, AI Tools, trí tuệ nhân tạo'
     }
 };
 
