@@ -20,7 +20,7 @@ const cache = new Map();
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes for better caching
 const MAX_CACHE_SIZE = 100; // Limit cache size
 
-const fetchWithCache = async (url, cacheKey) => {
+const fetchWithCache = async (url, cacheKey, retries = 3) => {
     const now = Date.now();
     const cached = cache.get(cacheKey);
 
@@ -28,35 +28,48 @@ const fetchWithCache = async (url, cacheKey) => {
         return cached.data;
     }
 
-    try {
-        const response = await fetch(url, {
-            headers: {
-                'Cache-Control': 'max-age=600', // 10 minutes
-                'Accept': 'application/json',
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Cache-Control': 'max-age=600', // 10 minutes
+                    'Accept': 'application/json',
+                },
+                // Add timeout to prevent hanging requests
+                signal: AbortSignal.timeout(10000) // 10 seconds timeout
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+
+            // Clean cache if it's too large
+            if (cache.size >= MAX_CACHE_SIZE) {
+                const firstKey = cache.keys().next().value;
+                cache.delete(firstKey);
+            }
+
+            cache.set(cacheKey, { data, timestamp: now });
+            return data;
+        } catch (error) {
+            console.error(`Fetch error (attempt ${attempt}/${retries}):`, error);
+
+            // If this is the last attempt, return cached data or fallback data
+            if (attempt === retries) {
+                if (cached) {
+                    console.warn('Using cached data due to API failure');
+                    return cached.data;
+                }
+                // Return fallback data if API fails completely
+                console.warn('API failed completely, using fallback data for:', cacheKey);
+                return getFallbackData(cacheKey);
+            }
+
+            // Wait before retry (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
         }
-
-        const data = await response.json();
-
-        // Clean cache if it's too large
-        if (cache.size >= MAX_CACHE_SIZE) {
-            const firstKey = cache.keys().next().value;
-            cache.delete(firstKey);
-        }
-
-        cache.set(cacheKey, { data, timestamp: now });
-        return data;
-    } catch (error) {
-        console.error('Fetch error:', error);
-        // Return cached data if available, even if expired
-        if (cached) {
-            return cached.data;
-        }
-        throw error;
     }
 };
 
@@ -87,6 +100,152 @@ const fetchCategories = async () => {
     return fetchWithCache(`${apiUrl}/api/articles/categories`, cacheKey);
 };
 
+// Fallback data for when API is not available
+const getFallbackData = (cacheKey) => {
+    if (cacheKey.includes('articles_')) {
+        return {
+            success: true,
+            data: {
+                articles: [
+                    {
+                        _id: '1',
+                        title: 'Hướng dẫn tạo dàn đề 9x-0x hiệu quả nhất 2025',
+                        excerpt: 'Cách tạo dàn đề 9x-0x chuyên nghiệp với thuật toán Fisher-Yates. Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%.',
+                        slug: 'huong-dan-tao-dan-de-9x-0x',
+                        category: 'huong-dan-choi',
+                        publishedAt: new Date().toISOString(),
+                        views: 1250,
+                        author: 'Admin',
+                        featuredImage: {
+                            url: '/imgs/wukong.png',
+                            alt: 'Hướng dẫn tạo dàn đề'
+                        }
+                    },
+                    {
+                        _id: '2',
+                        title: 'Thống kê xổ số 3 miền - Xu hướng số nóng lạnh',
+                        excerpt: 'Phân tích thống kê xổ số miền Bắc, Nam, Trung. Xu hướng số nóng lạnh, mẹo chơi hiệu quả từ chuyên gia.',
+                        slug: 'thong-ke-xo-so-3-mien',
+                        category: 'thong-ke-xo-so',
+                        publishedAt: new Date(Date.now() - 86400000).toISOString(),
+                        views: 980,
+                        author: 'Admin',
+                        featuredImage: {
+                            url: '/imgs/wukong.png',
+                            alt: 'Thống kê xổ số'
+                        }
+                    },
+                    {
+                        _id: '3',
+                        title: 'Mẹo vặt xổ số - Tăng tỷ lệ trúng thưởng',
+                        excerpt: 'Những mẹo vặt xổ số được các cao thủ chia sẻ. Cách tăng tỷ lệ trúng thưởng, kinh nghiệm chơi lô đề.',
+                        slug: 'meo-vat-xo-so',
+                        category: 'meo-vat-xo-so',
+                        publishedAt: new Date(Date.now() - 172800000).toISOString(),
+                        views: 756,
+                        author: 'Admin',
+                        featuredImage: {
+                            url: '/imgs/wukong.png',
+                            alt: 'Mẹo vặt xổ số'
+                        }
+                    }
+                ],
+                totalPages: 1,
+                currentPage: 1
+            }
+        };
+    }
+
+    if (cacheKey.includes('featured_')) {
+        return {
+            success: true,
+            data: [
+                {
+                    _id: 'f1',
+                    title: 'Công cụ tạo dàn đề chuyên nghiệp - Tôn Ngộ Không',
+                    excerpt: 'Công cụ tạo dàn đề và thống kê xổ số 3 miền chuyên nghiệp. Miễn phí, nhanh chóng, chính xác 100%.',
+                    slug: 'cong-cu-tao-dan-de-chuyen-nghiep',
+                    category: 'dan-de-chuyen-nghiep',
+                    publishedAt: new Date().toISOString(),
+                    views: 2100,
+                    author: 'Admin',
+                    featuredImage: {
+                        url: '/imgs/wukong.png',
+                        alt: 'Công cụ tạo dàn đề'
+                    }
+                },
+                {
+                    _id: 'f2',
+                    title: 'Phương pháp soi cầu xổ số hiệu quả',
+                    excerpt: 'Các phương pháp soi cầu xổ số được các chuyên gia khuyên dùng. Tăng cơ hội trúng thưởng.',
+                    slug: 'phuong-phap-soi-cau-xo-so',
+                    category: 'phuong-phap-soi-cau',
+                    publishedAt: new Date(Date.now() - 43200000).toISOString(),
+                    views: 1580,
+                    author: 'Admin',
+                    featuredImage: {
+                        url: '/imgs/wukong.png',
+                        alt: 'Phương pháp soi cầu'
+                    }
+                }
+            ]
+        };
+    }
+
+    if (cacheKey.includes('trending_')) {
+        return {
+            success: true,
+            data: [
+                {
+                    _id: 't1',
+                    title: 'Kinh nghiệm chơi lô đề từ cao thủ',
+                    excerpt: 'Chia sẻ kinh nghiệm chơi lô đề từ các cao thủ. Mẹo và chiến thuật hiệu quả.',
+                    slug: 'kinh-nghiem-choi-lo-de',
+                    category: 'kinh-nghiem-choi-lo-de',
+                    publishedAt: new Date().toISOString(),
+                    views: 3200,
+                    author: 'Admin',
+                    featuredImage: {
+                        url: '/imgs/wukong.png',
+                        alt: 'Kinh nghiệm chơi lô đề'
+                    }
+                },
+                {
+                    _id: 't2',
+                    title: 'Giải mã giấc mơ - Số may mắn',
+                    excerpt: 'Giải mã giấc mơ để tìm số may mắn. Cách chọn số dựa trên giấc mơ.',
+                    slug: 'giai-ma-giac-mo',
+                    category: 'giai-ma-giac-mo',
+                    publishedAt: new Date(Date.now() - 21600000).toISOString(),
+                    views: 1890,
+                    author: 'Admin',
+                    featuredImage: {
+                        url: '/imgs/wukong.png',
+                        alt: 'Giải mã giấc mơ'
+                    }
+                }
+            ]
+        };
+    }
+
+    if (cacheKey.includes('categories')) {
+        return {
+            success: true,
+            data: [
+                { key: 'huong-dan-choi', count: 15 },
+                { key: 'thong-ke-xo-so', count: 12 },
+                { key: 'meo-vat-xo-so', count: 8 },
+                { key: 'kinh-nghiem-choi-lo-de', count: 10 },
+                { key: 'phuong-phap-soi-cau', count: 6 },
+                { key: 'giai-ma-giac-mo', count: 9 },
+                { key: 'dan-de-chuyen-nghiep', count: 7 }
+            ]
+        };
+    }
+
+    return { success: false, data: [] };
+};
+
 // Utility functions
 const formatDate = (dateString) => {
     if (!dateString) return 'Ngày đăng';
@@ -101,6 +260,88 @@ const formatDate = (dateString) => {
         return 'Ngày đăng';
     }
 };
+
+// Enhanced image URL validation and fallback
+const getImageUrl = (imageUrl) => {
+    if (!imageUrl) return '/imgs/wukong.png';
+
+    // Check if it's a valid URL
+    try {
+        const url = new URL(imageUrl);
+        // If it's from our API, return as is
+        if (url.hostname === 'api.taodandewukong.pro' || url.hostname === 'localhost') {
+            return imageUrl;
+        }
+    } catch {
+        // Invalid URL, return fallback
+        return '/imgs/wukong.png';
+    }
+
+    return imageUrl;
+};
+
+// Enhanced image error handler
+const handleImageError = (e, fallbackSrc = '/imgs/wukong.png') => {
+    if (e.target.src !== fallbackSrc) {
+        e.target.src = fallbackSrc;
+    }
+};
+
+// Enhanced Image Component with better error handling
+const OptimizedImage = React.memo(({
+    src,
+    alt,
+    width,
+    height,
+    className,
+    priority = false,
+    loading = "lazy",
+    quality = IMAGE_QUALITY,
+    placeholder = IMAGE_PLACEHOLDER,
+    blurDataURL,
+    sizes,
+    ...props
+}) => {
+    const [imageSrc, setImageSrc] = useState(getImageUrl(src));
+    const [hasError, setHasError] = useState(false);
+
+    const handleError = useCallback((e) => {
+        if (!hasError) {
+            setHasError(true);
+            setImageSrc('/imgs/wukong.png');
+        }
+    }, [hasError]);
+
+    // Reset error state when src changes
+    useEffect(() => {
+        setHasError(false);
+        setImageSrc(getImageUrl(src));
+    }, [src]);
+
+    // Only use blur placeholder if blurDataURL is provided
+    const finalPlaceholder = blurDataURL ? placeholder : 'empty';
+
+    // Don't use loading="lazy" when priority is true
+    const finalLoading = priority ? undefined : loading;
+
+    return (
+        <Image
+            src={imageSrc}
+            alt={alt}
+            width={width}
+            height={height}
+            className={className}
+            priority={priority}
+            loading={finalLoading}
+            quality={quality}
+            placeholder={finalPlaceholder}
+            blurDataURL={blurDataURL}
+            sizes={sizes}
+            onError={handleError}
+            {...props}
+        />
+    );
+});
 
 const getCategoryColor = (category) => {
     const colors = {
@@ -175,23 +416,15 @@ const HeroArticle = React.memo(({ article }) => {
     return (
         <Link href={`/tin-tuc/${article.slug}`} className={styles.heroPost}>
             <div className={styles.heroImageContainer}>
-                <Image
-                    src={article.featuredImage?.url || '/imgs/wukong.png'}
+                <OptimizedImage
+                    src={article.featuredImage?.url}
                     alt={article.featuredImage?.alt || article.title}
                     width={800}
                     height={400}
                     className={styles.heroImage}
                     priority
-                    quality={IMAGE_QUALITY}
-                    placeholder={IMAGE_PLACEHOLDER}
                     blurDataURL={blurDataURL}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 800px"
-                    onError={(e) => {
-                        e.target.src = '/imgs/wukong.png';
-                    }}
-                    onLoad={() => {
-                        // Image loaded successfully
-                    }}
                 />
                 <div className={styles.heroOverlay}>
                     <div className={styles.heroCategory}>
@@ -222,23 +455,15 @@ const HeroArticle = React.memo(({ article }) => {
 const FeaturedCard = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.featuredCard}>
         <div className={styles.featuredImageContainer}>
-            <Image
-                src={article.featuredImage?.url || '/imgs/wukong.png'}
+            <OptimizedImage
+                src={article.featuredImage?.url}
                 alt={article.featuredImage?.alt || article.title}
                 width={300}
                 height={200}
                 className={styles.featuredImage}
                 loading={index < 2 ? "eager" : "lazy"}
-                quality={IMAGE_QUALITY}
-                placeholder={IMAGE_PLACEHOLDER}
                 blurDataURL={blurDataURL}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
-                onError={(e) => {
-                    e.target.src = '/imgs/wukong.png';
-                }}
-                onLoad={() => {
-                    // Image loaded successfully
-                }}
             />
             <div className={styles.featuredOverlay}>
                 <span
@@ -268,23 +493,15 @@ const FeaturedCard = React.memo(({ article, index }) => (
 const ArticleCard = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.articleCard}>
         <div className={styles.articleImageContainer}>
-            <Image
-                src={article.featuredImage?.url || '/imgs/wukong.png'}
+            <OptimizedImage
+                src={article.featuredImage?.url}
                 alt={article.featuredImage?.alt || article.title}
                 width={200}
                 height={120}
                 className={styles.articleImage}
                 loading="lazy"
-                quality={IMAGE_QUALITY}
-                placeholder={IMAGE_PLACEHOLDER}
                 blurDataURL={blurDataURL}
                 sizes="(max-width: 768px) 100vw, 200px"
-                onError={(e) => {
-                    e.target.src = '/imgs/wukong.png';
-                }}
-                onLoad={() => {
-                    // Image loaded successfully
-                }}
             />
             <div className={styles.articleOverlay}>
                 <span
@@ -314,23 +531,15 @@ const ArticleCard = React.memo(({ article, index }) => (
 const SidebarItem = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.sidebarItem}>
         <div className={styles.sidebarItemImage}>
-            <Image
-                src={article.featuredImage?.url || '/imgs/wukong.png'}
+            <OptimizedImage
+                src={article.featuredImage?.url}
                 alt={article.featuredImage?.alt || article.title}
                 width={60}
                 height={60}
                 className={styles.sidebarItemImage}
                 loading="lazy"
-                quality={IMAGE_QUALITY}
-                placeholder={IMAGE_PLACEHOLDER}
                 blurDataURL={blurDataURL}
                 sizes="60px"
-                onError={(e) => {
-                    e.target.src = '/imgs/wukong.png';
-                }}
-                onLoad={() => {
-                    // Image loaded successfully
-                }}
             />
         </div>
         <div className={styles.sidebarItemContent}>

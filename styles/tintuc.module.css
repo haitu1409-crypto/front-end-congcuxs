@@ -162,6 +162,9 @@
     height: 400px;
     overflow: hidden;
     background-color: #f8f9fa;
+    /* Optimize for image loading */
+    will-change: transform;
+    contain: layout style paint;
 }
 
 .heroImage {
@@ -183,7 +186,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 100%);
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
@@ -297,6 +300,9 @@
     height: 200px;
     overflow: hidden;
     background-color: #f8f9fa;
+    /* Optimize for image loading */
+    will-change: transform;
+    contain: layout style paint;
 }
 
 .featuredImage {
@@ -317,7 +323,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 100%);
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%);
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
@@ -396,6 +402,9 @@
     flex-shrink: 0;
     overflow: hidden;
     background-color: #f8f9fa;
+    /* Optimize for image loading */
+    will-change: transform;
+    contain: layout style paint;
 }
 
 .articleImage {
@@ -416,7 +425,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 100%);
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%);
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
@@ -516,6 +525,9 @@
     border-radius: 6px;
     flex-shrink: 0;
     background-color: #f8f9fa;
+    /* Optimize for image loading */
+    will-change: transform;
+    contain: layout style paint;
 }
 
 .sidebarItemContent {
@@ -616,6 +628,21 @@
     color: white;
 }
 
+/* Image Loading Optimizations */
+.heroImage,
+.featuredImage,
+.articleImage,
+.sidebarItemImage {
+    /* Optimize image rendering */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    /* Prevent layout shifts */
+    aspect-ratio: attr(width) / attr(height);
+    /* Optimize for performance */
+    will-change: transform;
+    contain: layout style paint;
+}
+
 /* Loading and Error States */
 .loading {
     padding: 40px 20px;
@@ -632,6 +659,7 @@
     0% {
         background-position: 200% 0;
     }
+
     100% {
         background-position: -200% 0;
     }
