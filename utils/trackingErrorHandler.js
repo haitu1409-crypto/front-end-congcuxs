@@ -317,6 +317,8 @@ export const initTrackingErrorHandling = () => {
         // Kiểm tra nếu là cảnh báo Tracking Prevention hoặc mm.js
         if (message.includes('Tracking Prevention blocked access to storage') ||
             message.includes('was preloaded using link preload but not used') ||
+            message.includes('using deprecated parameters for the initialization function') ||
+            message.includes('feature_collector.js') ||
             message.includes('mm.js') ||
             message.includes('sendEvents') ||
             message.includes('a.mrktmtrcs.net')) {

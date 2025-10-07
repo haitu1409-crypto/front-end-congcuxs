@@ -19,30 +19,29 @@ export default function Document() {
                 <link rel="preconnect" href="https://www.googletagmanager.com" />
 
                 {/* ===== CRITICAL RESOURCE PRELOAD ===== */}
-                <link rel="preload" href="/imgs/monkey.png" as="image" />
-                <link rel="preload" href="/imgs/monkey.png" as="image" />
+                {/* Only preload critical resources that are used immediately above the fold */}
+                {/* Removed unnecessary preloads to avoid browser warnings */}
 
                 {/* ===== GOOGLE ANALYTICS (gtag.js) - DEFER LOADING ===== */}
                 <script
                     async
                     src="https://www.googletagmanager.com/gtag/js?id=G-RLCH8J3MHR"
-                    onLoad="window.gtag=window.gtag||function(){(gtag.q=gtag.q||[]).push(arguments)};gtag('js',new Date());gtag('config','G-RLCH8J3MHR')"
+                    onLoad="window.gtag=window.gtag||function(){(gtag.q=gtag.q||[]).push(arguments)};gtag('js',new Date());gtag('config',{measurement_id:'G-RLCH8J3MHR'})"
                 />
 
 
                 {/* ===== SYSTEM FONTS ONLY - No external font loading ===== */}
 
-                {/* ===== FAVICONS - Sử dụng ảnh từ thư mục imgs ===== */}
-                <link rel="icon" type="image/png" href="/imgs/monkey.png" />
-                <link rel="icon" type="image/png" sizes="192x192" href="/imgs/monkey.png" />
-                <link rel="icon" type="image/png" sizes="512x512" href="/imgs/monkey.png" />
-                <link rel="apple-touch-icon" sizes="180x180" href="/imgs/monkey.png" />
-                <link rel="shortcut icon" href="/imgs/monkey.png" />
+                {/* ===== FAVICONS - Sử dụng favicon.ico chính thức ===== */}
+                <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+                <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+                <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+                <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+                <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+                <link rel="shortcut icon" href="/favicon.ico" />
 
                 {/* ===== PWA ICONS ===== */}
-                <link rel="apple-touch-icon" href="/imgs/monkey.png" />
-                <link rel="apple-touch-icon" sizes="192x192" href="/imgs/monkey.png" />
-                <link rel="apple-touch-icon" sizes="512x512" href="/imgs/monkey.png" />
+                <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
                 {/* ===== PWA MANIFEST ===== */}
                 <link rel="manifest" href="/manifest.json" />
@@ -50,7 +49,7 @@ export default function Document() {
                 {/* ===== THEME COLOR - Cập nhật cho thương hiệu con khỉ ===== */}
                 <meta name="theme-color" content="#667eea" />
                 <meta name="msapplication-TileColor" content="#667eea" />
-                <meta name="msapplication-TileImage" content="/imgs/monkey.png" />
+                <meta name="msapplication-TileImage" content="/icon-192.png" />
 
                 {/* ===== APPLE MOBILE WEB APP ===== */}
                 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -280,6 +279,8 @@ export default function Document() {
                                 // Kiểm tra nếu là cảnh báo Tracking Prevention hoặc tracking domains
                                 if (message.includes('Tracking Prevention blocked access to storage') || 
                                     message.includes('was preloaded using link preload but not used') ||
+                                    message.includes('using deprecated parameters for the initialization function') ||
+                                    message.includes('feature_collector.js') ||
                                     message.includes('mm.js') ||
                                     message.includes('sendEvents') ||
                                     message.includes('a.mrktmtrcs.net') ||
