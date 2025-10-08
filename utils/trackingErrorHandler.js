@@ -15,7 +15,11 @@ const PROBLEMATIC_TRACKING_DOMAINS = [
     'tynt.com',
     'de.tynt.com',
     'match.adsrvr.org',
-    'adsrvr.org'
+    'adsrvr.org',
+    'crwdcntrl.net',
+    'sync.crwdcntrl.net',
+    'match?publisher_dsp_id',
+    'dsp_callback'
 ];
 
 // Cấu hình error handling
@@ -300,7 +304,11 @@ export const initTrackingErrorHandling = () => {
         if (PROBLEMATIC_TRACKING_DOMAINS.some(domain => message.includes(domain)) ||
             message.includes('mm.js') ||
             message.includes('sendEvents') ||
-            message.includes('a.mrktmtrcs.net')) {
+            message.includes('a.mrktmtrcs.net') ||
+            message.includes('crwdcntrl.net') ||
+            message.includes('publisher_dsp_id') ||
+            message.includes('dsp_callback') ||
+            message.includes('ERR_NAME_NOT_RESOLVED')) {
             console.warn('🚫 Suppressed tracking error:', ...args);
             return;
         }
@@ -321,7 +329,11 @@ export const initTrackingErrorHandling = () => {
             message.includes('feature_collector.js') ||
             message.includes('mm.js') ||
             message.includes('sendEvents') ||
-            message.includes('a.mrktmtrcs.net')) {
+            message.includes('a.mrktmtrcs.net') ||
+            message.includes('crwdcntrl.net') ||
+            message.includes('publisher_dsp_id') ||
+            message.includes('dsp_callback') ||
+            message.includes('ERR_NAME_NOT_RESOLVED')) {
             // Chỉ log một lần để tránh spam
             if (!window._trackingWarningLogged) {
                 console.info('🔒 Browser tracking prevention is active - this is normal and expected');

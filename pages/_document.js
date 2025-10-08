@@ -159,7 +159,11 @@ export default function Document() {
                                 'de.tynt.com',
                                 'cdn.tynt.com',
                                 'match.adsrvr.org',
-                                'adsrvr.org'
+                                'adsrvr.org',
+                                'crwdcntrl.net',
+                                'sync.crwdcntrl.net',
+                                'match?publisher_dsp_id',
+                                'dsp_callback'
                             ];
 
                             // Kiểm tra xem URL có phải là tracking domain có vấn đề không
@@ -262,7 +266,11 @@ export default function Document() {
                                 if (PROBLEMATIC_TRACKING_DOMAINS.some(domain => message.includes(domain)) ||
                                     message.includes('mm.js') ||
                                     message.includes('sendEvents') ||
-                                    message.includes('a.mrktmtrcs.net')) {
+                                    message.includes('a.mrktmtrcs.net') ||
+                                    message.includes('crwdcntrl.net') ||
+                                    message.includes('publisher_dsp_id') ||
+                                    message.includes('dsp_callback') ||
+                                    message.includes('ERR_NAME_NOT_RESOLVED')) {
                                     console.warn('🚫 Suppressed tracking error:', ...args);
                                     return;
                                 }
@@ -288,7 +296,11 @@ export default function Document() {
                                     message.includes('ic.tynt.com') ||
                                     message.includes('de.tynt.com') ||
                                     message.includes('cdn.tynt.com') ||
-                                    message.includes('match.adsrvr.org')) {
+                                    message.includes('match.adsrvr.org') ||
+                                    message.includes('crwdcntrl.net') ||
+                                    message.includes('publisher_dsp_id') ||
+                                    message.includes('dsp_callback') ||
+                                    message.includes('ERR_NAME_NOT_RESOLVED')) {
                                     // Chỉ log một lần để tránh spam
                                     if (!window._trackingWarningLogged) {
                                         console.info('🔒 Browser tracking prevention is active - this is normal and expected');

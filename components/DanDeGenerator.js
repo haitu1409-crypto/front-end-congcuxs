@@ -54,9 +54,27 @@ const DanDeGenerator = memo(() => {
   const [undoData, setUndoData] = useState(null);
   const [undoStatus, setUndoStatus] = useState(false);
   const [selectedSpecialSets, setSelectedSpecialSets] = useState([]);
+  const [showSpecialSetsModal, setShowSpecialSetsModal] = useState(false);
+  const [showStatsDetailModal, setShowStatsDetailModal] = useState(false);
+  const [statsDetailType, setStatsDetailType] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [editableContent, setEditableContent] = useState('');
 
   // Memoize special sets data
   const specialSetsData = useMemo(() => getAllSpecialSets(), []);
+
+  // Detect mobile and update editable content
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
 
   // Handler cho chọn/bỏ chọn bộ số đặc biệt
   const handleSpecialSetToggle = useCallback((setId) => {
@@ -856,6 +874,17 @@ const DanDeGenerator = memo(() => {
     setModalMessage('');
   }, []);
 
+  // Handler để mở modal chi tiết thống kê
+  const handleStatsDetailClick = useCallback((type) => {
+    setStatsDetailType(type);
+    setShowStatsDetailModal(true);
+  }, []);
+
+  const closeStatsDetailModal = useCallback(() => {
+    setShowStatsDetailModal(false);
+    setStatsDetailType(null);
+  }, []);
+
   // Tạo nội dung textarea từ kết quả
   const generateTextareaContent = useMemo(() => {
     if (levelsList.length === 0) {
@@ -889,6 +918,11 @@ const DanDeGenerator = memo(() => {
 
     return content.join('\n');
   }, [levelsList, excludeDoubles]);
+
+  // Update editable content when generateTextareaContent changes
+  useEffect(() => {
+    setEditableContent(generateTextareaContent);
+  }, [generateTextareaContent]);
 
   return (
     <div className={styles.container}>
@@ -957,11 +991,11 @@ const DanDeGenerator = memo(() => {
                   )}
                 </div>
               </div>
-              {/* Row 1: Quantity Input and Exclude Doubles Checkbox */}
+              {/* Main Inputs Row: 3 inputs on same row */}
               <div className={styles.inputRow}>
                 <div className={styles.inputGroup}>
                   <label htmlFor="quantity" className={styles.inputLabel}>
-                    Số lượng dàn (1-50):
+                    Số lượng dàn:
                   </label>
                   <input
                     id="quantity"
@@ -978,40 +1012,15 @@ const DanDeGenerator = memo(() => {
                 </div>
 
                 <div className={styles.inputGroup}>
-                  <label className={styles.inputLabel}>
-                    Tùy chọn khác:
-                  </label>
-                  <div className={styles.checkboxContainer}>
-                    <input
-                      id="excludeDoubles"
-                      type="checkbox"
-                      checked={excludeDoubles}
-                      onChange={handleExcludeDoublesChange}
-                      className={styles.checkbox}
-                      disabled={loading}
-                    />
-                    <label htmlFor="excludeDoubles" className={styles.checkboxLabel}>
-                      Loại bỏ kép bằng
-                    </label>
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px', fontStyle: 'italic' }}>
-                    Chú ý: Loại bỏ kép bằng 95s sẽ thành 90s
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 2: Combination Numbers and Exclude Numbers */}
-              <div className={styles.inputRow}>
-                <div className={styles.inputGroup}>
                   <label htmlFor="combinationNumbers" className={styles.inputLabel}>
-                    Thêm số mong muốn (tối đa 40 số):
+                    Thêm số:
                   </label>
                   <input
                     id="combinationNumbers"
                     type="text"
                     value={combinationNumbers}
                     onChange={handleCombinationChange}
-                    placeholder="45,50,67 hoặc 45 50 67 hoặc 45;50;67"
+                    placeholder="45,50,67"
                     title="Nhập các số 2 chữ số (00-99), cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng. Tối đa 40 số."
                     className={styles.input}
                     disabled={loading}
@@ -1020,14 +1029,14 @@ const DanDeGenerator = memo(() => {
 
                 <div className={styles.inputGroup}>
                   <label htmlFor="excludeNumbers" className={styles.inputLabel}>
-                    Loại bỏ số mong muốn (tối đa 5 số):
+                    Loại bỏ số:
                   </label>
                   <input
                     id="excludeNumbers"
                     type="text"
                     value={excludeNumbers}
                     onChange={handleExcludeChange}
-                    placeholder="83,84,85 hoặc 83 84 85 hoặc 83;84;85"
+                    placeholder="83,84,85"
                     title="Nhập các số 2 chữ số (00-99) cần loại bỏ, cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng. Tối đa 5 số."
                     className={styles.input}
                     disabled={loading}
@@ -1035,91 +1044,226 @@ const DanDeGenerator = memo(() => {
                 </div>
               </div>
 
-              {/* Special Sets Selection */}
-              <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>
-                  <Star size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                  Chọn bộ số đặc biệt (tối đa 5 bộ):
-                </label>
-                <div className={styles.specialSetsContainer}>
-                  <div className={styles.specialSetsList}>
-                    {specialSetsData.map(set => (
-                      <div
-                        key={set.id}
-                        className={`${styles.specialSetItem} ${selectedSpecialSets.includes(set.id) ? styles.selected : ''
-                          } ${selectedSpecialSets.length >= 5 && !selectedSpecialSets.includes(set.id) ? styles.disabled : ''}`}
-                        onClick={() => !loading && handleSpecialSetToggle(set.id)}
-                        title={`Bộ ${set.id}: ${set.numbers.join(', ')}`}
-                      >
-                        <div className={styles.specialSetHeader}>
-                          <span className={styles.specialSetId}>Bộ {set.id}</span>
-                          <span className={styles.specialSetCount}>({set.count} số)</span>
-                        </div>
-                        <div className={styles.specialSetNumbers}>
-                          {set.numbers.join(', ')}
-                        </div>
-                      </div>
-                    ))}
+              {/* Desktop Layout: Separate rows */}
+              <div className={styles.desktopOptionsLayout}>
+                {/* Options Row: Checkbox and other options */}
+                <div className={styles.optionsRow}>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.inputLabel}>
+                      Tùy chọn khác:
+                    </label>
+                    <div className={styles.checkboxContainer}>
+                      <input
+                        id="excludeDoubles"
+                        type="checkbox"
+                        checked={excludeDoubles}
+                        onChange={handleExcludeDoublesChange}
+                        className={styles.checkbox}
+                        disabled={loading}
+                      />
+                      <label htmlFor="excludeDoubles" className={styles.checkboxLabel}>
+                        Loại bỏ kép bằng
+                      </label>
+                    </div>
+                    <div className={styles.helpText}>
+                      Chú ý: Loại bỏ kép bằng 95s sẽ thành 90s
+                    </div>
                   </div>
                 </div>
-                {selectedSpecialSets.length > 0 && (
-                  <div className={styles.selectedSpecialSets}>
-                    <strong>Đã chọn:</strong> {selectedSpecialSets.map(id => `Bộ ${id}`).join(', ')}
+
+                {/* Special Sets Selection */}
+                <div className={styles.inputGroup}>
+                  <label className={styles.inputLabel}>
+                    <Star size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                    Chọn bộ số đặc biệt:
+                  </label>
+
+                  <div className={styles.specialSetsContainer}>
+                    <div className={styles.specialSetsList}>
+                      {specialSetsData.map(set => (
+                        <div
+                          key={set.id}
+                          className={`${styles.specialSetItem} ${selectedSpecialSets.includes(set.id) ? styles.selected : ''
+                            } ${selectedSpecialSets.length >= 5 && !selectedSpecialSets.includes(set.id) ? styles.disabled : ''}`}
+                          onClick={() => !loading && handleSpecialSetToggle(set.id)}
+                          title={`Bộ ${set.id}: ${set.numbers.join(', ')}`}
+                        >
+                          <div className={styles.specialSetHeader}>
+                            <span className={styles.specialSetId}>Bộ {set.id}</span>
+                            <span className={styles.specialSetCount}>({set.count} số)</span>
+                          </div>
+                          <div className={styles.specialSetNumbers}>
+                            {set.numbers.join(', ')}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                )}
-              </div>
 
-
-              {/* Thống kê lựa chọn */}
-              <div className={styles.helpText}>
-                <h4 style={{ margin: '0 0 8px 0', color: '#1e40af', fontSize: '14px', fontWeight: 'bold' }}>
-                  📊 Thống kê lựa chọn hiện tại:
-                </h4>
-                <div style={{ fontSize: '13px', lineHeight: '1.4' }}>
                   {selectedSpecialSets.length > 0 && (
-                    <div style={{ color: '#059669', marginBottom: '4px' }}>
-                      ✅ <strong>Bộ số đặc biệt:</strong> {selectedSpecialSets.length}/5 bộ ({selectedSpecialSets.map(id => `Bộ ${id}`).join(', ')})<br />
-                      <span style={{ fontSize: '12px', color: '#047857', fontFamily: 'monospace' }}>
-                        {getCombinedSpecialSetNumbers(selectedSpecialSets).join(', ')}
-                      </span>
+                    <div className={styles.selectedSpecialSets}>
+                      <strong>Đã chọn:</strong> {selectedSpecialSets.map(id => `Bộ ${id}`).join(', ')}
                     </div>
                   )}
-
-                  {combinationNumbers.trim() && (
-                    <div style={{ color: '#2563eb', marginBottom: '4px' }}>
-                      ✅ <strong>Thêm số mong muốn:</strong> {parseCombinationNumbers().length}/40 số<br />
-                      <span style={{ fontSize: '12px', color: '#1e40af', fontFamily: 'monospace' }}>
-                        {parseCombinationNumbers().join(', ')}
-                      </span>
-                    </div>
-                  )}
-
-                  {excludeNumbers.trim() && (
-                    <div style={{ color: '#dc2626', marginBottom: '4px' }}>
-                      ✅ <strong>Loại bỏ số mong muốn:</strong> {parseExcludeNumbers().length}/5 số<br />
-                      <span style={{ fontSize: '12px', color: '#991b1b', fontFamily: 'monospace' }}>
-                        {parseExcludeNumbers().join(', ')}
-                      </span>
-                    </div>
-                  )}
-
-                  {excludeDoubles && (
-                    <div style={{ color: '#7c3aed', marginBottom: '4px' }}>
-                      ✅ <strong>Loại bỏ kép bằng:</strong> Đã bật (Cấp cao nhất: 90s)<br />
-                      <span style={{ fontSize: '12px', color: '#6b21a8', fontFamily: 'monospace' }}>
-                        00, 11, 22, 33, 44, 55, 66, 77, 88, 99
-                      </span>
-                    </div>
-                  )}
-
-                  {selectedSpecialSets.length === 0 && !combinationNumbers.trim() && !excludeNumbers.trim() && !excludeDoubles && (
-                    <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
-                      💡 Chưa có lựa chọn nào. Dàn sẽ được tạo ngẫu nhiên.
-                    </div>
-                  )}
-
                 </div>
               </div>
+
+              {/* Mobile Layout: Combined row */}
+              <div className={styles.mobileOptionsLayout}>
+                <div className={styles.mobileOptionsRow}>
+                  {/* Checkbox */}
+                  <div className={styles.mobileCheckboxGroup}>
+                    <div className={styles.checkboxContainer}>
+                      <input
+                        id="excludeDoublesMobile"
+                        type="checkbox"
+                        checked={excludeDoubles}
+                        onChange={handleExcludeDoublesChange}
+                        className={styles.checkbox}
+                        disabled={loading}
+                      />
+                      <label htmlFor="excludeDoublesMobile" className={styles.checkboxLabel}>
+                        Loại bỏ kép bằng
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Button chọn bộ số */}
+                  <div className={styles.mobileSpecialSetsGroup}>
+                    <button
+                      className={styles.specialSetsButton}
+                      onClick={() => setShowSpecialSetsModal(true)}
+                      disabled={loading}
+                    >
+                      <Star size={16} />
+                      {selectedSpecialSets.length > 0
+                        ? `${selectedSpecialSets.length} bộ`
+                        : 'Chọn bộ số'
+                      }
+                    </button>
+                  </div>
+                </div>
+
+                {/* Help text and Stats row for mobile */}
+                <div className={styles.mobileHelpStatsRow}>
+                  <div className={styles.mobileHelpText}>
+                    Chú ý: Loại bỏ kép bằng 95s sẽ thành 90s
+                  </div>
+
+                  {/* Mobile Stats Grid */}
+                  <div className={styles.mobileStatsSection}>
+                    {(selectedSpecialSets.length > 0 || combinationNumbers.trim() || excludeNumbers.trim() || excludeDoubles) ? (
+                      <div className={styles.mobileStatsGrid}>
+                        {selectedSpecialSets.length > 0 && (
+                          <div
+                            className={styles.mobileStatItem}
+                            onClick={() => handleStatsDetailClick('specialSets')}
+                          >
+                            <span className={styles.mobileStatIcon}>⭐</span>
+                            <span className={styles.mobileStatText}>
+                              {selectedSpecialSets.length}/5 bộ
+                            </span>
+                          </div>
+                        )}
+
+                        {combinationNumbers.trim() && (
+                          <div
+                            className={styles.mobileStatItem}
+                            onClick={() => handleStatsDetailClick('combinationNumbers')}
+                          >
+                            <span className={styles.mobileStatIcon}>➕</span>
+                            <span className={styles.mobileStatText}>
+                              +{parseCombinationNumbers().length}
+                            </span>
+                          </div>
+                        )}
+
+                        {excludeNumbers.trim() && (
+                          <div
+                            className={styles.mobileStatItem}
+                            onClick={() => handleStatsDetailClick('excludeNumbers')}
+                          >
+                            <span className={styles.mobileStatIcon}>➖</span>
+                            <span className={styles.mobileStatText}>
+                              -{parseExcludeNumbers().length}
+                            </span>
+                          </div>
+                        )}
+
+                        {excludeDoubles && (
+                          <div
+                            className={styles.mobileStatItem}
+                            onClick={() => handleStatsDetailClick('excludeDoubles')}
+                          >
+                            <span className={styles.mobileStatIcon}>🚫</span>
+                            <span className={styles.mobileStatText}>
+                              Kép
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className={styles.mobileStatsEmpty}>
+                        💡 Ngẫu nhiên
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+
+              {/* Thống kê lựa chọn - Desktop */}
+              <div className={styles.desktopStatsSection}>
+                <div className={styles.helpText}>
+                  <h4 style={{ margin: '0 0 8px 0', color: '#1e40af', fontSize: '14px', fontWeight: 'bold' }}>
+                    📊 Thống kê lựa chọn hiện tại:
+                  </h4>
+                  <div style={{ fontSize: '13px', lineHeight: '1.4' }}>
+                    {selectedSpecialSets.length > 0 && (
+                      <div style={{ color: '#059669', marginBottom: '4px' }}>
+                        ✅ <strong>Bộ số đặc biệt:</strong> {selectedSpecialSets.length}/5 bộ ({selectedSpecialSets.map(id => `Bộ ${id}`).join(', ')})<br />
+                        <span style={{ fontSize: '12px', color: '#047857', fontFamily: 'monospace' }}>
+                          {getCombinedSpecialSetNumbers(selectedSpecialSets).join(', ')}
+                        </span>
+                      </div>
+                    )}
+
+                    {combinationNumbers.trim() && (
+                      <div style={{ color: '#2563eb', marginBottom: '4px' }}>
+                        ✅ <strong>Thêm số mong muốn:</strong> {parseCombinationNumbers().length}/40 số<br />
+                        <span style={{ fontSize: '12px', color: '#1e40af', fontFamily: 'monospace' }}>
+                          {parseCombinationNumbers().join(', ')}
+                        </span>
+                      </div>
+                    )}
+
+                    {excludeNumbers.trim() && (
+                      <div style={{ color: '#dc2626', marginBottom: '4px' }}>
+                        ✅ <strong>Loại bỏ số mong muốn:</strong> {parseExcludeNumbers().length}/5 số<br />
+                        <span style={{ fontSize: '12px', color: '#991b1b', fontFamily: 'monospace' }}>
+                          {parseExcludeNumbers().join(', ')}
+                        </span>
+                      </div>
+                    )}
+
+                    {excludeDoubles && (
+                      <div style={{ color: '#7c3aed', marginBottom: '4px' }}>
+                        ✅ <strong>Loại bỏ kép bằng:</strong> Đã bật (Cấp cao nhất: 90s)<br />
+                        <span style={{ fontSize: '12px', color: '#6b21a8', fontFamily: 'monospace' }}>
+                          00, 11, 22, 33, 44, 55, 66, 77, 88, 99
+                        </span>
+                      </div>
+                    )}
+
+                    {selectedSpecialSets.length === 0 && !combinationNumbers.trim() && !excludeNumbers.trim() && !excludeDoubles && (
+                      <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                        💡 Chưa có lựa chọn nào. Dàn sẽ được tạo ngẫu nhiên.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
             </div>
 
 
@@ -1143,11 +1287,16 @@ const DanDeGenerator = memo(() => {
               <h2 className={styles.resultsTitle}>Kết quả tạo dàn</h2>
               <textarea
                 className={styles.resultsTextarea}
-                value={generateTextareaContent}
-                readOnly
+                value={isMobile ? editableContent : generateTextareaContent}
+                onChange={(e) => {
+                  if (isMobile) {
+                    setEditableContent(e.target.value);
+                  }
+                }}
+                readOnly={!isMobile}
                 placeholder="Kết quả tạo dàn sẽ hiển thị ở đây..."
                 aria-label="Kết quả tạo dàn đề"
-                tabIndex="-1"
+                tabIndex={isMobile ? "0" : "-1"}
               />
             </div>
           </div>
@@ -1167,6 +1316,145 @@ const DanDeGenerator = memo(() => {
             <button onClick={closeModal} className={styles.modalButton}>
               Đóng
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Special Sets Modal */}
+      {showSpecialSetsModal && (
+        <div className={styles.specialSetsModalOverlay} onClick={() => setShowSpecialSetsModal(false)}>
+          <div className={styles.specialSetsModal} onClick={e => e.stopPropagation()}>
+            <div className={styles.specialSetsModalHeader}>
+              <h3>Chọn bộ số đặc biệt</h3>
+              <button
+                className={styles.specialSetsModalClose}
+                onClick={() => setShowSpecialSetsModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.specialSetsModalContent}>
+              <div className={styles.specialSetsList}>
+                {specialSetsData.map(set => (
+                  <div
+                    key={set.id}
+                    className={`${styles.specialSetItem} ${selectedSpecialSets.includes(set.id) ? styles.selected : ''
+                      } ${selectedSpecialSets.length >= 5 && !selectedSpecialSets.includes(set.id) ? styles.disabled : ''}`}
+                    onClick={() => !loading && handleSpecialSetToggle(set.id)}
+                    title={`Bộ ${set.id}: ${set.numbers.join(', ')}`}
+                  >
+                    <div className={styles.specialSetHeader}>
+                      <span className={styles.specialSetId}>Bộ {set.id}</span>
+                      <span className={styles.specialSetCount}>({set.count} số)</span>
+                    </div>
+                    <div className={styles.specialSetNumbers}>
+                      {set.numbers.join(', ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className={styles.specialSetsModalFooter}>
+              <div className={styles.selectedCount}>
+                Đã chọn: {selectedSpecialSets.length}/5 bộ
+              </div>
+              <button
+                className={styles.specialSetsModalDone}
+                onClick={() => setShowSpecialSetsModal(false)}
+              >
+                Xong
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stats Detail Modal */}
+      {showStatsDetailModal && (
+        <div className={styles.statsDetailModalOverlay} onClick={closeStatsDetailModal}>
+          <div className={styles.statsDetailModal} onClick={e => e.stopPropagation()}>
+            <div className={styles.statsDetailModalHeader}>
+              <h3>
+                {statsDetailType === 'specialSets' && '⭐ Bộ số đặc biệt'}
+                {statsDetailType === 'combinationNumbers' && '➕ Thêm số mong muốn'}
+                {statsDetailType === 'excludeNumbers' && '➖ Loại bỏ số mong muốn'}
+                {statsDetailType === 'excludeDoubles' && '🚫 Loại bỏ kép bằng'}
+              </h3>
+              <button
+                className={styles.statsDetailModalClose}
+                onClick={closeStatsDetailModal}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.statsDetailModalContent}>
+              {statsDetailType === 'specialSets' && (
+                <div>
+                  <div className={styles.statsDetailInfo}>
+                    <strong>Đã chọn:</strong> {selectedSpecialSets.length}/5 bộ
+                  </div>
+                  <div className={styles.statsDetailList}>
+                    {selectedSpecialSets.map(id => {
+                      const set = specialSetsData.find(s => s.id === id);
+                      return (
+                        <div key={id} className={styles.statsDetailItem}>
+                          <div className={styles.statsDetailItemHeader}>
+                            <strong>Bộ {id}</strong> ({set.count} số)
+                          </div>
+                          <div className={styles.statsDetailNumbers}>
+                            {set.numbers.join(', ')}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {statsDetailType === 'combinationNumbers' && (
+                <div>
+                  <div className={styles.statsDetailInfo}>
+                    <strong>Số lượng:</strong> {parseCombinationNumbers().length}/40 số
+                  </div>
+                  <div className={styles.statsDetailNumbers}>
+                    {parseCombinationNumbers().join(', ')}
+                  </div>
+                </div>
+              )}
+
+              {statsDetailType === 'excludeNumbers' && (
+                <div>
+                  <div className={styles.statsDetailInfo}>
+                    <strong>Số lượng:</strong> {parseExcludeNumbers().length}/5 số
+                  </div>
+                  <div className={styles.statsDetailNumbers}>
+                    {parseExcludeNumbers().join(', ')}
+                  </div>
+                </div>
+              )}
+
+              {statsDetailType === 'excludeDoubles' && (
+                <div>
+                  <div className={styles.statsDetailInfo}>
+                    <strong>Trạng thái:</strong> Đã bật
+                  </div>
+                  <div className={styles.statsDetailInfo}>
+                    <strong>Cấp cao nhất:</strong> 90s (thay vì 95s)
+                  </div>
+                  <div className={styles.statsDetailNumbers}>
+                    Các số kép bằng: 00, 11, 22, 33, 44, 55, 66, 77, 88, 99
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className={styles.statsDetailModalFooter}>
+              <button
+                className={styles.statsDetailModalDone}
+                onClick={closeStatsDetailModal}
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         </div>
       )}

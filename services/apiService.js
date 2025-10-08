@@ -109,7 +109,13 @@ class ApiService {
                 return data;
             })
             .catch(error => {
-                console.error('API Error:', error);
+                // Provide more descriptive error logging
+                const errorMessage = error.message || error.toString();
+                console.error('API Error:', {
+                    message: errorMessage,
+                    url: urlWithParams.toString(),
+                    timestamp: new Date().toISOString()
+                });
                 throw error;
             })
             .finally(() => {

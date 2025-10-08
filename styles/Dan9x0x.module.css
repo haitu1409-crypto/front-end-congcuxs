@@ -294,65 +294,337 @@
 }
 
 @keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-    .container {
-        padding: 0 var(--spacing-4);
-    }
-
+/* Tablet Landscape */
+@media (max-width: 1024px) and (min-width: 769px) {
     .hero {
-        padding: 40px 0;
-        margin-bottom: 20px;
+        padding: 32px 0;
+        margin-bottom: 24px;
     }
 
     .heroTitle {
-        font-size: 2.5rem;
+        font-size: 2.75rem;
     }
 
     .heroDescription {
         font-size: 1.125rem;
     }
 
+    .featuresGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+}
+
+/* Tablet Portrait */
+@media (max-width: 768px) and (min-width: 481px) {
+    .container {
+        padding: 0 10px;
+    }
+
+    .hero {
+        padding: 20px 0;
+        margin-bottom: 12px;
+        border-radius: 10px;
+    }
+
+    .heroContent {
+        padding: 0 12px;
+    }
+
+    .heroBadge {
+        padding: 4px 8px;
+        font-size: 10px;
+        margin-bottom: 12px;
+    }
+
+    .heroBadgeIcon {
+        width: 12px;
+        height: 12px;
+    }
+
+    .heroTitle {
+        font-size: 1.25rem;
+        margin-bottom: 12px;
+        line-height: 1.2;
+    }
+
+    .heroDescription {
+        font-size: 0.8125rem;
+        margin-bottom: 16px;
+        line-height: 1.4;
+    }
+
     .heroFeatures {
-        gap: 16px;
+        display: flex;
+        gap: 8px;
+        margin-bottom: 5px;
+    }
+
+    .heroFeature {
+        font-size: 10px;
+    }
+
+    .heroFeatureIcon {
+        width: 12px;
+        height: 12px;
+    }
+
+    .main {
+        margin: 16px 0;
+        padding: 16px 0;
+        border-radius: 10px;
     }
 
     .featuresGrid {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 16px;
     }
 
     .quickLinksGrid {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 10px;
     }
 
     .featureCard,
     .quickLinkCard {
-        padding: 24px 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .heroTitle {
-        font-size: 2rem;
+        padding: 16px 12px;
     }
 
-    .heroDescription {
-        font-size: 1rem;
+    .features {
+        margin: 32px 0;
+        padding: 16px 0;
     }
 
-    .heroFeatures {
-        flex-direction: column;
-        gap: 12px;
+    .quickLinks {
+        margin: 32px 0;
+        padding: 16px 0;
+        border-radius: 10px;
     }
 
     .featuresTitle,
     .quickLinksTitle {
-        font-size: 2rem;
+        font-size: 1.25rem;
+        margin-bottom: 16px;
+    }
+
+    .featuresDescription {
+        font-size: 0.8125rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 10px;
+    }
+
+    .hero {
+        padding: 16px 0;
+        margin-bottom: 8px;
+        border-radius: 6px;
+    }
+
+    .heroContent {
+        padding: 0 8px;
+    }
+
+    .heroBadge {
+        padding: 3px 6px;
+        font-size: 9px;
+        margin-bottom: 8px;
+    }
+
+    .heroBadgeIcon {
+        width: 10px;
+        height: 10px;
+    }
+
+    .heroTitle {
+        font-size: 1.125rem;
+        margin-bottom: 8px;
+        line-height: 1.1;
+    }
+
+    .heroDescription {
+        font-size: 0.75rem;
+        margin-bottom: 12px;
+        line-height: 1.3;
+    }
+
+    .heroFeatures {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 5px;
+    }
+
+    .heroFeature {
+        font-size: 9px;
+    }
+
+    .heroFeatureIcon {
+        width: 10px;
+        height: 10px;
+    }
+
+    .featuresTitle,
+    .quickLinksTitle {
+        font-size: 1.125rem;
+        margin-bottom: 12px;
+    }
+
+    .featuresDescription {
+        font-size: 0.75rem;
+    }
+
+    .main {
+        margin: 12px 0;
+        padding: 12px 0;
+    }
+
+    .featureCard,
+    .quickLinkCard {
+        padding: 12px 8px;
+    }
+
+    .featureTitle {
+        font-size: 0.875rem;
+    }
+
+    .featureDescription {
+        font-size: 0.75rem;
+    }
+
+    .quickLinkCard h3 {
+        font-size: 0.875rem;
+    }
+
+    .quickLinkCard p {
+        font-size: 10px;
+    }
+
+    .features {
+        margin: 24px 0;
+        padding: 12px 0;
+    }
+
+    .quickLinks {
+        margin: 24px 0;
+        padding: 12px 0;
+    }
+}
+
+/* Mobile Landscape */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        padding: 12px 0;
+        margin-bottom: 8px;
+    }
+
+    .heroTitle {
+        font-size: 1.125rem;
+        margin-bottom: 6px;
+    }
+
+    .heroDescription {
+        font-size: 0.75rem;
+        margin-bottom: 8px;
+    }
+
+    .heroFeatures {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 5px;
+    }
+
+    .heroFeature {
+        font-size: 9px;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 360px) {
+    .hero {
+        padding: 12px 0;
+        margin-bottom: 6px;
+    }
+
+    .heroContent {
+        padding: 0 6px;
+    }
+
+    .heroTitle {
+        font-size: 1rem;
+        margin-bottom: 6px;
+    }
+
+    .heroDescription {
+        font-size: 0.6875rem;
+        margin-bottom: 8px;
+    }
+
+    .heroBadge {
+        padding: 2px 6px;
+        font-size: 8px;
+        margin-bottom: 6px;
+    }
+
+    .heroBadgeIcon {
+        width: 8px;
+        height: 8px;
+    }
+
+    .heroFeatures {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 5px;
+    }
+
+    .heroFeature {
+        font-size: 8px;
+    }
+
+    .heroFeatureIcon {
+        width: 8px;
+        height: 8px;
+    }
+
+    .featureCard,
+    .quickLinkCard {
+        padding: 10px 6px;
+    }
+
+    .featuresTitle,
+    .quickLinksTitle {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .featuresDescription {
+        font-size: 0.6875rem;
+    }
+
+    .featureTitle {
+        font-size: 0.8125rem;
+    }
+
+    .featureDescription {
+        font-size: 0.6875rem;
+    }
+
+    .quickLinkCard h3 {
+        font-size: 0.8125rem;
+    }
+
+    .quickLinkCard p {
+        font-size: 9px;
     }
 }
