@@ -57,24 +57,9 @@ const DanDeGenerator = memo(() => {
   const [showSpecialSetsModal, setShowSpecialSetsModal] = useState(false);
   const [showStatsDetailModal, setShowStatsDetailModal] = useState(false);
   const [statsDetailType, setStatsDetailType] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [editableContent, setEditableContent] = useState('');
 
   // Memoize special sets data
   const specialSetsData = useMemo(() => getAllSpecialSets(), []);
-
-  // Detect mobile and update editable content
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
 
   // Handler cho chọn/bỏ chọn bộ số đặc biệt
   const handleSpecialSetToggle = useCallback((setId) => {
@@ -919,11 +904,6 @@ const DanDeGenerator = memo(() => {
     return content.join('\n');
   }, [levelsList, excludeDoubles]);
 
-  // Update editable content when generateTextareaContent changes
-  useEffect(() => {
-    setEditableContent(generateTextareaContent);
-  }, [generateTextareaContent]);
-
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -1287,16 +1267,11 @@ const DanDeGenerator = memo(() => {
               <h2 className={styles.resultsTitle}>Kết quả tạo dàn</h2>
               <textarea
                 className={styles.resultsTextarea}
-                value={isMobile ? editableContent : generateTextareaContent}
-                onChange={(e) => {
-                  if (isMobile) {
-                    setEditableContent(e.target.value);
-                  }
-                }}
-                readOnly={!isMobile}
+                value={generateTextareaContent}
+                readOnly
                 placeholder="Kết quả tạo dàn sẽ hiển thị ở đây..."
                 aria-label="Kết quả tạo dàn đề"
-                tabIndex={isMobile ? "0" : "-1"}
+                tabIndex="-1"
               />
             </div>
           </div>

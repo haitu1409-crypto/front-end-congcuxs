@@ -1364,13 +1364,6 @@
     -moz-user-select: text !important;
     -ms-user-select: text !important;
     user-select: text !important;
-    /* Enable text selection on touch */
-    -webkit-tap-highlight-color: transparent;
-    /* Remove any selection restrictions */
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
   }
 }
 
@@ -1583,13 +1576,6 @@
     -moz-user-select: text !important;
     -ms-user-select: text !important;
     user-select: text !important;
-    /* Enable text selection on touch */
-    -webkit-tap-highlight-color: transparent;
-    /* Remove any selection restrictions */
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
   }
 }
 
@@ -1629,20 +1615,13 @@
     -moz-user-select: text !important;
     -ms-user-select: text !important;
     user-select: text !important;
-    /* Enable text selection on touch */
-    -webkit-tap-highlight-color: transparent;
-    /* Remove any selection restrictions */
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
   }
 }
 
 /* ===== MOBILE TEXTAREA INTERACTION ===== */
 @media (max-width: 768px) {
   .resultsTextarea {
-    /* Make textarea fully interactive on mobile */
+    /* Force mobile interaction */
     -webkit-user-select: text !important;
     -moz-user-select: text !important;
     -ms-user-select: text !important;
@@ -1652,37 +1631,9 @@
     pointer-events: auto !important;
     /* Remove any touch-action restrictions */
     touch-action: manipulation;
-    /* Make text editable and selectable */
+    /* Ensure text is selectable */
     -webkit-user-drag: none;
     -webkit-user-modify: read-write-plaintext-only;
-    /* Ensure it's focusable and clickable */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    /* Remove any disabled state */
-    opacity: 1 !important;
-    /* Enable input method */
-    -webkit-text-size-adjust: 100%;
-    /* Make it fully editable */
-    resize: vertical;
-    /* Remove readonly styling */
-    background: var(--color-white) !important;
-    border: 2px solid var(--color-primary-300) !important;
-    /* Enable cursor and selection */
-    caret-color: var(--color-primary-600);
-    /* Force text selection to work */
-    -webkit-touch-callout: default !important;
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
-    /* Enable text selection on touch */
-    -webkit-tap-highlight-color: transparent;
-    /* Remove any selection restrictions */
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
   }
 
   .resultsTextarea:focus {
@@ -1692,61 +1643,6 @@
     -ms-user-select: text !important;
     user-select: text !important;
     cursor: text !important;
-    /* Show keyboard on mobile */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    /* Focus styling */
-    border-color: var(--color-primary-500) !important;
-    box-shadow: 0 0 0 3px var(--color-primary-100), inset 0 2px 4px rgba(0, 0, 0, 0.06) !important;
-    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%) !important;
-    /* Force text selection in focus state */
-    -webkit-touch-callout: default !important;
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
-  }
-
-  .resultsTextarea:hover {
-    /* Show cursor on hover */
-    cursor: text !important;
-  }
-
-  .resultsTextarea:active {
-    /* Show cursor on touch */
-    cursor: text !important;
-  }
-
-  /* Ensure textarea is not readonly on mobile */
-  .resultsTextarea[readonly] {
-    /* Override readonly on mobile */
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
-    cursor: text !important;
-    pointer-events: auto !important;
-  }
-}
-
-/* ===== GLOBAL TEXT SELECTION FOR MOBILE ===== */
-@media (max-width: 768px) {
-  .resultsTextarea * {
-    /* Force all child elements to be selectable */
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
-  }
-
-  .resultsTextarea::before,
-  .resultsTextarea::after {
-    /* Force pseudo-elements to be selectable */
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
   }
 }
 
