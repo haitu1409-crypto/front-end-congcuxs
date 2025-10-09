@@ -48,6 +48,7 @@ const DanDeGenerator = memo(() => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isRequestInProgress, setIsRequestInProgress] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [copyStatus, setCopyStatus] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState(false);
@@ -237,8 +238,8 @@ const DanDeGenerator = memo(() => {
         const specialNumbers = getCombinedSpecialSetNumbers(specialSets);
         specialNumbers.forEach(num => {
           if (currentPool.includes(num)) {
-          criteria4Numbers.push(num);
-          numberFrequency[num] = (numberFrequency[num] || 0) + 1;
+            criteria4Numbers.push(num);
+            numberFrequency[num] = (numberFrequency[num] || 0) + 1;
           }
         });
       }
@@ -248,8 +249,8 @@ const DanDeGenerator = memo(() => {
         const touchNumbers = getNumbersByTouch(touches);
         touchNumbers.forEach(num => {
           if (currentPool.includes(num)) {
-          criteria4Numbers.push(num);
-          numberFrequency[num] = (numberFrequency[num] || 0) + 1;
+            criteria4Numbers.push(num);
+            numberFrequency[num] = (numberFrequency[num] || 0) + 1;
           }
         });
       }
@@ -395,7 +396,7 @@ const DanDeGenerator = memo(() => {
             if (availableRandomNumbers.length >= remainingCount) {
               const randomNumbers = generateRandomNumbers(remainingCount, availableRandomNumbers);
               finalNumbers = [...finalNumbers, ...randomNumbers];
-          } else {
+            } else {
               // Trường hợp hiếm: không đủ số để bù
               finalNumbers = [...finalNumbers, ...availableRandomNumbers];
             }
@@ -919,8 +920,15 @@ const DanDeGenerator = memo(() => {
       return;
     }
 
+    // Ngăn chặn request trùng lặp
+    if (isRequestInProgress) {
+      console.warn('🚫 Request already in progress, ignoring duplicate call');
+      return;
+    }
+
     setLoading(true);
     setError(null);
+    setIsRequestInProgress(true);
 
     try {
       // Thử gọi API trước
@@ -934,6 +942,14 @@ const DanDeGenerator = memo(() => {
         sums: selectedSums.length > 0 ? selectedSums : undefined
       };
 
+      // Debug logging
+      console.log('🚀 Sending request to API:', {
+        url: `${API_URL}/api/dande/generate`,
+        data: requestData,
+        quantityType: typeof requestData.quantity,
+        quantityValue: requestData.quantity
+      });
+
       const response = await axios.post(`${API_URL}/api/dande/generate`, requestData);
 
       if (response.data.success) {
@@ -945,6 +961,20 @@ const DanDeGenerator = memo(() => {
       }
     } catch (err) {
       console.error('API Error, falling back to client-side generation:', err);
+
+      // Log chi tiết lỗi API
+      if (err.response) {
+        console.error('API Response Error:', {
+          status: err.response.status,
+          statusText: err.response.statusText,
+          data: err.response.data
+        });
+      } else if (err.request) {
+        console.error('API Request Error:', err.request);
+      } else {
+        console.error('API Setup Error:', err.message);
+      }
+
       // Fallback: Tạo ở client-side nếu API lỗi
       const result = generateClientSideWithAllLogics(parseInt(quantity, 10), combinationNums, excludeNums, excludeDoubles, selectedSpecialSets, selectedTouches, selectedSums);
       setLevelsList(result.levelsList);
@@ -952,6 +982,7 @@ const DanDeGenerator = memo(() => {
       setUndoData(null); // Xóa dữ liệu undo khi tạo dàn mới
     } finally {
       setLoading(false);
+      setIsRequestInProgress(false);
     }
   }, [quantity, combinationNumbers, excludeNumbers, excludeDoubles, selectedSpecialSets, selectedTouches, selectedSums]);
 

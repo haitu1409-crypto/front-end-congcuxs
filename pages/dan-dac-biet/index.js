@@ -7,10 +7,11 @@ import Link from 'next/link';
 import Layout from '../../components/Layout';
 import SEOOptimized from '../../components/SEOOptimized';
 import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
+import MobileNavbar from '../../components/MobileNavbar';
 import AOSWrapper from '../../components/AOSWrapper';
 import { Star, Zap, Target, CheckCircle, Rocket, BookOpen, Hash, Dice6, BarChart3, Home, Shield, Smartphone } from 'lucide-react';
 import styles from '../../styles/DanDacBiet.module.css';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 
 // Import safe lazy components với Error Boundary
 import {
@@ -27,6 +28,32 @@ const TaoDanBo = lazy(() => import('../../components/DanDe/TaoDanBo'));
 
 export default function DanDacBietPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003';
+
+    // Handle scroll to section when page loads with anchor
+    useEffect(() => {
+        const handleHashNavigation = () => {
+            if (typeof window !== 'undefined' && window.location.hash) {
+                const hash = window.location.hash.substring(1);
+                const element = document.getElementById(hash);
+                if (element) {
+                    // Delay scroll to ensure page is fully loaded
+                    setTimeout(() => {
+                        element.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 500);
+                }
+            }
+        };
+
+        // Handle initial load
+        handleHashNavigation();
+
+        // Handle hash change
+        window.addEventListener('hashchange', handleHashNavigation);
+        return () => window.removeEventListener('hashchange', handleHashNavigation);
+    }, []);
 
     const breadcrumbs = [
         { name: 'Trang chủ', url: siteUrl },
@@ -71,6 +98,9 @@ export default function DanDacBietPage() {
             <Layout>
                 <AOSWrapper>
                     <div className={styles.pageContainer}>
+                        {/* Mobile Navbar */}
+                        <MobileNavbar currentPage="dan-dac-biet" showCurrentPageItems={false} />
+
                         {/* Hero Section */}
                         <div className={styles.heroSection}>
                             <div className={styles.heroContent}>
@@ -92,7 +122,7 @@ export default function DanDacBietPage() {
                         </div>
 
                         {/* LỌC, GHÉP DÀN ĐẶC BIỆT Section */}
-                        <div className={styles.locGhepSection} data-aos="fade-up" data-aos-delay="100">
+                        <div className={styles.locGhepSection} id="loc-ghep" data-aos="fade-up" data-aos-delay="100">
                             <ComponentLoader
                                 errorMessage="Lỗi khi tải bộ lọc dàn đặc biệt. Vui lòng thử lại."
                                 fallback={<div className={styles.loadingPlaceholder}>Đang tải bộ lọc...</div>}
@@ -103,25 +133,25 @@ export default function DanDacBietPage() {
 
                         {/* Main Tools Grid */}
                         <div className={styles.toolsGrid}>
-                            <div className={styles.toolCard} data-aos="fade-up" data-aos-delay="100">
+                            <div className={styles.toolCard} id="nhanh" data-aos="fade-up" data-aos-delay="100">
                                 <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
                                     <LayNhanhDacBiet />
                                 </Suspense>
                             </div>
 
-                            <div className={styles.toolCard} data-aos="fade-up" data-aos-delay="200">
+                            <div className={styles.toolCard} id="dau-duoi" data-aos="fade-up" data-aos-delay="200">
                                 <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
                                     <TaoDanDauDuoi />
                                 </Suspense>
                             </div>
 
-                            <div className={styles.toolCard} data-aos="fade-up" data-aos-delay="300">
+                            <div className={styles.toolCard} id="cham" data-aos="fade-up" data-aos-delay="300">
                                 <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
                                     <TaoDanCham />
                                 </Suspense>
                             </div>
 
-                            <div className={styles.toolCard} data-aos="fade-up" data-aos-delay="400">
+                            <div className={styles.toolCard} id="bo" data-aos="fade-up" data-aos-delay="400">
                                 <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
                                     <TaoDanBo />
                                 </Suspense>

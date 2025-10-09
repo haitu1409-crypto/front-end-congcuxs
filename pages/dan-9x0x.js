@@ -6,7 +6,8 @@
 import Link from 'next/link';
 import Head from 'next/head';
 import Layout from '../components/Layout';
-import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, Filter, Info } from 'lucide-react';
+import MobileNavbar from '../components/MobileNavbar';
+import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone } from 'lucide-react';
 import styles from '../styles/Dan9x0x.module.css';
 import SEOOptimized from '../components/SEOOptimized';
 import SEOAnalytics from '../components/SEOAnalytics';
@@ -14,7 +15,7 @@ import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import PerformanceMonitor from '../components/PerformanceMonitor';
 // import WukongSlider from '../components/WukongSlider';
 import dynamic from 'next/dynamic';
-import { useState, useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 
 // Lazy load heavy components for better PageSpeed
 const DanDeGenerator = dynamic(() => import('../components/DanDeGenerator'), {
@@ -30,70 +31,32 @@ const GuideSection = dynamic(() => import('../components/GuideSection'), {
 export default function Dan9x0xPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
-    // States cho mobile navbar
-    const [activeNavItem, setActiveNavItem] = useState('generator');
-
-    // Auto update active nav item based on scroll position
+    // Handle scroll to section when page loads with anchor
     useEffect(() => {
-        const handleScroll = () => {
-            const sections = [
-                { id: 'generator', element: document.querySelector('[data-section="generator"]') },
-                { id: 'filter', element: document.querySelector('[data-section="filter"]') },
-                { id: 'guide', element: document.querySelector('[data-section="guide"]') }
-            ];
-
-            const scrollPosition = window.scrollY + 100; // Offset for better UX
-
-            for (let i = sections.length - 1; i >= 0; i--) {
-                const section = sections[i];
-                if (section.element && section.element.offsetTop <= scrollPosition) {
-                    setActiveNavItem(section.id);
-                    break;
+        const handleHashNavigation = () => {
+            if (typeof window !== 'undefined' && window.location.hash) {
+                const hash = window.location.hash.substring(1);
+                const element = document.querySelector(`[data-section="${hash}"]`);
+                if (element) {
+                    // Delay scroll to ensure page is fully loaded
+                    setTimeout(() => {
+                        element.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 500);
                 }
             }
         };
 
-        // Throttle scroll event for better performance
-        let ticking = false;
-        const throttledHandleScroll = () => {
-            if (!ticking) {
-                requestAnimationFrame(() => {
-                    handleScroll();
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
+        // Handle initial load
+        handleHashNavigation();
 
-        window.addEventListener('scroll', throttledHandleScroll);
-        return () => window.removeEventListener('scroll', throttledHandleScroll);
+        // Handle hash change
+        window.addEventListener('hashchange', handleHashNavigation);
+        return () => window.removeEventListener('hashchange', handleHashNavigation);
     }, []);
 
-    // Mobile navbar handlers
-    const handleNavItemClick = useCallback((itemId) => {
-        setActiveNavItem(itemId);
-
-        // Scroll to section based on itemId
-        if (itemId === 'generator') {
-            // Scroll to top of generator section
-            const generatorSection = document.querySelector('[data-section="generator"]');
-            if (generatorSection) {
-                generatorSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        } else if (itemId === 'filter') {
-            // Scroll to filter section
-            const filterSection = document.querySelector('[data-section="filter"]');
-            if (filterSection) {
-                filterSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        } else if (itemId === 'guide') {
-            // Scroll to guide section
-            const guideSection = document.querySelector('[data-section="guide"]');
-            if (guideSection) {
-                guideSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-    }, []);
 
     // Register mobile-optimized service worker
     useEffect(() => {
@@ -302,31 +265,7 @@ export default function Dan9x0xPage() {
                     </section>
 
                     {/* Mobile Navbar */}
-                    <div className={styles.mobileNavbar}>
-                        <div className={styles.mobileNavbarContainer}>
-                            <button
-                                className={`${styles.mobileNavbarItem} ${activeNavItem === 'generator' ? styles.active : ''}`}
-                                onClick={() => handleNavItemClick('generator')}
-                            >
-                                <Dice6 className={styles.mobileNavbarIcon} />
-                                Tạo Dàn 9x0x
-                            </button>
-                            <button
-                                className={`${styles.mobileNavbarItem} ${activeNavItem === 'filter' ? styles.active : ''}`}
-                                onClick={() => handleNavItemClick('filter')}
-                            >
-                                <Filter className={styles.mobileNavbarIcon} />
-                                Lọc Dàn Siêu Cấp
-                            </button>
-                            <button
-                                className={`${styles.mobileNavbarItem} ${activeNavItem === 'guide' ? styles.active : ''}`}
-                                onClick={() => handleNavItemClick('guide')}
-                            >
-                                <Info className={styles.mobileNavbarIcon} />
-                                Hướng Dẫn
-                            </button>
-                        </div>
-                    </div>
+                    <MobileNavbar currentPage="dan-9x0x" showCurrentPageItems={false} />
 
                     {/* Wukong Slider */}
                     {/* <WukongSlider /> */}

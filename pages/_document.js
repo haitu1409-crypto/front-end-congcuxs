@@ -142,6 +142,148 @@ export default function Document() {
                 {/* ===== NEXT.JS SCRIPTS ===== */}
                 <NextScript />
 
+                {/* ===== TRACKING ERROR HANDLER - EARLY INIT ===== */}
+                <script dangerouslySetInnerHTML={{
+                    __html: `
+                        // Early tracking error prevention
+                        (function() {
+                            // Danh sách các domain tracking có thể gây lỗi
+                            const PROBLEMATIC_TRACKING_DOMAINS = [
+                                'a.mrktmtrcs.net',
+                                'mrktmtrcs.net',
+                                'static.aroa.io',
+                                't.dtscout.com',
+                                'dtscout.com',
+                                'ic.tynt.com',
+                                'tynt.com',
+                                'de.tynt.com',
+                                'cdn.tynt.com',
+                                'match.adsrvr.org',
+                                'adsrvr.org',
+                                'crwdcntrl.net',
+                                'sync.crwdcntrl.net',
+                                'match?publisher_dsp_id',
+                                'dsp_callback'
+                            ];
+
+                            // Kiểm tra xem URL có phải là tracking domain có vấn đề không
+                            const isProblematicTrackingDomain = (url) => {
+                                try {
+                                    const urlObj = new URL(url);
+                                    return PROBLEMATIC_TRACKING_DOMAINS.some(domain => 
+                                        urlObj.hostname.includes(domain)
+                                    );
+                                } catch (error) {
+                                    return false;
+                                }
+                            };
+
+                            // Override XMLHttpRequest ngay từ đầu để tránh InvalidStateError
+                            if (typeof XMLHttpRequest !== 'undefined') {
+                                const OriginalXHR = XMLHttpRequest;
+                                function SafeXMLHttpRequest() {
+                                    const xhr = new OriginalXHR();
+                                    let isBlocked = false;
+                                    let blockedUrl = null;
+
+                                    const originalOpen = xhr.open;
+                                    const originalSend = xhr.send;
+                                    const originalSetRequestHeader = xhr.setRequestHeader;
+
+                                    xhr.open = function(method, url, ...args) {
+                                        blockedUrl = url;
+                                        isBlocked = isProblematicTrackingDomain(url);
+                                        
+                                        if (isBlocked) {
+                                            console.warn('🚫 Early blocked XHR request to: ' + url);
+                                            // Set fake response immediately
+                                            Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
+                                            Object.defineProperty(xhr, 'status', { value: 200, writable: false });
+                                            Object.defineProperty(xhr, 'statusText', { value: 'OK', writable: false });
+                                            Object.defineProperty(xhr, 'responseText', { value: '{}', writable: false });
+                                            Object.defineProperty(xhr, 'response', { value: '{}', writable: false });
+                                            return;
+                                        }
+                                        
+                                        return originalOpen.call(this, method, url, ...args);
+                                    };
+
+                                    xhr.setRequestHeader = function(name, value) {
+                                        if (isBlocked) {
+                                            console.warn('🚫 Early blocked setRequestHeader for: ' + blockedUrl);
+                                            return;
+                                        }
+                                        return originalSetRequestHeader.call(this, name, value);
+                                    };
+
+                                    xhr.send = function(data) {
+                                        if (isBlocked) {
+                                            console.warn('🚫 Early blocked send for: ' + blockedUrl);
+                                            // Trigger fake load event
+                                            setTimeout(() => {
+                                                if (xhr.onreadystatechange) xhr.onreadystatechange();
+                                                if (xhr.onload) xhr.onload();
+                                            }, 0);
+                                            return;
+                                        }
+                                        return originalSend.call(this, data);
+                                    };
+
+                                    return xhr;
+                                }
+
+                                // Replace global XMLHttpRequest
+                                SafeXMLHttpRequest.prototype = OriginalXHR.prototype;
+                                window.XMLHttpRequest = SafeXMLHttpRequest;
+                            }
+
+                            // Block mm.js functions early
+                            if (typeof window !== 'undefined') {
+                                // Override sendEvents function
+                                window.sendEvents = function() {
+                                    console.warn('🚫 Early blocked sendEvents call');
+                                    return;
+                                };
+                                
+                                // Block other potential tracking functions
+                                ['_mm', 'mm', 'trackEvent', 'track', 'sendEvent', 'trackEvent'].forEach(funcName => {
+                                    window[funcName] = function() {
+                                        console.warn('🚫 Early blocked ' + funcName + ' call');
+                                        return;
+                                    };
+                                });
+
+                                // Block mm.js script loading
+                                const originalAppendChild = Node.prototype.appendChild;
+                                Node.prototype.appendChild = function(child) {
+                                    if (child.tagName === 'SCRIPT' && child.src && child.src.includes('mm.js')) {
+                                        console.warn('🚫 Blocked mm.js script loading');
+                                        return child; // Return without appending
+                                    }
+                                    return originalAppendChild.call(this, child);
+                                };
+
+                                // Block dynamic script creation
+                                const originalCreateElement = Document.prototype.createElement;
+                                Document.prototype.createElement = function(tagName) {
+                                    const element = originalCreateElement.call(this, tagName);
+                                    if (tagName.toLowerCase() === 'script') {
+                                        const originalSetAttribute = element.setAttribute;
+                                        element.setAttribute = function(name, value) {
+                                            if (name === 'src' && value && value.includes('mm.js')) {
+                                                console.warn('🚫 Blocked mm.js script creation');
+                                                return;
+                                            }
+                                            return originalSetAttribute.call(this, name, value);
+                                        };
+                                    }
+                                    return element;
+                                };
+                            }
+                        })();
+                    `
+                }} />
+
                 {/* ===== TRACKING ERROR HANDLER ===== */}
                 <script dangerouslySetInnerHTML={{
                     __html: `
@@ -317,14 +459,18 @@ export default function Document() {
                             const setupXHRErrorHandling = () => {
                                 const originalXHROpen = XMLHttpRequest.prototype.open;
                                 const originalXHRSend = XMLHttpRequest.prototype.send;
+                                const originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
 
                                 XMLHttpRequest.prototype.open = function(method, url, ...args) {
                                     this._url = url;
                                     this._method = method;
+                                    this._isBlocked = false;
                                     
                                     // Kiểm tra nếu là tracking domain có vấn đề
                                     if (isProblematicTrackingDomain(url)) {
                                         console.warn('🚫 Blocked XHR request to problematic tracking domain: ' + url);
+                                        this._isBlocked = true;
+                                        
                                         // Tạo một fake response
                                         this.readyState = 4;
                                         this.status = 200;
@@ -348,9 +494,27 @@ export default function Document() {
                                     return originalXHROpen.call(this, method, url, ...args);
                                 };
 
+                                // Override setRequestHeader để tránh InvalidStateError
+                                XMLHttpRequest.prototype.setRequestHeader = function(name, value) {
+                                    // Nếu request đã bị chặn, không set header
+                                    if (this._isBlocked) {
+                                        console.warn('🚫 Blocked setRequestHeader for blocked request: ' + this._url);
+                                        return;
+                                    }
+                                    
+                                    // Kiểm tra nếu đang cố set header cho tracking domain
+                                    if (this._url && isProblematicTrackingDomain(this._url)) {
+                                        console.warn('🚫 Blocked setRequestHeader for tracking domain: ' + this._url);
+                                        return;
+                                    }
+                                    
+                                    return originalSetRequestHeader.call(this, name, value);
+                                };
+
                                 XMLHttpRequest.prototype.send = function(data) {
                                     // Nếu đã bị chặn ở open, không cần send
-                                    if (this._url && isProblematicTrackingDomain(this._url)) {
+                                    if (this._isBlocked || (this._url && isProblematicTrackingDomain(this._url))) {
+                                        console.warn('🚫 Blocked send for blocked request: ' + this._url);
                                         return;
                                     }
                                     

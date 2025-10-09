@@ -1,0 +1,97 @@
+/* Mobile Navbar Component Styles - Reusable */
+
+/* ===== MOBILE NAVBAR ===== */
+.mobileNavbar {
+    display: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: var(--spacing-4);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.mobileNavbarContainer {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    padding: var(--spacing-2);
+    gap: var(--spacing-2);
+}
+
+.mobileNavbarContainer::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+}
+
+.mobileNavbarItem {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-3) var(--spacing-4);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    min-width: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-1);
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+}
+
+.mobileNavbarItem:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mobileNavbarItem.active {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mobileNavbarIcon {
+    font-size: 16px;
+}
+
+/* Mobile navbar responsive */
+@media (max-width: 768px) {
+    .mobileNavbar {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobileNavbarItem {
+        min-width: 95px;
+        padding: var(--spacing-2) var(--spacing-3);
+        font-size: 11px;
+    }
+
+    .mobileNavbarIcon {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .mobileNavbarItem {
+        min-width: 90px;
+        padding: var(--spacing-2);
+        font-size: 11px;
+    }
+
+    .mobileNavbarIcon {
+        font-size: 12px;
+    }
+}

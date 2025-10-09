@@ -39,13 +39,14 @@
     text-align: center;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
-    min-width: 140px;
+    min-width: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--spacing-1);
     cursor: pointer;
     border: none;
+    white-space: nowrap;
 }
 
 .mobileNavbarItem:hover {
@@ -73,9 +74,9 @@
 
 @media (max-width: 480px) {
     .mobileNavbarItem {
-        min-width: 120px;
+        min-width: 100px;
         padding: var(--spacing-2) var(--spacing-3);
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .mobileNavbarIcon {
@@ -85,8 +86,12 @@
 
 @media (max-width: 360px) {
     .mobileNavbarItem {
-        min-width: 100px;
+        min-width: 90px;
         padding: var(--spacing-2);
+        font-size: 11px;
+    }
+
+    .mobileNavbarIcon {
         font-size: 12px;
     }
 }

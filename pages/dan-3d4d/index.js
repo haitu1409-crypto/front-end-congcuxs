@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Layout from '../../components/Layout';
 import SEOOptimized from '../../components/SEOOptimized';
 import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
+import MobileNavbar from '../../components/MobileNavbar';
 import { BarChart3 } from 'lucide-react';
 import styles from '../../styles/Dan3D4D.module.css';
 import dynamic from 'next/dynamic';
@@ -65,6 +66,9 @@ export default function Dan3D4DPage() {
 
             <Layout>
                 <div className={styles.pageContainer}>
+                    {/* Mobile Navbar */}
+                    <MobileNavbar currentPage="dan-3d4d" showCurrentPageItems={false} />
+
                     <header className={styles.pageHeader}>
                         <h1 className={styles.pageTitle}>
                             <BarChart3 size={20} style={{ display: 'inline', marginRight: '8px' }} />

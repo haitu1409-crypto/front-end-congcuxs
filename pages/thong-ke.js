@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import SEOOptimized from '../components/SEOOptimized';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
+import MobileNavbar from '../components/MobileNavbar';
 // Tối ưu import icons - chỉ import những icon cần thiết
 import { BarChart3, RefreshCw, Filter, Download, ImageIcon, Settings, Save, FolderOpen, Plus, Check, X } from 'lucide-react';
 import styles from '../styles/ThongKe.module.css';
@@ -1096,257 +1097,260 @@ function ThongKePage() {
 
             <Layout>
                 <div className={styles.container}>
-                {/* Header */}
-                <div className={styles.header}>
-                    <div className={styles.headerContent}>
-                        <div className={styles.headerLeft}>
-                            <BarChart3 className={styles.headerIcon} />
-                            <div>
-                                <h1 className={styles.title}>Lập Bảng Thống Kê Chốt Dàn 3 Miền - Tôn Ngộ Không</h1>
-                                <p className={styles.subtitle}>
-                                    Công cụ lập bảng thống kê chốt dàn 3 miền chuyên nghiệp - Theo dõi kết quả và xu hướng xổ số - Thương hiệu Tôn Ngộ Không
-                                </p>
+                    {/* Mobile Navbar */}
+                    <MobileNavbar currentPage="thong-ke" showCurrentPageItems={false} />
+
+                    {/* Header */}
+                    <div className={styles.header}>
+                        <div className={styles.headerContent}>
+                            <div className={styles.headerLeft}>
+                                <BarChart3 className={styles.headerIcon} />
+                                <div>
+                                    <h1 className={styles.title}>Lập Bảng Thống Kê Chốt Dàn 3 Miền - Tôn Ngộ Không</h1>
+                                    <p className={styles.subtitle}>
+                                        Công cụ lập bảng thống kê chốt dàn 3 miền chuyên nghiệp - Theo dõi kết quả và xu hướng xổ số - Thương hiệu Tôn Ngộ Không
+                                    </p>
+                                </div>
+                            </div>
+                            <div className={styles.headerActions}>
+                                {/* Chỉ giữ lại thông tin cơ bản */}
                             </div>
                         </div>
-                        <div className={styles.headerActions}>
-                            {/* Chỉ giữ lại thông tin cơ bản */}
+
+                    </div>
+
+                    {/* Month Tabs */}
+                    <div className={styles.monthTabs}>
+                        <div className={styles.tabsContainer}>
+                            <button
+                                className={`${styles.monthTab} ${activeMonth === 'current' ? styles.activeTab : ''}`}
+                                onClick={() => switchMonth('current')}
+                                disabled={loading}
+                            >
+                                <span className={styles.tabLabel}>Tháng hiện tại</span>
+                                <span className={styles.tabSubLabel}>
+                                    {getCurrentMonthRange.title}
+                                </span>
+                            </button>
+                            <button
+                                className={`${styles.monthTab} ${activeMonth === 'previous' ? styles.activeTab : ''}`}
+                                onClick={() => switchMonth('previous')}
+                                disabled={loading}
+                            >
+                                <span className={styles.tabLabel}>Tháng trước</span>
+                                <span className={styles.tabSubLabel}>
+                                    {getPreviousMonthRange.title}
+                                </span>
+                            </button>
+                        </div>
+                        <div className={styles.tabIndicator}>
+                            <span className={styles.currentTitle}>
+                                {data?.title || 'Đang tải...'}
+                            </span>
                         </div>
                     </div>
 
-                </div>
+                    {/* Summary Cards - Safe lazy loaded */}
+                    <SafeSummaryCards summary={data?.summary} />
 
-                {/* Month Tabs */}
-                <div className={styles.monthTabs}>
-                    <div className={styles.tabsContainer}>
-                        <button
-                            className={`${styles.monthTab} ${activeMonth === 'current' ? styles.activeTab : ''}`}
-                            onClick={() => switchMonth('current')}
-                            disabled={loading}
-                        >
-                            <span className={styles.tabLabel}>Tháng hiện tại</span>
-                            <span className={styles.tabSubLabel}>
-                                {getCurrentMonthRange.title}
-                            </span>
-                        </button>
-                        <button
-                            className={`${styles.monthTab} ${activeMonth === 'previous' ? styles.activeTab : ''}`}
-                            onClick={() => switchMonth('previous')}
-                            disabled={loading}
-                        >
-                            <span className={styles.tabLabel}>Tháng trước</span>
-                            <span className={styles.tabSubLabel}>
-                                {getPreviousMonthRange.title}
-                            </span>
-                        </button>
-                    </div>
-                    <div className={styles.tabIndicator}>
-                        <span className={styles.currentTitle}>
-                            {data?.title || 'Đang tải...'}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Summary Cards - Safe lazy loaded */}
-                <SafeSummaryCards summary={data?.summary} />
-
-                {/* Action Bar - Ngay trên bảng thống kê */}
-                <div className={styles.actionBar}>
-                    <div className={styles.actionBarLeft}>
-                        <button
-                            className={styles.filterButton}
-                            onClick={() => setShowFilters(!showFilters)}
-                        >
-                            <Filter size={16} />
-                            Bộ lọc
-                        </button>
-                        <button
-                            className={styles.refreshButton}
-                            onClick={fetchData}
-                            disabled={loading}
-                        >
-                            <RefreshCw size={16} className={loading ? styles.spinning : ''} />
-                            Cập nhập
-                        </button>
-                    </div>
-                    <div className={styles.actionBarRight}>
-                        <div className={styles.addDateSection}>
-                            {showAddDateInput ? (
-                                <div className={styles.addDateInputGroup}>
-                                    <input
-                                        type="text"
-                                        value={addDateInput}
-                                        onChange={(e) => setAddDateInput(e.target.value)}
-                                        onKeyDown={handleAddDateKeyPress}
-                                        placeholder="VD: 30/09 hoặc 30-09"
-                                        className={styles.addDateInput}
-                                        autoFocus
-                                        maxLength={5}
-                                    />
+                    {/* Action Bar - Ngay trên bảng thống kê */}
+                    <div className={styles.actionBar}>
+                        <div className={styles.actionBarLeft}>
+                            <button
+                                className={styles.filterButton}
+                                onClick={() => setShowFilters(!showFilters)}
+                            >
+                                <Filter size={16} />
+                                Bộ lọc
+                            </button>
+                            <button
+                                className={styles.refreshButton}
+                                onClick={fetchData}
+                                disabled={loading}
+                            >
+                                <RefreshCw size={16} className={loading ? styles.spinning : ''} />
+                                Cập nhập
+                            </button>
+                        </div>
+                        <div className={styles.actionBarRight}>
+                            <div className={styles.addDateSection}>
+                                {showAddDateInput ? (
+                                    <div className={styles.addDateInputGroup}>
+                                        <input
+                                            type="text"
+                                            value={addDateInput}
+                                            onChange={(e) => setAddDateInput(e.target.value)}
+                                            onKeyDown={handleAddDateKeyPress}
+                                            placeholder="VD: 30/09 hoặc 30-09"
+                                            className={styles.addDateInput}
+                                            autoFocus
+                                            maxLength={5}
+                                        />
+                                        <button
+                                            className={styles.addDateConfirm}
+                                            onClick={addNewDateRow}
+                                            title="Thêm ngày"
+                                        >
+                                            <Check size={16} />
+                                        </button>
+                                        <button
+                                            className={styles.addDateCancel}
+                                            onClick={() => {
+                                                setAddDateInput('');
+                                                setShowAddDateInput(false);
+                                            }}
+                                            title="Hủy"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                ) : (
                                     <button
-                                        className={styles.addDateConfirm}
-                                        onClick={addNewDateRow}
-                                        title="Thêm ngày"
+                                        className={styles.addDateButton}
+                                        onClick={() => setShowAddDateInput(true)}
+                                        disabled={!data}
+                                        title="Thêm ngày mới"
                                     >
-                                        <Check size={16} />
+                                        <Plus size={16} />
+                                        Thêm ngày
                                     </button>
-                                    <button
-                                        className={styles.addDateCancel}
-                                        onClick={() => {
-                                            setAddDateInput('');
-                                            setShowAddDateInput(false);
-                                        }}
-                                        title="Hủy"
+                                )}
+                            </div>
+                            <button
+                                className={styles.saveButton}
+                                onClick={openSaveModal}
+                                disabled={!data}
+                            >
+                                <Save size={16} />
+                                Lưu dữ liệu thống kê
+                            </button>
+                            <button
+                                className={styles.loadButton}
+                                onClick={openLoadModal}
+                            >
+                                <FolderOpen size={16} />
+                                Mở file đã lưu
+                            </button>
+                            <button
+                                className={styles.exportButton}
+                                onClick={() => setShowExportOptions(!showExportOptions)}
+                                disabled={!data}
+                            >
+                                <Settings size={16} />
+                                Xuất hình ảnh
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Filters - Di chuyển xuống */}
+                    {showFilters && (
+                        <div className={styles.filters}>
+                            <div className={styles.filterRow}>
+                                <div className={styles.filterGroup}>
+                                    <label>Từ ngày:</label>
+                                    <input
+                                        type="date"
+                                        value={filters.startDate}
+                                        onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                                        className={styles.filterInput}
+                                    />
+                                </div>
+                                <div className={styles.filterGroup}>
+                                    <label>Đến ngày:</label>
+                                    <input
+                                        type="date"
+                                        value={filters.endDate}
+                                        onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                                        className={styles.filterInput}
+                                    />
+                                </div>
+                                <div className={styles.filterGroup}>
+                                    <label>Số bản ghi:</label>
+                                    <select
+                                        value={filters.limit}
+                                        onChange={(e) => handleFilterChange('limit', parseInt(e.target.value))}
+                                        className={styles.filterSelect}
                                     >
-                                        <X size={16} />
+                                        <option value={10}>10</option>
+                                        <option value={20}>20</option>
+                                        <option value={30}>30</option>
+                                        <option value={50}>50</option>
+                                        <option value={100}>100</option>
+                                    </select>
+                                </div>
+                                <div className={styles.filterActions}>
+                                    <button onClick={applyFilters} className={styles.applyButton}>
+                                        Áp dụng
+                                    </button>
+                                    <button onClick={resetFilters} className={styles.resetButton}>
+                                        Đặt lại
                                     </button>
                                 </div>
-                            ) : (
-                                <button
-                                    className={styles.addDateButton}
-                                    onClick={() => setShowAddDateInput(true)}
-                                    disabled={!data}
-                                    title="Thêm ngày mới"
-                                >
-                                    <Plus size={16} />
-                                    Thêm ngày
-                                </button>
-                            )}
-                        </div>
-                        <button
-                            className={styles.saveButton}
-                            onClick={openSaveModal}
-                            disabled={!data}
-                        >
-                            <Save size={16} />
-                            Lưu dữ liệu thống kê
-                        </button>
-                        <button
-                            className={styles.loadButton}
-                            onClick={openLoadModal}
-                        >
-                            <FolderOpen size={16} />
-                            Mở file đã lưu
-                        </button>
-                        <button
-                            className={styles.exportButton}
-                            onClick={() => setShowExportOptions(!showExportOptions)}
-                            disabled={!data}
-                        >
-                            <Settings size={16} />
-                            Xuất hình ảnh
-                        </button>
-                    </div>
-                </div>
-
-                {/* Filters - Di chuyển xuống */}
-                {showFilters && (
-                    <div className={styles.filters}>
-                        <div className={styles.filterRow}>
-                            <div className={styles.filterGroup}>
-                                <label>Từ ngày:</label>
-                                <input
-                                    type="date"
-                                    value={filters.startDate}
-                                    onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                                    className={styles.filterInput}
-                                />
-                            </div>
-                            <div className={styles.filterGroup}>
-                                <label>Đến ngày:</label>
-                                <input
-                                    type="date"
-                                    value={filters.endDate}
-                                    onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                                    className={styles.filterInput}
-                                />
-                            </div>
-                            <div className={styles.filterGroup}>
-                                <label>Số bản ghi:</label>
-                                <select
-                                    value={filters.limit}
-                                    onChange={(e) => handleFilterChange('limit', parseInt(e.target.value))}
-                                    className={styles.filterSelect}
-                                >
-                                    <option value={10}>10</option>
-                                    <option value={20}>20</option>
-                                    <option value={30}>30</option>
-                                    <option value={50}>50</option>
-                                    <option value={100}>100</option>
-                                </select>
-                            </div>
-                            <div className={styles.filterActions}>
-                                <button onClick={applyFilters} className={styles.applyButton}>
-                                    Áp dụng
-                                </button>
-                                <button onClick={resetFilters} className={styles.resetButton}>
-                                    Đặt lại
-                                </button>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* Export Options - Memoized Component */}
-                <ExportOptions
-                    showExportOptions={showExportOptions}
-                    userName={userName}
-                    setUserName={setUserName}
-                    exportPreset={exportPreset}
-                    exportWidth={exportWidth}
-                    facebookPresets={facebookPresets}
-                    handlePresetChange={handlePresetChange}
-                    setExportWidth={setExportWidth}
-                    exportToImage={exportToImage}
-                    exportToCSV={exportToCSV}
-                    isExporting={isExporting}
-                    data={data}
-                />
-
-                {/* Main Content - Safe lazy loaded */}
-                <div className={styles.content}>
-                    <SafeStatisticsTable
+                    {/* Export Options - Memoized Component */}
+                    <ExportOptions
+                        showExportOptions={showExportOptions}
+                        userName={userName}
+                        setUserName={setUserName}
+                        exportPreset={exportPreset}
+                        exportWidth={exportWidth}
+                        facebookPresets={facebookPresets}
+                        handlePresetChange={handlePresetChange}
+                        setExportWidth={setExportWidth}
+                        exportToImage={exportToImage}
+                        exportToCSV={exportToCSV}
+                        isExporting={isExporting}
                         data={data}
-                        loading={loading}
-                        error={error}
-                        onRetry={fetchData}
-                        onSave={saveStatistics}
-                        onDelete={deleteDateRow}
                     />
-                </div>
 
-                {/* Hidden Export Table - Lazy loaded */}
-                <div style={{
-                    position: 'absolute',
-                    left: '-9999px',
-                    top: '0',
-                    width: '1200px', // Fixed width for consistent export
-                    height: 'auto',
-                    visibility: 'hidden',
-                    opacity: '0',
-                    pointerEvents: 'none',
-                    zIndex: '-1',
-                    backgroundColor: '#ffffff',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                    <Suspense fallback={<div>Loading export table...</div>}>
-                        {data && (
-                            <ExportableTable
-                                ref={exportTableRef}
-                                data={data}
-                                title={`THỐNG KÊ 3 MIỀN - ${data?.title || ''}`}
-                                userDisplayName={userName}
-                                exportMode="image"
-                            />
-                        )}
-                    </Suspense>
-                </div>
+                    {/* Main Content - Safe lazy loaded */}
+                    <div className={styles.content}>
+                        <SafeStatisticsTable
+                            data={data}
+                            loading={loading}
+                            error={error}
+                            onRetry={fetchData}
+                            onSave={saveStatistics}
+                            onDelete={deleteDateRow}
+                        />
+                    </div>
 
-                {/* Auth Modal - Memoized Component */}
-                {AuthModal}
-            </div>
+                    {/* Hidden Export Table - Lazy loaded */}
+                    <div style={{
+                        position: 'absolute',
+                        left: '-9999px',
+                        top: '0',
+                        width: '1200px', // Fixed width for consistent export
+                        height: 'auto',
+                        visibility: 'hidden',
+                        opacity: '0',
+                        pointerEvents: 'none',
+                        zIndex: '-1',
+                        backgroundColor: '#ffffff',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <Suspense fallback={<div>Loading export table...</div>}>
+                            {data && (
+                                <ExportableTable
+                                    ref={exportTableRef}
+                                    data={data}
+                                    title={`THỐNG KÊ 3 MIỀN - ${data?.title || ''}`}
+                                    userDisplayName={userName}
+                                    exportMode="image"
+                                />
+                            )}
+                        </Suspense>
+                    </div>
+
+                    {/* Auth Modal - Memoized Component */}
+                    {AuthModal}
+                </div>
             </Layout>
         </>
     );
