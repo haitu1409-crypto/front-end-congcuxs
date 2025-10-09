@@ -29,6 +29,8 @@ const DanDeFilter = memo(() => {
     const [copyStatus, setCopyStatus] = useState(false);
     const [undoData, setUndoData] = useState(null);
     const [undoStatus, setUndoStatus] = useState(false);
+    const [showCopyModal, setShowCopyModal] = useState(false);
+    const [copyText, setCopyText] = useState('');
 
     // States cho modals
     const [showSpecialSetsModal, setShowSpecialSetsModal] = useState(false);
@@ -708,16 +710,19 @@ const DanDeFilter = memo(() => {
                 }
             }
 
-            const copyText = resultLines.join('\n').trim();
+            const finalCopyText = resultLines.join('\n').trim();
 
             // Debug log
-            console.log('Copy text:', copyText);
+            console.log('Copy text:', finalCopyText);
             console.log('Result lines:', resultLines);
 
-            if (!copyText) {
+            if (!finalCopyText) {
                 setError('Không có nội dung để sao chép');
                 return;
             }
+
+            // Lưu text để hiển thị trong modal nếu cần
+            setCopyText(finalCopyText);
 
             // Kiểm tra hỗ trợ Clipboard API
             console.log('Clipboard API supported:', !!navigator.clipboard);
@@ -726,7 +731,7 @@ const DanDeFilter = memo(() => {
             // Sử dụng Clipboard API với fallback
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 console.log('Using Clipboard API...');
-                navigator.clipboard.writeText(copyText).then(() => {
+                navigator.clipboard.writeText(finalCopyText).then(() => {
                     console.log('Copy successful via Clipboard API');
                     setCopyStatus(true);
                     setTimeout(() => setCopyStatus(false), 2000);
@@ -734,12 +739,12 @@ const DanDeFilter = memo(() => {
                     console.error('Clipboard API error:', err);
                     console.log('Falling back to textarea method...');
                     // Fallback: tạo textarea và copy
-                    fallbackCopyTextToClipboard(copyText);
+                    fallbackCopyTextToClipboard(finalCopyText);
                 });
             } else {
                 console.log('Clipboard API not supported, using fallback...');
                 // Fallback cho trình duyệt không hỗ trợ Clipboard API
-                fallbackCopyTextToClipboard(copyText);
+                fallbackCopyTextToClipboard(finalCopyText);
             }
         } catch (error) {
             console.error('Copy error:', error);
@@ -749,22 +754,32 @@ const DanDeFilter = memo(() => {
 
     // Fallback copy function
     const fallbackCopyTextToClipboard = (text) => {
+        console.log('Using fallback copy method...');
+
         const textArea = document.createElement('textarea');
         textArea.value = text;
         textArea.style.position = 'fixed';
         textArea.style.left = '-999999px';
         textArea.style.top = '-999999px';
+        textArea.style.opacity = '0';
+        textArea.style.pointerEvents = 'none';
         document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
 
         try {
+            textArea.focus();
+            textArea.select();
+            textArea.setSelectionRange(0, 99999); // For mobile devices
+
             const successful = document.execCommand('copy');
+            console.log('Fallback copy result:', successful);
+
             if (successful) {
                 setCopyStatus(true);
                 setTimeout(() => setCopyStatus(false), 2000);
             } else {
-                setError('Không thể sao chép. Vui lòng thử lại.');
+                console.error('Fallback copy failed');
+                // Hiển thị modal với text để user copy thủ công
+                setShowCopyModal(true);
             }
         } catch (err) {
             console.error('Fallback copy error:', err);
@@ -1691,6 +1706,63 @@ const DanDeFilter = memo(() => {
                             >
                                 Đóng
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Copy Modal */}
+            {showCopyModal && (
+                <div className={styles.specialSetsModalOverlay} onClick={() => setShowCopyModal(false)}>
+                    <div className={styles.specialSetsModal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.specialSetsModalHeader}>
+                            <h3>Sao chép kết quả</h3>
+                            <button
+                                className={styles.modalCloseButton}
+                                onClick={() => setShowCopyModal(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className={styles.specialSetsModalContent}>
+                            <p style={{ marginBottom: '16px', color: '#666' }}>
+                                Không thể sao chép tự động. Vui lòng chọn và copy thủ công:
+                            </p>
+                            <textarea
+                                value={copyText}
+                                readOnly
+                                style={{
+                                    width: '100%',
+                                    height: '200px',
+                                    padding: '12px',
+                                    border: '1px solid #ddd',
+                                    borderRadius: '8px',
+                                    fontSize: '14px',
+                                    fontFamily: 'monospace',
+                                    resize: 'vertical',
+                                    backgroundColor: '#f8f9fa'
+                                }}
+                                onClick={(e) => e.target.select()}
+                            />
+                            <div style={{ marginTop: '16px', textAlign: 'center' }}>
+                                <button
+                                    className={`${styles.button} ${styles.primaryButton}`}
+                                    onClick={() => {
+                                        const textarea = document.querySelector('textarea');
+                                        textarea.select();
+                                        setShowCopyModal(false);
+                                    }}
+                                >
+                                    Chọn tất cả
+                                </button>
+                                <button
+                                    className={`${styles.button} ${styles.secondaryButton}`}
+                                    onClick={() => setShowCopyModal(false)}
+                                    style={{ marginLeft: '8px' }}
+                                >
+                                    Đóng
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
