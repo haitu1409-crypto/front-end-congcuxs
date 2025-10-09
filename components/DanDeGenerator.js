@@ -3,14 +3,17 @@
  * Component chính cho chức năng tạo dàn đề
  */
 
-import React, { useState, useCallback, useEffect, useMemo, memo, lazy, Suspense } from 'react';
-import { Dice6, Copy, Trash2, Clock, Check, Undo2, Star } from 'lucide-react';
+import React, { useState, useCallback, useEffect, useMemo, memo, lazy, Suspense, useDeferredValue, startTransition } from 'react';
+import { Dice6, Copy, Trash2, Clock, Check, Undo2, Star, Filter, Info } from 'lucide-react';
 import styles from '../styles/DanDeGenerator.module.css';
 import axios from 'axios';
 import { getAllSpecialSets, getCombinedSpecialSetNumbers } from '../utils/specialSets';
+import { getTouchInfo, getNumbersByTouch } from '../utils/touchSets';
+import { getSumInfo, getNumbersBySum } from '../utils/sumSets';
 
-// Lazy load DanDeFilter for better performance with error handling
+// Lazy load components for better performance with error handling
 const DanDeFilter = lazy(() => import('./DanDeFilter').catch(() => ({ default: () => null })));
+const GuideSection = lazy(() => import('./GuideSection').catch(() => ({ default: () => null })));
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -57,9 +60,65 @@ const DanDeGenerator = memo(() => {
   const [showSpecialSetsModal, setShowSpecialSetsModal] = useState(false);
   const [showStatsDetailModal, setShowStatsDetailModal] = useState(false);
   const [statsDetailType, setStatsDetailType] = useState(null);
+  const [showTouchModal, setShowTouchModal] = useState(false);
+  const [showSumModal, setShowSumModal] = useState(false);
+
+  // States cho touch
+  const [selectedTouches, setSelectedTouches] = useState([]);
+
+  // States cho sum
+  const [selectedSums, setSelectedSums] = useState([]);
+
+  // States cho mobile navbar
+  const [activeNavItem, setActiveNavItem] = useState('generator');
+
+  // Auto update active nav item based on scroll position - Mobile optimized
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = [
+        { id: 'generator', element: document.querySelector('[data-section="generator"]') },
+        { id: 'filter', element: document.querySelector('[data-section="filter"]') },
+        { id: 'guide', element: document.querySelector('[data-section="guide"]') }
+      ];
+
+      const scrollPosition = window.scrollY + 100; // Offset for better UX
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.element && section.element.offsetTop <= scrollPosition) {
+          setActiveNavItem(section.id);
+          break;
+        }
+      }
+    };
+
+    // Mobile-optimized scroll throttling with passive listeners
+    let ticking = false;
+    const throttledHandleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    // Use passive listeners for better mobile performance
+    const scrollOptions = { passive: true };
+    window.addEventListener('scroll', throttledHandleScroll, scrollOptions);
+
+    return () => window.removeEventListener('scroll', throttledHandleScroll, scrollOptions);
+  }, []);
 
   // Memoize special sets data
   const specialSetsData = useMemo(() => getAllSpecialSets(), []);
+
+  // Memoize touch data
+  const touchData = useMemo(() => getTouchInfo(), []);
+
+  // Memoize sum data
+  const sumData = useMemo(() => getSumInfo(), []);
 
   // Handler cho chọn/bỏ chọn bộ số đặc biệt
   const handleSpecialSetToggle = useCallback((setId) => {
@@ -73,10 +132,72 @@ const DanDeGenerator = memo(() => {
     });
   }, []);
 
-  // Client-side generation với bộ số đặc biệt
-  const generateClientSideWithAllLogics = (quantity, combinationNumbers = [], excludeNumbers = [], excludeDoubles = false, specialSets = []) => {
-    // Điều chỉnh cấp độ khi loại bỏ kép bằng
-    const levelCounts = excludeDoubles ? [90, 88, 78, 68, 58, 48, 38, 28, 18, 8] : [95, 88, 78, 68, 58, 48, 38, 28, 18, 8];
+  // Handler cho chọn/bỏ chọn chạm
+  const handleTouchToggle = useCallback((touchId) => {
+    setSelectedTouches(prev => {
+      if (prev.includes(touchId)) {
+        return prev.filter(id => id !== touchId);
+      } else if (prev.length < 10) {
+        return [...prev, touchId];
+      }
+      return prev;
+    });
+  }, []);
+
+  // Handler cho chọn/bỏ chọn tổng
+  const handleSumToggle = useCallback((sumId) => {
+    setSelectedSums(prev => {
+      if (prev.includes(sumId)) {
+        return prev.filter(id => id !== sumId);
+      } else if (prev.length < 10) {
+        return [...prev, sumId];
+      }
+      return prev;
+    });
+  }, []);
+
+  // Client-side generation với thuật toán mới - 5 mức độ ưu tiên theo yêu cầu
+  const generateClientSideWithAllLogics = (quantity, combinationNumbers = [], excludeNumbers = [], excludeDoubles = false, specialSets = [], touches = [], sums = []) => {
+    // Tính số lượng số thực tế có thể sử dụng
+    let availableNumbers = 100; // Tổng số từ 00-99
+
+    // Mức 1: Loại bỏ kép bằng (10 số)
+    if (excludeDoubles) {
+      availableNumbers -= 10;
+    }
+
+    // Mức 2: Loại bỏ số mong muốn
+    if (excludeNumbers && excludeNumbers.length > 0) {
+      availableNumbers -= excludeNumbers.length;
+    }
+
+    // Định nghĩa cấp độ dựa trên số lượng số thực tế
+    let levelCounts;
+    if (availableNumbers >= 95) {
+      levelCounts = excludeDoubles ? [8, 18, 28, 38, 48, 58, 68, 78, 88, 90] : [8, 18, 28, 38, 48, 58, 68, 78, 88, 95];
+    } else if (availableNumbers >= 90) {
+      levelCounts = [8, 18, 28, 38, 48, 58, 68, 78, 88, availableNumbers];
+    } else if (availableNumbers >= 80) {
+      levelCounts = [8, 18, 28, 38, 48, 58, 68, 78, availableNumbers];
+    } else if (availableNumbers >= 70) {
+      levelCounts = [8, 18, 28, 38, 48, 58, 68, availableNumbers];
+    } else if (availableNumbers >= 60) {
+      levelCounts = [8, 18, 28, 38, 48, 58, availableNumbers];
+    } else if (availableNumbers >= 50) {
+      levelCounts = [8, 18, 28, 38, 48, availableNumbers];
+    } else if (availableNumbers >= 40) {
+      levelCounts = [8, 18, 28, 38, availableNumbers];
+    } else if (availableNumbers >= 30) {
+      levelCounts = [8, 18, 28, availableNumbers];
+    } else if (availableNumbers >= 20) {
+      levelCounts = [8, 18, availableNumbers];
+    } else if (availableNumbers >= 10) {
+      levelCounts = [8, availableNumbers];
+    } else {
+      // Trường hợp quá ít số, chỉ có bậc 8s
+      levelCounts = [Math.min(8, availableNumbers)];
+    }
+
     const levelsList = [];
     let totalSelected = 0;
 
@@ -89,108 +210,203 @@ const DanDeGenerator = memo(() => {
         index.toString().padStart(2, '0')
       );
 
-      // Loại bỏ số kép bằng nếu được chọn
+      // Mức 1: Loại bỏ kép bằng
       if (excludeDoubles) {
         const doubleNumbers = ['00', '11', '22', '33', '44', '55', '66', '77', '88', '99'];
         currentPool = currentPool.filter(num => !doubleNumbers.includes(num));
       }
 
-      // Logic chính: Ưu tiên bộ số đặc biệt
-      if (specialSets && specialSets.length > 0) {
-        const combinedSpecialNumbers = getCombinedSpecialSetNumbers(specialSets);
-
-        // Loại bỏ số loại bỏ từ pool
-        if (excludeNumbers && excludeNumbers.length > 0) {
-          currentPool = currentPool.filter(num => !excludeNumbers.includes(num));
-        }
-
-        // Áp dụng logic phân tầng cho bộ số đặc biệt
-        levelCounts.forEach((count) => {
-          let numbers;
-          const specialCount = combinedSpecialNumbers.length;
-
-          let requiredSpecialCount;
-          if (count <= specialCount) {
-            requiredSpecialCount = count;
-          } else {
-            requiredSpecialCount = specialCount;
-          }
-
-          const availableSpecial = combinedSpecialNumbers.filter(num => currentPool.includes(num));
-
-          if (availableSpecial.length >= requiredSpecialCount) {
-            const selectedSpecial = generateRandomNumbers(requiredSpecialCount, availableSpecial);
-            const remainingCount = count - selectedSpecial.length;
-            const otherNumbers = currentPool.filter(num => !selectedSpecial.includes(num));
-            const selectedOthers = generateRandomNumbers(remainingCount, otherNumbers);
-            numbers = [...selectedSpecial, ...selectedOthers].sort((a, b) => parseInt(a) - parseInt(b));
-          } else {
-            const selectedSpecial = [...availableSpecial];
-            const remainingCount = count - selectedSpecial.length;
-            const otherNumbers = currentPool.filter(num => !selectedSpecial.includes(num));
-            const selectedOthers = generateRandomNumbers(remainingCount, otherNumbers);
-            numbers = [...selectedSpecial, ...selectedOthers].sort((a, b) => parseInt(a) - parseInt(b));
-          }
-
-          levels[count] = numbers;
-          currentDanTotal += numbers.length;
-          currentPool = numbers;
-        });
-      } else {
-        // Logic cũ cho trường hợp không có bộ số đặc biệt
-        if ((!combinationNumbers || combinationNumbers.length === 0) && (!excludeNumbers || excludeNumbers.length === 0)) {
-          levelCounts.forEach(count => {
-            const numbers = generateRandomNumbers(count, currentPool);
-            levels[count] = numbers;
-            currentDanTotal += numbers.length;
-            currentPool = numbers;
-          });
-        } else if (excludeNumbers && excludeNumbers.length > 0 && (!combinationNumbers || combinationNumbers.length === 0)) {
-          currentPool = currentPool.filter(num => !excludeNumbers.includes(num));
-          levelCounts.forEach(count => {
-            const numbers = generateRandomNumbers(count, currentPool);
-            levels[count] = numbers;
-            currentDanTotal += numbers.length;
-            currentPool = numbers;
-          });
-        } else if (combinationNumbers && combinationNumbers.length > 0) {
-          if (excludeNumbers && excludeNumbers.length > 0) {
-            currentPool = currentPool.filter(num => !excludeNumbers.includes(num));
-          }
-
-          levelCounts.forEach((count) => {
-            let numbers;
-            const combinationCount = combinationNumbers.length;
-
-            let requiredCombinationCount;
-            if (count <= combinationCount) {
-              requiredCombinationCount = count;
-            } else {
-              requiredCombinationCount = combinationCount;
-            }
-
-            const availableCombination = combinationNumbers.filter(num => currentPool.includes(num));
-
-            if (availableCombination.length >= requiredCombinationCount) {
-              const selectedCombination = generateRandomNumbers(requiredCombinationCount, availableCombination);
-              const remainingCount = count - selectedCombination.length;
-              const otherNumbers = currentPool.filter(num => !selectedCombination.includes(num));
-              const selectedOthers = generateRandomNumbers(remainingCount, otherNumbers);
-              numbers = [...selectedCombination, ...selectedOthers].sort((a, b) => parseInt(a) - parseInt(b));
-            } else {
-              const selectedCombination = [...availableCombination];
-              const remainingCount = count - selectedCombination.length;
-              const otherNumbers = currentPool.filter(num => !selectedCombination.includes(num));
-              const selectedOthers = generateRandomNumbers(remainingCount, otherNumbers);
-              numbers = [...selectedCombination, ...selectedOthers].sort((a, b) => parseInt(a) - parseInt(b));
-            }
-
-            levels[count] = numbers;
-            currentDanTotal += numbers.length;
-            currentPool = numbers;
-          });
-        }
+      // Mức 2: Loại bỏ số mong muốn
+      if (excludeNumbers && excludeNumbers.length > 0) {
+        currentPool = currentPool.filter(num => !excludeNumbers.includes(num));
       }
+
+      // Chuẩn bị các tập số ưu tiên
+      // Mức 3: Số mong muốn (ưu tiên cao nhất)
+      let priority3Numbers = [];
+      if (combinationNumbers && combinationNumbers.length > 0) {
+        priority3Numbers = combinationNumbers.filter(num => currentPool.includes(num));
+      }
+
+      // Mức 4: Kết hợp Bộ đặc biệt + Chạm + Tổng
+      let criteria4Numbers = [];
+      let numberFrequency = {}; // Đếm tần suất xuất hiện
+
+      // Thêm số từ Bộ đặc biệt
+      if (specialSets && specialSets.length > 0) {
+        const specialNumbers = getCombinedSpecialSetNumbers(specialSets);
+        specialNumbers.forEach(num => {
+          if (currentPool.includes(num)) {
+          criteria4Numbers.push(num);
+          numberFrequency[num] = (numberFrequency[num] || 0) + 1;
+          }
+        });
+      }
+
+      // Thêm số từ Chạm
+      if (touches && touches.length > 0) {
+        const touchNumbers = getNumbersByTouch(touches);
+        touchNumbers.forEach(num => {
+          if (currentPool.includes(num)) {
+          criteria4Numbers.push(num);
+          numberFrequency[num] = (numberFrequency[num] || 0) + 1;
+          }
+        });
+      }
+
+      // Thêm số từ Tổng
+      if (sums && sums.length > 0) {
+        const sumNumbers = getNumbersBySum(sums);
+        sumNumbers.forEach(num => {
+          if (currentPool.includes(num)) {
+            criteria4Numbers.push(num);
+            numberFrequency[num] = (numberFrequency[num] || 0) + 1;
+          }
+        });
+      }
+
+      // Loại bỏ trùng lặp và sắp xếp theo tần suất (cao → thấp)
+      const uniqueCriteria4Numbers = [...new Set(criteria4Numbers)].sort((a, b) => {
+        const freqA = numberFrequency[a] || 0;
+        const freqB = numberFrequency[b] || 0;
+
+        // Ưu tiên tần suất cao hơn
+        if (freqA !== freqB) {
+          return freqB - freqA;
+        }
+
+        // Nếu tần suất bằng nhau, sắp xếp theo số
+        return parseInt(a) - parseInt(b);
+      });
+
+      // Tạo bản sao để theo dõi số đã sử dụng
+      let usedPriority3Numbers = [...priority3Numbers];
+      let usedCriteria4Numbers = [...uniqueCriteria4Numbers];
+
+      // Xử lý từ bậc thấp lên cao (8s → 95s/90s) - Đảm bảo quy tắc tập con và không trùng lặp
+      levelCounts.forEach((count, levelIndex) => {
+        let finalNumbers = [];
+
+        // Bước 1: Bao gồm tất cả số từ các bậc trước (quy tắc tập con)
+        if (levelIndex > 0) {
+          const previousCount = levelCounts[levelIndex - 1];
+          const previousNumbers = levels[previousCount] || [];
+          finalNumbers = [...previousNumbers];
+        }
+
+        // Bước 2: Tính số lượng cần thêm cho bậc hiện tại
+        const additionalNeeded = count - finalNumbers.length;
+
+        if (additionalNeeded > 0) {
+          // Tạo Set để theo dõi số đã chọn trong bậc hiện tại
+          const currentLevelUsed = new Set(finalNumbers);
+
+          // Bước 3: Lấy số từ Mức 3 (Số mong muốn) - ưu tiên cao nhất
+          let remainingCount = additionalNeeded;
+          let selectedFromPriority3 = [];
+
+          if (usedPriority3Numbers.length > 0) {
+            // Lọc số chưa được sử dụng trong bậc hiện tại
+            const availablePriority3 = usedPriority3Numbers.filter(num =>
+              !currentLevelUsed.has(num)
+            );
+
+            if (availablePriority3.length > 0) {
+              if (availablePriority3.length >= remainingCount) {
+                // Nếu số mong muốn >= số cần thiết, lấy ngẫu nhiên
+                selectedFromPriority3 = generateRandomNumbers(remainingCount, availablePriority3);
+              } else {
+                // Nếu số mong muốn < số cần thiết, lấy tất cả
+                selectedFromPriority3 = [...availablePriority3];
+              }
+              remainingCount -= selectedFromPriority3.length;
+            }
+          }
+
+          // Cập nhật Set và finalNumbers
+          selectedFromPriority3.forEach(num => currentLevelUsed.add(num));
+          finalNumbers = [...finalNumbers, ...selectedFromPriority3];
+
+          // Bước 4: Lấy số từ Mức 4 (Bộ đặc biệt + Chạm + Tổng) nếu còn thiếu
+          if (remainingCount > 0 && usedCriteria4Numbers.length > 0) {
+            let selectedFromCriteria4 = [];
+
+            // Lọc số chưa được sử dụng trong bậc hiện tại
+            const availableCriteria4 = usedCriteria4Numbers.filter(num =>
+              !currentLevelUsed.has(num)
+            );
+
+            if (availableCriteria4.length > 0) {
+              // Phân loại theo tần suất từ cao xuống thấp
+              const freq3Numbers = availableCriteria4.filter(num => (numberFrequency[num] || 0) === 3);
+              const freq2Numbers = availableCriteria4.filter(num => (numberFrequency[num] || 0) === 2);
+              const freq1Numbers = availableCriteria4.filter(num => (numberFrequency[num] || 0) === 1);
+
+              // Lấy theo thứ tự ưu tiên: tần suất 3 → tần suất 2 → tần suất 1
+              let tempRemainingCount = remainingCount;
+
+              // Bước 1: Lấy tất cả số có tần suất 3
+              if (freq3Numbers.length > 0 && tempRemainingCount > 0) {
+                if (freq3Numbers.length <= tempRemainingCount) {
+                  selectedFromCriteria4 = [...selectedFromCriteria4, ...freq3Numbers];
+                  tempRemainingCount -= freq3Numbers.length;
+                } else {
+                  const randomFromFreq3 = generateRandomNumbers(tempRemainingCount, freq3Numbers);
+                  selectedFromCriteria4 = [...selectedFromCriteria4, ...randomFromFreq3];
+                  tempRemainingCount = 0;
+                }
+              }
+
+              // Bước 2: Lấy số có tần suất 2 nếu còn thiếu
+              if (tempRemainingCount > 0 && freq2Numbers.length > 0) {
+                if (freq2Numbers.length <= tempRemainingCount) {
+                  selectedFromCriteria4 = [...selectedFromCriteria4, ...freq2Numbers];
+                  tempRemainingCount -= freq2Numbers.length;
+                } else {
+                  const randomFromFreq2 = generateRandomNumbers(tempRemainingCount, freq2Numbers);
+                  selectedFromCriteria4 = [...selectedFromCriteria4, ...randomFromFreq2];
+                  tempRemainingCount = 0;
+                }
+              }
+
+              // Bước 3: Lấy số có tần suất 1 nếu vẫn còn thiếu
+              if (tempRemainingCount > 0 && freq1Numbers.length > 0) {
+                const randomFromFreq1 = generateRandomNumbers(
+                  Math.min(tempRemainingCount, freq1Numbers.length),
+                  freq1Numbers
+                );
+                selectedFromCriteria4 = [...selectedFromCriteria4, ...randomFromFreq1];
+              }
+
+              // Cập nhật Set và finalNumbers
+              selectedFromCriteria4.forEach(num => currentLevelUsed.add(num));
+              finalNumbers = [...finalNumbers, ...selectedFromCriteria4];
+              remainingCount = count - finalNumbers.length;
+            }
+          }
+
+          // Bước 5: Bù số ngẫu nhiên (Mức 5) nếu vẫn thiếu
+          if (remainingCount > 0) {
+            // Lọc số chưa được sử dụng trong bậc hiện tại
+            const availableRandomNumbers = currentPool.filter(num =>
+              !currentLevelUsed.has(num)
+            );
+
+            if (availableRandomNumbers.length >= remainingCount) {
+              const randomNumbers = generateRandomNumbers(remainingCount, availableRandomNumbers);
+              finalNumbers = [...finalNumbers, ...randomNumbers];
+          } else {
+              // Trường hợp hiếm: không đủ số để bù
+              finalNumbers = [...finalNumbers, ...availableRandomNumbers];
+            }
+          }
+        }
+
+        // Sắp xếp và lưu kết quả
+        const sortedNumbers = finalNumbers.sort((a, b) => parseInt(a) - parseInt(b));
+        levels[count] = sortedNumbers;
+        currentDanTotal += sortedNumbers.length;
+      });
 
       levelsList.push(levels);
       totalSelected += currentDanTotal;
@@ -419,60 +635,88 @@ const DanDeGenerator = memo(() => {
     }
   }, []);
 
-  // Debounced input handler
+  // Mobile-optimized debounced input handler
   const debouncedCombinationChange = useMemo(
     () => debounce((value) => {
-      // Validate số kết hợp
-      if (value.trim() !== '') {
-        // Xử lý dấu câu: chấp nhận dấu phẩy, chấm phẩy, khoảng trắng
-        const processedValue = value.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
-        const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
+      // Use startTransition for non-urgent validation
+      startTransition(() => {
+        // Validate số kết hợp
+        if (value.trim() !== '') {
+          // Xử lý dấu câu: chấp nhận dấu phẩy, chấm phẩy, khoảng trắng
+          const processedValue = value.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+          const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
 
-        // Loại bỏ số trùng lặp và giữ thứ tự
-        const uniqueNumbers = [...new Set(numbers)];
+          // Loại bỏ số trùng lặp và giữ thứ tự
+          const uniqueNumbers = [...new Set(numbers)];
 
-        // Cập nhật giá trị input để loại bỏ số trùng lặp
-        if (uniqueNumbers.length !== numbers.length) {
-          const cleanedValue = uniqueNumbers.join(',');
-          setCombinationNumbers(cleanedValue);
-        }
+          // Cập nhật giá trị input để loại bỏ số trùng lặp
+          if (uniqueNumbers.length !== numbers.length) {
+            const cleanedValue = uniqueNumbers.join(',');
+            setCombinationNumbers(cleanedValue);
+          }
 
-        // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
-        if (uniqueNumbers.length > 40) {
-          setError('Thêm số mong muốn không được quá 40 số (đã loại bỏ số trùng lặp)');
-          return;
-        }
+          // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
+          if (uniqueNumbers.length > 40) {
+            setError('Thêm số mong muốn không được quá 40 số (đã loại bỏ số trùng lặp)');
+            return;
+          }
 
-        const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
-
-        if (invalidNumbers.length > 0) {
-          setError('Thêm số phải là số 2 chữ số (00-99), cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng');
-        } else {
-          // Kiểm tra xung đột với số loại bỏ
+          // Kiểm tra xung đột với số loại bỏ và kép bằng
           const excludeNums = excludeNumbers.trim() ?
             excludeNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '').split(',').map(n => n.trim()).filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0')) : [];
-          const combinationNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
-          const conflicts = combinationNums.filter(num => excludeNums.includes(num));
 
-          if (conflicts.length > 0) {
-            setError(`Số ${conflicts.join(', ')} không thể vừa là Thêm số vừa là Loại bỏ số`);
-          } else {
-            setError(null);
+          let availableNumbers = 100;
+          if (excludeDoubles) {
+            availableNumbers -= 10; // Loại bỏ kép bằng
           }
+          if (excludeNums.length > 0) {
+            availableNumbers -= excludeNums.length; // Loại bỏ số mong muốn
+          }
+
+          if (uniqueNumbers.length > availableNumbers) {
+            setError(`Thêm số mong muốn không được quá ${availableNumbers} số (sau khi loại bỏ kép bằng và số loại bỏ)`);
+            return;
+          }
+
+          const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
+
+          if (invalidNumbers.length > 0) {
+            setError('Thêm số phải là số 2 chữ số (00-99), cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng');
+          } else {
+            // Kiểm tra xung đột với số loại bỏ
+            const excludeNums = excludeNumbers.trim() ?
+              excludeNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '').split(',').map(n => n.trim()).filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0')) : [];
+            const combinationNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
+            const conflicts = combinationNums.filter(num => excludeNums.includes(num));
+
+            if (conflicts.length > 0) {
+              setError(`Số ${conflicts.join(', ')} không thể vừa là Thêm số vừa là Loại bỏ số`);
+            } else {
+              setError(null);
+            }
+          }
+        } else {
+          setError(null);
         }
-      } else {
-        setError(null);
-      }
-    }, 300),
-    []
+      });
+    }, 150), // Reduced debounce time for mobile responsiveness
+    [excludeNumbers]
   );
 
-  // Xử lý input số kết hợp
+  // Deferred values for better performance
+  const deferredCombinationNumbers = useDeferredValue(combinationNumbers);
+  const deferredExcludeNumbers = useDeferredValue(excludeNumbers);
+
+  // Xử lý input số kết hợp với startTransition
   const handleCombinationChange = useCallback((e) => {
     const value = e.target.value;
     setCombinationNumbers(value);
-    debouncedCombinationChange(value);
-  }, []);
+
+    // Use startTransition for non-urgent updates
+    startTransition(() => {
+      debouncedCombinationChange(value);
+    });
+  }, [debouncedCombinationChange]);
 
   // Debounced exclude handler
   const debouncedExcludeChange = useMemo(
@@ -493,8 +737,8 @@ const DanDeGenerator = memo(() => {
         }
 
         // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
-        if (uniqueNumbers.length > 5) {
-          setError('Loại bỏ số mong muốn không được quá 5 số (đã loại bỏ số trùng lặp)');
+        if (uniqueNumbers.length > 10) {
+          setError('Loại bỏ số mong muốn không được quá 10 số (đã loại bỏ số trùng lặp)');
           return;
         }
 
@@ -522,12 +766,16 @@ const DanDeGenerator = memo(() => {
     []
   );
 
-  // Xử lý input số loại bỏ
+  // Xử lý input số loại bỏ với startTransition
   const handleExcludeChange = useCallback((e) => {
     const value = e.target.value;
     setExcludeNumbers(value);
-    debouncedExcludeChange(value);
-  }, []);
+
+    // Use startTransition for non-urgent updates
+    startTransition(() => {
+      debouncedExcludeChange(value);
+    });
+  }, [debouncedExcludeChange]);
 
   // Parse số kết hợp thành mảng
   const parseCombinationNumbers = useCallback(() => {
@@ -562,7 +810,7 @@ const DanDeGenerator = memo(() => {
   // Kiểm tra tính hợp lệ của input để bật/tắt nút tạo dàn
   const isValidForCreate = useCallback(() => {
     // Nếu không có input nào, cho phép tạo dàn ngẫu nhiên
-    if (!combinationNumbers.trim() && !excludeNumbers.trim() && selectedSpecialSets.length === 0) {
+    if (!combinationNumbers.trim() && !excludeNumbers.trim() && selectedSpecialSets.length === 0 && selectedTouches.length === 0 && selectedSums.length === 0) {
       return true;
     }
 
@@ -600,7 +848,7 @@ const DanDeGenerator = memo(() => {
         return isNaN(numInt) || numInt < 0 || numInt > 99 || num.length > 2 || (num.length === 2 && num[0] === '0');
       });
 
-      if (invalidNumbers.length > 0 || uniqueNumbers.length > 5) {
+      if (invalidNumbers.length > 0 || uniqueNumbers.length > 10) {
         return false;
       }
     }
@@ -626,7 +874,7 @@ const DanDeGenerator = memo(() => {
     }
 
     return true;
-  }, [combinationNumbers, excludeNumbers, selectedSpecialSets]);
+  }, [combinationNumbers, excludeNumbers, selectedSpecialSets, selectedTouches, selectedSums]);
 
   // Xử lý checkbox loại bỏ kép bằng
   const handleExcludeDoublesChange = useCallback((e) => {
@@ -681,7 +929,9 @@ const DanDeGenerator = memo(() => {
         combinationNumbers: combinationNums.length > 0 ? combinationNums : undefined,
         excludeNumbers: excludeNums.length > 0 ? excludeNums : undefined,
         excludeDoubles: excludeDoubles || undefined,
-        specialSets: selectedSpecialSets.length > 0 ? selectedSpecialSets : undefined
+        specialSets: selectedSpecialSets.length > 0 ? selectedSpecialSets : undefined,
+        touches: selectedTouches.length > 0 ? selectedTouches : undefined,
+        sums: selectedSums.length > 0 ? selectedSums : undefined
       };
 
       const response = await axios.post(`${API_URL}/api/dande/generate`, requestData);
@@ -696,14 +946,14 @@ const DanDeGenerator = memo(() => {
     } catch (err) {
       console.error('API Error, falling back to client-side generation:', err);
       // Fallback: Tạo ở client-side nếu API lỗi
-      const result = generateClientSideWithAllLogics(parseInt(quantity, 10), combinationNums, excludeNums, excludeDoubles, selectedSpecialSets);
+      const result = generateClientSideWithAllLogics(parseInt(quantity, 10), combinationNums, excludeNums, excludeDoubles, selectedSpecialSets, selectedTouches, selectedSums);
       setLevelsList(result.levelsList);
       setTotalSelected(result.totalSelected);
       setUndoData(null); // Xóa dữ liệu undo khi tạo dàn mới
     } finally {
       setLoading(false);
     }
-  }, [quantity, combinationNumbers, excludeNumbers, excludeDoubles, selectedSpecialSets]);
+  }, [quantity, combinationNumbers, excludeNumbers, excludeDoubles, selectedSpecialSets, selectedTouches, selectedSums]);
 
   const handleCopyDan = useCallback(() => {
     if (levelsList.length === 0) {
@@ -767,7 +1017,7 @@ const DanDeGenerator = memo(() => {
 
   const handleXoaDan = useCallback(() => {
     // Lưu tất cả dữ liệu trước khi xóa để có thể hoàn tác
-    if (levelsList.length > 0 || combinationNumbers.trim() || excludeNumbers.trim() || selectedSpecialSets.length > 0 || excludeDoubles) {
+    if (levelsList.length > 0 || combinationNumbers.trim() || excludeNumbers.trim() || selectedSpecialSets.length > 0 || selectedTouches.length > 0 || selectedSums.length > 0 || excludeDoubles) {
       setUndoData({
         levelsList: [...levelsList],
         totalSelected: totalSelected,
@@ -776,7 +1026,9 @@ const DanDeGenerator = memo(() => {
         combinationNumbers: combinationNumbers,
         excludeNumbers: excludeNumbers,
         excludeDoubles: excludeDoubles,
-        selectedSpecialSets: [...selectedSpecialSets]
+        selectedSpecialSets: [...selectedSpecialSets],
+        selectedTouches: [...selectedTouches],
+        selectedSums: [...selectedSums]
       });
     }
 
@@ -789,10 +1041,12 @@ const DanDeGenerator = memo(() => {
     setExcludeNumbers('');
     setExcludeDoubles(false);
     setSelectedSpecialSets([]);
+    setSelectedTouches([]);
+    setSelectedSums([]);
     setError(null);
     setDeleteStatus(true);
     setTimeout(() => setDeleteStatus(false), 2000);
-  }, [levelsList, combinationNumbers, excludeNumbers, selectedSpecialSets, excludeDoubles, totalSelected, selectedLevels]);
+  }, [levelsList, combinationNumbers, excludeNumbers, selectedSpecialSets, selectedTouches, selectedSums, excludeDoubles, totalSelected, selectedLevels]);
 
   const handleUndo = useCallback(() => {
     if (undoData) {
@@ -804,6 +1058,8 @@ const DanDeGenerator = memo(() => {
       setExcludeNumbers(undoData.excludeNumbers);
       setExcludeDoubles(undoData.excludeDoubles);
       setSelectedSpecialSets(undoData.selectedSpecialSets);
+      setSelectedTouches(undoData.selectedTouches || []);
+      setSelectedSums(undoData.selectedSums || []);
       setUndoData(null); // Xóa dữ liệu undo sau khi hoàn tác
       setUndoStatus(true);
       setTimeout(() => setUndoStatus(false), 2000);
@@ -870,6 +1126,32 @@ const DanDeGenerator = memo(() => {
     setStatsDetailType(null);
   }, []);
 
+  // Mobile navbar handlers
+  const handleNavItemClick = useCallback((itemId) => {
+    setActiveNavItem(itemId);
+
+    // Scroll to section based on itemId
+    if (itemId === 'generator') {
+      // Scroll to top of generator section
+      const generatorSection = document.querySelector('[data-section="generator"]');
+      if (generatorSection) {
+        generatorSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (itemId === 'filter') {
+      // Scroll to filter section
+      const filterSection = document.querySelector('[data-section="filter"]');
+      if (filterSection) {
+        filterSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (itemId === 'guide') {
+      // Scroll to guide section
+      const guideSection = document.querySelector('[data-section="guide"]');
+      if (guideSection) {
+        guideSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, []);
+
   // Tạo nội dung textarea từ kết quả
   const generateTextareaContent = useMemo(() => {
     if (levelsList.length === 0) {
@@ -906,7 +1188,7 @@ const DanDeGenerator = memo(() => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
+      <div className={styles.card} data-section="generator">
         <div className={styles.twoColumnLayout}>
           {/* Left Column: Inputs and Buttons */}
           <div className={styles.leftColumn}>
@@ -1017,7 +1299,7 @@ const DanDeGenerator = memo(() => {
                     value={excludeNumbers}
                     onChange={handleExcludeChange}
                     placeholder="83,84,85"
-                    title="Nhập các số 2 chữ số (00-99) cần loại bỏ, cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng. Tối đa 5 số."
+                    title="Nhập các số 2 chữ số (00-99) cần loại bỏ, cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng. Tối đa 10 số."
                     className={styles.input}
                     disabled={loading}
                   />
@@ -1051,40 +1333,113 @@ const DanDeGenerator = memo(() => {
                   </div>
                 </div>
 
-                {/* Special Sets Selection */}
-                <div className={styles.inputGroup}>
-                  <label className={styles.inputLabel}>
-                    <Star size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                    Chọn bộ số đặc biệt:
-                  </label>
+                {/* Desktop Selection Layout - 2 rows */}
+                <div className={styles.desktopSelectionRow}>
+                  {/* Row 1: Special Sets - Full width */}
+                  <div className={styles.desktopSpecialSetsRow}>
+                    <div className={styles.inputGroup}>
+                      <label className={styles.inputLabel}>
+                        Chọn bộ số đặc biệt:
+                      </label>
 
-                  <div className={styles.specialSetsContainer}>
-                    <div className={styles.specialSetsList}>
-                      {specialSetsData.map(set => (
-                        <div
-                          key={set.id}
-                          className={`${styles.specialSetItem} ${selectedSpecialSets.includes(set.id) ? styles.selected : ''
-                            } ${selectedSpecialSets.length >= 5 && !selectedSpecialSets.includes(set.id) ? styles.disabled : ''}`}
-                          onClick={() => !loading && handleSpecialSetToggle(set.id)}
-                          title={`Bộ ${set.id}: ${set.numbers.join(', ')}`}
-                        >
-                          <div className={styles.specialSetHeader}>
-                            <span className={styles.specialSetId}>Bộ {set.id}</span>
-                            <span className={styles.specialSetCount}>({set.count} số)</span>
-                          </div>
-                          <div className={styles.specialSetNumbers}>
-                            {set.numbers.join(', ')}
-                          </div>
+                      <div className={styles.specialSetsContainer}>
+                        <div className={styles.specialSetsList}>
+                          {specialSetsData.map(set => (
+                            <div
+                              key={set.id}
+                              className={`${styles.specialSetItem} ${selectedSpecialSets.includes(set.id) ? styles.selected : ''
+                                } ${selectedSpecialSets.length >= 5 && !selectedSpecialSets.includes(set.id) ? styles.disabled : ''}`}
+                              onClick={() => !loading && handleSpecialSetToggle(set.id)}
+                              title={`Bộ ${set.id}: ${set.numbers.join(', ')}`}
+                            >
+                              <div className={styles.specialSetHeader}>
+                                <span className={styles.specialSetId}>Bộ {set.id}</span>
+                                <span className={styles.specialSetCount}>({set.count} số)</span>
+                              </div>
+                              <div className={styles.specialSetNumbers}>
+                                {set.numbers.join(', ')}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </div>
+
+                      {selectedSpecialSets.length > 0 && (
+                        <div className={styles.selectedSpecialSets}>
+                          <strong>Đã chọn:</strong> {selectedSpecialSets.map(id => `Bộ ${id}`).join(', ')}
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  {selectedSpecialSets.length > 0 && (
-                    <div className={styles.selectedSpecialSets}>
-                      <strong>Đã chọn:</strong> {selectedSpecialSets.map(id => `Bộ ${id}`).join(', ')}
+                  {/* Row 2: Touch and Sum - Side by side */}
+                  <div className={styles.desktopTouchSumRow}>
+                    {/* Chọn chạm - Desktop */}
+                    <div className={styles.inputGroup}>
+                      <label className={styles.inputLabel}>
+                        Chọn chạm (tối đa 10 chạm):
+                      </label>
+                      <div className={styles.touchSelectionContainer}>
+                        <div className={styles.touchSelectionList}>
+                          {touchData.map(touch => (
+                            <div
+                              key={touch.id}
+                              className={`${styles.touchSelectionItem} ${selectedTouches.includes(touch.id) ? styles.selected : ''
+                                } ${selectedTouches.length >= 10 && !selectedTouches.includes(touch.id) ? styles.disabled : ''}`}
+                              onClick={() => !loading && handleTouchToggle(touch.id)}
+                              title={`Chạm ${touch.id}: ${touch.numbers.join(', ')}`}
+                            >
+                              <div className={styles.touchSelectionHeader}>
+                                <span className={styles.touchSelectionId}>Chạm {touch.id}</span>
+                                <span className={styles.touchSelectionCount}>({touch.count} số)</span>
+                              </div>
+                              <div className={styles.touchSelectionNumbers}>
+                                {touch.numbers.join(', ')}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      {selectedTouches.length > 0 && (
+                        <div className={styles.selectedTouches}>
+                          <strong>Đã chọn:</strong> {selectedTouches.map(id => `Chạm ${id}`).join(', ')}
+                        </div>
+                      )}
                     </div>
-                  )}
+
+                    {/* Chọn tổng - Desktop */}
+                    <div className={styles.inputGroup}>
+                      <label className={styles.inputLabel}>
+                        Chọn tổng (tối đa 10 tổng):
+                      </label>
+                      <div className={styles.sumSelectionContainer}>
+                        <div className={styles.sumSelectionList}>
+                          {sumData.map(sum => (
+                            <div
+                              key={sum.id}
+                              className={`${styles.sumSelectionItem} ${selectedSums.includes(sum.id) ? styles.selected : ''
+                                } ${selectedSums.length >= 10 && !selectedSums.includes(sum.id) ? styles.disabled : ''}`}
+                              onClick={() => !loading && handleSumToggle(sum.id)}
+                              title={`Tổng ${sum.id}: ${sum.numbers.join(', ')}`}
+                            >
+                              <div className={styles.sumSelectionHeader}>
+                                <span className={styles.sumSelectionId}>Tổng {sum.id}</span>
+                                <span className={styles.sumSelectionCount}>({sum.count} số)</span>
+                              </div>
+                              <div className={styles.sumSelectionNumbers}>
+                                {sum.numbers.join(', ')}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      {selectedSums.length > 0 && (
+                        <div className={styles.selectedSums}>
+                          <strong>Đã chọn:</strong> {selectedSums.map(id => `Tổng ${id}`).join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1115,10 +1470,37 @@ const DanDeGenerator = memo(() => {
                       onClick={() => setShowSpecialSetsModal(true)}
                       disabled={loading}
                     >
-                      <Star size={16} />
                       {selectedSpecialSets.length > 0
                         ? `${selectedSpecialSets.length} bộ`
                         : 'Chọn bộ số'
+                      }
+                    </button>
+                  </div>
+
+                  {/* Button chọn chạm */}
+                  <div className={styles.mobileTouchGroup}>
+                    <button
+                      className={styles.touchButton}
+                      onClick={() => setShowTouchModal(true)}
+                      disabled={loading}
+                    >
+                      {selectedTouches.length > 0
+                        ? `${selectedTouches.length} chạm`
+                        : 'Chạm'
+                      }
+                    </button>
+                  </div>
+
+                  {/* Button chọn tổng */}
+                  <div className={styles.mobileSumGroup}>
+                    <button
+                      className={styles.sumButton}
+                      onClick={() => setShowSumModal(true)}
+                      disabled={loading}
+                    >
+                      {selectedSums.length > 0
+                        ? `${selectedSums.length} tổng`
+                        : 'Tổng'
                       }
                     </button>
                   </div>
@@ -1132,7 +1514,7 @@ const DanDeGenerator = memo(() => {
 
                   {/* Mobile Stats Grid */}
                   <div className={styles.mobileStatsSection}>
-                    {(selectedSpecialSets.length > 0 || combinationNumbers.trim() || excludeNumbers.trim() || excludeDoubles) ? (
+                    {(selectedSpecialSets.length > 0 || combinationNumbers.trim() || excludeNumbers.trim() || selectedTouches.length || selectedSums.length || excludeDoubles) ? (
                       <div className={styles.mobileStatsGrid}>
                         {selectedSpecialSets.length > 0 && (
                           <div
@@ -1166,6 +1548,30 @@ const DanDeGenerator = memo(() => {
                             <span className={styles.mobileStatIcon}>➖</span>
                             <span className={styles.mobileStatText}>
                               -{parseExcludeNumbers().length}
+                            </span>
+                          </div>
+                        )}
+
+                        {selectedTouches.length > 0 && (
+                          <div
+                            className={styles.mobileStatItem}
+                            onClick={() => handleStatsDetailClick('selectedTouches')}
+                          >
+                            <span className={styles.mobileStatIcon}>🎯</span>
+                            <span className={styles.mobileStatText}>
+                              {selectedTouches.length} chạm
+                            </span>
+                          </div>
+                        )}
+
+                        {selectedSums.length > 0 && (
+                          <div
+                            className={styles.mobileStatItem}
+                            onClick={() => handleStatsDetailClick('selectedSums')}
+                          >
+                            <span className={styles.mobileStatIcon}>🔢</span>
+                            <span className={styles.mobileStatText}>
+                              {selectedSums.length} tổng
                             </span>
                           </div>
                         )}
@@ -1219,9 +1625,27 @@ const DanDeGenerator = memo(() => {
 
                     {excludeNumbers.trim() && (
                       <div style={{ color: '#dc2626', marginBottom: '4px' }}>
-                        ✅ <strong>Loại bỏ số mong muốn:</strong> {parseExcludeNumbers().length}/5 số<br />
+                        ✅ <strong>Loại bỏ số mong muốn:</strong> {parseExcludeNumbers().length}/10 số<br />
                         <span style={{ fontSize: '12px', color: '#991b1b', fontFamily: 'monospace' }}>
                           {parseExcludeNumbers().join(', ')}
+                        </span>
+                      </div>
+                    )}
+
+                    {selectedTouches.length > 0 && (
+                      <div style={{ color: '#f59e0b', marginBottom: '4px' }}>
+                        ✅ <strong>Chọn chạm:</strong> {selectedTouches.length}/10 chạm ({selectedTouches.map(id => `Chạm ${id}`).join(', ')})<br />
+                        <span style={{ fontSize: '12px', color: '#d97706', fontFamily: 'monospace' }}>
+                          {getNumbersByTouch(selectedTouches).join(', ')}
+                        </span>
+                      </div>
+                    )}
+
+                    {selectedSums.length > 0 && (
+                      <div style={{ color: '#8b5cf6', marginBottom: '4px' }}>
+                        ✅ <strong>Chọn tổng:</strong> {selectedSums.length}/10 tổng ({selectedSums.map(id => `Tổng ${id}`).join(', ')})<br />
+                        <span style={{ fontSize: '12px', color: '#7c3aed', fontFamily: 'monospace' }}>
+                          {getNumbersBySum(selectedSums).join(', ')}
                         </span>
                       </div>
                     )}
@@ -1235,7 +1659,7 @@ const DanDeGenerator = memo(() => {
                       </div>
                     )}
 
-                    {selectedSpecialSets.length === 0 && !combinationNumbers.trim() && !excludeNumbers.trim() && !excludeDoubles && (
+                    {selectedSpecialSets.length === 0 && !combinationNumbers.trim() && !excludeNumbers.trim() && !selectedTouches.length && !selectedSums.length && !excludeDoubles && (
                       <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
                         💡 Chưa có lựa chọn nào. Dàn sẽ được tạo ngẫu nhiên.
                       </div>
@@ -1279,9 +1703,18 @@ const DanDeGenerator = memo(() => {
       </div>
 
       {/* Box Lọc Dàn */}
-      <Suspense fallback={<LoadingSkeleton />}>
-        <DanDeFilter />
-      </Suspense>
+      <div data-section="filter">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <DanDeFilter />
+        </Suspense>
+      </div>
+
+      {/* Hướng dẫn sử dụng */}
+      <div data-section="guide">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <GuideSection />
+        </Suspense>
+      </div>
 
       {/* Modal */}
       {showModal && (
@@ -1353,6 +1786,8 @@ const DanDeGenerator = memo(() => {
                 {statsDetailType === 'specialSets' && '⭐ Bộ số đặc biệt'}
                 {statsDetailType === 'combinationNumbers' && '➕ Thêm số mong muốn'}
                 {statsDetailType === 'excludeNumbers' && '➖ Loại bỏ số mong muốn'}
+                {statsDetailType === 'selectedTouches' && '🎯 Chọn chạm'}
+                {statsDetailType === 'selectedSums' && '🔢 Chọn tổng'}
                 {statsDetailType === 'excludeDoubles' && '🚫 Loại bỏ kép bằng'}
               </h3>
               <button
@@ -1400,10 +1835,56 @@ const DanDeGenerator = memo(() => {
               {statsDetailType === 'excludeNumbers' && (
                 <div>
                   <div className={styles.statsDetailInfo}>
-                    <strong>Số lượng:</strong> {parseExcludeNumbers().length}/5 số
+                    <strong>Số lượng:</strong> {parseExcludeNumbers().length}/10 số
                   </div>
                   <div className={styles.statsDetailNumbers}>
                     {parseExcludeNumbers().join(', ')}
+                  </div>
+                </div>
+              )}
+
+              {statsDetailType === 'selectedTouches' && (
+                <div>
+                  <div className={styles.statsDetailInfo}>
+                    <strong>Đã chọn:</strong> {selectedTouches.length}/10 chạm
+                  </div>
+                  <div className={styles.statsDetailList}>
+                    {selectedTouches.map(id => {
+                      const touch = touchData.find(t => t.id === id);
+                      return (
+                        <div key={id} className={styles.statsDetailItem}>
+                          <div className={styles.statsDetailItemHeader}>
+                            <strong>Chạm {id}</strong> ({touch.count} số)
+                          </div>
+                          <div className={styles.statsDetailNumbers}>
+                            {touch.numbers.join(', ')}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {statsDetailType === 'selectedSums' && (
+                <div>
+                  <div className={styles.statsDetailInfo}>
+                    <strong>Đã chọn:</strong> {selectedSums.length}/10 tổng
+                  </div>
+                  <div className={styles.statsDetailList}>
+                    {selectedSums.map(id => {
+                      const sum = sumData.find(s => s.id === id);
+                      return (
+                        <div key={id} className={styles.statsDetailItem}>
+                          <div className={styles.statsDetailItemHeader}>
+                            <strong>Tổng {id}</strong> ({sum.count} số)
+                          </div>
+                          <div className={styles.statsDetailNumbers}>
+                            {sum.numbers.join(', ')}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1428,6 +1909,104 @@ const DanDeGenerator = memo(() => {
                 onClick={closeStatsDetailModal}
               >
                 Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Touch Modal */}
+      {showTouchModal && (
+        <div className={styles.specialSetsModalOverlay} onClick={() => setShowTouchModal(false)}>
+          <div className={styles.specialSetsModal} onClick={e => e.stopPropagation()}>
+            <div className={styles.specialSetsModalHeader}>
+              <h3>Chọn chạm (0-9)</h3>
+              <button
+                className={styles.specialSetsModalClose}
+                onClick={() => setShowTouchModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.specialSetsModalContent}>
+              <div className={styles.specialSetsList}>
+                {touchData.map(touch => (
+                  <div
+                    key={touch.id}
+                    className={`${styles.specialSetItem} ${selectedTouches.includes(touch.id) ? styles.selected : ''
+                      } ${selectedTouches.length >= 10 && !selectedTouches.includes(touch.id) ? styles.disabled : ''}`}
+                    onClick={() => !loading && handleTouchToggle(touch.id)}
+                    title={`Chạm ${touch.id}: ${touch.numbers.join(', ')}`}
+                  >
+                    <div className={styles.specialSetHeader}>
+                      <span className={styles.specialSetId}>Chạm {touch.id}</span>
+                      <span className={styles.specialSetCount}>({touch.count} số)</span>
+                    </div>
+                    <div className={styles.specialSetNumbers}>
+                      {touch.numbers.join(', ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className={styles.specialSetsModalFooter}>
+              <div className={styles.selectedCount}>
+                Đã chọn: {selectedTouches.length}/10 chạm
+              </div>
+              <button
+                className={styles.specialSetsModalDone}
+                onClick={() => setShowTouchModal(false)}
+              >
+                Xong
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sum Modal */}
+      {showSumModal && (
+        <div className={styles.specialSetsModalOverlay} onClick={() => setShowSumModal(false)}>
+          <div className={styles.specialSetsModal} onClick={e => e.stopPropagation()}>
+            <div className={styles.specialSetsModalHeader}>
+              <h3>Chọn tổng (0-9)</h3>
+              <button
+                className={styles.specialSetsModalClose}
+                onClick={() => setShowSumModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.specialSetsModalContent}>
+              <div className={styles.specialSetsList}>
+                {sumData.map(sum => (
+                  <div
+                    key={sum.id}
+                    className={`${styles.specialSetItem} ${selectedSums.includes(sum.id) ? styles.selected : ''
+                      } ${selectedSums.length >= 10 && !selectedSums.includes(sum.id) ? styles.disabled : ''}`}
+                    onClick={() => !loading && handleSumToggle(sum.id)}
+                    title={`Tổng ${sum.id}: ${sum.numbers.join(', ')}`}
+                  >
+                    <div className={styles.specialSetHeader}>
+                      <span className={styles.specialSetId}>Tổng {sum.id}</span>
+                      <span className={styles.specialSetCount}>({sum.count} số)</span>
+                    </div>
+                    <div className={styles.specialSetNumbers}>
+                      {sum.numbers.join(', ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className={styles.specialSetsModalFooter}>
+              <div className={styles.selectedCount}>
+                Đã chọn: {selectedSums.length}/10 tổng
+              </div>
+              <button
+                className={styles.specialSetsModalDone}
+                onClick={() => setShowSumModal(false)}
+              >
+                Xong
               </button>
             </div>
           </div>

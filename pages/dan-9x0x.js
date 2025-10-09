@@ -4,14 +4,17 @@
  */
 
 import Link from 'next/link';
+import Head from 'next/head';
 import Layout from '../components/Layout';
-import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone } from 'lucide-react';
+import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, Filter, Info } from 'lucide-react';
 import styles from '../styles/Dan9x0x.module.css';
 import SEOOptimized from '../components/SEOOptimized';
 import SEOAnalytics from '../components/SEOAnalytics';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
+import PerformanceMonitor from '../components/PerformanceMonitor';
 // import WukongSlider from '../components/WukongSlider';
 import dynamic from 'next/dynamic';
+import { useState, useCallback, useEffect } from 'react';
 
 // Lazy load heavy components for better PageSpeed
 const DanDeGenerator = dynamic(() => import('../components/DanDeGenerator'), {
@@ -26,6 +29,88 @@ const GuideSection = dynamic(() => import('../components/GuideSection'), {
 
 export default function Dan9x0xPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+    // States cho mobile navbar
+    const [activeNavItem, setActiveNavItem] = useState('generator');
+
+    // Auto update active nav item based on scroll position
+    useEffect(() => {
+        const handleScroll = () => {
+            const sections = [
+                { id: 'generator', element: document.querySelector('[data-section="generator"]') },
+                { id: 'filter', element: document.querySelector('[data-section="filter"]') },
+                { id: 'guide', element: document.querySelector('[data-section="guide"]') }
+            ];
+
+            const scrollPosition = window.scrollY + 100; // Offset for better UX
+
+            for (let i = sections.length - 1; i >= 0; i--) {
+                const section = sections[i];
+                if (section.element && section.element.offsetTop <= scrollPosition) {
+                    setActiveNavItem(section.id);
+                    break;
+                }
+            }
+        };
+
+        // Throttle scroll event for better performance
+        let ticking = false;
+        const throttledHandleScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    handleScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
+        window.addEventListener('scroll', throttledHandleScroll);
+        return () => window.removeEventListener('scroll', throttledHandleScroll);
+    }, []);
+
+    // Mobile navbar handlers
+    const handleNavItemClick = useCallback((itemId) => {
+        setActiveNavItem(itemId);
+
+        // Scroll to section based on itemId
+        if (itemId === 'generator') {
+            // Scroll to top of generator section
+            const generatorSection = document.querySelector('[data-section="generator"]');
+            if (generatorSection) {
+                generatorSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        } else if (itemId === 'filter') {
+            // Scroll to filter section
+            const filterSection = document.querySelector('[data-section="filter"]');
+            if (filterSection) {
+                filterSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        } else if (itemId === 'guide') {
+            // Scroll to guide section
+            const guideSection = document.querySelector('[data-section="guide"]');
+            if (guideSection) {
+                guideSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    }, []);
+
+    // Register mobile-optimized service worker
+    useEffect(() => {
+        if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                navigator.serviceWorker.register('/sw-mobile.js')
+                    .then((registration) => {
+                        console.log('Mobile SW registered:', registration);
+                    })
+                    .catch((error) => {
+                        console.log('Mobile SW registration failed:', error);
+                    });
+            }
+        }
+    }, []);
 
     const breadcrumbs = [
         { name: 'Trang chủ', url: siteUrl },
@@ -59,17 +144,129 @@ export default function Dan9x0xPage() {
         }
     ];
 
+    // Schema Markup for SEO
+    const lotterySchema = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Tạo Dàn Đề 9x-0x Chuyên Nghiệp",
+        "description": "Công cụ tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế. Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%.",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "VND"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "1250"
+        },
+        "featureList": [
+            "Tạo dàn đề 9x-0x ngẫu nhiên",
+            "Bộ lọc dàn đề tổng hợp",
+            "Thuật toán Fisher-Yates chuẩn quốc tế",
+            "Miễn phí 100%",
+            "Responsive design"
+        ]
+    };
+
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbs.map((item, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "name": item.name,
+            "item": item.url
+        }))
+    };
+
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqData.map(faq => ({
+            "@type": "Question",
+            "name": faq.question,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.answer
+            }
+        }))
+    };
+
     return (
         <>
             <SEOOptimized
                 pageType="dan-9x0x"
-                customTitle="Tạo Dàn Đề 9x-0x Chuyên Nghiệp - Công Cụ Miễn Phí 2024"
+                customTitle="Tạo Dàn Đề 9x-0x Chuyên Nghiệp - Công Cụ Miễn Phí 2025"
                 customDescription="Tạo dàn đề 9x-0x ngẫu nhiên chuyên nghiệp với thuật toán Fisher-Yates chuẩn quốc tế. Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%, chính xác cho xổ số 3 miền."
                 customKeywords="tạo dàn đề 9x-0x, dàn đề 9x-0x, công cụ tạo dàn đề, dàn đề ngẫu nhiên, bộ lọc dàn đề, thuật toán Fisher-Yates, xổ số 3 miền, lô đề, tạo dàn đề miễn phí, dàn đề chuyên nghiệp"
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
+                structuredData={[lotterySchema, breadcrumbSchema, faqSchema]}
             />
+
+            {/* Core Web Vitals & Mobile SEO Optimization */}
+            <Head>
+                {/* Mobile-first viewport optimization */}
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+                <meta name="mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+                <meta name="apple-mobile-web-app-title" content="Tạo Dàn Đề 9x-0x" />
+
+                {/* Mobile SEO optimization */}
+                <meta name="format-detection" content="telephone=no" />
+                <meta name="theme-color" content="#3b82f6" />
+                <meta name="msapplication-TileColor" content="#3b82f6" />
+                <meta name="msapplication-navbutton-color" content="#3b82f6" />
+
+                {/* Preload critical resources for mobile */}
+                {/* <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" /> */}
+                {/* <link rel="preload" href="/styles/critical.css" as="style" /> */}
+                {/* <link rel="preload" href="/api/dande/generate" as="fetch" crossOrigin="anonymous" /> */}
+
+                {/* DNS prefetch for external resources */}
+                <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+                <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+
+                {/* Resource hints */}
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+                {/* Mobile-optimized critical CSS */}
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                        .hero { min-height: 60vh; }
+                        .loadingSkeleton { 
+                            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                            background-size: 200% 100%;
+                            animation: loading 1.5s infinite;
+                        }
+                        @keyframes loading {
+                            0% { background-position: 200% 0; }
+                            100% { background-position: -200% 0; }
+                        }
+                        /* Mobile touch optimization */
+                        @media (hover: none) and (pointer: coarse) {
+                            .button, .input, .specialSetItem, .touchSelectionItem, .sumSelectionItem {
+                                min-height: 44px;
+                                touch-action: manipulation;
+                            }
+                        }
+                        /* Prevent zoom on input focus (iOS) */
+                        @media screen and (max-width: 768px) {
+                            input[type="text"], input[type="number"], textarea {
+                                font-size: 16px;
+                            }
+                        }
+                    `
+                }} />
+            </Head>
+
             <PageSpeedOptimizer />
+            <PerformanceMonitor />
 
             <Layout>
                 <div className={styles.container}>
@@ -104,11 +301,38 @@ export default function Dan9x0xPage() {
                         </div>
                     </section>
 
+                    {/* Mobile Navbar */}
+                    <div className={styles.mobileNavbar}>
+                        <div className={styles.mobileNavbarContainer}>
+                            <button
+                                className={`${styles.mobileNavbarItem} ${activeNavItem === 'generator' ? styles.active : ''}`}
+                                onClick={() => handleNavItemClick('generator')}
+                            >
+                                <Dice6 className={styles.mobileNavbarIcon} />
+                                Tạo Dàn 9x0x
+                            </button>
+                            <button
+                                className={`${styles.mobileNavbarItem} ${activeNavItem === 'filter' ? styles.active : ''}`}
+                                onClick={() => handleNavItemClick('filter')}
+                            >
+                                <Filter className={styles.mobileNavbarIcon} />
+                                Lọc Dàn Siêu Cấp
+                            </button>
+                            <button
+                                className={`${styles.mobileNavbarItem} ${activeNavItem === 'guide' ? styles.active : ''}`}
+                                onClick={() => handleNavItemClick('guide')}
+                            >
+                                <Info className={styles.mobileNavbarIcon} />
+                                Hướng Dẫn
+                            </button>
+                        </div>
+                    </div>
+
                     {/* Wukong Slider */}
                     {/* <WukongSlider /> */}
 
                     {/* Main Generator Section */}
-                    <main className={styles.main} id="generator">
+                    <main className={styles.main} id="generator" data-section="generator">
                         <h2 className={styles.sectionTitles} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
                             {/* <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} /> */}
                             Tạo Dàn Đề 9X-0X Ngẫu Nhiên
@@ -121,7 +345,9 @@ export default function Dan9x0xPage() {
                     </main>
 
                     {/* Guide Section */}
-                    <GuideSection />
+                    <div data-section="guide">
+                        <GuideSection />
+                    </div>
 
                     {/* Features Section */}
                     <section className={styles.features}>

@@ -210,10 +210,10 @@
 /* ===== MOBILE MENU BUTTON ===== */
 .menuButton {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 24px;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
     background: transparent;
     border: none;
     cursor: pointer;
@@ -221,6 +221,12 @@
     z-index: 1001;
     /* Ensure button is above mobile nav */
     position: relative;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-base);
+}
+
+.menuButton:hover {
+    background: var(--color-gray-100);
 }
 
 @media (min-width: 768px) {
@@ -229,26 +235,13 @@
     }
 }
 
-.menuButtonLine {
-    width: 100%;
-    height: 3px;
-    background: var(--color-gray-900);
-    border-radius: var(--border-radius-full);
+.menuIcon {
+    color: var(--color-gray-900);
     transition: all var(--transition-base);
-    transform-origin: center;
 }
 
-/* Hamburger to X animation */
-.menuButtonOpen .menuButtonLine:nth-child(1) {
-    transform: translateY(10.5px) rotate(45deg);
-}
-
-.menuButtonOpen .menuButtonLine:nth-child(2) {
-    opacity: 0;
-}
-
-.menuButtonOpen .menuButtonLine:nth-child(3) {
-    transform: translateY(-10.5px) rotate(-45deg);
+.menuButton:hover .menuIcon {
+    color: var(--color-primary-600);
 }
 
 /* ===== MOBILE NAVIGATION ===== */
@@ -572,7 +565,8 @@
 @media (prefers-reduced-motion: reduce) {
 
     .mobileNav,
-    .menuButtonLine,
+    .menuButton,
+    .menuIcon,
     .navLink,
     .footerLink {
         transition: none;

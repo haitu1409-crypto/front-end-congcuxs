@@ -9,6 +9,16 @@
   animation: fadeIn var(--transition-slow) ease;
 }
 
+/* ===== SECTION TITLES ===== */
+.sectionTitles {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-gray-800);
+  margin-bottom: var(--spacing-6);
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .card {
   background: var(--color-white);
   border-radius: var(--border-radius-lg);
@@ -206,7 +216,7 @@
 .leftColumn {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-5);
+  gap: 5px;
 }
 
 .rightColumn {
@@ -297,6 +307,8 @@
   background: var(--color-white);
   border-radius: var(--border-radius-md);
   border: 2px solid green;
+  width: 100%;
+  height: 100%;
 }
 
 .checkbox {
@@ -317,18 +329,27 @@
 @media (max-width: 768px) {
   .checkboxLabel {
     font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 @media (max-width: 480px) {
   .checkboxLabel {
     font-size: 0.6875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 @media (max-width: 360px) {
   .checkboxLabel {
     font-size: 0.625rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -365,6 +386,13 @@
     height: 24px;
   }
 
+  .checkboxContainer {
+    padding: 2px;
+    width: 100%;
+    height: 100%;
+    min-height: 24px;
+  }
+
   /* Ensure titles are hidden on smallest mobile */
   .sectionTitle {
     display: none;
@@ -395,7 +423,7 @@
 
   .mobileStatItem {
     padding: 1px 3px;
-    font-size: 0.5625rem;
+    font-size: 0.8rem;
   }
 
   .mobileStatIcon {
@@ -778,6 +806,17 @@
     display: block;
   }
 
+  .mobileOptionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  /* Hide desktop selection row on mobile */
+  .desktopSelectionRow {
+    display: none;
+  }
+
   .desktopStatsSection {
     display: none;
   }
@@ -804,6 +843,12 @@
   .buttonsSection {
     padding: 2px;
     margin-bottom: var(--spacing-2);
+  }
+
+  .leftColumn {
+    display: flex;
+    flex-direction: column;
+    /* gap: var(--spacing-5); */
   }
 
   .desktopSpecialSets {
@@ -886,7 +931,7 @@
   }
 
   .mobileStatText {
-    font-size: 0.625rem;
+    font-size: 0.8rem;
   }
 
   .mobileStatsEmpty {
@@ -938,6 +983,12 @@
     gap: var(--spacing-1);
   }
 
+  .leftColumn {
+    display: flex;
+    flex-direction: column;
+    /* gap: var(--spacing-5); */
+  }
+
   .mobileCheckboxGroup {
     height: 28px;
   }
@@ -973,7 +1024,7 @@
 
   .mobileStatItem {
     padding: 1px 4px;
-    font-size: 0.625rem;
+    font-size: 0.8rem;
   }
 
   .mobileStatIcon {
@@ -981,7 +1032,7 @@
   }
 
   .mobileStatText {
-    font-size: 0.5625rem;
+    font-size: 0.8rem;
   }
 
   .mobileStatsEmpty {
@@ -1288,6 +1339,220 @@
   color: blue;
 }
 
+
+/* ===== DESKTOP SELECTION ROW ===== */
+.desktopSelectionRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+/* Special sets row - full width */
+.desktopSpecialSetsRow {
+  display: block;
+  width: 100%;
+}
+
+/* Touch and Sum row - side by side */
+.desktopTouchSumRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-3);
+}
+
+/* ===== TOUCH SELECTION STYLES ===== */
+.touchSelectionContainer {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-gray-50);
+  padding: var(--spacing-3);
+}
+
+.touchSelectionList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-2);
+}
+
+.touchSelectionItem {
+  padding: var(--spacing-3);
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  background: var(--color-white);
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  position: relative;
+}
+
+.touchSelectionItem:hover {
+  border-color: var(--color-primary-400);
+  background: var(--color-primary-50);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.touchSelectionItem.selected {
+  border-color: green;
+  background: var(--color-primary-100);
+  box-shadow: 0 0 0 3px green;
+}
+
+.touchSelectionItem.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--color-gray-100);
+}
+
+.touchSelectionItem.disabled:hover {
+  border-color: var(--color-gray-300);
+  background: var(--color-gray-100);
+  transform: none;
+  box-shadow: none;
+}
+
+.touchSelectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-1);
+}
+
+.touchSelectionId {
+  font-weight: var(--font-semibold);
+  color: var(--color-primary-700);
+  font-size: var(--text-base);
+}
+
+.touchSelectionCount {
+  font-size: var(--text-sm);
+  color: var(--color-gray-600);
+  background: var(--color-gray-200);
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-medium);
+}
+
+.touchSelectionNumbers {
+  font-size: var(--text-sm);
+  color: var(--color-gray-700);
+  line-height: 1.4;
+  max-height: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.selectedTouches {
+  margin-top: var(--spacing-3);
+  padding: var(--spacing-2);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--border-radius-md);
+  font-size: var(--text-sm);
+  color: blue;
+}
+
+/* ===== SUM SELECTION STYLES ===== */
+.sumSelectionContainer {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-gray-50);
+  padding: var(--spacing-3);
+}
+
+.sumSelectionList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-2);
+}
+
+.sumSelectionItem {
+  padding: var(--spacing-3);
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  background: var(--color-white);
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  position: relative;
+}
+
+.sumSelectionItem:hover {
+  border-color: var(--color-primary-400);
+  background: var(--color-primary-50);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.sumSelectionItem.selected {
+  border-color: green;
+  background: var(--color-primary-100);
+  box-shadow: 0 0 0 3px green;
+}
+
+.sumSelectionItem.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--color-gray-100);
+}
+
+.sumSelectionItem.disabled:hover {
+  border-color: var(--color-gray-300);
+  background: var(--color-gray-100);
+  transform: none;
+  box-shadow: none;
+}
+
+.sumSelectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-1);
+}
+
+.sumSelectionId {
+  font-weight: var(--font-semibold);
+  color: var(--color-primary-700);
+  font-size: var(--text-base);
+}
+
+.sumSelectionCount {
+  font-size: var(--text-sm);
+  color: var(--color-gray-600);
+  background: var(--color-gray-200);
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-medium);
+}
+
+.sumSelectionNumbers {
+  font-size: var(--text-sm);
+  color: var(--color-gray-700);
+  line-height: 1.4;
+  max-height: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.selectedSums {
+  margin-top: var(--spacing-3);
+  padding: var(--spacing-2);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--border-radius-md);
+  font-size: var(--text-sm);
+  color: blue;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1024px) {
   .twoColumnLayout {
@@ -1375,6 +1640,9 @@
 
   .checkboxContainer {
     padding: 4px;
+    width: 100%;
+    height: 100%;
+    min-height: 32px;
   }
 }
 
@@ -1447,12 +1715,15 @@
 
   .checkboxContainer {
     padding: 4px;
+    width: 100%;
+    height: 100%;
+    min-height: 32px;
   }
 
   .button {
     flex: 1;
     min-width: 0;
-    font-size: 0.75rem;
+    font-size: 1rem;
     padding: var(--spacing-2) var(--spacing-1);
     min-height: 32px;
   }
@@ -1467,6 +1738,12 @@
     border: none;
   }
 
+  .leftColumn {
+    display: flex;
+    flex-direction: column;
+    /* gap: var(--spacing-5); */
+  }
+
   .twoColumnLayout {
     display: grid;
     /* grid-template-columns: 0fr 0fr; */
@@ -1476,10 +1753,17 @@
 
   .checkboxContainer {
     padding: 4px;
+    width: 100%;
+    height: 100%;
+    min-height: 26px;
+  }
+
+  .resultsTextarea {
+    font-size: 16px;
   }
 
   .button {
-    font-size: 0.6875rem;
+    font-size: 1rem;
     padding: var(--spacing-1) 2px;
     min-height: 28px;
   }
@@ -1494,6 +1778,12 @@
     font-size: 0.625rem;
     padding: var(--spacing-1) 1px;
     min-height: 26px;
+  }
+
+  .leftColumn {
+    display: flex;
+    flex-direction: column;
+    /* gap: var(--spacing-5); */
   }
 }
 
@@ -1515,7 +1805,7 @@
   }
 
   .inputRow .inputLabel {
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     margin-bottom: var(--spacing-1);
     display: block;
     white-space: nowrap;
@@ -1526,7 +1816,7 @@
   }
 
   .inputRow .input {
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     padding: var(--spacing-1) var(--spacing-2);
     min-height: 28px;
     height: 28px;
@@ -1546,6 +1836,12 @@
     margin-bottom: var(--spacing-1);
   }
 
+  .leftColumn {
+    display: flex;
+    flex-direction: column;
+    /* gap: var(--spacing-5); */
+  }
+
   .inputRow .inputLabel {
     font-size: 0.6875rem;
     margin-bottom: 2px;
@@ -1554,7 +1850,7 @@
   }
 
   .inputRow .input {
-    font-size: 0.6875rem;
+    font-size: 0.9rem;
     padding: var(--spacing-1);
     min-height: 26px;
     height: 26px;
@@ -1585,6 +1881,12 @@
     margin-bottom: var(--spacing-1);
   }
 
+  .leftColumn {
+    display: flex;
+    flex-direction: column;
+    /* gap: var(--spacing-5); */
+  }
+
   .inputRow .inputLabel {
     font-size: 0.625rem;
     margin-bottom: 2px;
@@ -1593,7 +1895,7 @@
   }
 
   .inputRow .input {
-    font-size: 0.625rem;
+    font-size: 0.9rem;
     padding: var(--spacing-1);
     min-height: 24px;
     height: 24px;
@@ -1645,6 +1947,366 @@
     cursor: text !important;
   }
 }
+
+/* ===== FILTER COMPONENT MOBILE LAYOUT ===== */
+@media (max-width: 768px) {
+
+  /* Hide desktop layout, show mobile layout */
+  .desktopOptionsLayout {
+    display: none;
+  }
+
+  .mobileOptionsLayout {
+    display: block;
+  }
+
+  /* Mobile Options Row */
+  .mobileOptionsRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .mobileCheckboxGroup {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    height: 32px;
+    min-width: 0;
+  }
+
+  .mobileSpecialSetsGroup {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .mobileTouchGroup {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .mobileSumGroup {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .mobileHelpText {
+    flex: 1;
+    font-size: 0.6875rem;
+    color: #dc2626;
+    /* Red color */
+    font-style: italic;
+    text-align: left;
+  }
+
+  .specialSetsButton {
+    font-size: 0.875rem;
+    padding: var(--spacing-1) var(--spacing-2);
+    height: 32px;
+    min-height: 32px;
+    width: 100%;
+    background: #2563eb;
+    /* Blue color */
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .specialSetsButton:hover {
+    background: #1d4ed8;
+    /* Darker blue */
+  }
+
+  .specialSetsButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .mobileTouchGroup {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .mobileSumGroup {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .touchButton {
+    font-size: 0.875rem;
+    padding: var(--spacing-1) var(--spacing-2);
+    height: 32px;
+    min-height: 32px;
+    width: 100%;
+    background: #dc2626;
+    /* Red color */
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .touchButton:hover {
+    background: #b91c1c;
+    /* Darker red */
+  }
+
+  .touchButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .sumButton {
+    font-size: 0.875rem;
+    padding: var(--spacing-1) var(--spacing-2);
+    height: 32px;
+    min-height: 32px;
+    width: 100%;
+    background: #059669;
+    /* Green color */
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sumButton:hover {
+    background: #047857;
+    /* Darker green */
+  }
+
+  .sumButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .sectionTitles {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .mobileOptionsRow {
+    gap: 4px;
+  }
+
+  .mobileCheckboxGroup {
+    height: 28px;
+  }
+
+  .specialSetsButton {
+    font-size: 0.8125rem;
+    padding: var(--spacing-1) var(--spacing-2);
+    height: 28px;
+    min-height: 28px;
+    width: 100%;
+    background: #2563eb;
+    /* Blue color */
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .specialSetsButton:hover {
+    background: #1d4ed8;
+    /* Darker blue */
+  }
+
+  .specialSetsButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .mobileHelpText {
+    font-size: 0.625rem;
+  }
+
+  .sectionTitles {
+    font-size: 1rem;
+    margin-top: 8px;
+    margin-bottom: var(--spacing-1);
+  }
+}
+
+@media (max-width: 360px) {
+  .mobileOptionsRow {
+    gap: 2px;
+  }
+
+  .mobileCheckboxGroup {
+    height: 24px;
+  }
+
+  .checkboxContainer {
+    padding: 2px;
+    width: 100%;
+    height: 100%;
+    min-height: 24px;
+  }
+
+  .specialSetsButton {
+    font-size: 0.75rem;
+    padding: var(--spacing-1) var(--spacing-2);
+    height: 24px;
+    min-height: 24px;
+    width: 100%;
+    background: #2563eb;
+    /* Blue color */
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .specialSetsButton:hover {
+    background: #1d4ed8;
+    /* Darker blue */
+  }
+
+  .specialSetsButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .touchButton {
+    font-size: 0.75rem;
+    padding: var(--spacing-1) var(--spacing-2);
+    height: 24px;
+    min-height: 24px;
+    width: 100%;
+    background: #dc2626;
+    /* Red color */
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .touchButton:hover {
+    background: #b91c1c;
+    /* Darker red */
+  }
+
+  .touchButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .sumButton {
+    font-size: 0.75rem;
+    padding: var(--spacing-1) var(--spacing-2);
+    height: 24px;
+    min-height: 24px;
+    width: 100%;
+    background: #059669;
+    /* Green color */
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sumButton:hover {
+    background: #047857;
+    /* Darker green */
+  }
+
+  .sumButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .mobileHelpText {
+    font-size: 0.5625rem;
+  }
+
+  .sectionTitles {
+    font-size: 1rem;
+    margin-top: 8px;
+    margin-bottom: var(--spacing-1);
+  }
+}
+
+/* Desktop layout */
+@media (min-width: 769px) {
+  .desktopOptionsLayout {
+    display: block;
+  }
+
+  .mobileOptionsLayout {
+    display: none;
+  }
+}
+
+
 
 /* ===== LEVEL SELECTION STYLES ===== */
 .levelSelectionContainer {
@@ -1698,5 +2360,107 @@
   .levelOption {
     padding: var(--spacing-1) var(--spacing-2);
     font-size: var(--text-xs);
+  }
+}
+
+/* ===== TIPS SECTIONS RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .tipsSection {
+    display: none !important;
+  }
+
+  .mobileTipsSection {
+    display: block !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .tipsSection {
+    display: block !important;
+  }
+
+  .mobileTipsSection {
+    display: none !important;
+  }
+}
+
+/* ===== CORE WEB VITALS OPTIMIZATION ===== */
+/* Reduce layout shift */
+.card {
+  contain: layout style paint;
+}
+
+/* Optimize animations for better performance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Use transform instead of changing layout properties */
+.button {
+  will-change: transform;
+  transform: translateZ(0);
+  /* Force hardware acceleration */
+}
+
+.button:hover {
+  transform: translateY(-1px) translateZ(0);
+}
+
+/* Optimize text rendering */
+.sectionTitles,
+.resultsTitle {
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+}
+
+/* Reduce paint complexity */
+.specialSetItem,
+.touchSelectionItem,
+.sumSelectionItem {
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Optimize scrolling performance */
+.resultsTextarea {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Critical loading states */
+.loadingSkeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  contain: layout style paint;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
   }
 }

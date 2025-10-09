@@ -80,6 +80,29 @@ const SimpleOnlineWidget = () => {
         return () => clearInterval(interval);
     }, []);
 
+    // Thêm CSS để ẩn widget trên mobile
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.textContent = `
+            .widget-mobile-hidden {
+                display: block !important;
+            }
+            
+            @media (max-width: 768px) {
+                .widget-mobile-hidden {
+                    display: none !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        return () => {
+            if (document.head.contains(style)) {
+                document.head.removeChild(style);
+            }
+        };
+    }, []);
+
     return (
         <div
             style={{
@@ -89,6 +112,7 @@ const SimpleOnlineWidget = () => {
                 zIndex: 9999,
                 pointerEvents: 'auto'
             }}
+            className="widget-mobile-hidden"
         >
             <div id="_wau38a"></div>
         </div>

@@ -136,9 +136,11 @@ export default function Layout({ children, className = '' }) {
                             aria-label="Toggle menu"
                             aria-expanded={isMenuOpen}
                         >
-                            <span className={styles.menuButtonLine}></span>
-                            <span className={styles.menuButtonLine}></span>
-                            <span className={styles.menuButtonLine}></span>
+                            {isMenuOpen ? (
+                                <X size={24} className={styles.menuIcon} />
+                            ) : (
+                                <Menu size={24} className={styles.menuIcon} />
+                            )}
                         </button>
                     </div>
 

@@ -3,10 +3,12 @@
  * Component cho chức năng lọc dàn đề
  */
 
-import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo, startTransition } from 'react';
 import { Clock, Dice6, Star, Copy, Check, Undo2, Filter } from 'lucide-react';
 import styles from '../styles/DanDeGenerator.module.css';
 import { getAllSpecialSets, getCombinedSpecialSetNumbers } from '../utils/specialSets';
+import { getTouchInfo, getNumbersByTouch } from '../utils/touchSets';
+import { getSumInfo, getNumbersBySum } from '../utils/sumSets';
 
 const DanDeFilter = memo(() => {
     // States cho box Lọc dàn
@@ -14,6 +16,7 @@ const DanDeFilter = memo(() => {
     const [filterResult, setFilterResult] = useState('');
     const [filterSelectedLevels, setFilterSelectedLevels] = useState([]);
     const [filterLoading, setFilterLoading] = useState(false);
+    const [quantity, setQuantity] = useState(1);
 
     // States cho các tùy chọn bổ sung
     const [excludeDoubles, setExcludeDoubles] = useState(false);
@@ -27,8 +30,27 @@ const DanDeFilter = memo(() => {
     const [undoData, setUndoData] = useState(null);
     const [undoStatus, setUndoStatus] = useState(false);
 
+    // States cho modals
+    const [showSpecialSetsModal, setShowSpecialSetsModal] = useState(false);
+    const [showTouchModal, setShowTouchModal] = useState(false);
+    const [showSumModal, setShowSumModal] = useState(false);
+    const [showStatsDetailModal, setShowStatsDetailModal] = useState(false);
+    const [statsDetailType, setStatsDetailType] = useState(null);
+
+    // States cho touch
+    const [selectedTouches, setSelectedTouches] = useState([]);
+
+    // States cho sum
+    const [selectedSums, setSelectedSums] = useState([]);
+
     // Memoize special sets data
     const specialSetsData = useMemo(() => getAllSpecialSets(), []);
+
+    // Memoize touch data
+    const touchData = useMemo(() => getTouchInfo(), []);
+
+    // Memoize sum data
+    const sumData = useMemo(() => getSumInfo(), []);
 
     // Handler cho chọn/bỏ chọn bộ số đặc biệt
     const handleSpecialSetToggle = useCallback((setId) => {
@@ -42,51 +64,55 @@ const DanDeFilter = memo(() => {
         });
     }, []);
 
-    // Xử lý thay đổi input số mong muốn
+
+    // Mobile-optimized input handling
     const handleCombinationChange = useCallback((e) => {
         const value = e.target.value;
         setCombinationNumbers(value);
 
-        // Validate số kết hợp
-        if (value.trim() !== '') {
-            // Xử lý dấu câu: chấp nhận dấu phẩy, chấm phẩy, khoảng trắng
-            const processedValue = value.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
-            const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
+        // Use startTransition for non-urgent validation on mobile
+        startTransition(() => {
+            // Validate số kết hợp
+            if (value.trim() !== '') {
+                // Xử lý dấu câu: chấp nhận dấu phẩy, chấm phẩy, khoảng trắng
+                const processedValue = value.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
 
-            // Loại bỏ số trùng lặp và giữ thứ tự
-            const uniqueNumbers = [...new Set(numbers)];
+                // Loại bỏ số trùng lặp và giữ thứ tự
+                const uniqueNumbers = [...new Set(numbers)];
 
-            // Cập nhật giá trị input để loại bỏ số trùng lặp
-            if (uniqueNumbers.length !== numbers.length) {
-                const cleanedValue = uniqueNumbers.join(',');
-                setCombinationNumbers(cleanedValue);
-            }
-
-            // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
-            if (uniqueNumbers.length > 40) {
-                setError('Thêm số mong muốn không được quá 40 số (đã loại bỏ số trùng lặp)');
-                return;
-            }
-
-            const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
-
-            if (invalidNumbers.length > 0) {
-                setError('Thêm số phải là số 2 chữ số (00-99), cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng');
-            } else {
-                // Kiểm tra xung đột với số loại bỏ
-                const excludeNums = parseExcludeNumbers();
-                const combinationNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
-                const conflicts = combinationNums.filter(num => excludeNums.includes(num));
-
-                if (conflicts.length > 0) {
-                    setError(`Số ${conflicts.join(', ')} không thể vừa là Thêm số vừa là Loại bỏ số`);
-                } else {
-                    setError(null);
+                // Cập nhật giá trị input để loại bỏ số trùng lặp
+                if (uniqueNumbers.length !== numbers.length) {
+                    const cleanedValue = uniqueNumbers.join(',');
+                    setCombinationNumbers(cleanedValue);
                 }
+
+                // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
+                if (uniqueNumbers.length > 40) {
+                    setError('Thêm số mong muốn không được quá 40 số (đã loại bỏ số trùng lặp)');
+                    return;
+                }
+
+                const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
+
+                if (invalidNumbers.length > 0) {
+                    setError('Thêm số phải là số 2 chữ số (00-99), cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng');
+                } else {
+                    // Kiểm tra xung đột với số loại bỏ
+                    const excludeNums = parseExcludeNumbers();
+                    const combinationNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
+                    const conflicts = combinationNums.filter(num => excludeNums.includes(num));
+
+                    if (conflicts.length > 0) {
+                        setError(`Số ${conflicts.join(', ')} không thể vừa là Thêm số vừa là Loại bỏ số`);
+                    } else {
+                        setError(null);
+                    }
+                }
+            } else {
+                setError(null);
             }
-        } else {
-            setError(null);
-        }
+        });
     }, []);
 
     // Xử lý thay đổi input loại bỏ số mong muốn
@@ -94,46 +120,49 @@ const DanDeFilter = memo(() => {
         const value = e.target.value;
         setExcludeNumbers(value);
 
-        // Validate số loại bỏ
-        if (value.trim() !== '') {
-            // Xử lý dấu câu: chấp nhận dấu phẩy, chấm phẩy, khoảng trắng
-            const processedValue = value.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
-            const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
+        // Use startTransition for non-urgent validation on mobile
+        startTransition(() => {
+            // Validate số loại bỏ
+            if (value.trim() !== '') {
+                // Xử lý dấu câu: chấp nhận dấu phẩy, chấm phẩy, khoảng trắng
+                const processedValue = value.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
 
-            // Loại bỏ số trùng lặp và giữ thứ tự
-            const uniqueNumbers = [...new Set(numbers)];
+                // Loại bỏ số trùng lặp và giữ thứ tự
+                const uniqueNumbers = [...new Set(numbers)];
 
-            // Cập nhật giá trị input để loại bỏ số trùng lặp
-            if (uniqueNumbers.length !== numbers.length) {
-                const cleanedValue = uniqueNumbers.join(',');
-                setExcludeNumbers(cleanedValue);
-            }
-
-            // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
-            if (uniqueNumbers.length > 5) {
-                setError('Loại bỏ số mong muốn không được quá 5 số (đã loại bỏ số trùng lặp)');
-                return;
-            }
-
-            const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
-
-            if (invalidNumbers.length > 0) {
-                setError('Loại bỏ số phải là số 2 chữ số (00-99), cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng');
-            } else {
-                // Kiểm tra xung đột với số kết hợp
-                const combinationNums = parseCombinationNumbers();
-                const excludeNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
-                const conflicts = combinationNums.filter(num => excludeNums.includes(num));
-
-                if (conflicts.length > 0) {
-                    setError(`Số ${conflicts.join(', ')} không thể vừa là Thêm số vừa là Loại bỏ số`);
-                } else {
-                    setError(null);
+                // Cập nhật giá trị input để loại bỏ số trùng lặp
+                if (uniqueNumbers.length !== numbers.length) {
+                    const cleanedValue = uniqueNumbers.join(',');
+                    setExcludeNumbers(cleanedValue);
                 }
+
+                // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
+                if (uniqueNumbers.length > 5) {
+                    setError('Loại bỏ số mong muốn không được quá 5 số (đã loại bỏ số trùng lặp)');
+                    return;
+                }
+
+                const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
+
+                if (invalidNumbers.length > 0) {
+                    setError('Loại bỏ số phải là số 2 chữ số (00-99), cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng');
+                } else {
+                    // Kiểm tra xung đột với số kết hợp
+                    const combinationNums = parseCombinationNumbers();
+                    const excludeNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
+                    const conflicts = combinationNums.filter(num => excludeNums.includes(num));
+
+                    if (conflicts.length > 0) {
+                        setError(`Số ${conflicts.join(', ')} không thể vừa là Thêm số vừa là Loại bỏ số`);
+                    } else {
+                        setError(null);
+                    }
+                }
+            } else {
+                setError(null);
             }
-        } else {
-            setError(null);
-        }
+        });
     }, []);
 
     // Xử lý checkbox loại bỏ kép bằng
@@ -141,16 +170,32 @@ const DanDeFilter = memo(() => {
         setExcludeDoubles(e.target.checked);
     }, []);
 
-    // Parse số mong muốn thành mảng
+    // Parse số mong muốn thành mảng (bao gồm touch numbers)
     const parseCombinationNumbers = useCallback(() => {
-        if (!combinationNumbers.trim()) return [];
-        const processedValue = combinationNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
-        const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
-        const uniqueNumbers = [...new Set(numbers)];
+        let allNumbers = [];
+
+        // Thêm combination numbers
+        if (combinationNumbers.trim()) {
+            const processedValue = combinationNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+            const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
+            allNumbers = [...allNumbers, ...numbers];
+        }
+
+        // Thêm touch numbers
+        if (selectedTouches.length > 0) {
+            const touchNumbers = getNumbersByTouch(selectedTouches);
+            allNumbers = [...allNumbers, ...touchNumbers];
+        }
+        if (selectedSums.length > 0) {
+            const sumNumbers = getNumbersBySum(selectedSums);
+            allNumbers = [...allNumbers, ...sumNumbers];
+        }
+
+        const uniqueNumbers = [...new Set(allNumbers)];
         return uniqueNumbers
             .filter(n => /^\d{2}$/.test(n) && parseInt(n) <= 99)
             .map(n => n.padStart(2, '0'));
-    }, [combinationNumbers]);
+    }, [combinationNumbers, selectedTouches, selectedSums]);
 
     // Parse số loại bỏ thành mảng
     const parseExcludeNumbers = useCallback(() => {
@@ -205,6 +250,12 @@ const DanDeFilter = memo(() => {
         return true;
     }, [combinationNumbers, excludeNumbers, selectedSpecialSets]);
 
+    // Handler cho quantity change
+    const handleQuantityChange = useCallback((e) => {
+        const value = parseInt(e.target.value) || 1;
+        setQuantity(Math.max(1, Math.min(50, value)));
+    }, []);
+
     // Handler cho lọc dàn
     const handleFilterInputChange = useCallback((e) => {
         const value = e.target.value;
@@ -225,6 +276,46 @@ const DanDeFilter = memo(() => {
             }
         });
     }, []);
+
+    // Handler cho chọn/bỏ chọn chạm
+    const handleTouchToggle = useCallback((touchId) => {
+        setSelectedTouches(prev => {
+            if (prev.includes(touchId)) {
+                return prev.filter(id => id !== touchId);
+            } else if (prev.length < 10) {
+                return [...prev, touchId];
+            }
+            return prev;
+        });
+    }, []);
+
+    // Handler cho chọn/bỏ chọn tổng
+    const handleSumToggle = useCallback((sumId) => {
+        setSelectedSums(prev => {
+            if (prev.includes(sumId)) {
+                return prev.filter(id => id !== sumId);
+            } else if (prev.length < 10) {
+                return [...prev, sumId];
+            }
+            return prev;
+        });
+    }, []);
+
+    // Hàm tạo số ngẫu nhiên (client-side fallback)
+    const shuffleArray = (array) => {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    };
+
+    const generateRandomNumbers = (count, sourcePool) => {
+        const shuffled = shuffleArray(sourcePool);
+        return shuffled.slice(0, Math.min(count, sourcePool.length))
+            .sort((a, b) => parseInt(a) - parseInt(b));
+    };
 
     const handleFilterDan = useCallback(() => {
         if (!filterInput.trim()) {
@@ -261,8 +352,6 @@ const DanDeFilter = memo(() => {
                 })
                 .map(n => n.padStart(2, '0'));
 
-            // KHÔNG loại bỏ số trùng lặp - cho phép số xuất hiện nhiều lần
-
             if (inputNumbers.length === 0) {
                 setFilterResult('Không tìm thấy số hợp lệ trong input.');
                 setFilterLoading(false);
@@ -273,129 +362,176 @@ const DanDeFilter = memo(() => {
             const combinationNums = parseCombinationNumbers();
             const excludeNums = parseExcludeNumbers();
 
-            // Loại bỏ kép bằng nếu được chọn
+            // BƯỚC 1: Tạo kho dữ liệu tổng hợp
+            // Kho dữ liệu = Input người dùng + Số mong muốn + Bộ đặc biệt + Chạm + Tổng
+            let dataPool = [...inputNumbers];
+
+            // Thêm số mong muốn
+            if (combinationNums.length > 0) {
+                dataPool = [...dataPool, ...combinationNums];
+            }
+
+            // Thêm bộ số đặc biệt
+            if (selectedSpecialSets.length > 0) {
+                const specialNumbers = getCombinedSpecialSetNumbers(selectedSpecialSets);
+                dataPool = [...dataPool, ...specialNumbers];
+            }
+
+            // Thêm chạm
+            if (selectedTouches.length > 0) {
+                const touchNumbers = getNumbersByTouch(selectedTouches);
+                dataPool = [...dataPool, ...touchNumbers];
+            }
+
+            // Thêm tổng
+            if (selectedSums.length > 0) {
+                const sumNumbers = getNumbersBySum(selectedSums);
+                dataPool = [...dataPool, ...sumNumbers];
+            }
+
+            // BƯỚC 2: Mức 1 - Loại bỏ kép bằng
             if (excludeDoubles) {
                 const doubleNumbers = ['00', '11', '22', '33', '44', '55', '66', '77', '88', '99'];
-                inputNumbers = inputNumbers.filter(num => !doubleNumbers.includes(num));
+                dataPool = dataPool.filter(num => !doubleNumbers.includes(num));
             }
 
-            // Loại bỏ số exclude
+            // BƯỚC 3: Loại bỏ số exclude
             if (excludeNums.length > 0) {
-                inputNumbers = inputNumbers.filter(num => !excludeNums.includes(num));
+                dataPool = dataPool.filter(num => !excludeNums.includes(num));
             }
 
-            // Ưu tiên số mong muốn hoặc bộ số đặc biệt
-            if (combinationNums.length > 0 || selectedSpecialSets.length > 0) {
-                let priorityNumbers = [];
-
-                if (selectedSpecialSets.length > 0) {
-                    priorityNumbers = getCombinedSpecialSetNumbers(selectedSpecialSets);
-                } else if (combinationNums.length > 0) {
-                    priorityNumbers = combinationNums;
-                }
-
-                // Tìm các số có trong input
-                const availablePriorityNumbers = priorityNumbers.filter(num => inputNumbers.includes(num));
-
-                if (availablePriorityNumbers.length > 0) {
-                    // Ưu tiên các số này
-                    inputNumbers = [...availablePriorityNumbers, ...inputNumbers.filter(num => !availablePriorityNumbers.includes(num))];
-                }
-            }
-
-            // Logic lọc theo cấp độ với thứ tự ưu tiên mới
-            // Điều chỉnh cấp độ khi loại bỏ kép bằng
-            let levelCounts, levelMapping;
-            if (excludeDoubles) {
-                // Khi loại bỏ kép bằng, chỉ còn 90 số, điều chỉnh cấp 95s thành 90s
-                levelCounts = { 0: 8, 1: 18, 2: 28, 3: 38, 4: 48, 5: 58, 6: 68, 7: 78, 8: 88, 9: 90 };
-                levelMapping = { 0: 8, 1: 18, 2: 28, 3: 38, 4: 48, 5: 58, 6: 68, 7: 78, 8: 88, 9: 90 };
-            } else {
-                // Bình thường với đầy đủ 100 số
-                levelCounts = { 0: 8, 1: 18, 2: 28, 3: 38, 4: 48, 5: 58, 6: 68, 7: 78, 8: 88, 9: 95 };
-                levelMapping = { 0: 8, 1: 18, 2: 28, 3: 38, 4: 48, 5: 58, 6: 68, 7: 78, 8: 88, 9: 95 };
-            }
-            const filteredResults = [];
-
-            // Đếm tần suất xuất hiện của mỗi số (chỉ cần đếm 1 lần)
+            // BƯỚC 4: Tính tần suất xuất hiện
             const frequencyMap = {};
-            inputNumbers.forEach(num => {
+            dataPool.forEach(num => {
                 frequencyMap[num] = (frequencyMap[num] || 0) + 1;
             });
 
-            filterSelectedLevels.forEach(level => {
+            // BƯỚC 5: Tạo danh sách số duy nhất (loại bỏ trùng lặp) và sắp xếp theo tần suất
+            const uniqueNumbers = [...new Set(dataPool)].sort((a, b) => {
+                const freqA = frequencyMap[a] || 0;
+                const freqB = frequencyMap[b] || 0;
+
+                // Ưu tiên tần suất cao hơn
+                if (freqA !== freqB) {
+                    return freqB - freqA;
+                }
+
+                // Nếu tần suất bằng nhau, sắp xếp theo số
+                return parseInt(a) - parseInt(b);
+            });
+
+            // BƯỚC 6: Định nghĩa cấp độ dựa trên excludeDoubles
+            let levelCounts, levelMapping;
+            if (excludeDoubles) {
+                levelCounts = { 0: 8, 1: 18, 2: 28, 3: 38, 4: 48, 5: 58, 6: 68, 7: 78, 8: 88, 9: 90 };
+                levelMapping = { 0: 8, 1: 18, 2: 28, 3: 38, 4: 48, 5: 58, 6: 68, 7: 78, 8: 88, 9: 90 };
+            } else {
+                levelCounts = { 0: 8, 1: 18, 2: 28, 3: 38, 4: 48, 5: 58, 6: 68, 7: 78, 8: 88, 9: 95 };
+                levelMapping = { 0: 8, 1: 18, 2: 28, 3: 38, 4: 48, 5: 58, 6: 68, 7: 78, 8: 88, 9: 95 };
+            }
+
+            // BƯỚC 7: Tạo dàn theo từng cấp độ với quy tắc tập con
+            const filteredResults = [];
+            let usedNumbers = new Set(); // Theo dõi số đã sử dụng
+
+            // Sắp xếp các cấp độ từ thấp lên cao
+            const sortedLevels = [...filterSelectedLevels].sort((a, b) => parseInt(a) - parseInt(b));
+
+            sortedLevels.forEach((level, levelIndex) => {
                 const targetCount = levelCounts[level];
-                const selectedNumbers = [];
+                let finalNumbers = [];
 
-                // Bước 1: Ưu tiên số mong muốn (nếu có)
-                if (combinationNums.length > 0) {
-                    const availableCombination = combinationNums.filter(num => inputNumbers.includes(num));
-                    selectedNumbers.push(...availableCombination);
-                }
-
-                // Bước 2: Ưu tiên bộ số đặc biệt (nếu có và chưa có số mong muốn)
-                if (selectedNumbers.length === 0 && selectedSpecialSets.length > 0) {
-                    const specialNumbers = getCombinedSpecialSetNumbers(selectedSpecialSets);
-                    const availableSpecial = specialNumbers.filter(num => inputNumbers.includes(num));
-                    selectedNumbers.push(...availableSpecial);
-                }
-
-                // Bước 3: Ưu tiên số lặp lại từ input (sắp xếp theo tần suất giảm dần)
-                const repeatNumbers = [];
-                const singleNumbers = [];
-
-                Object.keys(frequencyMap).forEach(num => {
-                    if (frequencyMap[num] > 1) {
-                        repeatNumbers.push(num);
-                    } else {
-                        singleNumbers.push(num);
+                // BƯỚC 7.1: Bao gồm tất cả số từ các bậc trước (quy tắc tập con)
+                if (levelIndex > 0) {
+                    const previousLevel = sortedLevels[levelIndex - 1];
+                    const previousResult = filteredResults.find(r => r.level === previousLevel);
+                    if (previousResult) {
+                        finalNumbers = [...previousResult.result];
                     }
-                });
-
-                // Loại bỏ các số đã được chọn ở bước 1, 2
-                const remainingRepeatNumbers = repeatNumbers.filter(num => !selectedNumbers.includes(num));
-                const remainingSingleNumbers = singleNumbers.filter(num => !selectedNumbers.includes(num));
-
-                // Sắp xếp số lặp lại theo tần suất giảm dần
-                remainingRepeatNumbers.sort((a, b) => frequencyMap[b] - frequencyMap[a]);
-
-                // Thêm số lặp lại vào kết quả
-                selectedNumbers.push(...remainingRepeatNumbers);
-
-                // Bước 4: Bổ sung các số đơn lẻ từ input
-                const remainingCount = targetCount - selectedNumbers.length;
-                if (remainingCount > 0 && remainingSingleNumbers.length > 0) {
-                    const shuffledSingles = [...remainingSingleNumbers].sort(() => Math.random() - 0.5);
-                    selectedNumbers.push(...shuffledSingles.slice(0, remainingCount));
                 }
 
-                // Bước 5: Nếu vẫn thiếu, thêm số ngẫu nhiên từ 00-99
-                const finalCount = selectedNumbers.length;
-                if (finalCount < targetCount) {
-                    const allNumbers = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'));
-                    const availableNumbers = allNumbers.filter(num => !inputNumbers.includes(num));
-                    const shuffledAvailable = [...availableNumbers].sort(() => Math.random() - 0.5);
-                    const neededCount = targetCount - finalCount;
-                    selectedNumbers.push(...shuffledAvailable.slice(0, neededCount));
+                // BƯỚC 7.2: Tính số lượng cần thêm cho bậc hiện tại
+                const additionalNeeded = targetCount - finalNumbers.length;
+
+                if (additionalNeeded > 0) {
+                    // Tạo Set để theo dõi số đã chọn trong bậc hiện tại
+                    const currentLevelUsed = new Set(finalNumbers);
+
+                    // BƯỚC 7.3: Lấy số theo tần suất từ cao xuống thấp
+                    let remainingCount = additionalNeeded;
+                    let selectedFromPool = [];
+
+                    // Lọc số chưa được sử dụng trong bậc hiện tại
+                    const availableNumbers = uniqueNumbers.filter(num => !currentLevelUsed.has(num));
+
+                    if (availableNumbers.length > 0) {
+                        // Phân loại theo tần suất từ cao xuống thấp
+                        const maxFreq = Math.max(...Object.values(frequencyMap));
+                        const freqGroups = {};
+
+                        // Nhóm số theo tần suất
+                        for (let freq = maxFreq; freq >= 1; freq--) {
+                            freqGroups[freq] = availableNumbers.filter(num => (frequencyMap[num] || 0) === freq);
+                        }
+
+                        // Lấy theo thứ tự ưu tiên: tần suất cao → tần suất thấp
+                        for (let freq = maxFreq; freq >= 1; freq--) {
+                            if (remainingCount <= 0) break;
+
+                            const freqNumbers = freqGroups[freq] || [];
+                            if (freqNumbers.length === 0) continue;
+
+                            if (freqNumbers.length <= remainingCount) {
+                                // Lấy tất cả số có tần suất này
+                                selectedFromPool = [...selectedFromPool, ...freqNumbers];
+                                remainingCount -= freqNumbers.length;
+                            } else {
+                                // Lấy ngẫu nhiên từ số có tần suất này
+                                const randomFromFreq = generateRandomNumbers(remainingCount, freqNumbers);
+                                selectedFromPool = [...selectedFromPool, ...randomFromFreq];
+                                remainingCount = 0;
+                            }
+                        }
+
+                        // Cập nhật Set và finalNumbers
+                        selectedFromPool.forEach(num => currentLevelUsed.add(num));
+                        finalNumbers = [...finalNumbers, ...selectedFromPool];
+                    }
+
+                    // BƯỚC 7.4: Bù số ngẫu nhiên nếu vẫn thiếu
+                    if (remainingCount > 0) {
+                        // Lọc số chưa được sử dụng trong bậc hiện tại
+                        const allNumbers = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'));
+                        const availableRandomNumbers = allNumbers.filter(num =>
+                            !currentLevelUsed.has(num) &&
+                            !excludeNums.includes(num) &&
+                            (!excludeDoubles || !['00', '11', '22', '33', '44', '55', '66', '77', '88', '99'].includes(num))
+                        );
+
+                        if (availableRandomNumbers.length >= remainingCount) {
+                            const randomNumbers = generateRandomNumbers(remainingCount, availableRandomNumbers);
+                            finalNumbers = [...finalNumbers, ...randomNumbers];
+                        } else {
+                            // Trường hợp hiếm: không đủ số để bù
+                            finalNumbers = [...finalNumbers, ...availableRandomNumbers];
+                        }
+                    }
                 }
 
-                // Sắp xếp kết quả theo thứ tự tăng dần
-                const finalResult = selectedNumbers.slice(0, targetCount).sort((a, b) => parseInt(a) - parseInt(b));
+                // Sắp xếp và lưu kết quả
+                const sortedNumbers = finalNumbers.sort((a, b) => parseInt(a) - parseInt(b));
 
                 // Thống kê cho hiển thị
-                const priorityCount = combinationNums.length > 0 ? combinationNums.length :
-                    (selectedSpecialSets.length > 0 ? getCombinedSpecialSetNumbers(selectedSpecialSets).length : 0);
-                const repeatCount = remainingRepeatNumbers.length;
-                const singleCount = Math.min(remainingCount, remainingSingleNumbers.length);
-                const randomCount = Math.max(0, targetCount - priorityCount - repeatCount - singleCount);
+                const dataPoolCount = uniqueNumbers.length;
+                const usedFromPool = sortedNumbers.filter(num => uniqueNumbers.includes(num)).length;
+                const randomCount = sortedNumbers.length - usedFromPool;
 
                 filteredResults.push({
                     level: level,
                     targetCount: targetCount,
-                    result: finalResult,
-                    priorityCount: priorityCount,
-                    repeatCount: repeatCount,
-                    singleCount: singleCount,
+                    result: sortedNumbers,
+                    dataPoolCount: dataPoolCount,
+                    usedFromPool: usedFromPool,
                     randomCount: randomCount
                 });
             });
@@ -404,40 +540,15 @@ const DanDeFilter = memo(() => {
                 setFilterResult(`Không tìm thấy số nào phù hợp với các cấp độ đã chọn: ${filterSelectedLevels.join(', ')}X`);
             } else {
                 // Tạo kết quả hiển thị
-                const resultLines = filteredResults.map(result => {
-                    const stats = [];
-                    if (result.priorityCount > 0) {
-                        const priorityType = combinationNums.length > 0 ? 'ưu tiên' : 'bộ đặc biệt';
-                        stats.push(`${result.priorityCount} ${priorityType}`);
-                    }
-                    if (result.repeatCount > 0) stats.push(`${result.repeatCount} lặp lại`);
-                    if (result.singleCount > 0) stats.push(`${result.singleCount} đơn lẻ`);
-                    if (result.randomCount > 0) stats.push(`${result.randomCount} ngẫu nhiên`);
-
-                    const statsText = stats.length > 0 ? `(${stats.join(', ')})` : '';
-                    // Format: "9 5 s" (tách số thành từng chữ số)
-                    const actualLevel = levelMapping[result.level];
-                    const levelStr = actualLevel.toString();
-                    const formattedLevel = levelStr.split('').join(' ') + ' s';
-                    return `${formattedLevel} ${statsText}:\n${result.result.join(',')}`;
-                });
-
-                // Sắp xếp kết quả theo thứ tự giảm dần (cao nhất xuống thấp nhất)
                 const sortedResults = filteredResults.sort((a, b) => {
                     const levelA = levelMapping[a.level];
                     const levelB = levelMapping[b.level];
                     return parseInt(levelB) - parseInt(levelA);
                 });
 
-                // Tạo lại resultLines với thứ tự đã sắp xếp
                 const sortedResultLines = sortedResults.map(result => {
                     const stats = [];
-                    if (result.priorityCount > 0) {
-                        const priorityType = combinationNums.length > 0 ? 'ưu tiên' : 'bộ đặc biệt';
-                        stats.push(`${result.priorityCount} ${priorityType}`);
-                    }
-                    if (result.repeatCount > 0) stats.push(`${result.repeatCount} lặp lại`);
-                    if (result.singleCount > 0) stats.push(`${result.singleCount} đơn lẻ`);
+                    if (result.usedFromPool > 0) stats.push(`${result.usedFromPool} từ kho dữ liệu`);
                     if (result.randomCount > 0) stats.push(`${result.randomCount} ngẫu nhiên`);
 
                     const statsText = stats.length > 0 ? `(${stats.join(', ')})` : '';
@@ -451,27 +562,56 @@ const DanDeFilter = memo(() => {
                 const appliedOptions = [];
                 if (excludeDoubles) appliedOptions.push('loại bỏ kép bằng');
                 if (excludeNums.length > 0) appliedOptions.push(`loại bỏ ${excludeNums.length} số`);
-                if (combinationNums.length > 0) appliedOptions.push(`ưu tiên ${combinationNums.length} số`);
-                if (selectedSpecialSets.length > 0) appliedOptions.push(`ưu tiên ${selectedSpecialSets.length} bộ đặc biệt`);
+                if (combinationNums.length > 0) appliedOptions.push(`thêm ${combinationNums.length} số mong muốn`);
+                if (selectedSpecialSets.length > 0) appliedOptions.push(`${selectedSpecialSets.length} bộ đặc biệt`);
+                if (selectedTouches.length > 0) appliedOptions.push(`${selectedTouches.length} chạm`);
+                if (selectedSums.length > 0) appliedOptions.push(`${selectedSums.length} tổng`);
 
                 // Tạo thống kê tần suất số ở đầu
                 const frequencyStats = [];
                 if (frequencyMap && Object.keys(frequencyMap).length > 0) {
                     const sortedFrequency = Object.entries(frequencyMap)
-                        .sort(([, a], [, b]) => b - a) // Sắp xếp theo tần suất giảm dần
-                        .slice(0, 20); // Chỉ hiển thị top 20 số xuất hiện nhiều nhất
+                        .sort(([, a], [, b]) => b - a); // Sắp xếp theo tần suất giảm dần
 
                     if (sortedFrequency.length > 0) {
-                        frequencyStats.push('📊 THỐNG KÊ TẦN SUẤT SỐ (Top 20):');
-                        frequencyStats.push('');
+                        // Hiển thị tất cả số có tần suất > 1, sau đó hiển thị một số số có tần suất = 1
+                        const highFreqNumbers = sortedFrequency.filter(([, count]) => count > 1);
+                        const lowFreqNumbers = sortedFrequency.filter(([, count]) => count === 1);
 
-                        const frequencyList = sortedFrequency
-                            .map(([num, count]) => `${num}(${count} lần)`)
-                            .join('; ');
+                        // Hiển thị tất cả số có tần suất > 1
+                        if (highFreqNumbers.length > 0) {
+                            frequencyStats.push('📊 THỐNG KÊ TẦN SUẤT SỐ (Tần suất > 1):');
+                            frequencyStats.push('');
 
-                        frequencyStats.push(frequencyList);
-                        frequencyStats.push('');
-                        frequencyStats.push('📋 KẾT QUẢ LỌC:');
+                            const highFreqList = highFreqNumbers
+                                .map(([num, count]) => `${num}(${count} lần)`)
+                                .join('; ');
+
+                            frequencyStats.push(highFreqList);
+                            frequencyStats.push('');
+                        }
+
+                        // Hiển thị một số số có tần suất = 1 (tối đa 30 số để không quá dài)
+                        if (lowFreqNumbers.length > 0) {
+                            const displayLowFreq = lowFreqNumbers.slice(0, 30);
+
+                            frequencyStats.push('📊 THỐNG KÊ TẦN SUẤT SỐ (Tần suất = 1):');
+                            frequencyStats.push('');
+
+                            const lowFreqList = displayLowFreq
+                                .map(([num, count]) => `${num}(${count} lần)`)
+                                .join('; ');
+
+                            frequencyStats.push(lowFreqList);
+
+                            if (lowFreqNumbers.length > 30) {
+                                frequencyStats.push(`... và ${lowFreqNumbers.length - 30} số khác`);
+                            }
+
+                            frequencyStats.push('');
+                        }
+
+                        frequencyStats.push(`📋 KẾT QUẢ LỌC (${uniqueNumbers.length} số từ kho dữ liệu):`);
                         frequencyStats.push('');
                     }
                 }
@@ -490,7 +630,7 @@ const DanDeFilter = memo(() => {
         }
 
         setFilterLoading(false);
-    }, [filterInput, filterSelectedLevels, combinationNumbers, excludeNumbers, selectedSpecialSets, excludeDoubles]);
+    }, [filterInput, filterSelectedLevels, combinationNumbers, excludeNumbers, selectedSpecialSets, selectedTouches, selectedSums, excludeDoubles]);
 
     const handleClearFilter = useCallback(() => {
         // Lưu dữ liệu trước khi xóa để có thể hoàn tác
@@ -499,22 +639,27 @@ const DanDeFilter = memo(() => {
                 filterResult: filterResult,
                 filterInput: filterInput,
                 filterSelectedLevels: [...filterSelectedLevels],
+                quantity: quantity,
                 excludeDoubles: excludeDoubles,
                 combinationNumbers: combinationNumbers,
                 excludeNumbers: excludeNumbers,
-                selectedSpecialSets: [...selectedSpecialSets]
+                selectedSpecialSets: [...selectedSpecialSets],
+                selectedTouches: [...selectedTouches]
             });
         }
 
         setFilterInput('');
         setFilterResult('');
         setFilterSelectedLevels([]);
+        setQuantity(1);
         setExcludeDoubles(false);
         setCombinationNumbers('');
         setExcludeNumbers('');
         setSelectedSpecialSets([]);
+        setSelectedTouches([]);
+        setSelectedSums([]);
         setError(null);
-    }, [filterResult, filterInput, filterSelectedLevels, excludeDoubles, combinationNumbers, excludeNumbers, selectedSpecialSets]);
+    }, [filterResult, filterInput, filterSelectedLevels, quantity, excludeDoubles, combinationNumbers, excludeNumbers, selectedSpecialSets, selectedTouches, selectedSums]);
 
     const handleCopyResult = useCallback(() => {
         if (!filterResult.trim()) {
@@ -522,70 +667,141 @@ const DanDeFilter = memo(() => {
             return;
         }
 
-        // Lấy chỉ phần kết quả lọc, bỏ qua thống kê và options
-        const lines = filterResult.split('\n');
-        const resultLines = [];
-        let inResultSection = false;
+        try {
+            // Lấy chỉ phần kết quả lọc, bỏ qua thống kê và options
+            const lines = filterResult.split('\n');
+            const resultLines = [];
+            let inResultSection = false;
 
-        for (const line of lines) {
-            // Bắt đầu từ phần "📋 KẾT QUẢ LỌC:"
-            if (line.includes('📋 KẾT QUẢ LỌC:')) {
-                inResultSection = true;
-                continue;
-            }
+            for (const line of lines) {
+                // Bắt đầu từ phần "📋 KẾT QUẢ LỌC"
+                if (line.includes('📋 KẾT QUẢ LỌC')) {
+                    inResultSection = true;
+                    continue;
+                }
 
-            // Dừng khi gặp phần "Đã áp dụng"
-            if (inResultSection && line.includes('Đã áp dụng')) {
-                break;
-            }
+                // Dừng khi gặp phần "Đã áp dụng"
+                if (inResultSection && line.includes('Đã áp dụng')) {
+                    break;
+                }
 
-            // Thu thập kết quả lọc
-            if (inResultSection && line.trim() !== '') {
-                // Nếu dòng có format "9 5 s (stats):" và chứa số liệu
-                if (line.includes(' s') && line.includes(':')) {
-                    const parts = line.split(':');
-                    const levelPart = parts[0].trim();
-                    const numbersPart = parts[1] ? parts[1].trim() : '';
+                // Thu thập kết quả lọc
+                if (inResultSection && line.trim() !== '') {
+                    // Nếu dòng có format "9 5 s (stats):" và chứa số liệu
+                    if (line.includes(' s') && line.includes(':')) {
+                        const parts = line.split(':');
+                        const levelPart = parts[0].trim();
+                        const numbersPart = parts[1] ? parts[1].trim() : '';
 
-                    // Loại bỏ thống kê trong ngoặc
-                    const cleanLevelPart = levelPart.replace(/\s*\([^)]*\)\s*$/, '');
+                        // Loại bỏ thống kê trong ngoặc
+                        const cleanLevelPart = levelPart.replace(/\s*\([^)]*\)\s*$/, '');
 
-                    resultLines.push(cleanLevelPart);
-                    if (numbersPart) {
-                        resultLines.push(numbersPart);
+                        resultLines.push(cleanLevelPart);
+                        if (numbersPart) {
+                            resultLines.push(numbersPart);
+                        }
+                    }
+                    // Nếu dòng chỉ chứa số liệu (không có level)
+                    else if (!line.includes('📊') && !line.includes('THỐNG KÊ')) {
+                        resultLines.push(line.trim());
                     }
                 }
-                // Nếu dòng chỉ chứa số liệu (không có level)
-                else if (!line.includes('📊') && !line.includes('THỐNG KÊ')) {
-                    resultLines.push(line.trim());
-                }
             }
+
+            const copyText = resultLines.join('\n').trim();
+
+            // Debug log
+            console.log('Copy text:', copyText);
+            console.log('Result lines:', resultLines);
+
+            if (!copyText) {
+                setError('Không có nội dung để sao chép');
+                return;
+            }
+
+            // Kiểm tra hỗ trợ Clipboard API
+            console.log('Clipboard API supported:', !!navigator.clipboard);
+            console.log('HTTPS:', window.location.protocol === 'https:');
+
+            // Sử dụng Clipboard API với fallback
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                console.log('Using Clipboard API...');
+                navigator.clipboard.writeText(copyText).then(() => {
+                    console.log('Copy successful via Clipboard API');
+                    setCopyStatus(true);
+                    setTimeout(() => setCopyStatus(false), 2000);
+                }).catch((err) => {
+                    console.error('Clipboard API error:', err);
+                    console.log('Falling back to textarea method...');
+                    // Fallback: tạo textarea và copy
+                    fallbackCopyTextToClipboard(copyText);
+                });
+            } else {
+                console.log('Clipboard API not supported, using fallback...');
+                // Fallback cho trình duyệt không hỗ trợ Clipboard API
+                fallbackCopyTextToClipboard(copyText);
+            }
+        } catch (error) {
+            console.error('Copy error:', error);
+            setError('Lỗi khi xử lý dữ liệu để sao chép');
         }
-
-        const copyText = resultLines.join('\n');
-
-        navigator.clipboard.writeText(copyText.trim()).then(() => {
-            setCopyStatus(true);
-            setTimeout(() => setCopyStatus(false), 2000);
-        }).catch(() => {
-            setError('Lỗi khi sao chép kết quả');
-        });
     }, [filterResult]);
+
+    // Fallback copy function
+    const fallbackCopyTextToClipboard = (text) => {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                setCopyStatus(true);
+                setTimeout(() => setCopyStatus(false), 2000);
+            } else {
+                setError('Không thể sao chép. Vui lòng thử lại.');
+            }
+        } catch (err) {
+            console.error('Fallback copy error:', err);
+            setError('Lỗi khi sao chép kết quả');
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    };
 
     const handleUndo = useCallback(() => {
         if (undoData) {
             setFilterInput(undoData.filterInput);
             setFilterResult(undoData.filterResult);
             setFilterSelectedLevels(undoData.filterSelectedLevels);
+            setQuantity(undoData.quantity || 1);
             setExcludeDoubles(undoData.excludeDoubles);
             setCombinationNumbers(undoData.combinationNumbers);
             setExcludeNumbers(undoData.excludeNumbers);
             setSelectedSpecialSets(undoData.selectedSpecialSets);
+            setSelectedTouches(undoData.selectedTouches || []);
+            setSelectedSums(undoData.selectedSums || []);
             setUndoData(null);
             setUndoStatus(true);
             setTimeout(() => setUndoStatus(false), 2000);
         }
     }, [undoData]);
+
+    // Stats Detail Modal handlers
+    const handleStatsDetailClick = useCallback((type) => {
+        setStatsDetailType(type);
+        setShowStatsDetailModal(true);
+    }, []);
+
+    const closeStatsDetailModal = useCallback(() => {
+        setShowStatsDetailModal(false);
+        setStatsDetailType(null);
+    }, []);
 
     return (
         <div className={styles.card} style={{ marginTop: 'var(--spacing-6)' }}>
@@ -593,6 +809,82 @@ const DanDeFilter = memo(() => {
                 <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} />
                 Lọc Dàn Đề Siêu Cấp
             </h2>
+
+            {/* Mẹo hay section */}
+            <div className={styles.tipsSection} style={{
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #0ea5e9',
+                borderRadius: '8px',
+                padding: '16px',
+                marginBottom: 'var(--spacing-4)',
+                textAlign: 'center'
+            }}>
+                <h3 style={{
+                    color: '#0369a1',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    margin: '0 0 12px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                }}>
+                    💡 Mẹo Hay
+                </h3>
+                <div style={{
+                    color: '#0c4a6e',
+                    fontSize: '14px',
+                    lineHeight: '1.5',
+                    textAlign: 'left',
+                    maxWidth: '600px',
+                    margin: '0 auto'
+                }}>
+                    <p style={{ margin: '0 0 8px 0' }}>
+                        <strong>Bạn hãy copy các dàn tùy ý từ bất cứ ai chốt dàn 4X, 3X, 2X, 1X, 0X</strong> +
+                    </p>
+                    <p style={{ margin: '0 0 8px 0' }}>
+                        <strong>"loại bỏ các số đặc biệt đã ra gần đây"</strong> +
+                    </p>
+                    <p style={{ margin: '0' }}>
+                        <strong>loại bỏ kép bằng</strong> = <span style={{ color: '#dc2626', fontWeight: 'bold' }}>kết quả đầu ra dàn mong muốn</span>
+                    </p>
+                </div>
+            </div>
+
+            {/* Mobile compact tips section */}
+            <div className={styles.mobileTipsSection} style={{
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #0ea5e9',
+                borderRadius: '6px',
+                padding: '12px',
+                marginBottom: 'var(--spacing-4)',
+                textAlign: 'center',
+                display: 'none'
+            }}>
+                <h3 style={{
+                    color: '#0369a1',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    margin: '0 0 8px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                }}>
+                    💡 Mẹo Hay
+                </h3>
+                <div style={{
+                    color: '#0c4a6e',
+                    fontSize: '12px',
+                    lineHeight: '1.4',
+                    textAlign: 'center'
+                }}>
+                    <p style={{ margin: '0' }}>
+                        <strong>Copy dàn 4X,3X,2X,1X,0X</strong> + <strong>"loại bỏ số đặc biệt gần đây"</strong> + <strong>loại bỏ kép bằng</strong> = <span style={{ color: '#dc2626', fontWeight: 'bold' }}>dàn mong muốn</span>
+                    </p>
+                </div>
+            </div>
+
             <p className={styles.sectionTitle} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
                 {/* <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} /> */}
                 Đây là công cụ lọc dàn chuyên nghiệp, bạn có thể nhập tổng hợp dàn đề của các cao thủ khác nhau, với công cụ này sẽ cho bạn dàn đề cuối cùng tốt nhất
@@ -657,34 +949,44 @@ const DanDeFilter = memo(() => {
                             </div>
                         </div>
 
-                        {/* Row 1: Combination Numbers and Exclude Numbers */}
+                        {/* Main Inputs Row: 3 inputs on same row for mobile */}
                         <div className={styles.inputRow}>
                             <div className={styles.inputGroup}>
-                                <label htmlFor="filterCombinationNumbers" className={styles.inputLabel}>
-                                    Thêm số mong muốn (tối đa 40 số):
-                                </label>
+                                <label htmlFor="quantity" className={styles.inputLabel}>Số lượng dàn:</label>
+                                <input
+                                    id="quantity"
+                                    type="number"
+                                    value={quantity}
+                                    onChange={handleQuantityChange}
+                                    placeholder="1"
+                                    title="Nhập số lượng dàn (1-50)"
+                                    min="1"
+                                    max="50"
+                                    className={styles.input}
+                                    disabled={filterLoading}
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="filterCombinationNumbers" className={styles.inputLabel}>Thêm số:</label>
                                 <input
                                     id="filterCombinationNumbers"
                                     type="text"
                                     value={combinationNumbers}
                                     onChange={handleCombinationChange}
-                                    placeholder="45,50,67 hoặc 45 50 67 hoặc 45;50;67"
+                                    placeholder="45,50,67"
                                     title="Nhập các số 2 chữ số (00-99) muốn ưu tiên trong kết quả lọc"
                                     className={styles.input}
                                     disabled={filterLoading}
                                 />
                             </div>
-
                             <div className={styles.inputGroup}>
-                                <label htmlFor="filterExcludeNumbers" className={styles.inputLabel}>
-                                    Loại bỏ số mong muốn (tối đa 5 số):
-                                </label>
+                                <label htmlFor="filterExcludeNumbers" className={styles.inputLabel}>Loại bỏ số:</label>
                                 <input
                                     id="filterExcludeNumbers"
                                     type="text"
                                     value={excludeNumbers}
                                     onChange={handleExcludeChange}
-                                    placeholder="83,84,85 hoặc 83 84 85 hoặc 83;84;85"
+                                    placeholder="83,84,85"
                                     title="Nhập các số 2 chữ số (00-99) cần loại bỏ khỏi kết quả lọc"
                                     className={styles.input}
                                     disabled={filterLoading}
@@ -692,61 +994,279 @@ const DanDeFilter = memo(() => {
                             </div>
                         </div>
 
-                        {/* Row 2: Exclude Doubles and Special Sets */}
-                        <div className={styles.inputRow}>
-                            <div className={styles.inputGroup}>
-                                <label className={styles.inputLabel}>
-                                    Tùy chọn khác:
-                                </label>
-                                <div className={styles.checkboxContainer}>
-                                    <input
-                                        id="filterExcludeDoubles"
-                                        type="checkbox"
-                                        checked={excludeDoubles}
-                                        onChange={handleExcludeDoublesChange}
-                                        className={styles.checkbox}
-                                        disabled={filterLoading}
-                                    />
-                                    <label htmlFor="filterExcludeDoubles" className={styles.checkboxLabel}>
-                                        Loại bỏ kép bằng
-                                    </label>
-                                </div>
-                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px', fontStyle: 'italic' }}>
-                                    Chú ý: Loại bỏ kép bằng 95s sẽ thành 90s
+                        {/* Desktop Layout: Separate rows */}
+                        <div className={styles.desktopOptionsLayout}>
+                            {/* Options Row: Checkbox and other options */}
+                            <div className={styles.optionsRow}>
+                                <div className={styles.inputGroup}>
+                                    <label className={styles.inputLabel}>Tùy chọn khác:</label>
+                                    <div className={styles.checkboxContainer}>
+                                        <input
+                                            id="filterExcludeDoubles"
+                                            type="checkbox"
+                                            checked={excludeDoubles}
+                                            onChange={handleExcludeDoublesChange}
+                                            className={styles.checkbox}
+                                            disabled={filterLoading}
+                                        />
+                                        <label htmlFor="filterExcludeDoubles" className={styles.checkboxLabel}>
+                                            Loại bỏ kép bằng
+                                        </label>
+                                    </div>
+                                    <div className={styles.helpText}>
+                                        Chú ý: Loại bỏ kép bằng 95s sẽ thành 90s
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className={styles.inputGroup}>
-                                <label className={styles.inputLabel}>
-                                    <Star size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                                    Chọn bộ số đặc biệt (tối đa 5 bộ):
-                                </label>
-                                <div className={styles.specialSetsContainer}>
-                                    <div className={styles.specialSetsList}>
-                                        {specialSetsData.map(set => (
-                                            <div
-                                                key={set.id}
-                                                className={`${styles.specialSetItem} ${selectedSpecialSets.includes(set.id) ? styles.selected : ''
-                                                    } ${selectedSpecialSets.length >= 5 && !selectedSpecialSets.includes(set.id) ? styles.disabled : ''}`}
-                                                onClick={() => !filterLoading && handleSpecialSetToggle(set.id)}
-                                                title={`Bộ ${set.id}: ${set.numbers.join(', ')}`}
-                                            >
-                                                <div className={styles.specialSetHeader}>
-                                                    <span className={styles.specialSetId}>Bộ {set.id}</span>
-                                                    <span className={styles.specialSetCount}>({set.count} số)</span>
-                                                </div>
-                                                <div className={styles.specialSetNumbers}>
-                                                    {set.numbers.join(', ')}
-                                                </div>
+                            {/* Desktop Selection Layout - 2 rows */}
+                            <div className={styles.desktopSelectionRow}>
+                                {/* Row 1: Special Sets - Full width */}
+                                <div className={styles.desktopSpecialSetsRow}>
+                                    <div className={styles.inputGroup}>
+                                        <label className={styles.inputLabel}>
+                                            Chọn bộ số đặc biệt (tối đa 5 bộ):
+                                        </label>
+                                        <div className={styles.specialSetsContainer}>
+                                            <div className={styles.specialSetsList}>
+                                                {specialSetsData.map(set => (
+                                                    <div
+                                                        key={set.id}
+                                                        className={`${styles.specialSetItem} ${selectedSpecialSets.includes(set.id) ? styles.selected : ''
+                                                            } ${selectedSpecialSets.length >= 5 && !selectedSpecialSets.includes(set.id) ? styles.disabled : ''}`}
+                                                        onClick={() => !filterLoading && handleSpecialSetToggle(set.id)}
+                                                        title={`Bộ ${set.id}: ${set.numbers.join(', ')}`}
+                                                    >
+                                                        <div className={styles.specialSetHeader}>
+                                                            <span className={styles.specialSetId}>Bộ {set.id}</span>
+                                                            <span className={styles.specialSetCount}>({set.count} số)</span>
+                                                        </div>
+                                                        <div className={styles.specialSetNumbers}>
+                                                            {set.numbers.join(', ')}
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
+                                        </div>
+                                        {selectedSpecialSets.length > 0 && (
+                                            <div className={styles.selectedSpecialSets}>
+                                                <strong>Đã chọn:</strong> {selectedSpecialSets.map(id => `Bộ ${id}`).join(', ')}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                                {selectedSpecialSets.length > 0 && (
-                                    <div className={styles.selectedSpecialSets}>
-                                        <strong>Đã chọn:</strong> {selectedSpecialSets.map(id => `Bộ ${id}`).join(', ')}
+
+                                {/* Row 2: Touch and Sum - Side by side */}
+                                <div className={styles.desktopTouchSumRow}>
+                                    {/* Chọn chạm - Desktop */}
+                                    <div className={styles.inputGroup}>
+                                        <label className={styles.inputLabel}>
+                                            🎯 Chọn chạm (tối đa 10 chạm):
+                                        </label>
+                                        <div className={styles.touchSelectionContainer}>
+                                            <div className={styles.touchSelectionList}>
+                                                {touchData.map(touch => (
+                                                    <div
+                                                        key={touch.id}
+                                                        className={`${styles.touchSelectionItem} ${selectedTouches.includes(touch.id) ? styles.selected : ''
+                                                            } ${selectedTouches.length >= 10 && !selectedTouches.includes(touch.id) ? styles.disabled : ''}`}
+                                                        onClick={() => !filterLoading && handleTouchToggle(touch.id)}
+                                                        title={`Chạm ${touch.id}: ${touch.numbers.join(', ')}`}
+                                                    >
+                                                        <div className={styles.touchSelectionHeader}>
+                                                            <span className={styles.touchSelectionId}>Chạm {touch.id}</span>
+                                                            <span className={styles.touchSelectionCount}>({touch.count} số)</span>
+                                                        </div>
+                                                        <div className={styles.touchSelectionNumbers}>
+                                                            {touch.numbers.join(', ')}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {selectedTouches.length > 0 && (
+                                            <div className={styles.selectedTouches}>
+                                                <strong>Đã chọn:</strong> {selectedTouches.map(id => `Chạm ${id}`).join(', ')}
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+
+                                    {/* Chọn tổng - Desktop */}
+                                    <div className={styles.inputGroup}>
+                                        <label className={styles.inputLabel}>
+                                            Chọn tổng (tối đa 10 tổng):
+                                        </label>
+                                        <div className={styles.sumSelectionContainer}>
+                                            <div className={styles.sumSelectionList}>
+                                                {sumData.map(sum => (
+                                                    <div
+                                                        key={sum.id}
+                                                        className={`${styles.sumSelectionItem} ${selectedSums.includes(sum.id) ? styles.selected : ''
+                                                            } ${selectedSums.length >= 10 && !selectedSums.includes(sum.id) ? styles.disabled : ''}`}
+                                                        onClick={() => !filterLoading && handleSumToggle(sum.id)}
+                                                        title={`Tổng ${sum.id}: ${sum.numbers.join(', ')}`}
+                                                    >
+                                                        <div className={styles.sumSelectionHeader}>
+                                                            <span className={styles.sumSelectionId}>Tổng {sum.id}</span>
+                                                            <span className={styles.sumSelectionCount}>({sum.count} số)</span>
+                                                        </div>
+                                                        <div className={styles.sumSelectionNumbers}>
+                                                            {sum.numbers.join(', ')}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {selectedSums.length > 0 && (
+                                            <div className={styles.selectedSums}>
+                                                <strong>Đã chọn:</strong> {selectedSums.map(id => `Tổng ${id}`).join(', ')}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Mobile Layout: Combined row */}
+                        <div className={styles.mobileOptionsLayout}>
+                            <div className={styles.mobileOptionsRow}>
+                                {/* Checkbox */}
+                                <div className={styles.mobileCheckboxGroup}>
+                                    <div className={styles.checkboxContainer}>
+                                        <input
+                                            id="filterExcludeDoublesMobile"
+                                            type="checkbox"
+                                            checked={excludeDoubles}
+                                            onChange={handleExcludeDoublesChange}
+                                            className={styles.checkbox}
+                                            disabled={filterLoading}
+                                        />
+                                        <label htmlFor="filterExcludeDoublesMobile" className={styles.checkboxLabel}>
+                                            Loại bỏ kép bằng
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Button chọn bộ số */}
+                                <div className={styles.mobileSpecialSetsGroup}>
+                                    <button
+                                        className={styles.specialSetsButton}
+                                        onClick={() => setShowSpecialSetsModal(true)}
+                                        disabled={filterLoading}
+                                    >
+                                        {selectedSpecialSets.length > 0 ? `${selectedSpecialSets.length} bộ` : 'Chọn bộ số'}
+                                    </button>
+                                </div>
+
+                                {/* Button chọn chạm */}
+                                <div className={styles.mobileTouchGroup}>
+                                    <button
+                                        className={styles.touchButton}
+                                        onClick={() => setShowTouchModal(true)}
+                                        disabled={filterLoading}
+                                    >
+                                        {selectedTouches.length > 0 ? `${selectedTouches.length} chạm` : 'Chạm'}
+                                    </button>
+                                </div>
+
+                                {/* Button chọn tổng */}
+                                <div className={styles.mobileSumGroup}>
+                                    <button
+                                        className={styles.sumButton}
+                                        onClick={() => setShowSumModal(true)}
+                                        disabled={filterLoading}
+                                    >
+                                        {selectedSums.length > 0 ? `${selectedSums.length} tổng` : 'Tổng'}
+                                    </button>
+                                </div>
+                            </div>
+                            {/* Help text and Stats row for mobile */}
+                            <div className={styles.mobileHelpStatsRow}>
+                                <div className={styles.mobileHelpText}>
+                                    Chú ý: Loại bỏ kép bằng 95s sẽ thành 90s
+                                </div>
+
+                                {/* Mobile Stats Grid */}
+                                <div className={styles.mobileStatsSection}>
+                                    {(selectedSpecialSets.length > 0 || combinationNumbers.trim() || excludeNumbers.trim() || selectedTouches.length || selectedSums.length || excludeDoubles) ? (
+                                        <div className={styles.mobileStatsGrid}>
+                                            {selectedSpecialSets.length > 0 && (
+                                                <div
+                                                    className={styles.mobileStatItem}
+                                                    onClick={() => handleStatsDetailClick('specialSets')}
+                                                >
+                                                    <span className={styles.mobileStatIcon}>⭐</span>
+                                                    <span className={styles.mobileStatText}>
+                                                        {selectedSpecialSets.length}/5 bộ
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {combinationNumbers.trim() && (
+                                                <div
+                                                    className={styles.mobileStatItem}
+                                                    onClick={() => handleStatsDetailClick('combinationNumbers')}
+                                                >
+                                                    <span className={styles.mobileStatIcon}>➕</span>
+                                                    <span className={styles.mobileStatText}>
+                                                        +{parseCombinationNumbers().length}
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {excludeNumbers.trim() && (
+                                                <div
+                                                    className={styles.mobileStatItem}
+                                                    onClick={() => handleStatsDetailClick('excludeNumbers')}
+                                                >
+                                                    <span className={styles.mobileStatIcon}>➖</span>
+                                                    <span className={styles.mobileStatText}>
+                                                        -{parseExcludeNumbers().length}
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {selectedTouches.length > 0 && (
+                                                <div
+                                                    className={styles.mobileStatItem}
+                                                    onClick={() => handleStatsDetailClick('selectedTouches')}
+                                                >
+                                                    <span className={styles.mobileStatIcon}>🎯</span>
+                                                    <span className={styles.mobileStatText}>
+                                                        {selectedTouches.length} chạm
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {selectedSums.length > 0 && (
+                                                <div
+                                                    className={styles.mobileStatItem}
+                                                    onClick={() => handleStatsDetailClick('selectedSums')}
+                                                >
+                                                    <span className={styles.mobileStatIcon}>🔢</span>
+                                                    <span className={styles.mobileStatText}>
+                                                        {selectedSums.length} tổng
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {excludeDoubles && (
+                                                <div
+                                                    className={styles.mobileStatItem}
+                                                    onClick={() => handleStatsDetailClick('excludeDoubles')}
+                                                >
+                                                    <span className={styles.mobileStatIcon}>🚫</span>
+                                                    <span className={styles.mobileStatText}>
+                                                        Kép
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className={styles.mobileStatsEmpty}>
+                                            💡 Lọc dàn số
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -780,9 +1300,74 @@ const DanDeFilter = memo(() => {
                             </div>
                         )}
 
-                        {/* Help Text */}
-                        <div className={styles.helpText}>
-                            <strong>Hướng dẫn:</strong> Nhập các số cần lọc vào ô bên phải, chọn cấp độ muốn lọc (0X-9X), có thể thêm các tùy chọn bổ sung, sau đó nhấn "Lọc Dàn" để xem kết quả.
+                        {/* Thống kê lựa chọn - Desktop */}
+                        <div className={styles.desktopStatsSection}>
+                            <div className={styles.helpText}>
+                                <h4 style={{ margin: '0 0 8px 0', color: '#1e40af', fontSize: '14px', fontWeight: 'bold' }}>
+                                    📊 Thống kê lựa chọn hiện tại:
+                                </h4>
+                                <div style={{ fontSize: '13px', lineHeight: '1.4' }}>
+                                    {selectedSpecialSets.length > 0 && (
+                                        <div style={{ color: '#059669', marginBottom: '4px' }}>
+                                            ✅ <strong>Bộ số đặc biệt:</strong> {selectedSpecialSets.length}/5 bộ ({selectedSpecialSets.map(id => `Bộ ${id}`).join(', ')})<br />
+                                            <span style={{ fontSize: '12px', color: '#047857', fontFamily: 'monospace' }}>
+                                                {getCombinedSpecialSetNumbers(selectedSpecialSets).join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {combinationNumbers.trim() && (
+                                        <div style={{ color: '#2563eb', marginBottom: '4px' }}>
+                                            ✅ <strong>Thêm số mong muốn:</strong> {parseCombinationNumbers().length}/40 số<br />
+                                            <span style={{ fontSize: '12px', color: '#1e40af', fontFamily: 'monospace' }}>
+                                                {parseCombinationNumbers().join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {excludeNumbers.trim() && (
+                                        <div style={{ color: '#dc2626', marginBottom: '4px' }}>
+                                            ✅ <strong>Loại bỏ số mong muốn:</strong> {parseExcludeNumbers().length}/5 số<br />
+                                            <span style={{ fontSize: '12px', color: '#991b1b', fontFamily: 'monospace' }}>
+                                                {parseExcludeNumbers().join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {selectedTouches.length > 0 && (
+                                        <div style={{ color: '#f59e0b', marginBottom: '4px' }}>
+                                            ✅ <strong>Chọn chạm:</strong> {selectedTouches.length}/10 chạm ({selectedTouches.map(id => `Chạm ${id}`).join(', ')})<br />
+                                            <span style={{ fontSize: '12px', color: '#d97706', fontFamily: 'monospace' }}>
+                                                {getNumbersByTouch(selectedTouches).join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {selectedSums.length > 0 && (
+                                        <div style={{ color: '#8b5cf6', marginBottom: '4px' }}>
+                                            ✅ <strong>Chọn tổng:</strong> {selectedSums.length}/10 tổng ({selectedSums.map(id => `Tổng ${id}`).join(', ')})<br />
+                                            <span style={{ fontSize: '12px', color: '#7c3aed', fontFamily: 'monospace' }}>
+                                                {getNumbersBySum(selectedSums).join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {excludeDoubles && (
+                                        <div style={{ color: '#7c3aed', marginBottom: '4px' }}>
+                                            ✅ <strong>Loại bỏ kép bằng:</strong> Đã bật (Cấp cao nhất: 90s)<br />
+                                            <span style={{ fontSize: '12px', color: '#6b21a8', fontFamily: 'monospace' }}>
+                                                00, 11, 22, 33, 44, 55, 66, 77, 88, 99
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {selectedSpecialSets.length === 0 && !combinationNumbers.trim() && !excludeNumbers.trim() && !selectedTouches.length && !selectedSums.length && !excludeDoubles && (
+                                        <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                                            💡 Chưa có lựa chọn nào. Lọc sẽ dựa trên dàn số đã nhập.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -821,11 +1406,295 @@ const DanDeFilter = memo(() => {
                             placeholder="Kết quả lọc sẽ hiển thị ở đây..."
                             style={{ minHeight: '200px' }}
                             aria-label="Kết quả lọc dàn đề"
+                            aria-live="polite"
+                            aria-atomic="true"
+                            role="status"
                             tabIndex="-1"
                         />
                     </div>
                 </div>
             </div>
+
+            {/* Special Sets Modal */}
+            {showSpecialSetsModal && (
+                <div className={styles.specialSetsModalOverlay} onClick={() => setShowSpecialSetsModal(false)}>
+                    <div className={styles.specialSetsModal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.specialSetsModalHeader}>
+                            <h3>Chọn bộ số đặc biệt</h3>
+                            <button
+                                className={styles.modalCloseButton}
+                                onClick={() => setShowSpecialSetsModal(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className={styles.specialSetsModalContent}>
+                            <div className={styles.specialSetsList}>
+                                {specialSetsData.map(set => (
+                                    <div
+                                        key={set.id}
+                                        className={`${styles.specialSetItem} ${selectedSpecialSets.includes(set.id) ? styles.selected : ''
+                                            } ${selectedSpecialSets.length >= 5 && !selectedSpecialSets.includes(set.id) ? styles.disabled : ''}`}
+                                        onClick={() => !filterLoading && handleSpecialSetToggle(set.id)}
+                                        title={`Bộ ${set.id}: ${set.numbers.join(', ')}`}
+                                    >
+                                        <div className={styles.specialSetHeader}>
+                                            <span className={styles.specialSetId}>Bộ {set.id}</span>
+                                            <span className={styles.specialSetCount}>({set.count} số)</span>
+                                        </div>
+                                        <div className={styles.specialSetNumbers}>
+                                            {set.numbers.join(', ')}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className={styles.specialSetsModalFooter}>
+                            <button
+                                className={`${styles.button} ${styles.primaryButton}`}
+                                onClick={() => setShowSpecialSetsModal(false)}
+                            >
+                                Hoàn thành
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Touch Modal */}
+            {showTouchModal && (
+                <div className={styles.specialSetsModalOverlay} onClick={() => setShowTouchModal(false)}>
+                    <div className={styles.specialSetsModal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.specialSetsModalHeader}>
+                            <h3>Chọn chạm (0-9)</h3>
+                            <button
+                                className={styles.specialSetsModalClose}
+                                onClick={() => setShowTouchModal(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className={styles.specialSetsModalContent}>
+                            <div className={styles.specialSetsList}>
+                                {touchData.map(touch => (
+                                    <div
+                                        key={touch.id}
+                                        className={`${styles.specialSetItem} ${selectedTouches.includes(touch.id) ? styles.selected : ''
+                                            } ${selectedTouches.length >= 10 && !selectedTouches.includes(touch.id) ? styles.disabled : ''}`}
+                                        onClick={() => !filterLoading && handleTouchToggle(touch.id)}
+                                        title={`Chạm ${touch.id}: ${touch.numbers.join(', ')}`}
+                                    >
+                                        <div className={styles.specialSetHeader}>
+                                            <span className={styles.specialSetId}>Chạm {touch.id}</span>
+                                            <span className={styles.specialSetCount}>({touch.count} số)</span>
+                                        </div>
+                                        <div className={styles.specialSetNumbers}>
+                                            {touch.numbers.join(', ')}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className={styles.specialSetsModalFooter}>
+                            <div className={styles.selectedCount}>
+                                Đã chọn: {selectedTouches.length}/10 chạm
+                            </div>
+                            <button
+                                className={styles.specialSetsModalDone}
+                                onClick={() => setShowTouchModal(false)}
+                            >
+                                Xong
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Sum Modal */}
+            {showSumModal && (
+                <div className={styles.specialSetsModalOverlay} onClick={() => setShowSumModal(false)}>
+                    <div className={styles.specialSetsModal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.specialSetsModalHeader}>
+                            <h3>Chọn tổng (0-9)</h3>
+                            <button
+                                className={styles.specialSetsModalClose}
+                                onClick={() => setShowSumModal(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className={styles.specialSetsModalContent}>
+                            <div className={styles.specialSetsList}>
+                                {sumData.map(sum => (
+                                    <div
+                                        key={sum.id}
+                                        className={`${styles.specialSetItem} ${selectedSums.includes(sum.id) ? styles.selected : ''
+                                            } ${selectedSums.length >= 10 && !selectedSums.includes(sum.id) ? styles.disabled : ''}`}
+                                        onClick={() => !filterLoading && handleSumToggle(sum.id)}
+                                        title={`Tổng ${sum.id}: ${sum.numbers.join(', ')}`}
+                                    >
+                                        <div className={styles.specialSetHeader}>
+                                            <span className={styles.specialSetId}>Tổng {sum.id}</span>
+                                            <span className={styles.specialSetCount}>({sum.count} số)</span>
+                                        </div>
+                                        <div className={styles.specialSetNumbers}>
+                                            {sum.numbers.join(', ')}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className={styles.specialSetsModalFooter}>
+                            <div className={styles.selectedCount}>
+                                Đã chọn: {selectedSums.length}/10 tổng
+                            </div>
+                            <button
+                                className={styles.specialSetsModalDone}
+                                onClick={() => setShowSumModal(false)}
+                            >
+                                Xong
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Stats Detail Modal */}
+            {showStatsDetailModal && (
+                <div className={styles.statsDetailModalOverlay} onClick={closeStatsDetailModal}>
+                    <div className={styles.statsDetailModal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.statsDetailModalHeader}>
+                            <h3>
+                                {statsDetailType === 'specialSets' && '⭐ Bộ số đặc biệt'}
+                                {statsDetailType === 'combinationNumbers' && '➕ Thêm số mong muốn'}
+                                {statsDetailType === 'excludeNumbers' && '➖ Loại bỏ số mong muốn'}
+                                {statsDetailType === 'selectedTouches' && '🎯 Chọn chạm'}
+                                {statsDetailType === 'selectedSums' && '🔢 Chọn tổng'}
+                                {statsDetailType === 'excludeDoubles' && '🚫 Loại bỏ kép bằng'}
+                            </h3>
+                            <button
+                                className={styles.statsDetailModalClose}
+                                onClick={closeStatsDetailModal}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className={styles.statsDetailModalContent}>
+                            {statsDetailType === 'specialSets' && (
+                                <div>
+                                    <div className={styles.statsDetailInfo}>
+                                        <strong>Đã chọn:</strong> {selectedSpecialSets.length}/5 bộ
+                                    </div>
+                                    <div className={styles.statsDetailList}>
+                                        {selectedSpecialSets.map(id => {
+                                            const set = specialSetsData.find(s => s.id === id);
+                                            return (
+                                                <div key={id} className={styles.statsDetailItem}>
+                                                    <div className={styles.statsDetailItemHeader}>
+                                                        <strong>Bộ {id}</strong> ({set.count} số)
+                                                    </div>
+                                                    <div className={styles.statsDetailNumbers}>
+                                                        {set.numbers.join(', ')}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {statsDetailType === 'combinationNumbers' && (
+                                <div>
+                                    <div className={styles.statsDetailInfo}>
+                                        <strong>Số lượng:</strong> {parseCombinationNumbers().length}/40 số
+                                    </div>
+                                    <div className={styles.statsDetailNumbers}>
+                                        {parseCombinationNumbers().join(', ')}
+                                    </div>
+                                </div>
+                            )}
+
+                            {statsDetailType === 'excludeNumbers' && (
+                                <div>
+                                    <div className={styles.statsDetailInfo}>
+                                        <strong>Số lượng:</strong> {parseExcludeNumbers().length}/5 số
+                                    </div>
+                                    <div className={styles.statsDetailNumbers}>
+                                        {parseExcludeNumbers().join(', ')}
+                                    </div>
+                                </div>
+                            )}
+
+                            {statsDetailType === 'selectedTouches' && (
+                                <div>
+                                    <div className={styles.statsDetailInfo}>
+                                        <strong>Đã chọn:</strong> {selectedTouches.length}/10 chạm
+                                    </div>
+                                    <div className={styles.statsDetailList}>
+                                        {selectedTouches.map(id => {
+                                            const touch = touchData.find(t => t.id === id);
+                                            return (
+                                                <div key={id} className={styles.statsDetailItem}>
+                                                    <div className={styles.statsDetailItemHeader}>
+                                                        <strong>Chạm {id}</strong> ({touch.count} số)
+                                                    </div>
+                                                    <div className={styles.statsDetailNumbers}>
+                                                        {touch.numbers.join(', ')}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {statsDetailType === 'selectedSums' && (
+                                <div>
+                                    <div className={styles.statsDetailInfo}>
+                                        <strong>Đã chọn:</strong> {selectedSums.length}/10 tổng
+                                    </div>
+                                    <div className={styles.statsDetailList}>
+                                        {selectedSums.map(id => {
+                                            const sum = sumData.find(s => s.id === id);
+                                            return (
+                                                <div key={id} className={styles.statsDetailItem}>
+                                                    <div className={styles.statsDetailItemHeader}>
+                                                        <strong>Tổng {id}</strong> ({sum.count} số)
+                                                    </div>
+                                                    <div className={styles.statsDetailNumbers}>
+                                                        {sum.numbers.join(', ')}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {statsDetailType === 'excludeDoubles' && (
+                                <div>
+                                    <div className={styles.statsDetailInfo}>
+                                        <strong>Trạng thái:</strong> Đã bật
+                                    </div>
+                                    <div className={styles.statsDetailInfo}>
+                                        <strong>Cấp cao nhất:</strong> 90s (thay vì 95s)
+                                    </div>
+                                    <div className={styles.statsDetailNumbers}>
+                                        Các số kép bằng: 00, 11, 22, 33, 44, 55, 66, 77, 88, 99
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className={styles.statsDetailModalFooter}>
+                            <button
+                                className={styles.statsDetailModalDone}
+                                onClick={closeStatsDetailModal}
+                            >
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 });
