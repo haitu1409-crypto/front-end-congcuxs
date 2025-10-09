@@ -930,17 +930,18 @@ const DanDeGenerator = memo(() => {
     setError(null);
     setIsRequestInProgress(true);
 
+    // Định nghĩa requestData ở scope rộng hơn để có thể sử dụng trong catch block
+    const requestData = {
+      quantity: parseInt(quantity, 10),
+      combinationNumbers: combinationNums.length > 0 ? combinationNums : undefined,
+      excludeNumbers: excludeNums.length > 0 ? excludeNums : undefined,
+      excludeDoubles: excludeDoubles || undefined,
+      specialSets: selectedSpecialSets.length > 0 ? selectedSpecialSets : undefined,
+      touches: selectedTouches.length > 0 ? selectedTouches.map(t => t.toString()) : undefined,
+      sums: selectedSums.length > 0 ? selectedSums.map(s => s.toString()) : undefined
+    };
+
     try {
-      // Thử gọi API trước
-      const requestData = {
-        quantity: parseInt(quantity, 10),
-        combinationNumbers: combinationNums.length > 0 ? combinationNums : undefined,
-        excludeNumbers: excludeNums.length > 0 ? excludeNums : undefined,
-        excludeDoubles: excludeDoubles || undefined,
-        specialSets: selectedSpecialSets.length > 0 ? selectedSpecialSets : undefined,
-        touches: selectedTouches.length > 0 ? selectedTouches : undefined,
-        sums: selectedSums.length > 0 ? selectedSums : undefined
-      };
 
       // Debug logging
       console.log('🚀 Sending request to API:', {
@@ -950,7 +951,12 @@ const DanDeGenerator = memo(() => {
         quantityValue: requestData.quantity
       });
 
-      const response = await axios.post(`${API_URL}/api/dande/generate`, requestData);
+      const response = await axios.post(`${API_URL}/api/dande/generate`, requestData, {
+        timeout: 10000, // 10 seconds timeout
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
       if (response.data.success) {
         setLevelsList(response.data.data.levelsList);
@@ -967,7 +973,8 @@ const DanDeGenerator = memo(() => {
         console.error('API Response Error:', {
           status: err.response.status,
           statusText: err.response.statusText,
-          data: err.response.data
+          data: err.response.data,
+          requestData: requestData
         });
       } else if (err.request) {
         console.error('API Request Error:', err.request);
