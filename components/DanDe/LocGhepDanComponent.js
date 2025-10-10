@@ -301,6 +301,8 @@ const LocGhepDanComponent = memo(function LocGhepDanComponent() {
         }
     };
 
+    // Component sẽ được wrap bởi HydrationSafeWrapper, không cần check isMounted ở đây
+
     return (
         <div className={styles.newFeatureSection}>
             <h2 className={styles.toolTitle}><Layers size={16} style={{ display: 'inline', marginRight: '8px' }} />LỌC, GHÉP DÀN ĐẶC BIỆT</h2>

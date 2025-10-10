@@ -4,7 +4,11 @@
  * Tích hợp Analytics và Web Vitals tracking
  */
 
+// ✅ Import CSS in correct order
 import '../styles/globals.css';
+import '../styles/fonts.css';
+import '../styles/CLSFix.css';
+import '../styles/CriticalCLSFix.css';
 import Head from 'next/head';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -14,27 +18,27 @@ import dynamic from 'next/dynamic';
 import reportWebVitals from '../lib/reportWebVitals';
 
 // Lazy load heavy components with proper error handling
-const Analytics = dynamic(() => import('../components/Analytics'), { 
+const Analytics = dynamic(() => import('../components/Analytics'), {
     ssr: false,
     loading: () => null
 });
-const WebVitals = dynamic(() => import('../components/WebVitals'), { 
+const WebVitals = dynamic(() => import('../components/WebVitals'), {
     ssr: false,
     loading: () => null
 });
-const WebVitalsMonitor = dynamic(() => import('../components/WebVitalsMonitor'), { 
+const WebVitalsMonitor = dynamic(() => import('../components/WebVitalsMonitor'), {
     ssr: false,
     loading: () => null
 });
-const SEOAnalyticsEnhanced = dynamic(() => import('../components/SEOAnalyticsEnhanced'), { 
+const SEOAnalyticsEnhanced = dynamic(() => import('../components/SEOAnalyticsEnhanced'), {
     ssr: false,
     loading: () => null
 });
-const GoogleAnalytics = dynamic(() => import('../components/GoogleAnalytics'), { 
+const GoogleAnalytics = dynamic(() => import('../components/GoogleAnalytics'), {
     ssr: false,
     loading: () => null
 });
-const SimpleOnlineWidget = dynamic(() => import('../components/SimpleOnlineWidget'), { 
+const SimpleOnlineWidget = dynamic(() => import('../components/SimpleOnlineWidget'), {
     ssr: false,
     loading: () => null
 });
@@ -78,6 +82,16 @@ function MyApp({ Component, pageProps }) {
             <Head>
                 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
                 <meta charSet="utf-8" />
+
+                {/* ✅ Critical resource hints for LCP optimization */}
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+                <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+
+                {/* ✅ Preload critical images */}
+                <link rel="preload" as="image" href="/imgs/monkey.png" />
+                <link rel="preload" as="image" href="/imgs/wukong.png" />
             </Head>
 
             {/* Google Analytics */}

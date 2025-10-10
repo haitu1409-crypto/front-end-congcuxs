@@ -6,7 +6,7 @@
 
 import Head from 'next/head';
 
-// Cấu hình hình ảnh cho từng page
+// Cấu hình hình ảnh cho từng page - Updated với 5 OG images mới
 const PAGE_IMAGES = {
     homepage: {
         og: '/imgs/wukong.png',
@@ -16,37 +16,45 @@ const PAGE_IMAGES = {
         telegram: '/imgs/wukong.png',
         tiktok: '/imgs/wukong.png'
     },
+    'dan-9x0x': {
+        og: '/imgs/dan9x0x (1).png',
+        twitter: '/imgs/dan9x0x (1).png',
+        facebook: '/imgs/dan9x0x (1).png',
+        zalo: '/imgs/dan9x0x (1).png',
+        telegram: '/imgs/dan9x0x (1).png',
+        tiktok: '/imgs/dan9x0x (1).png'
+    },
     'dan-dac-biet': {
-        og: '/imgs/chemical-weapon.png',
-        twitter: '/imgs/chemical-weapon.png',
-        facebook: '/imgs/chemical-weapon.png',
-        zalo: '/imgs/chemical-weapon.png',
-        telegram: '/imgs/chemical-weapon.png',
-        tiktok: '/imgs/chemical-weapon.png'
+        og: '/imgs/dandacbiet (1).png',
+        twitter: '/imgs/dandacbiet (1).png',
+        facebook: '/imgs/dandacbiet (1).png',
+        zalo: '/imgs/dandacbiet (1).png',
+        telegram: '/imgs/dandacbiet (1).png',
+        tiktok: '/imgs/dandacbiet (1).png'
     },
     'dan-2d': {
-        og: '/imgs/monkey.png',
-        twitter: '/imgs/monkey.png',
-        facebook: '/imgs/monkey.png',
-        zalo: '/imgs/monkey.png',
-        telegram: '/imgs/monkey.png',
-        tiktok: '/imgs/monkey.png'
+        og: '/imgs/dan2d1d (1).png',
+        twitter: '/imgs/dan2d1d (1).png',
+        facebook: '/imgs/dan2d1d (1).png',
+        zalo: '/imgs/dan2d1d (1).png',
+        telegram: '/imgs/dan2d1d (1).png',
+        tiktok: '/imgs/dan2d1d (1).png'
     },
     'dan-3d4d': {
-        og: '/imgs/wukong.png',
-        twitter: '/imgs/wukong.png',
-        facebook: '/imgs/wukong.png',
-        zalo: '/imgs/wukong.png',
-        telegram: '/imgs/wukong.png',
-        tiktok: '/imgs/wukong.png'
+        og: '/imgs/dan3d4d (1).png',
+        twitter: '/imgs/dan3d4d (1).png',
+        facebook: '/imgs/dan3d4d (1).png',
+        zalo: '/imgs/dan3d4d (1).png',
+        telegram: '/imgs/dan3d4d (1).png',
+        tiktok: '/imgs/dan3d4d (1).png'
     },
     'thong-ke': {
-        og: '/imgs/chemical-weapon.png',
-        twitter: '/imgs/chemical-weapon.png',
-        facebook: '/imgs/chemical-weapon.png',
-        zalo: '/imgs/chemical-weapon.png',
-        telegram: '/imgs/chemical-weapon.png',
-        tiktok: '/imgs/chemical-weapon.png'
+        og: '/imgs/thongke (1).png',
+        twitter: '/imgs/thongke (1).png',
+        facebook: '/imgs/thongke (1).png',
+        zalo: '/imgs/thongke (1).png',
+        telegram: '/imgs/thongke (1).png',
+        tiktok: '/imgs/thongke (1).png'
     },
     'content': {
         og: '/imgs/wukong.png',
@@ -80,6 +88,11 @@ const PAGE_SEO_CONFIG = {
         title: 'Tạo Dàn Đề | Tạo Dàn Xổ Số 2D 3D 4D | Ghép Dàn Xiên, Lotto - Miễn Phí 2025',
         description: 'Tạo dàn đề, tạo dàn xổ số 2D 3D 4D chuyên nghiệp. Ghép dàn xiên, dàn theo tổng, dàn theo chạm, dàn kép bằng. Phần mềm AI, trí tuệ nhân tạo. Xem kết quả xổ số nhanh nhất. Miễn phí 100%.',
         keywords: 'tạo dàn đề, tạo dàn xổ số, công cụ dàn đề, dàn đề 2D, dàn đề 3D, dàn đề 4D, ghép dàn đặc biệt, lọc dàn đặc biệt, tạo dàn xiên, ghép dàn xiên, dàn theo tổng, dàn theo chạm, dàn kép bằng, cắt dàn, lọc dàn, công cụ mức số, tạo dàn số, tạo dàn 3 càng, xổ số 3 miền, lô đề, tạo dàn đề miễn phí, công cụ xổ số chuyên nghiệp, taodande, dàn đề 9x-0x ngẫu nhiên, lọc dàn đề tổng hợp, thuật toán Fisher-Yates, phần mềm AI, AI Tools, trí tuệ nhân tạo, xem kết quả xổ số, kết quả xổ số nhanh nhất, ứng dụng tạo mức số, tạo mức số miễn phí, lotto'
+    },
+    'dan-9x0x': {
+        title: 'Dàn Đề 9x-0x | Tạo Dàn Đề Ngẫu Nhiên | Công Cụ Lọc Dàn Đề Tổng Hợp - Miễn Phí 2025',
+        description: 'Tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế. Công cụ lọc dàn đề tổng hợp, tạo dàn đề miễn phí. Hỗ trợ xuất Excel, lưu trữ kết quả. Phần mềm AI chuyên nghiệp.',
+        keywords: 'dàn đề 9x-0x, tạo dàn đề ngẫu nhiên, lọc dàn đề tổng hợp, thuật toán Fisher-Yates, công cụ dàn đề, tạo dàn đề miễn phí, phần mềm AI, dàn đề Tôn Ngộ Không, công cụ xổ số chuyên nghiệp'
     },
     'dan-dac-biet': {
         title: 'Ghép Dàn Đặc Biệt | Lọc Dàn Đặc Biệt | Dàn Theo Tổng, Chạm, Kép Bằng - Miễn Phí 2025',
@@ -147,7 +160,8 @@ export default function SEOOptimized({
     const description = customDescription || pageConfig.description;
     const keywords = customKeywords || pageConfig.keywords;
 
-    const fullUrl = canonical || siteUrl;
+    // Fix canonical URL logic
+    const fullUrl = canonical || (pageType === 'home' ? siteUrl : `${siteUrl}/${pageType}`);
     const currentDate = new Date().toISOString();
 
     return (
@@ -398,6 +412,28 @@ export default function SEOOptimized({
                     }}
                 />
             )}
+
+            {/* ===== SITELINKS SEARCHBOX SCHEMA ===== */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'WebSite',
+                        'url': siteUrl,
+                        'name': siteName,
+                        'description': description,
+                        'potentialAction': {
+                            '@type': 'SearchAction',
+                            'target': {
+                                '@type': 'EntryPoint',
+                                'urlTemplate': `${siteUrl}/search?q={search_term_string}`
+                            },
+                            'query-input': 'required name=search_term_string'
+                        }
+                    }),
+                }}
+            />
 
             {/* ===== CUSTOM STRUCTURED DATA ===== */}
             {structuredData && (

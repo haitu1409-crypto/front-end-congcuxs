@@ -3,15 +3,17 @@
  * Compact design với Layout mới
  */
 
-import { useState } from 'react';
+import { useState, memo, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import Layout from '../../components/Layout';
 import SEOOptimized from '../../components/SEOOptimized';
 import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import MobileNavbar from '../../components/MobileNavbar';
-import { BarChart3 } from 'lucide-react';
 import styles from '../../styles/Dan3D4D.module.css';
-import dynamic from 'next/dynamic';
+
+// ✅ Dynamic icon import for better performance
+const BarChart3 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.BarChart3 })), { ssr: false });
 
 // Lazy load heavy components for better PageSpeed
 const Dan3DGenerator = dynamic(() => import('../../components/DanDe/Dan3DGenerator'), {
@@ -24,9 +26,15 @@ const Dan4DGenerator = dynamic(() => import('../../components/DanDe/Dan4DGenerat
     ssr: false
 });
 
-export default function Dan3D4DPage() {
+// ✅ Memoized Dan3D4D Page component
+const Dan3D4DPage = memo(function Dan3D4DPage() {
     const [selectedType, setSelectedType] = useState('3D');
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003';
+
+    // ✅ Memoized type change handler
+    const handleTypeChange = useCallback((type) => {
+        setSelectedType(type);
+    }, []);
 
     const breadcrumbs = [
         { name: 'Trang chủ', url: siteUrl },
@@ -52,6 +60,72 @@ export default function Dan3D4DPage() {
         }
     ];
 
+    // HowTo Schema cho dan-3d4d
+    const howToSchema = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "Cách tạo dàn đề 3D/4D chuyên nghiệp",
+        "description": "Hướng dẫn chi tiết cách tạo dàn đề 3D (000-999) và 4D (0000-9999) cho cao thủ",
+        "image": "https://taodandewukong.pro/imgs/dan3d4d (1).png",
+        "totalTime": "PT3M",
+        "estimatedCost": {
+            "@type": "MonetaryAmount",
+            "currency": "VND",
+            "value": "0"
+        },
+        "supply": [
+            {
+                "@type": "HowToSupply",
+                "name": "Máy tính hoặc điện thoại có kết nối internet"
+            }
+        ],
+        "tool": [
+            {
+                "@type": "HowToTool",
+                "name": "Công cụ tạo dàn đề 3D/4D Tôn Ngộ Không"
+            }
+        ],
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "Truy cập công cụ",
+                "text": "Vào trang công cụ tạo dàn đề 3D/4D tại taodandewukong.pro/dan-3d4d",
+                "image": "https://taodandewukong.pro/imgs/dan3d4d (1).png",
+                "url": "https://taodandewukong.pro/dan-3d4d"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Chọn loại dàn đề",
+                "text": "Chọn tạo dàn đề 3D (000-999) hoặc dàn đề 4D (0000-9999) tùy theo nhu cầu",
+                "image": "https://taodandewukong.pro/imgs/dan3d4d (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Nhập số gốc",
+                "text": "Nhập các số gốc vào ô text, mỗi số cách nhau bằng dấu phẩy hoặc xuống dòng",
+                "image": "https://taodandewukong.pro/imgs/dan3d4d (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Chọn số lượng dàn đề",
+                "text": "Chọn số lượng dàn đề muốn tạo (tối đa 1000 dàn đề)",
+                "image": "https://taodandewukong.pro/imgs/dan3d4d (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Tạo dàn đề",
+                "text": "Nhấn nút 'Tạo Dàn Đề' để tạo dàn đề 3D/4D theo thuật toán Fisher-Yates",
+                "image": "https://taodandewukong.pro/imgs/dan3d4d (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Xuất kết quả",
+                "text": "Xuất kết quả ra file Excel hoặc copy để sử dụng",
+                "image": "https://taodandewukong.pro/imgs/dan3d4d (1).png"
+            }
+        ]
+    };
+
     return (
         <>
             <SEOOptimized
@@ -61,6 +135,7 @@ export default function Dan3D4DPage() {
                 customKeywords="tạo dàn đề 3D, tạo dàn đề 4D, dàn đề 3D, dàn đề 4D, công cụ tạo dàn đề 3D, công cụ tạo dàn đề 4D, lô đề 3 số, lô đề 4 số, xổ số 3D, xổ số 4D, cao thủ xổ số, dàn đề chuyên nghiệp"
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
+                structuredData={howToSchema}
             />
             <PageSpeedOptimizer />
 
@@ -84,13 +159,13 @@ export default function Dan3D4DPage() {
                         <div className={styles.typeSelector}>
                             <button
                                 className={`${styles.typeButton} ${selectedType === '3D' ? styles.active : ''}`}
-                                onClick={() => setSelectedType('3D')}
+                                onClick={() => handleTypeChange('3D')}
                             >
                                 Dàn 3D
                             </button>
                             <button
                                 className={`${styles.typeButton} ${selectedType === '4D' ? styles.active : ''}`}
-                                onClick={() => setSelectedType('4D')}
+                                onClick={() => handleTypeChange('4D')}
                             >
                                 Dàn 4D
                             </button>
@@ -116,10 +191,56 @@ export default function Dan3D4DPage() {
                                 <p>Nhấn Copy để sao chép kết quả</p>
                             </div>
                         </div>
+
+                        <div className={styles.relatedTools}>
+                            <h3>Công cụ liên quan:</h3>
+                            <p>
+                                Kết hợp với <Link href="/dan-2d">dàn đề 2D</Link>,
+                                <Link href="/dan-dac-biet">dàn đề đặc biệt</Link>, và
+                                <Link href="/thong-ke">thống kê xổ số 3 miền</Link> để có chiến lược chơi toàn diện.
+                            </p>
+                        </div>
+
+                        <div className={styles.detailedGuide}>
+                            <h3>Hướng dẫn chi tiết tạo dàn đề 3D/4D cho cao thủ</h3>
+                            <div className={styles.guideContent}>
+                                <h4>1. Dàn đề 3D vs 4D - Sự khác biệt</h4>
+                                <p>
+                                    Dàn đề 3D bao gồm các số từ 000 đến 999 (1000 số), phù hợp cho lô đề 3 số và
+                                    xổ số miền Bắc. Dàn đề 4D từ 0000 đến 9999 (10000 số), dành cho lô đề 4 số và
+                                    các hình thức chơi có thưởng cao. Tỷ lệ trúng dàn 3D là 1/1000, dàn 4D là 1/10000,
+                                    nhưng thưởng tương ứng rất lớn.
+                                </p>
+
+                                <h4>2. Chiến lược cho cao thủ</h4>
+                                <p>
+                                    Dàn đề 3D/4D đòi hỏi kinh nghiệm và vốn lớn. Cao thủ thường kết hợp nhiều
+                                    phương pháp: phân tích thống kê, theo dõi xu hướng, sử dụng bảng chốt dàn 3 miền.
+                                    Quan trọng là có kế hoạch quản lý vốn chặt chẽ và không chơi theo cảm tính.
+                                </p>
+
+                                <h4>3. Thuật toán Fisher-Yates</h4>
+                                <p>
+                                    Công cụ sử dụng thuật toán Fisher-Yates chuẩn quốc tế, đảm bảo mỗi số có cơ hội
+                                    xuất hiện ngang nhau. Thuật toán này được sử dụng trong các hệ thống xổ số chính
+                                    thức trên thế giới, đảm bảo tính công bằng và ngẫu nhiên tuyệt đối.
+                                </p>
+
+                                <h4>4. Lưu ý quan trọng</h4>
+                                <p>
+                                    Dàn đề 3D/4D chỉ phù hợp với người chơi có kinh nghiệm và vốn dự phòng.
+                                    Luôn bắt đầu với số tiền nhỏ để làm quen, không bao giờ chơi bằng tiền vay mượn.
+                                    Sử dụng kết hợp với thống kê xổ số để có cái nhìn toàn diện về xu hướng.
+                                </p>
+                            </div>
+                        </div>
                     </section>
                 </div>
             </Layout>
         </>
     );
-}
+});
+
+// ✅ Export memoized component
+export default Dan3D4DPage;
 

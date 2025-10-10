@@ -1,3 +1,7 @@
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+    enabled: process.env.ANALYZE === 'true',
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
@@ -13,12 +17,27 @@ const nextConfig = {
     // Transpile packages for better performance
     transpilePackages: ['lucide-react'],
 
-    // Optimize for development - tăng thời gian cache để tránh reload liên tục
+    // ✅ Optimize for development - fix router abort errors
     onDemandEntries: {
         // Period (in ms) where the server will keep pages in the buffer
-        maxInactiveAge: 60 * 1000, // Tăng từ 25s lên 60s
+        maxInactiveAge: 120 * 1000, // Tăng lên 120s để tránh abort
         // Number of pages that should be kept simultaneously without being disposed
-        pagesBufferLength: 5, // Tăng từ 2 lên 5
+        pagesBufferLength: 10, // Tăng lên 10 để tránh abort
+    },
+
+    // ✅ Fix router abort errors
+    async rewrites() {
+        return [
+            // Handle dynamic routes properly
+            {
+                source: '/thong-ke',
+                destination: '/thong-ke',
+            },
+            {
+                source: '/dan-dac-biet',
+                destination: '/dan-dac-biet',
+            },
+        ];
     },
 
     // Tối ưu hóa images cho PageSpeed
@@ -130,13 +149,17 @@ const nextConfig = {
                     }
                 ],
             },
-            // Handle source maps requests
+            // Handle source maps requests - Fixed 404 errors
             {
                 source: '/_next/static/chunks/:path*.js.map',
                 headers: [
                     {
                         key: 'Cache-Control',
                         value: 'no-cache, no-store, must-revalidate'
+                    },
+                    {
+                        key: 'Content-Type',
+                        value: 'application/json'
                     }
                 ],
             },
@@ -147,6 +170,24 @@ const nextConfig = {
                     {
                         key: 'Cache-Control',
                         value: 'public, max-age=31536000, immutable'
+                    },
+                    {
+                        key: 'Content-Type',
+                        value: 'font/woff2'
+                    },
+                ],
+            },
+            // Fix font 404 errors - handle woff2 files
+            {
+                source: '/:path*.woff2',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=31536000, immutable'
+                    },
+                    {
+                        key: 'Content-Type',
+                        value: 'font/woff2'
                     },
                 ],
             },
@@ -189,6 +230,11 @@ const nextConfig = {
 
     // Webpack optimization - CRITICAL for performance
     webpack: (config, { dev, isServer }) => {
+        // ✅ Use eval-source-map for development (Next.js default)
+        if (dev) {
+            config.devtool = 'eval-source-map';
+        }
+
         // Development optimizations
         if (dev) {
             // Faster rebuilds in development
@@ -274,6 +320,7 @@ const nextConfig = {
     generateEtags: false, // Disable ETags for better performance
     compress: true, // Enable compression
 
+
     // Experimental features for better performance
     experimental: {
         optimizeCss: true,
@@ -304,10 +351,7 @@ const nextConfig = {
         largePageDataBytes: 128 * 1000, // 128KB
     },
 
-    // Bundle analyzer (uncomment to analyze)
-    // bundleAnalyzer: {
-    //     enabled: process.env.ANALYZE === 'true',
-    // },
+    // ✅ Bundle analyzer moved to withBundleAnalyzer wrapper
 
     // Compiler options
     compiler: {
@@ -315,5 +359,5 @@ const nextConfig = {
     },
 };
 
-module.exports = nextConfig;
+module.exports = withBundleAnalyzer(nextConfig);
 

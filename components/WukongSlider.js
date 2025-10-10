@@ -125,7 +125,7 @@ const WukongSlider = () => {
 
     const handleTouchEnd = () => {
         if (!touchStart || !touchEnd) return;
-        
+
         const distance = touchStart - touchEnd;
         const isLeftSwipe = distance > 50;
         const isRightSwipe = distance < -50;
@@ -134,24 +134,31 @@ const WukongSlider = () => {
         if (isRightSwipe) prevSlide();
     };
 
-    // Preload images for better performance
+    // ✅ Optimized preload for better LCP
     useEffect(() => {
         const preloadImages = () => {
-            slides.forEach(slide => {
-                const img = new window.Image();
-                img.src = slide.image;
-            });
-            setIsLoaded(true);
+            // Only preload first image immediately for LCP
+            const firstImg = new window.Image();
+            firstImg.src = slides[0].image;
+            firstImg.onload = () => setIsLoaded(true);
+
+            // Preload other images after a delay
+            setTimeout(() => {
+                slides.slice(1).forEach(slide => {
+                    const img = new window.Image();
+                    img.src = slide.image;
+                });
+            }, 1000);
         };
 
         preloadImages();
-    }, [slides]);
+    }, []);
 
     return (
         <div className={styles.sliderContainer}>
             <div className={styles.sliderHeader}>
                 <h2 className={styles.sliderTitle}>
-                 
+
                     Tôn Ngộ Không & Công Cụ
                 </h2>
                 <p className={styles.sliderDescription}>
@@ -159,7 +166,7 @@ const WukongSlider = () => {
                 </p>
             </div>
 
-            <div 
+            <div
                 className={styles.slider}
                 ref={sliderRef}
                 onTouchStart={handleTouchStart}
@@ -167,7 +174,7 @@ const WukongSlider = () => {
                 onTouchEnd={handleTouchEnd}
             >
                 {/* Slides */}
-                <div 
+                <div
                     className={styles.slidesContainer}
                     style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                 >
@@ -183,8 +190,12 @@ const WukongSlider = () => {
                                         className={styles.slideImage}
                                         priority={index === 0} // Prioritize first image
                                         loading={index === 0 ? 'eager' : 'lazy'}
-                                        placeholder="blur"
-                                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            objectPosition: 'center'
+                                        }}
                                     />
                                     <div className={styles.slideOverlay}>
                                         <div className={styles.slideContent}>
@@ -202,14 +213,14 @@ const WukongSlider = () => {
                 </div>
 
                 {/* Navigation Arrows */}
-                <button 
+                <button
                     className={`${styles.navButton} ${styles.prevButton}`}
                     onClick={prevSlide}
                     aria-label="Previous slide"
                 >
                     <ChevronLeft size={24} />
                 </button>
-                <button 
+                <button
                     className={`${styles.navButton} ${styles.nextButton}`}
                     onClick={nextSlide}
                     aria-label="Next slide"
@@ -230,7 +241,7 @@ const WukongSlider = () => {
                 </div>
 
                 {/* Auto-play Control */}
-                <button 
+                <button
                     className={styles.autoPlayButton}
                     onClick={() => setIsAutoPlay(!isAutoPlay)}
                     aria-label={isAutoPlay ? 'Pause slideshow' : 'Play slideshow'}
@@ -241,9 +252,9 @@ const WukongSlider = () => {
 
             {/* Progress Bar */}
             <div className={styles.progressContainer}>
-                <div 
+                <div
                     className={styles.progressBar}
-                    style={{ 
+                    style={{
                         width: `${((currentSlide + 1) / slides.length) * 100}%`,
                         animation: isAutoPlay ? 'progress 4s linear infinite' : 'none'
                     }}

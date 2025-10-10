@@ -158,16 +158,75 @@ export default function Dan9x0xPage() {
         }))
     };
 
+    const howToSchema = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "Cách tạo dàn đề 9x-0x ngẫu nhiên chuyên nghiệp",
+        "description": "Hướng dẫn chi tiết cách tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates",
+        "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png",
+        "totalTime": "PT2M",
+        "estimatedCost": {
+            "@type": "MonetaryAmount",
+            "currency": "VND",
+            "value": "0"
+        },
+        "supply": [
+            {
+                "@type": "HowToSupply",
+                "name": "Máy tính hoặc điện thoại có kết nối internet"
+            }
+        ],
+        "tool": [
+            {
+                "@type": "HowToTool",
+                "name": "Công cụ tạo dàn đề 9x-0x Tôn Ngộ Không"
+            }
+        ],
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "Truy cập công cụ",
+                "text": "Vào trang công cụ tạo dàn đề 9x-0x tại taodandewukong.pro/dan-9x0x",
+                "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png",
+                "url": "https://taodandewukong.pro/dan-9x0x"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Chọn số lượng dàn đề",
+                "text": "Chọn số lượng dàn đề muốn tạo (từ 1 đến 100 dàn đề)",
+                "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Chọn số lượng số mỗi dàn",
+                "text": "Chọn số lượng số trong mỗi dàn đề (từ 3 đến 10 số)",
+                "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Tạo dàn đề ngẫu nhiên",
+                "text": "Nhấn nút 'Tạo Dàn Đề Ngẫu Nhiên' để tạo dàn đề theo thuật toán Fisher-Yates",
+                "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Xuất kết quả",
+                "text": "Xuất kết quả ra file Excel hoặc copy để sử dụng",
+                "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png"
+            }
+        ]
+    };
+
     return (
         <>
             <SEOOptimized
                 pageType="dan-9x0x"
-                customTitle="Tạo Dàn Đề 9x-0x Chuyên Nghiệp - Công Cụ Miễn Phí 2025"
+                customTitle="Tạo Dàn Đề 9x-0x Chuyên Nghiệp - Miễn Phí 2025"
                 customDescription="Tạo dàn đề 9x-0x ngẫu nhiên chuyên nghiệp với thuật toán Fisher-Yates chuẩn quốc tế. Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%, chính xác cho xổ số 3 miền."
                 customKeywords="tạo dàn đề 9x-0x, dàn đề 9x-0x, công cụ tạo dàn đề, dàn đề ngẫu nhiên, bộ lọc dàn đề, thuật toán Fisher-Yates, xổ số 3 miền, lô đề, tạo dàn đề miễn phí, dàn đề chuyên nghiệp"
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
-                structuredData={[lotterySchema, breadcrumbSchema, faqSchema]}
+                structuredData={[lotterySchema, breadcrumbSchema, faqSchema, howToSchema]}
             />
 
             {/* Core Web Vitals & Mobile SEO Optimization */}

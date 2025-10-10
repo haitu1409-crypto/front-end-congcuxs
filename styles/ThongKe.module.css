@@ -108,6 +108,17 @@
     }
 }
 
+/* ✅ CRITICAL: Loading animation for skeletons */
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
 /* Filters */
 .filters {
     margin-top: var(--spacing-6);
@@ -813,7 +824,7 @@
     background: var(--color-gray-50);
 }
 
-/* Action Bar - Ngay trên bảng thống kê */
+/* Action Bar - Ngay trên bảng thống kê - ENHANCED CLS FIX */
 .actionBar {
     display: flex;
     justify-content: space-between;
@@ -824,6 +835,14 @@
     margin-bottom: var(--spacing-4);
     border: 1px solid var(--color-gray-200);
     box-shadow: var(--shadow-sm);
+    /* ✅ CRITICAL: Enhanced layout shift prevention */
+    min-height: 80px;
+    height: 80px;
+    contain: layout style paint;
+    position: relative;
+    /* ✅ CRITICAL: Prevent any dynamic changes */
+    overflow: hidden;
+    will-change: auto;
 }
 
 .actionBarLeft,
@@ -982,6 +1001,13 @@
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--color-gray-200);
     overflow: hidden;
+    /* ✅ CRITICAL: Enhanced layout shift prevention */
+    min-height: 500px;
+    height: 500px;
+    contain: layout style paint;
+    position: relative;
+    /* ✅ CRITICAL: Prevent any dynamic changes */
+    will-change: auto;
 }
 
 /* Loading */
@@ -1032,9 +1058,16 @@
     background: #b91c1c;
 }
 
-/* Table */
+/* Table - ENHANCED CLS FIX */
 .tableContainer {
     overflow-x: auto;
+    /* ✅ CRITICAL: Enhanced layout shift prevention */
+    min-height: 400px;
+    height: 400px;
+    contain: layout style paint;
+    position: relative;
+    /* ✅ CRITICAL: Prevent any dynamic changes */
+    will-change: auto;
 }
 
 .statisticsTable {
@@ -1591,7 +1624,7 @@
     }
 }
 
-/* Loading States */
+/* Loading States - ENHANCED FOR CLS */
 .loadingCard,
 .loadingTable {
     display: flex;
@@ -1604,6 +1637,73 @@
     border: 1px solid var(--color-gray-200);
     box-shadow: var(--shadow-lg);
     min-height: 200px;
+    /* ✅ CRITICAL: Prevent layout shifts during loading */
+    contain: layout style paint;
+    position: relative;
+}
+
+/* ✅ CRITICAL: ThongKe specific loading skeletons - ENHANCED */
+.thongKeActionBarSkeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: var(--border-radius-lg);
+    height: 80px;
+    width: 100%;
+    margin-bottom: var(--spacing-4);
+    /* ✅ CRITICAL: Prevent layout shifts */
+    contain: layout style paint;
+    position: relative;
+}
+
+.thongKeContentSkeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: var(--border-radius-xl);
+    height: 500px;
+    width: 100%;
+    margin-bottom: var(--spacing-4);
+    /* ✅ CRITICAL: Prevent layout shifts */
+    contain: layout style paint;
+    position: relative;
+}
+
+.thongKeTableSkeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: var(--border-radius-lg);
+    height: 400px;
+    width: 100%;
+    /* ✅ CRITICAL: Prevent layout shifts */
+    contain: layout style paint;
+    position: relative;
+}
+
+/* ✅ CRITICAL: ThongKe layout stabilization */
+.thongKeContainer {
+    /* ✅ CRITICAL: Prevent all layout shifts */
+    contain: layout style paint;
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.thongKeHeader {
+    /* ✅ CRITICAL: Fixed header dimensions */
+    min-height: 120px;
+    height: 120px;
+    contain: layout style paint;
+    position: relative;
+}
+
+.thongKeSubtitle {
+    /* ✅ CRITICAL: Fixed subtitle dimensions */
+    min-height: 24px;
+    height: 24px;
+    contain: layout style paint;
+    position: relative;
 }
 
 .loadingSpinner {

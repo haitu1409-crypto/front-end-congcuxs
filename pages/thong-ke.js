@@ -16,18 +16,24 @@ import { API_CONFIG } from '../config/api';
 import apiService from '../services/apiService';
 import dynamic from 'next/dynamic';
 
-// Lazy load heavy components for better PageSpeed
+// ✅ Fixed dynamic imports with proper error handling
 const SafeStatisticsTable = dynamic(() => import('../components/LazyComponents').then(mod => ({ default: mod.SafeStatisticsTable })), {
     loading: () => <div className={styles.loadingSkeleton}>Đang tải bảng thống kê...</div>,
-    ssr: false
+    ssr: false,
+    suspense: true
 });
 
 const SafeSummaryCards = dynamic(() => import('../components/LazyComponents').then(mod => ({ default: mod.SafeSummaryCards })), {
     loading: () => <div className={styles.loadingSkeleton}>Đang tải thẻ tóm tắt...</div>,
-    ssr: false
+    ssr: false,
+    suspense: true
 });
 
-const ExportableTable = lazy(() => import('../components/ThongKe/ExportableTable'));
+const ExportableTable = dynamic(() => import('../components/ThongKe/ExportableTable'), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải bảng xuất...</div>,
+    ssr: false,
+    suspense: true
+});
 
 function ThongKePage() {
     const router = useRouter();
@@ -1062,6 +1068,9 @@ function ThongKePage() {
         <>
             <SEOOptimized
                 pageType="thong-ke"
+                customTitle="Thống Kê Xổ Số 3 Miền - Bảng Chốt Dàn Chuyên Nghiệp 2024"
+                customDescription="Bảng thống kê xổ số 3 miền chính xác, cập nhật realtime. Phân tích số nóng/lạnh, tần suất xuất hiện, xu hướng chốt dàn. Công cụ chuyên nghiệp cho cao thủ xổ số. Miễn phí 100%."
+                customKeywords="thống kê xổ số 3 miền, bảng chốt dàn, thống kê số nóng lạnh, tần suất xuất hiện, xu hướng xổ số, miền bắc, miền nam, miền trung, chốt dàn chuyên nghiệp"
                 breadcrumbs={[
                     { name: 'Trang chủ', url: siteUrl },
                     { name: 'Lập Bảng Thống Kê Chốt Dàn 3 Miền', url: `${siteUrl}/thong-ke` }

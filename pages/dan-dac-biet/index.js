@@ -4,11 +4,13 @@
  */
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import Layout from '../../components/Layout';
 import SEOOptimized from '../../components/SEOOptimized';
 import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import MobileNavbar from '../../components/MobileNavbar';
 import AOSWrapper from '../../components/AOSWrapper';
+import HydrationSafeWrapper from '../../components/HydrationSafeWrapper';
 import { Star, Zap, Target, CheckCircle, Rocket, BookOpen, Hash, Dice6, BarChart3, Home, Shield, Smartphone } from 'lucide-react';
 import styles from '../../styles/DanDacBiet.module.css';
 import { Suspense, lazy, useEffect } from 'react';
@@ -19,12 +21,36 @@ import {
     DefaultLoadingSpinner
 } from '../../components/LazyComponents';
 
-// Lazy load các components nặng để cải thiện performance
-const LocGhepDanComponent = lazy(() => import('../../components/DanDe/LocGhepDanComponent'));
-const LayNhanhDacBiet = lazy(() => import('../../components/DanDe/LayNhanhDacBiet'));
-const TaoDanDauDuoi = lazy(() => import('../../components/DanDe/TaoDanDauDuoi'));
-const TaoDanCham = lazy(() => import('../../components/DanDe/TaoDanCham'));
-const TaoDanBo = lazy(() => import('../../components/DanDe/TaoDanBo'));
+// ✅ Fixed lazy loading with proper error handling and hydration fix
+const LocGhepDanComponent = dynamic(() => import('../../components/DanDe/LocGhepDanComponent'), {
+    loading: () => <div style={{ padding: '20px', textAlign: 'center' }}>Đang tải công cụ lọc ghép dàn...</div>,
+    ssr: false,
+    suspense: false
+});
+
+const LayNhanhDacBiet = dynamic(() => import('../../components/DanDe/LayNhanhDacBiet'), {
+    loading: () => <div style={{ padding: '20px', textAlign: 'center' }}>Đang tải lấy nhanh đặc biệt...</div>,
+    ssr: false,
+    suspense: true
+});
+
+const TaoDanDauDuoi = dynamic(() => import('../../components/DanDe/TaoDanDauDuoi'), {
+    loading: () => <div style={{ padding: '20px', textAlign: 'center' }}>Đang tải tạo dàn đầu đuôi...</div>,
+    ssr: false,
+    suspense: true
+});
+
+const TaoDanCham = dynamic(() => import('../../components/DanDe/TaoDanCham'), {
+    loading: () => <div style={{ padding: '20px', textAlign: 'center' }}>Đang tải tạo dàn chạm...</div>,
+    ssr: false,
+    suspense: true
+});
+
+const TaoDanBo = dynamic(() => import('../../components/DanDe/TaoDanBo'), {
+    loading: () => <div style={{ padding: '20px', textAlign: 'center' }}>Đang tải tạo dàn bộ...</div>,
+    ssr: false,
+    suspense: true
+});
 
 export default function DanDacBietPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003';
@@ -83,6 +109,72 @@ export default function DanDacBietPage() {
         }
     ];
 
+    // HowTo Schema cho dan-dac-biet
+    const howToSchema = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "Cách tạo dàn đề đặc biệt chuyên nghiệp",
+        "description": "Hướng dẫn chi tiết cách tạo dàn đề đặc biệt với bộ lọc thông minh",
+        "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png",
+        "totalTime": "PT5M",
+        "estimatedCost": {
+            "@type": "MonetaryAmount",
+            "currency": "VND",
+            "value": "0"
+        },
+        "supply": [
+            {
+                "@type": "HowToSupply",
+                "name": "Máy tính hoặc điện thoại có kết nối internet"
+            }
+        ],
+        "tool": [
+            {
+                "@type": "HowToTool",
+                "name": "Công cụ tạo dàn đề đặc biệt Tôn Ngộ Không"
+            }
+        ],
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "Truy cập công cụ",
+                "text": "Vào trang công cụ tạo dàn đề đặc biệt tại taodandewukong.pro/dan-dac-biet",
+                "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png",
+                "url": "https://taodandewukong.pro/dan-dac-biet"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Chọn phương thức lọc",
+                "text": "Chọn phương thức lọc: Lấy nhanh, Đầu-Đuôi, Chạm, Bộ, hoặc Kép",
+                "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Nhập số gốc",
+                "text": "Nhập các số gốc vào ô text theo định dạng yêu cầu của từng phương thức",
+                "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Cấu hình tham số",
+                "text": "Cấu hình các tham số lọc như số lượng, điều kiện, và các tiêu chí bổ sung",
+                "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Tạo dàn đề",
+                "text": "Nhấn nút 'Tạo Dàn Đề' để tạo dàn đề đặc biệt theo thuật toán AI",
+                "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Lưu và xuất kết quả",
+                "text": "Lưu kết quả vào localStorage hoặc xuất file Excel để sử dụng sau",
+                "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png"
+            }
+        ]
+    };
+
     return (
         <>
             <SEOOptimized
@@ -92,6 +184,7 @@ export default function DanDacBietPage() {
                 customKeywords="tạo dàn đề đặc biệt, dàn đề đặc biệt, bộ lọc dàn đề, lọc dàn đề theo đầu đuôi, lọc dàn đề theo chạm, lọc dàn đề theo kép, dàn đề kép bằng, dàn đề kép lệch, dàn đề kép âm, sát kép, tổng số, xổ số đặc biệt"
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
+                structuredData={howToSchema}
             />
             <PageSpeedOptimizer />
 
@@ -123,12 +216,9 @@ export default function DanDacBietPage() {
 
                         {/* LỌC, GHÉP DÀN ĐẶC BIỆT Section */}
                         <div className={styles.locGhepSection} id="loc-ghep" data-aos="fade-up" data-aos-delay="100">
-                            <ComponentLoader
-                                errorMessage="Lỗi khi tải bộ lọc dàn đặc biệt. Vui lòng thử lại."
-                                fallback={<div className={styles.loadingPlaceholder}>Đang tải bộ lọc...</div>}
-                            >
+                            <HydrationSafeWrapper fallback={<div className={styles.loadingPlaceholder}>Đang tải bộ lọc dàn đặc biệt...</div>}>
                                 <LocGhepDanComponent />
-                            </ComponentLoader>
+                            </HydrationSafeWrapper>
                         </div>
 
                         {/* Main Tools Grid */}

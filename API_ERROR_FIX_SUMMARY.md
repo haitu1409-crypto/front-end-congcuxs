@@ -51,3 +51,6 @@
 3. Client-side generation hoạt động khi API không available
 4. Không còn request liên tục
 
+
+
+

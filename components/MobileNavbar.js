@@ -78,7 +78,13 @@ export default function MobileNavbar({
                 return;
             }
 
-            router.push(`/${page}`);
+            // ✅ Fix router abort errors - add error handling
+            try {
+                router.push(`/${page}`);
+            } catch (error) {
+                console.warn('Router push failed, using window.location:', error);
+                window.location.href = `/${page}`;
+            }
             return;
         }
 
@@ -86,7 +92,13 @@ export default function MobileNavbar({
         if (itemId.startsWith('dac-biet-')) {
             const section = itemId.replace('dac-biet-', '');
             const targetUrl = `/dan-dac-biet${section ? `#${section}` : ''}`;
-            router.push(targetUrl);
+            // ✅ Fix router abort errors - add error handling
+            try {
+                router.push(targetUrl);
+            } catch (error) {
+                console.warn('Router push failed, using window.location:', error);
+                window.location.href = targetUrl;
+            }
             return;
         }
 

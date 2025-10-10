@@ -10,6 +10,21 @@
     min-height: 100vh;
 }
 
+/* ===== FILTER SECTIONS ===== */
+.filterSections {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: start;
+}
+
+.filterButtons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+}
+
 @media (min-width: 768px) {
     .pageContainer {
         padding: 2rem;
@@ -346,7 +361,7 @@
 
 @media (max-width: 768px) {
     .inputRow {
-        flex-direction: column;
+        /* flex-direction: column; */
         gap: 0.5rem;
     }
 }
@@ -383,8 +398,8 @@
 .resultsSection {
     background: #ffffff;
     border-radius: 8px;
-    padding: 1.5rem;
-    border: 1px solid #e5e7eb;
+    /* padding: 1.5rem; */
+    /* border: 1px solid #e5e7eb; */
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -973,7 +988,7 @@
     }
 
     .chamTongRow {
-        grid-template-columns: 1fr;
+        /* grid-template-columns: 1fr; */
         gap: 1rem;
     }
 
@@ -1149,6 +1164,20 @@
         padding: 0.125rem;
     }
 
+    .filterButtons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.4rem;
+    }
+
+    .filterSections {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1rem;
+        margin-bottom: 1rem;
+        align-items: start;
+    }
+
     .heroSection {
         padding: 0.75rem 0.25rem;
         margin-bottom: 0.75rem;
@@ -1242,14 +1271,7 @@
     width: 100%;
 }
 
-/* ===== FILTER SECTIONS ===== */
-.filterSections {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
-    align-items: start;
-}
+
 
 @media (min-width: 768px) {
     .filterSections {
@@ -1290,11 +1312,7 @@
     gap: 1rem;
 }
 
-.filterButtons {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.4rem;
-}
+
 
 @media (min-width: 768px) {
     .filterButtons {
@@ -1384,7 +1402,6 @@
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 }
 
-.filterButton {}
 
 .filterButton:disabled {
     opacity: 0.6;
@@ -1401,8 +1418,8 @@
 .resultsSection {
     background: white;
     border-radius: 15px;
-    padding: 1.5rem;
-    border: 1px solid #e2e8f0;
+    /* padding: 1.5rem; */
+    /* border: 1px solid #e2e8f0; */
 }
 
 .resultsHeader {
