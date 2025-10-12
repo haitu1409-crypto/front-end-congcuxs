@@ -795,7 +795,7 @@ export default function PostEditor() {
     // SEO Data
     const seoData = {
         title: 'Đăng Bài Viết - Tạo Dàn Đề',
-        description: 'Tạo và đăng bài viết mới về xổ số, lô đề với công cụ soạn thảo chuyên nghiệp',
+        description: 'Tạo và đăng bài viết mới về xổ số, lô số với công cụ soạn thảo chuyên nghiệp',
         canonical: `${siteUrl}/dang-bai`
     };
 
@@ -843,7 +843,7 @@ export default function PostEditor() {
                     <div className={styles.container}>
                         <h1 className={styles.pageTitle}>Đăng Bài Viết</h1>
                         <p className={styles.pageSubtitle}>
-                            Tạo bài viết mới về xổ số, lô đề với công cụ soạn thảo chuyên nghiệp
+                            Tạo bài viết mới về xổ số, lô số với công cụ soạn thảo chuyên nghiệp
                         </p>
                     </div>
                 </div>

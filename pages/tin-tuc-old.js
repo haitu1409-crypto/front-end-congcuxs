@@ -1,5 +1,5 @@
 /**
- * Tin Tức Page - Trang báo thông tin về xổ số và lô đề
+ * Tin Tức Page - Trang báo thông tin về xổ số và lô số
  * Thiết kế giống trang báo với layout responsive và SEO tối ưu
  */
 
@@ -267,8 +267,8 @@ export default function TinTucPage() {
             <SEOOptimized
                 pageType="tin-tuc"
                 customTitle="Tin Tức Xổ Số & Lô Đề - Cập Nhật Mới Nhất 2024"
-                customDescription="Tin tức xổ số mới nhất, giải mã giấc mơ, kinh nghiệm chơi lô đề, thống kê xổ số 3 miền. Cập nhật hàng ngày với thông tin chính xác và mẹo chơi hiệu quả từ chuyên gia."
-                customKeywords="tin tức xổ số, giải mã giấc mơ, kinh nghiệm chơi lô đề, thống kê xổ số, mẹo vặt xổ số, phương pháp soi cầu, dàn đề chuyên nghiệp, xu hướng xổ số, số may mắn"
+                customDescription="Tin tức xổ số mới nhất, giải mã giấc mơ, kinh nghiệm chơi lô số, thống kê xổ số 3 miền. Cập nhật hàng ngày với thông tin chính xác và mẹo chơi hiệu quả từ chuyên gia."
+                customKeywords="tin tức xổ số, giải mã giấc mơ, kinh nghiệm chơi lô số, thống kê xổ số, mẹo vặt xổ số, phương pháp soi cầu, dàn số chuyên nghiệp, xu hướng xổ số, số may mắn"
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
             />
@@ -283,7 +283,7 @@ export default function TinTucPage() {
                                 Tin Tức Xổ Số & Lô Đề
                             </h1>
                             <p className={styles.pageDescription}>
-                                Cập nhật tin tức mới nhất về xổ số 3 miền, giải mã giấc mơ, kinh nghiệm chơi lô đề và các mẹo vặt từ chuyên gia
+                                Cập nhật tin tức mới nhất về xổ số 3 miền, giải mã giấc mơ, kinh nghiệm chơi lô số và các mẹo vặt từ chuyên gia
                             </p>
                         </div>
 

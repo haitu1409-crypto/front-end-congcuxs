@@ -317,7 +317,7 @@ export default function TaoDanBo() {
                             value={generateTextareaContent}
                             readOnly
                             placeholder="Kết quả tạo dàn sẽ hiển thị ở đây..."
-                            aria-label="Kết quả tạo dàn đề"
+                            aria-label="Kết quả tạo dàn số"
                             tabIndex="-1"
                         />
                     </div>

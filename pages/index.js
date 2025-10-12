@@ -29,18 +29,18 @@ const Testimonials = dynamic(() => import('../components/SEO/Testimonials'), {
     ssr: false
 });
 
-const DirectAnswer = dynamic(() => 
-    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DirectAnswer })), 
+const DirectAnswer = dynamic(() =>
+    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DirectAnswer })),
     { ssr: false, loading: () => null }
 );
 
-const ListSnippet = dynamic(() => 
-    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.ListSnippet })), 
+const ListSnippet = dynamic(() =>
+    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.ListSnippet })),
     { ssr: false, loading: () => null }
 );
 
-const TableSnippet = dynamic(() => 
-    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.TableSnippet })), 
+const TableSnippet = dynamic(() =>
+    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.TableSnippet })),
     { ssr: false, loading: () => null }
 );
 
@@ -70,8 +70,8 @@ const Home = memo(function Home() {
 
     const faqData = useMemo(() => [
         {
-            question: 'Dàn Đề Tôn Ngộ Không có những công cụ gì?',
-            answer: 'Chúng tôi cung cấp đầy đủ bộ công cụ tạo dàn đề chuyên nghiệp: Dàn đề 9x-0x, Dàn 2D, Dàn 3D/4D, Dàn đặc biệt, Thống kê xổ số 3 miền, và nhiều công cụ hỗ trợ khác. Tất cả đều miễn phí 100%.'
+            question: 'Dàn Đề Wukong có những công cụ gì?',
+            answer: 'Chúng tôi cung cấp đầy đủ bộ công cụ tạo dàn đề chuyên nghiệp: Dàn đề 9x-0x, Dàn đề 2D, Dàn đề 3D/4D, Dàn đề đặc biệt, Thống kê xổ số 3 miền, và nhiều công cụ hỗ trợ khác. Tất cả đều miễn phí 100%.'
         },
         {
             question: 'Các công cụ có chính xác và đáng tin cậy không?',
@@ -83,11 +83,11 @@ const Home = memo(function Home() {
         },
         {
             question: 'Công cụ phù hợp cho loại xổ số nào?',
-            answer: 'Các công cụ phù hợp cho tất cả loại xổ số 3 miền (miền Bắc, miền Nam, miền Trung), lô đề, và các hình thức chơi xổ số khác. Được thiết kế chuyên nghiệp cho người chơi Việt Nam.'
+            answer: 'Các công cụ phù hợp cho tất cả loại xổ số 3 miền (miền Bắc, miền Nam, miền Trung), lô số, và các hình thức chơi xổ số khác. Được thiết kế chuyên nghiệp cho người chơi Việt Nam.'
         },
         {
             question: 'Dàn đề 9x-0x phù hợp cho loại xổ số nào?',
-            answer: 'Dàn đề 9x-0x phù hợp cho tất cả loại xổ số 3 miền (miền Bắc, miền Nam, miền Trung), lô đề 2 số, 3 số, và các hình thức chơi khác. Có thể tùy chỉnh số lượng dàn theo nhu cầu.'
+            answer: 'Dàn đề 9x-0x phù hợp cho tất cả loại xổ số 3 miền (miền Bắc, miền Nam, miền Trung), lô số 2 số, 3 số, và các hình thức chơi khác. Có thể tùy chỉnh số lượng dàn theo nhu cầu.'
         },
         {
             question: 'Tại sao nên chọn công cụ tạo dàn đề này?',
@@ -98,29 +98,29 @@ const Home = memo(function Home() {
     const tools = useMemo(() => [
         {
             icon: Dice6,
-            title: 'Dàn 9x-0x',
+            title: 'Dàn Đề 9x-0x',
             description: 'Tạo dàn đề 9x-0x ngẫu nhiên với 10 cấp độ rút dần từ 95 xuống 8 số',
             link: '/dan-9x0x',
             badge: 'Phổ biến'
         },
         {
             icon: Target,
-            title: 'Dàn 2D',
-            description: 'Tạo dàn 2D (00-99) với phân loại theo mức độ xuất hiện, hỗ trợ chuyển đổi 1D',
+            title: 'Dàn Đề 2D',
+            description: 'Tạo dàn đề 2D (00-99) với phân loại theo mức độ xuất hiện, hỗ trợ chuyển đổi 1D',
             link: '/dan-2d',
             badge: 'Mới'
         },
         {
             icon: BarChart3,
-            title: 'Dàn 3D/4D',
-            description: 'Tạo dàn 3D (000-999) và 4D (0000-9999), công cụ chuyên nghiệp cho cao thủ',
+            title: 'Dàn Đề 3D/4D',
+            description: 'Tạo dàn đề 3D (000-999) và 4D (0000-9999), công cụ chuyên nghiệp cho cao thủ',
             link: '/dan-3d4d',
             badge: 'Pro'
         },
         {
             icon: Star,
-            title: 'Dàn Đặc Biệt',
-            description: 'Bộ lọc thông minh theo đầu, đuôi, tổng, chạm, kép. Lấy nhanh số may mắn',
+            title: 'Dàn Đề Đặc Biệt',
+            description: 'Bộ lọc thông minh theo đầu, đuôi, tổng, chạm, kép. Lấy nhanh dàn đề may mắn',
             link: '/dan-dac-biet',
             badge: 'Đặc biệt'
         }
@@ -153,9 +153,9 @@ const Home = memo(function Home() {
     const softwareApplicationSchema = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "Dàn Đề Tôn Ngộ Không",
+        "name": "Dàn Đề Wukong",
         "alternateName": "Tạo Dàn Đề Online",
-        "description": "Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam. Dàn đề 9x-0x, Dàn 2D, Dàn 3D/4D, Dàn đặc biệt, Thống kê xổ số 3 miền. Miễn phí 100%, thuật toán Fisher-Yates chuẩn quốc tế.",
+        "description": "Bộ công cụ tạo dàn số chuyên nghiệp hàng đầu Việt Nam. Dàn đề 9x-0x, Dàn 2D, Dàn 3D/4D, Dàn đặc biệt, Thống kê xổ số 3 miền. Miễn phí 100%, thuật toán Fisher-Yates chuẩn quốc tế.",
         "url": "https://taodandewukong.pro",
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Web Browser",
@@ -165,7 +165,7 @@ const Home = memo(function Home() {
         "dateModified": new Date().toISOString(),
         "author": {
             "@type": "Organization",
-            "name": "Dàn Đề Tôn Ngộ Không"
+            "name": "Dàn Đề Wukong"
         },
         "offers": {
             "@type": "Offer",
@@ -180,10 +180,10 @@ const Home = memo(function Home() {
             "worstRating": "1"
         },
         "featureList": [
-            "Tạo dàn đề 9x-0x ngẫu nhiên",
-            "Tạo dàn đề 2D (00-99)",
-            "Tạo dàn đề 3D/4D",
-            "Ghép dàn đề đặc biệt",
+            "Tạo dàn số 9x-0x ngẫu nhiên",
+            "Tạo dàn số 2D (00-99)",
+            "Tạo dàn số 3D/4D",
+            "Ghép dàn số đặc biệt",
             "Thống kê xổ số 3 miền",
             "Thuật toán Fisher-Yates chuẩn quốc tế",
             "Miễn phí 100%",
@@ -225,11 +225,11 @@ const Home = memo(function Home() {
                             <span>Bộ công cụ chuyên nghiệp</span>
                         </div>
                         <h1 className={styles.mainTitle}>
-                            Dàn Đề <span className={styles.heroTitleHighlight}>Tôn Ngộ Không</span>
+                            Công Cụ Xổ Số, <span className={styles.heroTitleHighlight}>Tạo Dàn Đề Wukong</span>
                         </h1>
                         <p className={styles.subtitle}>
                             Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam.
-                            Dàn đề 9x-0x, Dàn 2D, Dàn 3D/4D, Dàn đặc biệt, Thống kê xổ số 3 miền.
+                            Dàn đề 9x-0x, Dàn đề 2D, Dàn đề 3D/4D, Dàn đề đặc biệt, Thống kê xổ số 3 miền.
                             Miễn phí 100%, thuật toán Fisher-Yates chuẩn quốc tế.
                         </p>
                         <div className={styles.heroActions}>
@@ -251,7 +251,7 @@ const Home = memo(function Home() {
                     {/* Featured Snippet - Direct Answer */}
                     <DirectAnswer
                         question="Tạo Dàn Đề (Tao Dan De) Là Gì?"
-                        answer="Tạo dàn đề (tao dan de) là phương pháp chọn ra một tập hợp các con số (dàn số) để đánh lô đề hoặc xổ số, dựa trên các tiêu chí như tổng, chạm, đầu, đuôi, kép nhằm tăng khả năng trúng thưởng. Ứng dụng tạo dàn đề giúp bạn tạo tự động các tổ hợp số 2D (00-99), 3D (000-999), 4D (0000-9999), ghép lô xiên, và lọc dàn theo nhiều điều kiện đặc biệt một cách nhanh chóng, chính xác 100% với thuật toán Fisher-Yates chuẩn quốc tế."
+                        answer="Tạo dàn đề (tao dan de) là phương pháp chọn ra một tập hợp các con số (dàn đề) để đánh lô đề hoặc xổ số, dựa trên các tiêu chí như tổng, chạm, đầu, đuôi, kép nhằm tăng khả năng trúng thưởng. Ứng dụng tạo dàn đề giúp bạn tạo tự động các tổ hợp số 2D (00-99), 3D (000-999), 4D (0000-9999), ghép lô xiên, và lọc dàn theo nhiều điều kiện đặc biệt một cách nhanh chóng, chính xác 100% với thuật toán Fisher-Yates chuẩn quốc tế."
                     />
 
                     {/* Tools Grid */}
@@ -292,7 +292,7 @@ const Home = memo(function Home() {
                         title="Cách Tạo Dàn Đề Online Miễn Phí"
                         ordered={true}
                         items={[
-                            { label: 'Bước 1', text: 'Truy cập công cụ tạo dàn đề TaoDanDe tại taodandewukong.pro' },
+                            { label: 'Bước 1', text: 'Truy cập công cụ tạo dàn số TaoDanDe tại taodandewukong.pro' },
                             { label: 'Bước 2', text: 'Chọn loại dàn cần tạo: Dàn 2D (00-99), Dàn 3D (000-999), Dàn 4D (0000-9999), Dàn 9x-0x, hoặc Ghép lô xiên' },
                             { label: 'Bước 3', text: 'Nhập các số vào ô text (có thể copy/paste) hoặc click nút "Tạo Ngẫu Nhiên"' },
                             { label: 'Bước 4', text: 'Áp dụng bộ lọc nếu cần: Lọc theo chạm, tổng, kép, tài xỉu, chẵn lẻ, đầu đuôi' },
@@ -369,8 +369,8 @@ const Home = memo(function Home() {
                         </div>
                         <div className={styles.newsGrid}>
                             <div className={styles.newsCard}>
-                                <h3>Hướng dẫn sử dụng công cụ tạo dàn đề hiệu quả</h3>
-                                <p>Khám phá các mẹo và chiến thuật để tối ưu hóa việc sử dụng công cụ tạo dàn đề...</p>
+                                <h3>Hướng dẫn sử dụng công cụ tạo dàn số hiệu quả</h3>
+                                <p>Khám phá các mẹo và chiến thuật để tối ưu hóa việc sử dụng công cụ tạo dàn số...</p>
                                 <Link href="/content" className={styles.newsReadMore}>Đọc thêm</Link>
                             </div>
                             <div className={styles.newsCard}>
@@ -390,7 +390,7 @@ const Home = memo(function Home() {
                         title="Chuyên Gia Tạo Dàn Đề & Xổ Số"
                         experience="10+"
                         users="100,000+"
-                        description="Đội ngũ chuyên gia với hơn 10 năm kinh nghiệm trong lĩnh vực xổ số và lô đề. Phát triển các công cụ tạo dàn đề, tạo mức số, nuôi dàn khung 3-5 ngày chuyên nghiệp phục vụ hơn 100,000 người chơi trên toàn quốc."
+                        description="Đội ngũ chuyên gia với hơn 10 năm kinh nghiệm trong lĩnh vực xổ số và lô số. Phát triển các công cụ tạo dàn số, tạo mức số, nuôi dàn khung 3-5 ngày chuyên nghiệp phục vụ hơn 100,000 người chơi trên toàn quốc."
                     />
                 </div>
             </Layout>

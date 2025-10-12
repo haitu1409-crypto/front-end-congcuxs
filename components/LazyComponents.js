@@ -87,5 +87,5 @@ export const SafeSummaryCards = withLazyLoading(
 export const SafeDanDeGenerator = withLazyLoading(
     DanDeGenerator,
     <DefaultLoadingSpinner />,
-    'Lỗi khi tải công cụ tạo dàn đề. Vui lòng thử lại.'
+    'Lỗi khi tải công cụ tạo dàn số. Vui lòng thử lại.'
 );

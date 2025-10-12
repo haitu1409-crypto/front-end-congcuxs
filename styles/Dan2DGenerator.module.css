@@ -1003,7 +1003,7 @@
 
     .featureButton {
         padding: 8px 6px;
-        font-size: 0.7rem;
+        font-size: 0.85rem;
         min-height: 36px;
     }
 
@@ -1018,7 +1018,7 @@
     .button {
         flex: 1;
         min-width: 70px;
-        font-size: 0.7rem;
+        font-size: 0.95rem;
         padding: 8px 6px;
         min-height: 38px;
         white-space: nowrap;
@@ -1045,14 +1045,14 @@
 
     .tab {
         flex: 1;
-        font-size: 0.8rem;
+        font-size: 1rem;
         padding: 8px 12px;
     }
 }
 
 @media (max-width: 640px) {
     .container {
-    
+
         margin: 4px;
         display: flex;
         flex-direction: column;
@@ -1113,7 +1113,7 @@
     .button {
         flex: 1;
         min-width: 65px;
-        font-size: 0.68rem;
+        font-size: 0.9rem;
         padding: 7px 5px;
         min-height: 36px;
         white-space: nowrap;
@@ -1133,14 +1133,14 @@
     }
 
     .tab {
-        font-size: 0.75rem;
+        font-size: 0.95rem;
         padding: 6px 10px;
     }
 }
 
 @media (max-width: 480px) {
     .container {
-      
+
         margin: 2px;
         display: flex;
         flex-direction: column;
@@ -1201,7 +1201,7 @@
     .button {
         flex: 1;
         min-width: 60px;
-        font-size: 0.65rem;
+        font-size: 0.85rem;
         padding: 6px 4px;
         min-height: 34px;
         white-space: nowrap;
@@ -1221,7 +1221,7 @@
     }
 
     .tab {
-        font-size: 0.7rem;
+        font-size: 0.9rem;
         padding: 5px 8px;
     }
 }

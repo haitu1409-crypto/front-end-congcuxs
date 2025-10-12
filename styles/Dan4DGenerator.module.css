@@ -476,7 +476,7 @@
         flex: 1;
         min-width: 70px;
         padding: 8px 6px;
-        font-size: 0.7rem;
+        font-size: 0.85rem;
         min-height: 38px;
         white-space: nowrap;
     }
@@ -486,8 +486,7 @@
     }
 
     .button svg {
-        width: 14px;
-        height: 14px;
+        display: none;
     }
 
     .numbersGrid {

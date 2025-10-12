@@ -21,8 +21,8 @@ const AuthorBio = dynamic(() => import('../components/SEO/AuthorBio'), {
     ssr: false
 });
 
-const DefinitionSnippet = dynamic(() => 
-    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })), 
+const DefinitionSnippet = dynamic(() =>
+    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })),
     { ssr: false, loading: () => null }
 );
 // import WukongSlider from '../components/WukongSlider';
@@ -108,27 +108,27 @@ export default function Dan9x0xPage() {
 
     const faqData = [
         {
-            question: 'Công cụ tạo dàn đề 9x-0x ngẫu nhiên có miễn phí không?',
-            answer: 'Có, công cụ tạo dàn đề 9x-0x ngẫu nhiên và lọc dàn đề tổng hợp hoàn toàn miễn phí 100%, không giới hạn số lần sử dụng, không cần đăng ký tài khoản.'
+            question: 'Công cụ tạo dàn số 9x-0x ngẫu nhiên có miễn phí không?',
+            answer: 'Có, công cụ tạo dàn số 9x-0x ngẫu nhiên và lọc dàn số tổng hợp hoàn toàn miễn phí 100%, không giới hạn số lần sử dụng, không cần đăng ký tài khoản.'
         },
         {
             question: 'Dàn đề 9x-0x được tạo có chính xác không?',
-            answer: 'Công cụ sử dụng thuật toán Fisher-Yates chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối và chính xác 100% cho dàn đề 9x-0x. Đây là thuật toán được sử dụng rộng rãi trong các ứng dụng chuyên nghiệp.'
+            answer: 'Công cụ sử dụng thuật toán Fisher-Yates chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối và chính xác 100% cho dàn số 9x-0x. Đây là thuật toán được sử dụng rộng rãi trong các ứng dụng chuyên nghiệp.'
         },
         {
-            question: 'Bộ lọc dàn đề tổng hợp hoạt động như thế nào?',
-            answer: 'Bộ lọc dàn đề tổng hợp sử dụng thuật toán thông minh để phân tích và lọc các số có khả năng trúng cao nhất từ dàn đề 9x-0x, dựa trên thống kê và xu hướng xổ số 3 miền.'
+            question: 'Bộ lọc dàn số tổng hợp hoạt động như thế nào?',
+            answer: 'Bộ lọc dàn số tổng hợp sử dụng thuật toán thông minh để phân tích và lọc các số có khả năng trúng cao nhất từ dàn số 9x-0x, dựa trên thống kê và xu hướng xổ số 3 miền.'
         },
         {
-            question: 'Có thể lưu và xuất dàn đề không?',
-            answer: 'Có, bạn có thể lưu dàn đề 9x-0x và kết quả lọc vào bộ nhớ tạm, xuất ra file Excel, hoặc chia sẻ qua mạng xã hội. Tất cả hoàn toàn miễn phí.'
+            question: 'Có thể lưu và xuất dàn số không?',
+            answer: 'Có, bạn có thể lưu dàn số 9x-0x và kết quả lọc vào bộ nhớ tạm, xuất ra file Excel, hoặc chia sẻ qua mạng xã hội. Tất cả hoàn toàn miễn phí.'
         },
         {
             question: 'Dàn đề 9x-0x phù hợp cho loại xổ số nào?',
-            answer: 'Dàn đề 9x-0x phù hợp cho tất cả loại xổ số 3 miền (miền Bắc, miền Nam, miền Trung), lô đề, và các hình thức chơi xổ số khác. Đây là loại dàn đề phổ biến và hiệu quả nhất.'
+            answer: 'Dàn đề 9x-0x phù hợp cho tất cả loại xổ số 3 miền (miền Bắc, miền Nam, miền Trung), lô số, và các hình thức chơi xổ số khác. Đây là loại dàn số phổ biến và hiệu quả nhất.'
         },
         {
-            question: 'Cách sử dụng công cụ tạo dàn đề 9x-0x hiệu quả?',
+            question: 'Cách sử dụng công cụ tạo dàn số 9x-0x hiệu quả?',
             answer: 'Chọn số lượng dàn phù hợp (10-20 dàn), sử dụng bộ lọc tổng hợp để tối ưu kết quả, kết hợp với thống kê xổ số 3 miền để tăng tỷ lệ trúng. Công cụ hỗ trợ nhiều tùy chọn lọc thông minh.'
         }
     ];
@@ -138,7 +138,7 @@ export default function Dan9x0xPage() {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Tạo Dàn Đề 9x-0x Chuyên Nghiệp",
-        "description": "Công cụ tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế. Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%.",
+        "description": "Công cụ tạo dàn số 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế. Bộ lọc dàn số tổng hợp thông minh, miễn phí 100%.",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Web Browser",
         "offers": {
@@ -152,8 +152,8 @@ export default function Dan9x0xPage() {
             "ratingCount": "1250"
         },
         "featureList": [
-            "Tạo dàn đề 9x-0x ngẫu nhiên",
-            "Bộ lọc dàn đề tổng hợp",
+            "Tạo dàn số 9x-0x ngẫu nhiên",
+            "Bộ lọc dàn số tổng hợp",
             "Thuật toán Fisher-Yates chuẩn quốc tế",
             "Miễn phí 100%",
             "Responsive design"
@@ -187,8 +187,8 @@ export default function Dan9x0xPage() {
     const howToSchema = {
         "@context": "https://schema.org",
         "@type": "HowTo",
-        "name": "Cách tạo dàn đề 9x-0x ngẫu nhiên chuyên nghiệp",
-        "description": "Hướng dẫn chi tiết cách tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates",
+        "name": "Cách tạo dàn số 9x-0x ngẫu nhiên chuyên nghiệp",
+        "description": "Hướng dẫn chi tiết cách tạo dàn số 9x-0x ngẫu nhiên với thuật toán Fisher-Yates",
         "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png",
         "totalTime": "PT2M",
         "estimatedCost": {
@@ -205,33 +205,33 @@ export default function Dan9x0xPage() {
         "tool": [
             {
                 "@type": "HowToTool",
-                "name": "Công cụ tạo dàn đề 9x-0x Tôn Ngộ Không"
+                "name": "Công cụ tạo dàn số 9x-0x Wukong"
             }
         ],
         "step": [
             {
                 "@type": "HowToStep",
                 "name": "Truy cập công cụ",
-                "text": "Vào trang công cụ tạo dàn đề 9x-0x tại taodandewukong.pro/dan-9x0x",
+                "text": "Vào trang công cụ tạo dàn số 9x-0x tại taodandewukong.pro/dan-9x0x",
                 "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png",
                 "url": "https://taodandewukong.pro/dan-9x0x"
             },
             {
                 "@type": "HowToStep",
-                "name": "Chọn số lượng dàn đề",
-                "text": "Chọn số lượng dàn đề muốn tạo (từ 1 đến 100 dàn đề)",
+                "name": "Chọn số lượng dàn số",
+                "text": "Chọn số lượng dàn số muốn tạo (từ 1 đến 100 dàn số)",
                 "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png"
             },
             {
                 "@type": "HowToStep",
                 "name": "Chọn số lượng số mỗi dàn",
-                "text": "Chọn số lượng số trong mỗi dàn đề (từ 3 đến 10 số)",
+                "text": "Chọn số lượng số trong mỗi dàn số (từ 3 đến 10 số)",
                 "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png"
             },
             {
                 "@type": "HowToStep",
-                "name": "Tạo dàn đề ngẫu nhiên",
-                "text": "Nhấn nút 'Tạo Dàn Đề Ngẫu Nhiên' để tạo dàn đề theo thuật toán Fisher-Yates",
+                "name": "Tạo dàn số ngẫu nhiên",
+                "text": "Nhấn nút 'Tạo Dàn Đề Ngẫu Nhiên' để tạo dàn số theo thuật toán Fisher-Yates",
                 "image": "https://taodandewukong.pro/imgs/dan9x0x (1).png"
             },
             {
@@ -328,11 +328,11 @@ export default function Dan9x0xPage() {
                                 <span>Công cụ chuyên nghiệp</span>
                             </div>
                             <h1 className={styles.heroTitle}>
-                                Tạo Dàn Đề <span className={styles.heroTitleHighlight}>9x-0x</span> Chuyên Nghiệp
+                                Tạo dàn đề 9x-0x | <span className={styles.heroTitleHighlight}>Lọc Dàn Đề Siêu Cấp</span>
                             </h1>
                             <p className={styles.heroDescription}>
-                                Công cụ tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế.
-                                Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%, chính xác cho xổ số 3 miền.
+                                Công cụ tạo dàn số 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế.
+                                Bộ lọc dàn số tổng hợp thông minh, miễn phí 100%, chính xác cho xổ số 3 miền.
                             </p>
                             <div className={styles.heroFeatures}>
                                 <div className={styles.heroFeature}>
@@ -402,7 +402,7 @@ export default function Dan9x0xPage() {
                             <Link href="/dan-dac-biet" className={styles.quickLinkCard}>
                                 <Star className={styles.quickLinkIcon} />
                                 <h3>Dàn Đặc Biệt</h3>
-                                <p>Bộ lọc dàn đề thông minh</p>
+                                <p>Bộ lọc dàn số thông minh</p>
                             </Link>
                             <Link href="/thong-ke" className={styles.quickLinkCard}>
                                 <BarChart3 className={styles.quickLinkIcon} />
@@ -415,7 +415,7 @@ export default function Dan9x0xPage() {
                     {/* Featured Snippet - Definition */}
                     <DefinitionSnippet
                         term="Dàn 9x-0x (Dàn Đề Bất Tử)"
-                        definition="Dàn 9x-0x là dàn số lớn gồm 70-95 số, được tạo ngẫu nhiên với 10 cấp độ rút dần. Thường dùng cho chiến thuật nuôi dàn khung 3-5 ngày hoặc đánh chào (gấp thếp). Có thể cắt dàn 9x và lọc dàn 9x để giảm số lượng nhưng vẫn giữ tỷ lệ trúng cao. Gọi là dàn đề bất tử vì tỷ lệ trúng rất cao khi nuôi đúng cách."
+                        definition="Dàn 9x-0x là dàn số lớn gồm 70-95 số, được tạo ngẫu nhiên với 10 cấp độ rút dần. Thường dùng cho chiến thuật nuôi dàn khung 3-5 ngày hoặc đánh chào (gấp thếp). Có thể cắt dàn 9x và lọc dàn 9x để giảm số lượng nhưng vẫn giữ tỷ lệ trúng cao. Gọi là dàn số bất tử vì tỷ lệ trúng rất cao khi nuôi đúng cách."
                         examples={[
                             'Dàn 90 số khung 3 ngày - Chiến lược nuôi phổ biến',
                             'Cắt dàn 9x còn 60-70 số - Giảm vốn, vẫn hiệu quả',

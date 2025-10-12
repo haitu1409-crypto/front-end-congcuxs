@@ -42,7 +42,6 @@ const nextConfig = {
 
     // Tối ưu hóa images cho PageSpeed
     images: {
-        domains: ['localhost', 'api.taodandewukong.pro'],
         remotePatterns: [
             {
                 protocol: 'http',

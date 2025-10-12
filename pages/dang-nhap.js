@@ -169,7 +169,7 @@ export default function LoginPage() {
     // SEO Data
     const seoData = {
         title: 'Đăng Nhập - Tạo Dàn Đề',
-        description: 'Đăng nhập vào hệ thống quản lý bài viết và dàn đề chuyên nghiệp',
+        description: 'Đăng nhập vào hệ thống quản lý bài viết và dàn số chuyên nghiệp',
         canonical: `${siteUrl}/dang-nhap`
     };
 
@@ -202,7 +202,7 @@ export default function LoginPage() {
                                     Tạo Dàn Đề
                                 </h1>
                                 <p className={styles.brandSubtitle}>
-                                    Hệ thống quản lý bài viết và công cụ tạo dàn đề chuyên nghiệp
+                                    Hệ thống quản lý bài viết và công cụ tạo dàn số chuyên nghiệp
                                 </p>
                                 <ul className={styles.brandFeatures}>
                                     <li className={styles.brandFeature}>
@@ -211,7 +211,7 @@ export default function LoginPage() {
                                     </li>
                                     <li className={styles.brandFeature}>
                                         <div className={styles.brandFeatureIcon}>✓</div>
-                                        <span>Công cụ tạo dàn đề thông minh</span>
+                                        <span>Công cụ tạo dàn số thông minh</span>
                                     </li>
                                     <li className={styles.brandFeature}>
                                         <div className={styles.brandFeatureIcon}>✓</div>

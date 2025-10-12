@@ -1,6 +1,6 @@
 /**
  * DanDeGenerator Component
- * Component chính cho chức năng tạo dàn đề
+ * Component chính cho chức năng tạo dàn số
  */
 
 import React, { useState, useCallback, useEffect, useMemo, memo, lazy, Suspense, useDeferredValue, startTransition } from 'react';
@@ -961,7 +961,7 @@ const DanDeGenerator = memo(() => {
         setTotalSelected(response.data.data.totalSelected);
         setUndoData(null); // Xóa dữ liệu undo khi tạo dàn mới
       } else {
-        throw new Error(response.data.message || 'Lỗi khi tạo dàn đề');
+        throw new Error(response.data.message || 'Lỗi khi tạo dàn số');
       }
     } catch (err) {
       console.error('API Error, falling back to client-side generation:', err);
@@ -1232,7 +1232,7 @@ const DanDeGenerator = memo(() => {
             <div className={styles.inputsSection}>
               <h2 className={styles.sectionTitle}>Cài đặt tạo dàn</h2>
               <p id="generator-description" className="sr-only">
-                Công cụ tạo dàn đề 9x-0x với 10 cấp độ từ 95 số xuống 8 số, hỗ trợ thêm số mong muốn, loại bỏ số, và chọn bộ số đặc biệt.
+                Công cụ tạo dàn số 9x-0x với 10 cấp độ từ 95 số xuống 8 số, hỗ trợ thêm số mong muốn, loại bỏ số, và chọn bộ số đặc biệt.
               </p>
               {/* Buttons Section */}
               <div className={styles.buttonsSection}>
@@ -1243,7 +1243,7 @@ const DanDeGenerator = memo(() => {
                     onClick={handleGenerateDan}
                     className={`${styles.button} ${styles.primaryButton}`}
                     disabled={loading || !isValidForCreate()}
-                    aria-label="Tạo dàn đề ngẫu nhiên"
+                    aria-label="Tạo dàn số ngẫu nhiên"
                     aria-describedby="generator-description"
                   >
                     {loading ? (
@@ -1730,7 +1730,7 @@ const DanDeGenerator = memo(() => {
               className={styles.resultsSection}
               role="region"
               aria-live="polite"
-              aria-label="Kết quả tạo dàn đề"
+              aria-label="Kết quả tạo dàn số"
             >
               <h2 className={styles.resultsTitle}>Kết quả tạo dàn</h2>
               <textarea
@@ -1738,7 +1738,7 @@ const DanDeGenerator = memo(() => {
                 value={generateTextareaContent}
                 readOnly
                 placeholder="Kết quả tạo dàn sẽ hiển thị ở đây..."
-                aria-label="Kết quả tạo dàn đề"
+                aria-label="Kết quả tạo dàn số"
                 tabIndex="-1"
               />
             </div>

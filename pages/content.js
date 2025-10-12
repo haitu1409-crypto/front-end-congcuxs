@@ -35,8 +35,8 @@ export default function ContentPage() {
 
     const faqData = [
         {
-            question: 'Cách tạo dàn đề 9x-0x hiệu quả nhất?',
-            answer: 'Để tạo dàn đề 9x-0x hiệu quả, bạn nên sử dụng công cụ tạo dàn đề ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế. Chọn số lượng dàn phù hợp (10-20 dàn), kết hợp với bộ lọc thông minh để tối ưu kết quả.'
+            question: 'Cách tạo dàn số 9x-0x hiệu quả nhất?',
+            answer: 'Để tạo dàn số 9x-0x hiệu quả, bạn nên sử dụng công cụ tạo dàn số ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế. Chọn số lượng dàn phù hợp (10-20 dàn), kết hợp với bộ lọc thông minh để tối ưu kết quả.'
         },
         {
             question: 'Thống kê xổ số 3 miền có chính xác không?',
@@ -48,7 +48,7 @@ export default function ContentPage() {
         },
         {
             question: 'Dàn đề 2D và 3D khác nhau như thế nào?',
-            answer: 'Dàn đề 2D (00-99) phù hợp cho lô đề 2 số, dàn đề 3D (000-999) cho lô đề 3 số. Mỗi loại có chiến lược chơi khác nhau và cần phân tích thống kê riêng biệt.'
+            answer: 'Dàn đề 2D (00-99) phù hợp cho lô số 2 số, dàn số 3D (000-999) cho lô số 3 số. Mỗi loại có chiến lược chơi khác nhau và cần phân tích thống kê riêng biệt.'
         },
         {
             question: 'Cách chơi xổ số an toàn và hiệu quả?',
@@ -63,9 +63,9 @@ export default function ContentPage() {
             content: [
                 {
                     title: 'Cách Tạo Dàn Đề 9x-0x Chính Xác',
-                    description: 'Dàn đề 9x-0x là phương pháp chơi lô đề phổ biến nhất hiện nay. Để tạo dàn đề hiệu quả, bạn cần:',
+                    description: 'Dàn đề 9x-0x là phương pháp chơi lô số phổ biến nhất hiện nay. Để tạo dàn số hiệu quả, bạn cần:',
                     steps: [
-                        'Sử dụng công cụ tạo dàn đề ngẫu nhiên với thuật toán Fisher-Yates',
+                        'Sử dụng công cụ tạo dàn số ngẫu nhiên với thuật toán Fisher-Yates',
                         'Chọn số lượng dàn phù hợp (10-20 dàn)',
                         'Kết hợp với bộ lọc thông minh để tối ưu kết quả',
                         'Phân tích thống kê xuất hiện của các số',
@@ -85,11 +85,11 @@ export default function ContentPage() {
                 },
                 {
                     title: 'Chiến Lược Chơi Dàn Đề 2D/3D/4D',
-                    description: 'Mỗi loại dàn đề có chiến lược riêng:',
+                    description: 'Mỗi loại dàn số có chiến lược riêng:',
                     steps: [
-                        'Dàn 2D (00-99): Phù hợp cho lô đề 2 số, dễ trúng',
-                        'Dàn 3D (000-999): Cho lô đề 3 số, tỷ lệ trúng thấp hơn nhưng thưởng cao',
-                        'Dàn 4D (0000-9999): Cho lô đề 4 số, thưởng rất cao nhưng khó trúng',
+                        'Dàn 2D (00-99): Phù hợp cho lô số 2 số, dễ trúng',
+                        'Dàn 3D (000-999): Cho lô số 3 số, tỷ lệ trúng thấp hơn nhưng thưởng cao',
+                        'Dàn 4D (0000-9999): Cho lô số 4 số, thưởng rất cao nhưng khó trúng',
                         'Kết hợp nhiều loại dàn để đa dạng hóa rủi ro',
                         'Sử dụng thống kê để chọn loại dàn phù hợp'
                     ]
@@ -202,14 +202,14 @@ export default function ContentPage() {
                     title: 'Công Cụ Tạo Dàn Đề Chuyên Nghiệp',
                     description: 'Sử dụng công cụ hiện đại để tối ưu kết quả:',
                     steps: [
-                        'Tạo dàn đề 9x-0x ngẫu nhiên với thuật toán Fisher-Yates',
-                        'Bộ lọc dàn đề tổng hợp thông minh',
-                        'Tạo dàn đề 2D/3D/4D chuyên nghiệp',
+                        'Tạo dàn số 9x-0x ngẫu nhiên với thuật toán Fisher-Yates',
+                        'Bộ lọc dàn số tổng hợp thông minh',
+                        'Tạo dàn số 2D/3D/4D chuyên nghiệp',
                         'Dàn đề đặc biệt với bộ lọc đầu-đuôi-chạm',
                         'Lưu trữ và quản lý kết quả',
                         'Xuất file Excel để phân tích',
                         'Chia sẻ kết quả với bạn bè',
-                        'Theo dõi lịch sử tạo dàn đề'
+                        'Theo dõi lịch sử tạo dàn số'
                     ]
                 },
                 {
@@ -258,8 +258,8 @@ export default function ContentPage() {
             <SEOOptimized
                 pageType="content"
                 customTitle="Hướng Dẫn Chơi Xổ Số & Mẹo Tăng Tỷ Lệ Trúng - Công Cụ Chuyên Nghiệp 2024"
-                customDescription="Hướng dẫn chi tiết cách chơi xổ số hiệu quả, mẹo tăng tỷ lệ trúng, thống kê xổ số 3 miền, soi cầu chính xác. Công cụ tạo dàn đề chuyên nghiệp, bảng thống kê chốt dàn, phương pháp soi cầu hiệu quả nhất 2024."
-                customKeywords="hướng dẫn chơi xổ số, mẹo tăng tỷ lệ trúng xổ số, thống kê xổ số 3 miền, soi cầu xổ số, cách tạo dàn đề hiệu quả, bảng thống kê chốt dàn, phương pháp soi cầu, mẹo chơi lô đề, chiến lược chơi xổ số, công cụ xổ số chuyên nghiệp, dự đoán xổ số, phân tích xổ số, xu hướng xổ số, số may mắn, cao thủ xổ số"
+                customDescription="Hướng dẫn chi tiết cách chơi xổ số hiệu quả, mẹo tăng tỷ lệ trúng, thống kê xổ số 3 miền, soi cầu chính xác. Công cụ tạo dàn số chuyên nghiệp, bảng thống kê chốt dàn, phương pháp soi cầu hiệu quả nhất 2024."
+                customKeywords="hướng dẫn chơi xổ số, mẹo tăng tỷ lệ trúng xổ số, thống kê xổ số 3 miền, soi cầu xổ số, cách tạo dàn số hiệu quả, bảng thống kê chốt dàn, phương pháp soi cầu, mẹo chơi lô số, chiến lược chơi xổ số, công cụ xổ số chuyên nghiệp, dự đoán xổ số, phân tích xổ số, xu hướng xổ số, số may mắn, cao thủ xổ số"
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
             />
@@ -355,7 +355,7 @@ export default function ContentPage() {
                                     <TrendingUp size={32} />
                                 </div>
                                 <h3>Tạo Dàn Đề 9x-0x</h3>
-                                <p>Thuật toán Fisher-Yates chuẩn quốc tế, tạo dàn đề ngẫu nhiên chính xác 100%</p>
+                                <p>Thuật toán Fisher-Yates chuẩn quốc tế, tạo dàn số ngẫu nhiên chính xác 100%</p>
                                 <Link href="/" className={styles.toolButton}>
                                     Sử dụng ngay
                                 </Link>
@@ -377,7 +377,7 @@ export default function ContentPage() {
                                     <Award size={32} />
                                 </div>
                                 <h3>Dàn Đề 2D/3D/4D</h3>
-                                <p>Công cụ tạo dàn đề chuyên nghiệp cho mọi loại lô đề</p>
+                                <p>Công cụ tạo dàn số chuyên nghiệp cho mọi loại lô số</p>
                                 <Link href="/dan-2d" className={styles.toolButton}>
                                     Tạo dàn 2D
                                 </Link>
@@ -413,7 +413,7 @@ export default function ContentPage() {
                             <div className={styles.benefitItem}>
                                 <Zap size={24} />
                                 <h3>Nhanh Chóng</h3>
-                                <p>Tạo dàn đề trong 0.1 giây, cập nhật thống kê realtime</p>
+                                <p>Tạo dàn số trong 0.1 giây, cập nhật thống kê realtime</p>
                             </div>
 
                             <div className={styles.benefitItem}>

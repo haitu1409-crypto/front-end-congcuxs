@@ -109,8 +109,8 @@ const getFallbackData = (cacheKey) => {
                 articles: [
                     {
                         _id: '1',
-                        title: 'Hướng dẫn tạo dàn đề 9x-0x hiệu quả nhất 2025',
-                        excerpt: 'Cách tạo dàn đề 9x-0x chuyên nghiệp với thuật toán Fisher-Yates. Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%.',
+                        title: 'Hướng dẫn tạo dàn số 9x-0x hiệu quả nhất 2025',
+                        excerpt: 'Cách tạo dàn số 9x-0x chuyên nghiệp với thuật toán Fisher-Yates. Bộ lọc dàn số tổng hợp thông minh, miễn phí 100%.',
                         slug: 'huong-dan-tao-dan-de-9x-0x',
                         category: 'huong-dan-choi',
                         publishedAt: new Date().toISOString(),
@@ -118,7 +118,7 @@ const getFallbackData = (cacheKey) => {
                         author: 'Admin',
                         featuredImage: {
                             url: '/imgs/wukong.png',
-                            alt: 'Hướng dẫn tạo dàn đề'
+                            alt: 'Hướng dẫn tạo dàn số'
                         }
                     },
                     {
@@ -138,7 +138,7 @@ const getFallbackData = (cacheKey) => {
                     {
                         _id: '3',
                         title: 'Mẹo vặt xổ số - Tăng tỷ lệ trúng thưởng',
-                        excerpt: 'Những mẹo vặt xổ số được các cao thủ chia sẻ. Cách tăng tỷ lệ trúng thưởng, kinh nghiệm chơi lô đề.',
+                        excerpt: 'Những mẹo vặt xổ số được các cao thủ chia sẻ. Cách tăng tỷ lệ trúng thưởng, kinh nghiệm chơi lô số.',
                         slug: 'meo-vat-xo-so',
                         category: 'meo-vat-xo-so',
                         publishedAt: new Date(Date.now() - 172800000).toISOString(),
@@ -162,8 +162,8 @@ const getFallbackData = (cacheKey) => {
             data: [
                 {
                     _id: 'f1',
-                    title: 'Công cụ tạo dàn đề chuyên nghiệp - Tôn Ngộ Không',
-                    excerpt: 'Công cụ tạo dàn đề và thống kê xổ số 3 miền chuyên nghiệp. Miễn phí, nhanh chóng, chính xác 100%.',
+                    title: 'Công cụ tạo dàn số chuyên nghiệp - Wukong',
+                    excerpt: 'Công cụ tạo dàn số và thống kê xổ số 3 miền chuyên nghiệp. Miễn phí, nhanh chóng, chính xác 100%.',
                     slug: 'cong-cu-tao-dan-de-chuyen-nghiep',
                     category: 'dan-de-chuyen-nghiep',
                     publishedAt: new Date().toISOString(),
@@ -171,7 +171,7 @@ const getFallbackData = (cacheKey) => {
                     author: 'Admin',
                     featuredImage: {
                         url: '/imgs/wukong.png',
-                        alt: 'Công cụ tạo dàn đề'
+                        alt: 'Công cụ tạo dàn số'
                     }
                 },
                 {
@@ -198,8 +198,8 @@ const getFallbackData = (cacheKey) => {
             data: [
                 {
                     _id: 't1',
-                    title: 'Kinh nghiệm chơi lô đề từ cao thủ',
-                    excerpt: 'Chia sẻ kinh nghiệm chơi lô đề từ các cao thủ. Mẹo và chiến thuật hiệu quả.',
+                    title: 'Kinh nghiệm chơi lô số từ cao thủ',
+                    excerpt: 'Chia sẻ kinh nghiệm chơi lô số từ các cao thủ. Mẹo và chiến thuật hiệu quả.',
                     slug: 'kinh-nghiem-choi-lo-de',
                     category: 'kinh-nghiem-choi-lo-de',
                     publishedAt: new Date().toISOString(),
@@ -207,7 +207,7 @@ const getFallbackData = (cacheKey) => {
                     author: 'Admin',
                     featuredImage: {
                         url: '/imgs/wukong.png',
-                        alt: 'Kinh nghiệm chơi lô đề'
+                        alt: 'Kinh nghiệm chơi lô số'
                     }
                 },
                 {
@@ -632,8 +632,8 @@ export default function NewsPage() {
     // Enhanced SEO Data
     const seoData = useMemo(() => ({
         title: 'Tin Tức Xổ Số & Lô Đề - Cập Nhật Mới Nhất 2025 | Tạo Dàn Đề',
-        description: 'Tin tức xổ số, lô đề mới nhất, kinh nghiệm chơi, thống kê số nóng lạnh, mẹo vặt và hướng dẫn chuyên nghiệp từ các chuyên gia. Cập nhật 24/7.',
-        keywords: 'tin tức xổ số, lô đề, thống kê xổ số, kinh nghiệm chơi, mẹo vặt xổ số, soi cầu, dàn đề, xổ số miền bắc, xổ số miền nam, xổ số miền trung',
+        description: 'Tin tức xổ số, lô số mới nhất, kinh nghiệm chơi, thống kê số nóng lạnh, mẹo vặt và hướng dẫn chuyên nghiệp từ các chuyên gia. Cập nhật 24/7.',
+        keywords: 'tin tức xổ số, lô số, thống kê xổ số, kinh nghiệm chơi, mẹo vặt xổ số, soi cầu, dàn số, xổ số miền bắc, xổ số miền nam, xổ số miền trung',
         canonical: `${siteUrl}/tin-tuc`,
         ogImage: `${siteUrl}/imgs/wukong.png`,
         ogType: 'website'

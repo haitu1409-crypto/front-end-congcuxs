@@ -1,6 +1,6 @@
 /**
  * Dan2DGenerator Component
- * Component logic cho tạo dàn đề 2D
+ * Component logic cho tạo dàn số 2D
  */
 
 import { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';

@@ -11,12 +11,12 @@ const features = [
     {
         icon: Dice6,
         title: 'Thuật toán Fisher-Yates',
-        description: 'Sử dụng thuật toán chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối cho dàn đề 9x-0x'
+        description: 'Sử dụng thuật toán chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối cho dàn số 9x-0x'
     },
     {
         icon: BarChart3,
         title: 'Bộ lọc thông minh',
-        description: 'Bộ lọc dàn đề tổng hợp phân tích và tối ưu kết quả dựa trên thống kê xổ số 3 miền'
+        description: 'Bộ lọc dàn số tổng hợp phân tích và tối ưu kết quả dựa trên thống kê xổ số 3 miền'
     },
     {
         icon: Smartphone,
@@ -50,7 +50,7 @@ const FeaturesSection = memo(() => {
                     Tại sao chọn công cụ của chúng tôi?
                 </h2>
                 <p className={styles.featuresDescription}>
-                    Công cụ tạo dàn đề 9x-0x được thiết kế chuyên nghiệp với các tính năng tiên tiến
+                    Công cụ tạo dàn số 9x-0x được thiết kế chuyên nghiệp với các tính năng tiên tiến
                 </p>
             </div>
             <div className={styles.featuresGrid}>

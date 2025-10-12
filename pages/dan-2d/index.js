@@ -19,13 +19,13 @@ const AuthorBio = dynamic(() => import('../../components/SEO/AuthorBio'), {
     ssr: false
 });
 
-const DefinitionSnippet = dynamic(() => 
-    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })), 
+const DefinitionSnippet = dynamic(() =>
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })),
     { ssr: false, loading: () => null }
 );
 
-const DirectAnswer = dynamic(() => 
-    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DirectAnswer })), 
+const DirectAnswer = dynamic(() =>
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DirectAnswer })),
     { ssr: false, loading: () => null }
 );
 
@@ -54,19 +54,19 @@ const Dan2DPage = memo(function Dan2DPage() {
     const faqData = [
         {
             question: 'Dàn đề 2D là gì và phù hợp cho loại xổ số nào?',
-            answer: 'Dàn đề 2D là tập hợp các số có 2 chữ số (00-99), phù hợp cho lô đề 2 số, xổ số miền Bắc, miền Nam, miền Trung. Đây là loại dàn đề phổ biến nhất với tỷ lệ trúng cao.'
+            answer: 'Dàn đề 2D là tập hợp các số có 2 chữ số (00-99), phù hợp cho lô số 2 số, xổ số miền Bắc, miền Nam, miền Trung. Đây là loại dàn số phổ biến nhất với tỷ lệ trúng cao.'
         },
         {
-            question: 'Cách tạo dàn đề 2D hiệu quả nhất?',
-            answer: 'Sử dụng công cụ tạo dàn đề 2D với phân loại theo mức độ xuất hiện, kết hợp với thống kê xổ số 3 miền để chọn số có khả năng trúng cao nhất.'
+            question: 'Cách tạo dàn số 2D hiệu quả nhất?',
+            answer: 'Sử dụng công cụ tạo dàn số 2D với phân loại theo mức độ xuất hiện, kết hợp với thống kê xổ số 3 miền để chọn số có khả năng trúng cao nhất.'
         },
         {
             question: 'Chuyển đổi 1D sang 2D hoạt động như thế nào?',
-            answer: 'Chức năng chuyển đổi 1D sang 2D giúp bạn tạo dàn đề 2D từ các số 1 chữ số, tăng tính linh hoạt và đa dạng hóa chiến lược chơi.'
+            answer: 'Chức năng chuyển đổi 1D sang 2D giúp bạn tạo dàn số 2D từ các số 1 chữ số, tăng tính linh hoạt và đa dạng hóa chiến lược chơi.'
         },
         {
             question: 'Dàn đề 2D có thể sử dụng cho bao nhiêu loại xổ số?',
-            answer: 'Dàn đề 2D có thể sử dụng cho tất cả loại xổ số 3 miền, lô đề 2 số, và nhiều hình thức chơi khác. Rất linh hoạt và phổ biến.'
+            answer: 'Dàn đề 2D có thể sử dụng cho tất cả loại xổ số 3 miền, lô số 2 số, và nhiều hình thức chơi khác. Rất linh hoạt và phổ biến.'
         }
     ];
 
@@ -74,8 +74,8 @@ const Dan2DPage = memo(function Dan2DPage() {
     const howToSchema = {
         "@context": "https://schema.org",
         "@type": "HowTo",
-        "name": "Cách tạo dàn đề 2D chuyên nghiệp",
-        "description": "Hướng dẫn chi tiết cách tạo dàn đề 2D từ 00-99 với phân loại theo mức độ xuất hiện",
+        "name": "Cách tạo dàn số 2D chuyên nghiệp",
+        "description": "Hướng dẫn chi tiết cách tạo dàn số 2D từ 00-99 với phân loại theo mức độ xuất hiện",
         "image": "https://taodandewukong.pro/imgs/dan2d1d (1).png",
         "totalTime": "PT2M",
         "estimatedCost": {
@@ -92,14 +92,14 @@ const Dan2DPage = memo(function Dan2DPage() {
         "tool": [
             {
                 "@type": "HowToTool",
-                "name": "Công cụ tạo dàn đề 2D Tôn Ngộ Không"
+                "name": "Công cụ tạo dàn số 2D Wukong"
             }
         ],
         "step": [
             {
                 "@type": "HowToStep",
                 "name": "Truy cập công cụ",
-                "text": "Vào trang công cụ tạo dàn đề 2D tại taodandewukong.pro/dan-2d",
+                "text": "Vào trang công cụ tạo dàn số 2D tại taodandewukong.pro/dan-2d",
                 "image": "https://taodandewukong.pro/imgs/dan2d1d (1).png",
                 "url": "https://taodandewukong.pro/dan-2d"
             },
@@ -117,8 +117,8 @@ const Dan2DPage = memo(function Dan2DPage() {
             },
             {
                 "@type": "HowToStep",
-                "name": "Tạo dàn đề",
-                "text": "Nhấn nút 'Tạo Dàn Đề' để tạo dàn đề 2D theo thuật toán Fisher-Yates",
+                "name": "Tạo dàn số",
+                "text": "Nhấn nút 'Tạo Dàn Đề' để tạo dàn số 2D theo thuật toán Fisher-Yates",
                 "image": "https://taodandewukong.pro/imgs/dan2d1d (1).png"
             },
             {
@@ -156,7 +156,7 @@ const Dan2DPage = memo(function Dan2DPage() {
                             Tạo Dàn Đề 2D Chuyên Nghiệp - Công Cụ Miễn Phí 2025
                         </h1>
                         <p className={styles.pageDescription}>
-                            Tạo dàn đề 2D (00-99) chuyên nghiệp với phân loại theo mức độ xuất hiện • Hỗ trợ chuyển đổi 1D sang 2D • Thuật toán Fisher-Yates chuẩn quốc tế • Miễn phí 100%
+                            Tạo dàn số 2D (00-99) chuyên nghiệp với phân loại theo mức độ xuất hiện • Hỗ trợ chuyển đổi 1D sang 2D • Thuật toán Fisher-Yates chuẩn quốc tế • Miễn phí 100%
                         </p>
                     </header>
 
@@ -184,20 +184,20 @@ const Dan2DPage = memo(function Dan2DPage() {
                         <div className={styles.relatedTools}>
                             <h3>Công cụ liên quan:</h3>
                             <p>
-                                Để có thêm thông tin về <Link href="/dan-3d4d">dàn đề 3D/4D</Link>,
-                                <Link href="/dan-dac-biet">dàn đề đặc biệt</Link>, hoặc
+                                Để có thêm thông tin về <Link href="/dan-3d4d">dàn số 3D/4D</Link>,
+                                <Link href="/dan-dac-biet">dàn số đặc biệt</Link>, hoặc
                                 <Link href="/thong-ke">thống kê xổ số 3 miền</Link> để phân tích hiệu quả hơn.
                             </p>
                         </div>
 
                         <div className={styles.detailedGuide}>
-                            <h3>Hướng dẫn chi tiết tạo dàn đề 2D chuyên nghiệp</h3>
+                            <h3>Hướng dẫn chi tiết tạo dàn số 2D chuyên nghiệp</h3>
                             <div className={styles.guideContent}>
-                                <h4>1. Tìm hiểu về dàn đề 2D</h4>
+                                <h4>1. Tìm hiểu về dàn số 2D</h4>
                                 <p>
                                     Dàn đề 2D là tập hợp các số có 2 chữ số từ 00 đến 99, được sử dụng rộng rãi trong
-                                    lô đề và xổ số. Khác với dàn đề 3D hay 4D, dàn đề 2D có tỷ lệ trúng cao hơn và
-                                    phù hợp với người chơi mới bắt đầu. Công cụ tạo dàn đề 2D của chúng tôi sử dụng
+                                    lô số và xổ số. Khác với dàn số 3D hay 4D, dàn số 2D có tỷ lệ trúng cao hơn và
+                                    phù hợp với người chơi mới bắt đầu. Công cụ tạo dàn số 2D của chúng tôi sử dụng
                                     thuật toán Fisher-Yates chuẩn quốc tế để đảm bảo tính ngẫu nhiên và công bằng.
                                 </p>
 
@@ -211,7 +211,7 @@ const Dan2DPage = memo(function Dan2DPage() {
 
                                 <h4>3. Chiến lược chơi hiệu quả</h4>
                                 <p>
-                                    Để tối ưu hóa tỷ lệ trúng, người chơi nên kết hợp dàn đề 2D với thống kê xổ số
+                                    Để tối ưu hóa tỷ lệ trúng, người chơi nên kết hợp dàn số 2D với thống kê xổ số
                                     và phân tích xu hướng. Tránh chơi quá nhiều số cùng lúc, tập trung vào các số
                                     có tần suất xuất hiện ổn định. Luôn có kế hoạch tài chính rõ ràng và không
                                     chơi vượt quá khả năng kinh tế.
@@ -219,7 +219,7 @@ const Dan2DPage = memo(function Dan2DPage() {
 
                                 <h4>4. Lợi ích của công cụ</h4>
                                 <p>
-                                    Công cụ tạo dàn đề 2D miễn phí 100%, không giới hạn số lần sử dụng. Hỗ trợ
+                                    Công cụ tạo dàn số 2D miễn phí 100%, không giới hạn số lần sử dụng. Hỗ trợ
                                     xuất kết quả ra file Excel, copy nhanh, và lưu trữ lịch sử. Giao diện thân thiện,
                                     hoạt động mượt mà trên mọi thiết bị từ máy tính đến điện thoại di động.
                                 </p>
@@ -230,7 +230,7 @@ const Dan2DPage = memo(function Dan2DPage() {
                     {/* Featured Snippet - Definition */}
                     <DefinitionSnippet
                         term="Dàn 2D (Tạo Mức Số 2D)"
-                        definition="Dàn 2D là tập hợp các số có 2 chữ số từ 00 đến 99, được sử dụng để đánh lô đề 2 số hoặc xổ số miền Bắc, miền Nam, miền Trung. Đây là loại dàn đề phổ biến nhất với tỷ lệ trúng cao (1/100) và dễ chơi. Có thể tạo bạch thủ (1 số), song thủ (2 số), hoặc dàn lớn (10-20 số) tùy theo chiến lược."
+                        definition="Dàn 2D là tập hợp các số có 2 chữ số từ 00 đến 99, được sử dụng để đánh lô số 2 số hoặc xổ số miền Bắc, miền Nam, miền Trung. Đây là loại dàn số phổ biến nhất với tỷ lệ trúng cao (1/100) và dễ chơi. Có thể tạo bạch thủ (1 số), song thủ (2 số), hoặc dàn lớn (10-20 số) tùy theo chiến lược."
                         examples={[
                             'Bạch thủ lô 2D: Chọn 1 số duy nhất, ví dụ: 36',
                             'Song thủ lô 2D: Chọn 2 số, ví dụ: 36, 63',

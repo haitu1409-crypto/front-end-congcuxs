@@ -1,6 +1,6 @@
 /**
  * Mobile Navbar Component - Reusable
- * Navbar mobile ngang cho tất cả các page dàn đề
+ * Navbar mobile ngang cho tất cả các page dàn số
  */
 
 import { useState, useCallback, useEffect } from 'react';

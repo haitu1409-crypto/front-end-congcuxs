@@ -1,6 +1,6 @@
 /**
  * Dan3DGenerator Component
- * Component logic cho tạo dàn đề 3D - Redesigned with 2D style
+ * Component logic cho tạo dàn số 3D - Redesigned with 2D style
  */
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';

@@ -12,7 +12,7 @@ const Testimonials = memo(function Testimonials({ reviews }) {
     const defaultReviews = reviews || [
         {
             rating: 5,
-            text: "Công cụ tạo dàn đề tốt nhất tôi từng dùng! Tính năng tách dàn và lọc ghép rất tiện lợi. Giao diện đẹp, dễ sử dụng.",
+            text: "Công cụ tạo dàn số tốt nhất tôi từng dùng! Tính năng tách dàn và lọc ghép rất tiện lợi. Giao diện đẹp, dễ sử dụng.",
             author: "Anh Tuấn",
             location: "Hà Nội",
             tool: "Tạo Dàn 2D"

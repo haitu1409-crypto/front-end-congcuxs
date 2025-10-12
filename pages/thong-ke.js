@@ -1090,7 +1090,7 @@ function ThongKePage() {
                     },
                     {
                         question: 'Làm thế nào để lập bảng thống kê chốt dàn hiệu quả?',
-                        answer: 'Sử dụng công cụ lập bảng thống kê chốt dàn 3 miền để theo dõi xu hướng, phân tích tần suất xuất hiện, xác định số nóng/lạnh, từ đó tối ưu chiến lược chơi dàn đề và tăng tỷ lệ trúng.'
+                        answer: 'Sử dụng công cụ lập bảng thống kê chốt dàn 3 miền để theo dõi xu hướng, phân tích tần suất xuất hiện, xác định số nóng/lạnh, từ đó tối ưu chiến lược chơi dàn số và tăng tỷ lệ trúng.'
                     },
                     {
                         question: 'Thống kê chốt dàn 3 miền có khác nhau không?',
@@ -1115,9 +1115,9 @@ function ThongKePage() {
                             <div className={styles.headerLeft}>
                                 <BarChart3 className={styles.headerIcon} />
                                 <div>
-                                    <h1 className={styles.title}>Lập Bảng Thống Kê Chốt Dàn 3 Miền - Tôn Ngộ Không</h1>
+                                    <h1 className={styles.title}>Lập Bảng Thống Kê Chốt Dàn 3 Miền - Wukong</h1>
                                     <p className={styles.subtitle}>
-                                        Công cụ lập bảng thống kê chốt dàn 3 miền chuyên nghiệp - Theo dõi kết quả và xu hướng xổ số - Thương hiệu Tôn Ngộ Không
+                                        Công cụ lập bảng thống kê chốt dàn 3 miền chuyên nghiệp - Theo dõi kết quả và xu hướng xổ số - Thương hiệu Wukong
                                     </p>
                                 </div>
                             </div>

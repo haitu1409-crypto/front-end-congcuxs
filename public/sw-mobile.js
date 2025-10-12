@@ -7,14 +7,12 @@ const CACHE_NAME = 'lottery-tools-mobile-v1';
 const STATIC_CACHE = 'static-mobile-v1';
 const DYNAMIC_CACHE = 'dynamic-mobile-v1';
 
-// Critical resources for mobile
+// Critical resources for mobile - Empty array to prevent cache errors in dev
 const CRITICAL_RESOURCES = [
-    '/',
-    '/dan-9x0x'
-    // Removed non-existent resources:
-    // '/styles/critical.css',
-    // '/fonts/inter-var.woff2',
-    // '/api/dande/generate'
+    // Disabled during development to prevent cache errors
+    // Enable in production:
+    // '/',
+    // '/dan-9x0x'
 ];
 
 // Install event - cache critical resources
@@ -22,10 +20,19 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(STATIC_CACHE)
             .then((cache) => {
-                console.log('Mobile SW: Caching critical resources');
-                return cache.addAll(CRITICAL_RESOURCES);
+                console.log('Mobile SW: Installed (dev mode - no precache)');
+                // Only cache if resources exist (production mode)
+                if (CRITICAL_RESOURCES.length > 0) {
+                    return cache.addAll(CRITICAL_RESOURCES);
+                }
+                return Promise.resolve();
             })
             .then(() => self.skipWaiting())
+            .catch((error) => {
+                console.error('SW install error:', error);
+                // Don't fail installation if cache fails
+                return self.skipWaiting();
+            })
     );
 });
 

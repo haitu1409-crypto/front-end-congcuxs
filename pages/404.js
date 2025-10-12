@@ -12,7 +12,7 @@ export default function Custom404() {
         <>
             <Head>
                 <title>404 - Không Tìm Thấy Trang | Tạo Dàn Đề</title>
-                <meta name="description" content="Trang bạn tìm kiếm không tồn tại. Quay lại trang chủ để sử dụng công cụ tạo dàn đề." />
+                <meta name="description" content="Trang bạn tìm kiếm không tồn tại. Quay lại trang chủ để sử dụng công cụ tạo dàn số." />
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
             <PageSpeedOptimizer />

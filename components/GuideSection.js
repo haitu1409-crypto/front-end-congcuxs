@@ -12,7 +12,7 @@ const GuideSection = () => {
                         Hướng Dẫn Sử Dụng
                     </h2>
                     <p className={styles.subtitle}>
-                        Khám phá cách sử dụng hiệu quả các công cụ tạo dàn đề chuyên nghiệp
+                        Khám phá cách sử dụng hiệu quả các công cụ tạo dàn số chuyên nghiệp
                     </p>
                 </div>
 

@@ -120,7 +120,7 @@ module.exports = {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/wukong.png`,
-                        caption: 'Dàn Đề Tôn Ngộ Không - Công cụ tạo dàn đề chuyên nghiệp miễn phí #1 Việt Nam',
+                        caption: 'Dàn Đề Wukong - Công cụ tạo dàn đề chuyên nghiệp miễn phí #1 Việt Nam',
                         title: 'Tạo Dàn Đề Online - Miễn Phí 100%'
                     }
                 ]
@@ -192,7 +192,7 @@ module.exports = {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/wukong.png`,
-                        caption: 'Hướng dẫn chơi lô đề, mẹo chiến thuật xổ số hiệu quả',
+                        caption: 'Hướng dẫn chơi lô số, mẹo chiến thuật xổ số hiệu quả',
                         title: 'Hướng Dẫn - Mẹo chơi xổ số'
                     }
                 ]

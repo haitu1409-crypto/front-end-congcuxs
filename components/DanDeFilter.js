@@ -1,6 +1,6 @@
 /**
  * DanDeFilter Component
- * Component cho chức năng lọc dàn đề
+ * Component cho chức năng lọc dàn số
  */
 
 import React, { useState, useEffect, useCallback, useMemo, memo, startTransition } from 'react';
@@ -1433,7 +1433,7 @@ const DanDeFilter = memo(() => {
                         className={styles.resultsSection}
                         role="region"
                         aria-live="polite"
-                        aria-label="Kết quả lọc dàn đề"
+                        aria-label="Kết quả lọc dàn số"
                     >
                         <h3 className={styles.resultsTitle}>Kết quả lọc</h3>
                         <textarea
@@ -1442,7 +1442,7 @@ const DanDeFilter = memo(() => {
                             readOnly
                             placeholder="Kết quả lọc sẽ hiển thị ở đây..."
                             style={{ minHeight: '200px' }}
-                            aria-label="Kết quả lọc dàn đề"
+                            aria-label="Kết quả lọc dàn số"
                             aria-live="polite"
                             aria-atomic="true"
                             role="status"

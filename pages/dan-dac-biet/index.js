@@ -27,13 +27,13 @@ const Testimonials = dynamic(() => import('../../components/SEO/Testimonials'), 
     ssr: false
 });
 
-const DefinitionSnippet = dynamic(() => 
-    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })), 
+const DefinitionSnippet = dynamic(() =>
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })),
     { ssr: false, loading: () => null }
 );
 
-const ListSnippet = dynamic(() => 
-    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.ListSnippet })), 
+const ListSnippet = dynamic(() =>
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.ListSnippet })),
     { ssr: false, loading: () => null }
 );
 
@@ -129,22 +129,22 @@ export default function DanDacBietPage() {
     const faqData = [
         {
             question: 'Dàn đề đặc biệt là gì và có gì khác biệt?',
-            answer: 'Dàn đề đặc biệt là bộ số được lọc thông minh theo các tiêu chí như đầu, đuôi, chạm, kép, tổng để tăng tỷ lệ trúng. Khác với dàn đề thông thường, dàn đặc biệt được tối ưu hóa dựa trên thống kê và xu hướng xổ số.'
+            answer: 'Dàn đề đặc biệt là bộ số được lọc thông minh theo các tiêu chí như đầu, đuôi, chạm, kép, tổng để tăng tỷ lệ trúng. Khác với dàn số thông thường, dàn đặc biệt được tối ưu hóa dựa trên thống kê và xu hướng xổ số.'
         },
         {
-            question: 'Có thể lọc dàn đề đặc biệt theo bao nhiêu tiêu chí?',
+            question: 'Có thể lọc dàn số đặc biệt theo bao nhiêu tiêu chí?',
             answer: 'Bạn có thể lọc theo nhiều tiêu chí cùng lúc: đầu số (chẵn/lẻ/bé/lớn), đuôi số, chạm số, kép bằng, kép lệch, kép âm, sát kép, tổng số. Mỗi tiêu chí đều được tối ưu hóa riêng biệt.'
         },
         {
-            question: 'Kết quả dàn đề đặc biệt có chính xác không?',
-            answer: 'Thuật toán lọc dàn đề đặc biệt được tối ưu dựa trên phân tích thống kê xổ số 3 miền, đảm bảo tính chính xác cao. Sử dụng dữ liệu realtime và AI để dự đoán xu hướng.'
+            question: 'Kết quả dàn số đặc biệt có chính xác không?',
+            answer: 'Thuật toán lọc dàn số đặc biệt được tối ưu dựa trên phân tích thống kê xổ số 3 miền, đảm bảo tính chính xác cao. Sử dụng dữ liệu realtime và AI để dự đoán xu hướng.'
         },
         {
             question: 'Dàn đề đặc biệt phù hợp cho loại xổ số nào?',
-            answer: 'Dàn đề đặc biệt phù hợp cho tất cả loại xổ số 3 miền, lô đề 2 số, 3 số, 4 số. Đặc biệt hiệu quả cho người chơi có kinh nghiệm và muốn tối ưu hóa chiến lược.'
+            answer: 'Dàn đề đặc biệt phù hợp cho tất cả loại xổ số 3 miền, lô số 2 số, 3 số, 4 số. Đặc biệt hiệu quả cho người chơi có kinh nghiệm và muốn tối ưu hóa chiến lược.'
         },
         {
-            question: 'Cách sử dụng dàn đề đặc biệt hiệu quả nhất?',
+            question: 'Cách sử dụng dàn số đặc biệt hiệu quả nhất?',
             answer: 'Kết hợp nhiều tiêu chí lọc, theo dõi thống kê xu hướng, sử dụng kết hợp với bảng thống kê chốt dàn 3 miền để đưa ra quyết định chính xác nhất.'
         }
     ];
@@ -153,8 +153,8 @@ export default function DanDacBietPage() {
     const howToSchema = {
         "@context": "https://schema.org",
         "@type": "HowTo",
-        "name": "Cách tạo dàn đề đặc biệt chuyên nghiệp",
-        "description": "Hướng dẫn chi tiết cách tạo dàn đề đặc biệt với bộ lọc thông minh",
+        "name": "Cách tạo dàn số đặc biệt chuyên nghiệp",
+        "description": "Hướng dẫn chi tiết cách tạo dàn số đặc biệt với bộ lọc thông minh",
         "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png",
         "totalTime": "PT5M",
         "estimatedCost": {
@@ -171,14 +171,14 @@ export default function DanDacBietPage() {
         "tool": [
             {
                 "@type": "HowToTool",
-                "name": "Công cụ tạo dàn đề đặc biệt Tôn Ngộ Không"
+                "name": "Công cụ tạo dàn số đặc biệt Wukong"
             }
         ],
         "step": [
             {
                 "@type": "HowToStep",
                 "name": "Truy cập công cụ",
-                "text": "Vào trang công cụ tạo dàn đề đặc biệt tại taodandewukong.pro/dan-dac-biet",
+                "text": "Vào trang công cụ tạo dàn số đặc biệt tại taodandewukong.pro/dan-dac-biet",
                 "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png",
                 "url": "https://taodandewukong.pro/dan-dac-biet"
             },
@@ -202,8 +202,8 @@ export default function DanDacBietPage() {
             },
             {
                 "@type": "HowToStep",
-                "name": "Tạo dàn đề",
-                "text": "Nhấn nút 'Tạo Dàn Đề' để tạo dàn đề đặc biệt theo thuật toán AI",
+                "name": "Tạo dàn số",
+                "text": "Nhấn nút 'Tạo Dàn Đề' để tạo dàn số đặc biệt theo thuật toán AI",
                 "image": "https://taodandewukong.pro/imgs/dandacbiet (1).png"
             },
             {
@@ -354,7 +354,7 @@ export default function DanDacBietPage() {
                         {/* Featured Snippet - Definition */}
                         <DefinitionSnippet
                             term="Dàn Đề Đặc Biệt (Dàn Đề Bất Tử)"
-                            definition="Dàn đề đặc biệt là dàn số được lọc và ghép theo các điều kiện đặc biệt như chạm, tổng, kép, tài xỉu, chẵn lẻ, đầu đuôi. Thường là dàn 10-60 số được nuôi trong khung 2-5 ngày với tỷ lệ trúng rất cao, gọi là dàn đề bất tử. Có thể lấy nhanh dàn đặc biệt theo template hoặc tùy chỉnh theo nhu cầu."
+                            definition="Dàn đề đặc biệt là dàn số được lọc và ghép theo các điều kiện đặc biệt như chạm, tổng, kép, tài xỉu, chẵn lẻ, đầu đuôi. Thường là dàn 10-60 số được nuôi trong khung 2-5 ngày với tỷ lệ trúng rất cao, gọi là dàn số bất tử. Có thể lấy nhanh dàn đặc biệt theo template hoặc tùy chỉnh theo nhu cầu."
                             examples={[
                                 'Dàn 36 số khung 3 ngày - Siêu kinh điển, tỷ lệ trúng 95%+',
                                 'Dàn 50 số khung 3 ngày - Cho người chơi có vốn lớn',

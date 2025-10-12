@@ -240,7 +240,7 @@ const ExportableTable = forwardRef(({ data, title = "THỐNG KÊ 3 MIỀN - TÔN
                     <span>📅 Tổng số ngày thống kê: {data.metadata?.totalRecords || 0}</span>
                 </div>
                 <div className={styles.footerItem}>
-                    <span>📊 Dàn Đề Tôn Ngộ Không - Công cụ chuyên nghiệp</span>
+                    <span>📊 Dàn Đề Wukong - Công cụ chuyên nghiệp</span>
                 </div>
             </div>
         </div>

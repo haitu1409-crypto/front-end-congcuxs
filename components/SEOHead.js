@@ -8,7 +8,7 @@ import Head from 'next/head';
 const SEOHead = ({
     title = "Tạo Dàn Đề Online Miễn Phí | Công Cụ Lọc Dàn Đề Chuyên Nghiệp #1 Việt Nam",
     description = "Công cụ tạo dàn đề 9x-0x online miễn phí hàng đầu Việt Nam. Tạo dàn đề ngẫu nhiên, lọc dàn đề từ cao thủ, chọn bộ số đặc biệt, thêm số mong muốn, loại bỏ kép bằng. Công cụ dàn đề chuyên nghiệp nhất 2024.",
-    keywords = "tạo dàn đề, tạo dàn đề online, công cụ tạo dàn đề, tạo dàn đề miễn phí, dàn đề 9x-0x, lọc dàn đề, bộ số đặc biệt, dàn đề ngẫu nhiên, tạo dàn lô đề, công cụ lô đề, số mong muốn, loại bỏ số, kép bằng, dàn đề chuyên nghiệp, cao thủ lô đề, cách tạo dàn đề 9x-0x, tạo dàn đề có chọn số mong muốn, lọc dàn đề từ cao thủ, bộ số đặc biệt lô đề, công cụ tạo dàn đề online miễn phí, tạo dàn đề loại bỏ kép bằng, dàn đề chuyên nghiệp nhất, tạo dàn đề Việt Nam, công cụ lô đề Việt Nam, dàn đề online Việt",
+    keywords = "tạo dàn đề, tạo dàn đề online, công cụ tạo dàn đề, tạo dàn đề miễn phí, dàn đề 9x-0x, lọc dàn đề, bộ số đặc biệt, dàn đề ngẫu nhiên, tạo dàn lô số, công cụ lô số, số mong muốn, loại bỏ số, kép bằng, dàn đề chuyên nghiệp, cao thủ lô số, cách tạo dàn đề 9x-0x, tạo dàn đề có chọn số mong muốn, lọc dàn đề từ cao thủ, bộ số đặc biệt lô số, công cụ tạo dàn đề online miễn phí, tạo dàn đề loại bỏ kép bằng, dàn đề chuyên nghiệp nhất, tạo dàn đề Việt Nam, công cụ lô số Việt Nam, dàn đề online Việt",
     canonical = "https://your-domain.com",
     image = "/og-image.png"
 }) => {
@@ -33,7 +33,7 @@ const SEOHead = ({
         "featureList": [
             "Tạo dàn đề ngẫu nhiên 9x-0x",
             "Lọc dàn đề chuyên nghiệp từ cao thủ",
-            "Chọn bộ số đặc biệt lô đề",
+            "Chọn bộ số đặc biệt lô số",
             "Thêm số mong muốn vào dàn",
             "Loại bỏ số không mong muốn",
             "Loại bỏ kép bằng tự động",

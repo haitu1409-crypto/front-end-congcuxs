@@ -11,7 +11,7 @@ const AuthorBio = memo(function AuthorBio({
     title = "Chuyên Gia Tạo Dàn Đề & Xổ Số",
     experience = "10+",
     users = "100,000+",
-    description = "Đội ngũ chuyên gia với hơn 10 năm kinh nghiệm trong lĩnh vực xổ số và lô đề. Phát triển các công cụ chuyên nghiệp phục vụ hơn 100,000 người chơi trên toàn quốc."
+    description = "Đội ngũ chuyên gia với hơn 10 năm kinh nghiệm trong lĩnh vực xổ số và lô số. Phát triển các công cụ chuyên nghiệp phục vụ hơn 100,000 người chơi trên toàn quốc."
 }) {
 
     // Author Schema Markup
@@ -24,7 +24,7 @@ const AuthorBio = memo(function AuthorBio({
         "description": description,
         "url": typeof window !== 'undefined' ? window.location.origin + "/about" : "https://taodandewukong.pro/about",
         "knowsAbout": [
-            "Tạo dàn đề",
+            "Tạo dàn số",
             "Xổ số",
             "Lô đề",
             "Thống kê xổ số",

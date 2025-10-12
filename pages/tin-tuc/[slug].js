@@ -239,7 +239,7 @@ export default function ArticleDetailPage() {
             wordCount: wordCount,
             timeRequired: `PT${readingTime}M`,
             articleSection: getCategoryLabel(article.category),
-            keywords: article.keywords?.join(', ') || 'tin tức xổ số, lô đề, thống kê xổ số'
+            keywords: article.keywords?.join(', ') || 'tin tức xổ số, lô số, thống kê xổ số'
         };
     }, [article, siteUrl]);
 
@@ -251,8 +251,8 @@ export default function ArticleDetailPage() {
 
         return {
             title: `${article.title} | Tin Tức Xổ Số & Lô Đề`,
-            description: article.metaDescription || article.excerpt || `Đọc bài viết "${article.title}" về xổ số và lô đề. ${article.excerpt}`,
-            keywords: article.keywords?.join(', ') || 'xổ số, lô đề, tin tức, kinh nghiệm chơi',
+            description: article.metaDescription || article.excerpt || `Đọc bài viết "${article.title}" về xổ số và lô số. ${article.excerpt}`,
+            keywords: article.keywords?.join(', ') || 'xổ số, lô số, tin tức, kinh nghiệm chơi',
             canonical: `${siteUrl}/tin-tuc/${article.slug}`,
             ogImage: article.featuredImage?.url || `${siteUrl}/images/og-news.jpg`,
             ogType: 'article',

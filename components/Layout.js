@@ -72,10 +72,10 @@ export default function Layout({ children, className = '' }) {
 
     const navLinks = [
         { href: '/', label: 'Trang chủ', icon: Home, description: 'Trang chủ chính' },
-        { href: '/dan-9x0x', label: 'Dàn 9x-0x', icon: Target, description: 'Tạo dàn đề 9x-0x chuyên nghiệp', isNew: true },
+        { href: '/dan-9x0x', label: 'Dàn 9x-0x', icon: Target, description: 'Tạo dàn số 9x-0x chuyên nghiệp', isNew: true },
         { href: '/dan-2d', label: 'Dàn 2D', icon: Target, description: 'Dàn đề 2 chữ số (00-99)' },
         { href: '/dan-3d4d', label: 'Dàn 3D/4D', icon: BarChart3, description: 'Dàn đề 3-4 chữ số' },
-        { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star, description: 'Bộ lọc dàn đề thông minh' },
+        { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star, description: 'Bộ lọc dàn số thông minh' },
         { href: '/thong-ke', label: 'Lập Thống Kê', icon: TrendingUp, description: 'Thống kê xổ số 3 miền' },
         { href: '/content', label: 'Hướng dẫn & Mẹo chơi', icon: HelpCircle, description: 'Hướng dẫn chơi xổ số' },
         { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper, description: 'Tin tức xổ số mới nhất' },
@@ -99,7 +99,7 @@ export default function Layout({ children, className = '' }) {
                                 <div className={styles.logoIcon}>
                                     <Image
                                         src="/imgs/monkey.png"
-                                        alt="Dàn Đề Tôn Ngộ Không"
+                                        alt="Dàn Đề Wukong"
                                         width={32}
                                         height={32}
                                         className={styles.logoImage}
@@ -108,7 +108,7 @@ export default function Layout({ children, className = '' }) {
                                     />
                                 </div>
                                 <span className={styles.logoText}>
-                                    <span className={styles.logoTextMain}>Dàn Đề Tôn Ngộ Không</span>
+                                    <span className={styles.logoTextMain}>Dàn Đề Wukong</span>
                                     <span className={styles.logoTextSub}>Công cụ chuyên nghiệp</span>
                                 </span>
                             </Link>
@@ -206,17 +206,17 @@ export default function Layout({ children, className = '' }) {
                                 <h3 className={styles.footerTitle}>
                                     <Image
                                         src="/imgs/monkey.png"
-                                        alt="Dàn Đề Tôn Ngộ Không"
+                                        alt="Dàn Đề Wukong"
                                         width={24}
                                         height={24}
                                         style={{ display: 'inline', marginRight: '8px' }}
                                         loading="lazy"
                                     />
-                                    Dàn Đề Tôn Ngộ Không
+                                    Dàn Đề Wukong
                                 </h3>
                                 <p className={styles.footerDescription}>
-                                    Bộ công cụ tạo dàn đề và thống kê xổ số 3 miền chuyên nghiệp hàng đầu Việt Nam.
-                                    Miễn phí, nhanh chóng, chính xác 100% - Thương hiệu Tôn Ngộ Không.
+                                    Bộ công cụ tạo dàn số và thống kê xổ số 3 miền chuyên nghiệp hàng đầu Việt Nam.
+                                    Miễn phí, nhanh chóng, chính xác 100% - Thương hiệu Wukong.
                                 </p>
                                 <div className={styles.footerBadges}>
                                     <span className={styles.footerBadge}>
@@ -287,7 +287,7 @@ export default function Layout({ children, className = '' }) {
                         {/* Footer Bottom */}
                         <div className={styles.footerBottom}>
                             <p className={styles.copyright}>
-                                © {new Date().getFullYear()} Dàn Đề Tôn Ngộ Không. Made with <Heart size={12} style={{ display: 'inline', margin: '0 2px' }} /> in Vietnam.
+                                © {new Date().getFullYear()} Dàn Đề Wukong. Made with <Heart size={12} style={{ display: 'inline', margin: '0 2px' }} /> in Vietnam.
                             </p>
                             <p className={styles.disclaimer}>
                                 Công cụ miễn phí cho mục đích giải trí và nghiên cứu.

@@ -52,7 +52,7 @@ export default function AdminStats() {
         return (
             <Layout>
                 <Head>
-                    <title>Đăng nhập Admin - Dàn Đề Tôn Ngộ Không</title>
+                    <title>Đăng nhập Admin - Dàn Đề Wukong</title>
                     <meta name="robots" content="noindex,nofollow" />
                 </Head>
 
