@@ -12,8 +12,22 @@ import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import MobileNavbar from '../../components/MobileNavbar';
 import styles from '../../styles/Dan3D4D.module.css';
 import { getPageSEO } from '../../config/seoConfig';
-import AuthorBio from '../../components/SEO/AuthorBio';
-import { DefinitionSnippet, TableSnippet } from '../../components/SEO/FeaturedSnippet';
+
+// ✅ Lazy load SEO components
+const AuthorBio = dynamic(() => import('../../components/SEO/AuthorBio'), {
+    loading: () => null,
+    ssr: false
+});
+
+const DefinitionSnippet = dynamic(() => 
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })), 
+    { ssr: false, loading: () => null }
+);
+
+const TableSnippet = dynamic(() => 
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.TableSnippet })), 
+    { ssr: false, loading: () => null }
+);
 
 // ✅ Dynamic icon import for better performance
 const BarChart3 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.BarChart3 })), { ssr: false });

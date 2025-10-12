@@ -12,8 +12,22 @@ import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import MobileNavbar from '../../components/MobileNavbar';
 import styles from '../../styles/Dan2D.module.css';
 import { getPageSEO } from '../../config/seoConfig';
-import AuthorBio from '../../components/SEO/AuthorBio';
-import { DefinitionSnippet, DirectAnswer } from '../../components/SEO/FeaturedSnippet';
+
+// ✅ Lazy load SEO components
+const AuthorBio = dynamic(() => import('../../components/SEO/AuthorBio'), {
+    loading: () => null,
+    ssr: false
+});
+
+const DefinitionSnippet = dynamic(() => 
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })), 
+    { ssr: false, loading: () => null }
+);
+
+const DirectAnswer = dynamic(() => 
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DirectAnswer })), 
+    { ssr: false, loading: () => null }
+);
 
 // ✅ Dynamic icon import for better performance
 const Target = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Target })), { ssr: false });

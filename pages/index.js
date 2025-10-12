@@ -12,10 +12,37 @@ import SEOOptimized from '../components/SEOOptimized';
 import SEOAnalytics from '../components/SEOAnalytics';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import { getPageSEO } from '../config/seoConfig';
-import AuthorBio from '../components/SEO/AuthorBio';
-import TrustSignals from '../components/SEO/TrustSignals';
-import Testimonials from '../components/SEO/Testimonials';
-import { DirectAnswer, ListSnippet, TableSnippet } from '../components/SEO/FeaturedSnippet';
+
+// ✅ Lazy load SEO components for better performance
+const AuthorBio = dynamic(() => import('../components/SEO/AuthorBio'), {
+    loading: () => null,
+    ssr: false
+});
+
+const TrustSignals = dynamic(() => import('../components/SEO/TrustSignals'), {
+    loading: () => null,
+    ssr: false
+});
+
+const Testimonials = dynamic(() => import('../components/SEO/Testimonials'), {
+    loading: () => null,
+    ssr: false
+});
+
+const DirectAnswer = dynamic(() => 
+    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DirectAnswer })), 
+    { ssr: false, loading: () => null }
+);
+
+const ListSnippet = dynamic(() => 
+    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.ListSnippet })), 
+    { ssr: false, loading: () => null }
+);
+
+const TableSnippet = dynamic(() => 
+    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.TableSnippet })), 
+    { ssr: false, loading: () => null }
+);
 
 // ✅ Dynamic icon imports for better performance
 const Dice6 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Dice6 })), { ssr: false });

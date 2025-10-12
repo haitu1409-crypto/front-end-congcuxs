@@ -1,40 +1,59 @@
 {
-  "name": "Tạo Dàn Đề - Thống Kê 3 Miền - Tôn Ngộ Không",
-  "short_name": "Dàn Đề Tôn Ngộ Không",
-  "description": "Công cụ tạo dàn đề và thống kê xổ số 3 miền chuyên nghiệp - Thương hiệu Tôn Ngộ Không",
+  "name": "TaoDanDe - Ứng Dụng Tạo Dàn Đề Miễn Phí",
+  "short_name": "TaoDanDe",
+  "description": "Ứng dụng tạo dàn đề, tạo mức số online miễn phí #1 Việt Nam. Dàn 2D, 3D, 4D, 9x-0x, ghép lotto, nuôi dàn khung 3-5 ngày.",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#667eea",
-  "theme_color": "#667eea",
-  "categories": ["productivity", "utilities", "games"],
-  "lang": "vi",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FF6B35",
+  "orientation": "portrait-primary",
   "scope": "/",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/imgs/wukong.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icon-512.png",
+      "src": "/imgs/wukong.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity", "tools"],
+  "lang": "vi",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Tạo Dàn 9x-0x",
+      "short_name": "Dàn 9x",
+      "description": "Tạo dàn 9x-0x ngẫu nhiên",
+      "url": "/dan-9x0x",
+      "icons": [{ "src": "/imgs/wukong.png", "sizes": "96x96" }]
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
+      "name": "Tạo Dàn 2D",
+      "short_name": "Dàn 2D",
+      "description": "Tạo dàn 2D (00-99)",
+      "url": "/dan-2d",
+      "icons": [{ "src": "/imgs/wukong.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/imgs/dan9x0x (1).png",
+      "sizes": "1280x720",
       "type": "image/png",
-      "purpose": "maskable"
+      "label": "Tạo Dàn 9x-0x"
+    },
+    {
+      "src": "/imgs/dan2d1d (1).png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Tạo Dàn 2D"
     }
   ]
 }
-

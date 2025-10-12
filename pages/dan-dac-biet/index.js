@@ -15,9 +15,27 @@ import { Star, Zap, Target, CheckCircle, Rocket, BookOpen, Hash, Dice6, BarChart
 import styles from '../../styles/DanDacBiet.module.css';
 import { Suspense, lazy, useEffect } from 'react';
 import { getPageSEO } from '../../config/seoConfig';
-import AuthorBio from '../../components/SEO/AuthorBio';
-import Testimonials from '../../components/SEO/Testimonials';
-import { DefinitionSnippet, ListSnippet } from '../../components/SEO/FeaturedSnippet';
+
+// ✅ Lazy load SEO components
+const AuthorBio = dynamic(() => import('../../components/SEO/AuthorBio'), {
+    loading: () => null,
+    ssr: false
+});
+
+const Testimonials = dynamic(() => import('../../components/SEO/Testimonials'), {
+    loading: () => null,
+    ssr: false
+});
+
+const DefinitionSnippet = dynamic(() => 
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })), 
+    { ssr: false, loading: () => null }
+);
+
+const ListSnippet = dynamic(() => 
+    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.ListSnippet })), 
+    { ssr: false, loading: () => null }
+);
 
 // Import safe lazy components với Error Boundary
 import {

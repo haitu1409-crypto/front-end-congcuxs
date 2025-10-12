@@ -14,8 +14,17 @@ import SEOAnalytics from '../components/SEOAnalytics';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import PerformanceMonitor from '../components/PerformanceMonitor';
 import { getPageSEO } from '../config/seoConfig';
-import AuthorBio from '../components/SEO/AuthorBio';
-import { DefinitionSnippet } from '../components/SEO/FeaturedSnippet';
+
+// ✅ Lazy load SEO components
+const AuthorBio = dynamic(() => import('../components/SEO/AuthorBio'), {
+    loading: () => null,
+    ssr: false
+});
+
+const DefinitionSnippet = dynamic(() => 
+    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })), 
+    { ssr: false, loading: () => null }
+);
 // import WukongSlider from '../components/WukongSlider';
 import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
