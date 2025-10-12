@@ -333,7 +333,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .container {
-        padding: 16px;
+        padding: 2px;
         margin: 8px;
     }
 
@@ -402,7 +402,7 @@
 
 @media (max-width: 640px) {
     .container {
-        padding: 12px;
+        padding: 2px;
         margin: 4px;
     }
 
@@ -456,7 +456,7 @@
 
 @media (max-width: 480px) {
     .container {
-        padding: 8px;
+        padding: 2px;
         margin: 2px;
     }
 

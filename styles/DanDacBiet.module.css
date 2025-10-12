@@ -14,8 +14,6 @@
 .filterSections {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
     align-items: start;
 }
 
@@ -23,6 +21,35 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.4rem;
+}
+
+/* Mobile: filterButtons inline với title */
+@media (max-width: 768px) {
+    .filterButtons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        flex: 1;
+    }
+}
+
+.filterButton {
+    padding: 0.2rem 0.75rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
 }
 
 @media (min-width: 768px) {
@@ -42,7 +69,6 @@
 .chamLayout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
     align-items: start;
 }
 
@@ -50,8 +76,7 @@
 .layNhanhResults {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin-top: 2rem;
+    margin-top: 0.8rem;
 }
 
 /* ===== SPECIAL SETS STYLES ===== */
@@ -250,14 +275,13 @@
 .twoColumnLayout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
     align-items: start;
 }
 
 @media (max-width: 768px) {
     .twoColumnLayout {
         grid-template-columns: 1fr;
-        gap: 1rem;
+
     }
 }
 
@@ -274,8 +298,6 @@
 .inputsSection {
     background: #ffffff;
     border-radius: 8px;
-    padding: 1.5rem;
-    border: 1px solid #e5e7eb;
 }
 
 .sectionTitle {
@@ -297,6 +319,17 @@
     flex-wrap: wrap;
 }
 
+/* Mobile: Buttons trên 1 hàng */
+@media (max-width: 768px) {
+    .buttonRow {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 6px;
+        justify-content: space-between;
+        overflow-x: auto;
+    }
+}
+
 .button {
     display: inline-flex;
     align-items: center;
@@ -309,6 +342,24 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
+}
+
+/* Mobile: Tối ưu button */
+@media (max-width: 768px) {
+    .button {
+        flex: 1;
+        min-width: 70px;
+        padding: 6px 5px;
+        font-size: 0.8rem;
+        min-height: 34px;
+        white-space: nowrap;
+        gap: 4px;
+    }
+
+    /* Ẩn icon trên mobile */
+    .button svg {
+        display: none;
+    }
 }
 
 .primaryButton {
@@ -352,7 +403,6 @@
     display: flex;
     gap: 1rem;
     align-items: flex-start;
-    margin-bottom: 1rem;
 }
 
 .inputRow:last-of-type {
@@ -538,7 +588,7 @@
 
 .heroTitleMain {
     display: block;
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 800;
     color: #000;
     -webkit-background-clip: text;
@@ -555,7 +605,7 @@
 
 @media (min-width: 768px) {
     .heroTitleMain {
-        font-size: 3.5rem;
+        font-size: 2rem;
     }
 
     .heroTitleSub {
@@ -976,7 +1026,7 @@
     }
 
     .heroSection {
-        padding: 1.5rem 0.75rem;
+        padding: 0 0.75rem;
         margin-bottom: 1.5rem;
         border-radius: 16px;
     }
@@ -984,7 +1034,7 @@
     /* Tạo Dàn Chạm - Mobile */
     .chamLayout {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+
     }
 
     .chamTongRow {
@@ -995,17 +1045,47 @@
     /* Lấy Nhanh Dàn Đặc Biệt - Mobile */
     .filterSections {
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+    }
+
+    .hieuGroup {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .hieuGroupTitle {
+        font-size: 0.8rem;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+        text-align: left;
+        min-width: 60px;
+        flex-shrink: 0;
+        border-right: 2px solid #d1d5db;
+        padding-right: 8px;
     }
 
     .hieuFilterButtons {
-        grid-template-columns: repeat(3, 1fr);
-        /* Mobile: 3 columns for 12 buttons in 4 rows */
-        grid-template-rows: repeat(4, 1fr);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        flex: 1;
+        grid-template-columns: unset;
+        grid-template-rows: unset;
+    }
+
+    .hieuFilterButtons .filterButton {
+        flex: 1 1 auto;
+        min-width: 45px;
+        padding: 6px 4px;
+        font-size: 0.75rem;
+        min-height: 32px;
     }
 
     .layNhanhResults {
-        margin-top: 1.5rem;
+        margin-top: 1rem;
     }
 
     .resultTextarea {
@@ -1014,7 +1094,7 @@
     }
 
     .layNhanhTextarea {
-        height: 350px;
+        /* height: 350px; */
         font-size: 1.1rem;
     }
 
@@ -1057,19 +1137,38 @@
     }
 
     .filterGroup {
-        padding: 1rem;
-        border-radius: 12px;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 10px;
     }
 
     .filterGroupTitle {
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
+        font-size: 0.8rem;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+        text-align: left;
+        min-width: 55px;
+        flex-shrink: 0;
+        border-right: 2px solid #d1d5db;
+        padding-right: 8px;
+    }
+
+    .filterButtons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        flex: 1;
     }
 
     .filterButton {
-        padding: 0.75rem 1rem;
-        font-size: 0.8rem;
-        min-height: 40px;
+        flex: 1 1 auto;
+        min-width: 45px;
+        padding: 6px 4px;
+        font-size: 0.75rem;
+        min-height: 32px;
     }
 
     .resultsSection {
@@ -1098,8 +1197,72 @@
         padding: 0.25rem;
     }
 
+    .buttonRow {
+        gap: 5px;
+    }
+
+    .buttonRow .button,
+    .actionButtons .button {
+        flex: 1;
+        min-width: 65px;
+        padding: 5px 4px;
+        font-size: 0.75rem;
+        min-height: 32px;
+    }
+
+    .buttonRow .button svg,
+    .actionButtons .button svg {
+        display: none;
+    }
+
+    .filterGroup {
+        flex-direction: row;
+        gap: 6px;
+        padding: 6px;
+    }
+
+    .filterGroupTitle {
+        font-size: 0.75rem;
+        min-width: 50px;
+        padding-right: 6px;
+    }
+
+    .filterButtons {
+        gap: 3px;
+    }
+
+    .filterButton {
+        flex: 1 1 auto;
+        min-width: 40px;
+        padding: 5px 3px;
+        font-size: 0.7rem;
+        min-height: 30px;
+    }
+
+    .hieuGroup {
+        gap: 6px;
+        padding: 6px;
+    }
+
+    .hieuGroupTitle {
+        font-size: 0.75rem;
+        min-width: 55px;
+        padding-right: 6px;
+    }
+
+    .hieuFilterButtons {
+        gap: 3px;
+    }
+
+    .hieuFilterButtons .filterButton {
+        min-width: 42px;
+        padding: 5px 3px;
+        font-size: 0.7rem;
+        min-height: 30px;
+    }
+
     .heroSection {
-        padding: 1rem 0.5rem;
+        padding: 0 0.5rem;
         margin-bottom: 1rem;
     }
 
@@ -1164,22 +1327,81 @@
         padding: 0.125rem;
     }
 
+    .buttonRow {
+        gap: 4px;
+    }
+
+    .buttonRow .button,
+    .actionButtons .button {
+        flex: 1;
+        min-width: 60px;
+        padding: 4px 3px;
+        font-size: 0.7rem;
+        min-height: 30px;
+    }
+
+    .buttonRow .button svg,
+    .actionButtons .button svg {
+        display: none;
+    }
+
+    .filterGroup {
+        flex-direction: row;
+        gap: 5px;
+        padding: 5px;
+    }
+
+    .filterGroupTitle {
+        font-size: 0.7rem;
+        min-width: 45px;
+        padding-right: 5px;
+    }
+
     .filterButtons {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.4rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+        flex: 1;
+    }
+
+    .filterButton {
+        flex: 1 1 auto;
+        min-width: 38px;
+        padding: 4px 3px;
+        font-size: 0.68rem;
+        min-height: 28px;
+    }
+
+    .hieuGroup {
+        gap: 5px;
+        padding: 5px;
+    }
+
+    .hieuGroupTitle {
+        font-size: 0.7rem;
+        min-width: 50px;
+        padding-right: 5px;
+    }
+
+    .hieuFilterButtons {
+        gap: 3px;
+    }
+
+    .hieuFilterButtons .filterButton {
+        min-width: 38px;
+        padding: 4px 3px;
+        font-size: 0.68rem;
+        min-height: 28px;
     }
 
     .filterSections {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
-        gap: 1rem;
-        margin-bottom: 1rem;
         align-items: start;
     }
 
     .heroSection {
-        padding: 0.75rem 0.25rem;
+        padding: 0 0.25rem;
         margin-bottom: 0.75rem;
     }
 
@@ -1296,6 +1518,16 @@
     gap: 0.5rem;
 }
 
+/* Mobile: Title và buttons nằm trên 1 hàng */
+@media (max-width: 768px) {
+    .filterGroup {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+    }
+}
+
 .filterGroupTitle {
     font-size: 0.95rem;
     font-weight: 700;
@@ -1304,6 +1536,21 @@
     text-align: center;
     padding-bottom: 0.25rem;
     border-bottom: 2px solid #d1d5db;
+}
+
+/* Mobile: Title compact, inline */
+@media (max-width: 768px) {
+    .filterGroupTitle {
+        font-size: 0.85rem;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+        text-align: left;
+        min-width: 60px;
+        flex-shrink: 0;
+        border-right: 2px solid #d1d5db;
+        padding-right: 8px;
+    }
 }
 
 .allFiltersContainer {
@@ -1323,7 +1570,6 @@
 /* ===== HIỆU SỐ SECTION ===== */
 .hieuSection {
     width: 100%;
-    margin-bottom: 1rem;
 }
 
 .hieuGroup {
@@ -1332,6 +1578,17 @@
     padding: 0.75rem;
     border: 1px solid #e2e8f0;
     width: 100%;
+}
+
+/* Mobile: hieuGroup horizontal layout */
+@media (max-width: 768px) {
+    .hieuGroup {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+    }
 }
 
 .hieuGroupTitle {
@@ -1344,6 +1601,21 @@
     margin-bottom: 0.75rem;
 }
 
+/* Mobile: hieuGroupTitle inline */
+@media (max-width: 768px) {
+    .hieuGroupTitle {
+        font-size: 0.8rem;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+        text-align: left;
+        min-width: 60px;
+        flex-shrink: 0;
+        border-right: 2px solid #d1d5db;
+        padding-right: 8px;
+    }
+}
+
 .hieuFilterButtons {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -1353,24 +1625,27 @@
     /* 2 rows for 12 buttons */
 }
 
-.filterButton {
-    padding: 0.2rem 0.75rem;
-    border: 2px solid #e5e7eb;
-    background: white;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #6b7280;
-    cursor: pointer;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    min-height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
+/* Mobile: hieuFilterButtons flex wrap */
+@media (max-width: 768px) {
+    .hieuFilterButtons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        flex: 1;
+        grid-template-columns: unset;
+        grid-template-rows: unset;
+    }
+
+    .hieuFilterButtons .filterButton {
+        flex: 1 1 auto;
+        min-width: 45px;
+        padding: 6px 4px;
+        font-size: 0.75rem;
+        min-height: 32px;
+    }
 }
+
+
 
 .filterButton::before {
     content: '';
@@ -1546,6 +1821,7 @@
     flex-direction: column;
 }
 
+.inputLabel,
 .label {
     font-size: 1.2rem;
     font-weight: 600;
@@ -1580,6 +1856,18 @@
     margin-bottom: 1.5rem;
 }
 
+/* Mobile: ActionButtons trên 1 hàng */
+@media (max-width: 768px) {
+    .actionButtons {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 6px;
+        justify-content: space-between;
+        overflow-x: auto;
+        margin-bottom: 1rem;
+    }
+}
+
 .button {
     padding: 0.75rem 2rem;
     border: none;
@@ -1591,6 +1879,23 @@
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
+}
+
+/* Mobile: Tối ưu button trong actionButtons */
+@media (max-width: 768px) {
+    .actionButtons .button {
+        flex: 1;
+        min-width: 70px;
+        padding: 6px 5px;
+        font-size: 0.8rem;
+        min-height: 34px;
+        white-space: nowrap;
+    }
+
+    /* Ẩn icon trên mobile */
+    .actionButtons .button svg {
+        display: none;
+    }
 }
 
 .primaryButton {

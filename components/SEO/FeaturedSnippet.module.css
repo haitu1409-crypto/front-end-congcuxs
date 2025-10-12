@@ -1,0 +1,206 @@
+/* Direct Answer Format */
+.directAnswer {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-left: 4px solid #FF6B35;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 32px 0;
+}
+
+.question {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 16px 0;
+}
+
+.answerBox {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e1e8ed;
+}
+
+.answer {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #333;
+    margin: 0;
+}
+
+.answer strong {
+    color: #FF6B35;
+    font-weight: 700;
+}
+
+/* List Format */
+.listSnippet {
+    margin: 32px 0;
+}
+
+.listTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 20px 0;
+}
+
+.featuredList {
+    background: white;
+    border-radius: 12px;
+    padding: 24px 24px 24px 48px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    margin: 0;
+    counter-reset: item;
+}
+
+.featuredList li {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #333;
+    margin: 16px 0;
+    position: relative;
+}
+
+.featuredList li strong {
+    color: #FF6B35;
+    font-weight: 700;
+}
+
+/* Table Format */
+.tableSnippet {
+    margin: 32px 0;
+}
+
+.tableTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 20px 0;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.comparisonTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 15px;
+}
+
+.comparisonTable thead {
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8555 100%);
+    color: white;
+}
+
+.comparisonTable th {
+    padding: 16px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comparisonTable td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+}
+
+.comparisonTable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.comparisonTable tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* Definition Format */
+.definition {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+    border: 2px solid #FF6B35;
+    box-shadow: 0 2px 12px rgba(255, 107, 53, 0.1);
+}
+
+.term {
+    font-size: 20px;
+    font-weight: 700;
+    color: #FF6B35;
+    margin: 0 0 12px 0;
+}
+
+.definitionText {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #333;
+    margin: 0 0 16px 0;
+}
+
+.examples {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+.examples strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+    font-weight: 700;
+}
+
+.examples ul {
+    margin: 0;
+    padding-left: 24px;
+}
+
+.examples li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+    margin: 6px 0;
+}
+
+@media (max-width: 768px) {
+
+    .directAnswer,
+    .listSnippet,
+    .tableSnippet,
+    .definition {
+        padding: 20px 16px;
+    }
+
+    .question,
+    .listTitle,
+    .tableTitle {
+        font-size: 20px;
+    }
+
+    .answer,
+    .featuredList li,
+    .definitionText {
+        font-size: 15px;
+    }
+
+    .featuredList {
+        padding: 20px 20px 20px 40px;
+    }
+
+    .comparisonTable {
+        font-size: 13px;
+    }
+
+    .comparisonTable th,
+    .comparisonTable td {
+        padding: 12px 8px;
+    }
+}

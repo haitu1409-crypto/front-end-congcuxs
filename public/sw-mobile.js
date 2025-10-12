@@ -84,6 +84,8 @@ async function networkFirstStrategy(request) {
 
         return networkResponse;
     } catch (error) {
+        console.log('[SW] Network first failed:', request.url, error);
+
         // Fallback to cache
         const cachedResponse = await caches.match(request);
         if (cachedResponse) {
@@ -92,10 +94,20 @@ async function networkFirstStrategy(request) {
 
         // Return offline page for navigation requests
         if (request.mode === 'navigate') {
-            return caches.match('/offline.html');
+            const offlinePage = await caches.match('/offline.html');
+            if (offlinePage) {
+                return offlinePage;
+            }
         }
 
-        throw error;
+        // Return empty 503 response instead of throwing
+        return new Response('Service Unavailable', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: new Headers({
+                'Content-Type': 'text/plain'
+            })
+        });
     }
 }
 
@@ -117,6 +129,8 @@ async function cacheFirstStrategy(request) {
 
         return networkResponse;
     } catch (error) {
+        console.log('[SW] Cache first failed:', request.url, error);
+
         // Return a fallback for images
         if (request.destination === 'image') {
             return new Response(
@@ -124,7 +138,15 @@ async function cacheFirstStrategy(request) {
                 { headers: { 'Content-Type': 'image/svg+xml' } }
             );
         }
-        throw error;
+
+        // Return empty 404 response for other assets
+        return new Response('Not Found', {
+            status: 404,
+            statusText: 'Not Found',
+            headers: new Headers({
+                'Content-Type': 'text/plain'
+            })
+        });
     }
 }
 
@@ -139,12 +161,25 @@ async function staleWhileRevalidateStrategy(request) {
             cache.put(request, networkResponse.clone());
         }
         return networkResponse;
-    }).catch(() => {
+    }).catch((error) => {
+        console.log('[SW] Stale while revalidate failed:', request.url, error);
+
         // Network failed, return cached version if available
-        return cachedResponse;
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+
+        // Return empty response if no cache available
+        return new Response('Service Unavailable', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: new Headers({
+                'Content-Type': 'text/plain'
+            })
+        });
     });
 
-    // Return cached version immediately if available
+    // Return cached version immediately if available, otherwise wait for network
     return cachedResponse || fetchPromise;
 }
 

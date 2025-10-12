@@ -1,0 +1,166 @@
+.testimonials {
+    padding: 48px 0;
+    margin: 40px 0;
+}
+
+.testimonialsHeader {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.testimonialsTitle {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 12px 0;
+}
+
+.testimonialsSubtitle {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+.reviewsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.reviewCard {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
+    transition: all 0.3s ease;
+    border: 1px solid #e1e8ed;
+}
+
+.reviewCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.quoteIcon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #FF6B35;
+    opacity: 0.2;
+}
+
+.stars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.reviewText {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    margin: 16px 0 20px 0;
+    font-style: italic;
+}
+
+.reviewer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.reviewerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.reviewerInfo strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.location {
+    font-size: 13px;
+    color: #999;
+}
+
+.reviewedTool {
+    font-size: 12px;
+    color: #666;
+    background: #f5f7fa;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.reviewedTool strong {
+    color: #FF6B35;
+    font-weight: 600;
+}
+
+.overallRating {
+    text-align: center;
+    padding: 32px 24px;
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8555 100%);
+    border-radius: 16px;
+    color: white;
+}
+
+.ratingScore {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.score {
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.starsLarge {
+    display: flex;
+    gap: 6px;
+}
+
+.ratingCount {
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .testimonials {
+        padding: 32px 0;
+    }
+
+    .testimonialsTitle {
+        font-size: 24px;
+    }
+
+    .reviewsGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .reviewCard {
+        padding: 20px;
+    }
+
+    .reviewer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .score {
+        font-size: 48px;
+    }
+}

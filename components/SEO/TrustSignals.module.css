@@ -1,0 +1,109 @@
+.trustSignals {
+    background: white;
+    border-radius: 12px;
+    padding: 32px 24px;
+    margin: 40px 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.trustTitle {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 32px 0;
+}
+
+.signalsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.signalCard {
+    text-align: center;
+    padding: 20px 12px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    border: 1px solid #e1e8ed;
+    transition: all 0.3s ease;
+}
+
+.signalCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.signalIcon {
+    margin: 0 auto 12px;
+    width: fit-content;
+}
+
+.signalValue {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.signalLabel {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.securityBadges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 1px solid #e1e8ed;
+}
+
+.securityBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #e8f5e9;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .trustSignals {
+        padding: 24px 16px;
+    }
+
+    .trustTitle {
+        font-size: 20px;
+        margin-bottom: 24px;
+    }
+
+    .signalsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .signalCard {
+        padding: 16px 8px;
+    }
+
+    .signalValue {
+        font-size: 22px;
+    }
+
+    .signalLabel {
+        font-size: 12px;
+    }
+
+    .securityBadges {
+        flex-direction: column;
+        align-items: center;
+    }
+}

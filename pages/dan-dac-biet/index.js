@@ -14,6 +14,10 @@ import HydrationSafeWrapper from '../../components/HydrationSafeWrapper';
 import { Star, Zap, Target, CheckCircle, Rocket, BookOpen, Hash, Dice6, BarChart3, Home, Shield, Smartphone } from 'lucide-react';
 import styles from '../../styles/DanDacBiet.module.css';
 import { Suspense, lazy, useEffect } from 'react';
+import { getPageSEO } from '../../config/seoConfig';
+import AuthorBio from '../../components/SEO/AuthorBio';
+import Testimonials from '../../components/SEO/Testimonials';
+import { DefinitionSnippet, ListSnippet } from '../../components/SEO/FeaturedSnippet';
 
 // Import safe lazy components với Error Boundary
 import {
@@ -55,21 +59,39 @@ const TaoDanBo = dynamic(() => import('../../components/DanDe/TaoDanBo'), {
 export default function DanDacBietPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003';
 
+    // Get SEO config
+    const pageSEO = getPageSEO('danDacBiet');
+
     // Handle scroll to section when page loads with anchor
     useEffect(() => {
+        const smoothScrollToSection = (sectionId) => {
+            const element = document.querySelector(`[data-section="${sectionId}"]`);
+            if (!element) return;
+
+            // Get navbar height for offset
+            const navbar = document.querySelector('.mobile-navbar');
+            const navbarHeight = navbar ? navbar.offsetHeight : 60;
+
+            // Calculate position with offset (20px extra padding)
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - 20;
+
+            // Use requestAnimationFrame for better performance
+            requestAnimationFrame(() => {
+                window.scrollTo({
+                    top: Math.max(0, offsetPosition),
+                    behavior: 'smooth'
+                });
+            });
+        };
+
         const handleHashNavigation = () => {
             if (typeof window !== 'undefined' && window.location.hash) {
                 const hash = window.location.hash.substring(1);
-                const element = document.getElementById(hash);
-                if (element) {
-                    // Delay scroll to ensure page is fully loaded
-                    setTimeout(() => {
-                        element.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }, 500);
-                }
+                // Delay scroll to ensure page is fully loaded
+                setTimeout(() => {
+                    smoothScrollToSection(hash);
+                }, 500);
             }
         };
 
@@ -179,9 +201,11 @@ export default function DanDacBietPage() {
         <>
             <SEOOptimized
                 pageType="dan-dac-biet"
-                customTitle="Tạo Dàn Đề Đặc Biệt Chuyên Nghiệp - Bộ Lọc Thông Minh 2024"
-                customDescription="Tạo dàn đề đặc biệt với bộ lọc thông minh theo đầu, đuôi, chạm, kép, tổng. Công cụ chuyên nghiệp, thuật toán AI, tăng tỷ lệ trúng cho xổ số 3 miền. Miễn phí 100%."
-                customKeywords="tạo dàn đề đặc biệt, dàn đề đặc biệt, bộ lọc dàn đề, lọc dàn đề theo đầu đuôi, lọc dàn đề theo chạm, lọc dàn đề theo kép, dàn đề kép bằng, dàn đề kép lệch, dàn đề kép âm, sát kép, tổng số, xổ số đặc biệt"
+                customTitle={pageSEO.title}
+                customDescription={pageSEO.description}
+                customKeywords={pageSEO.keywords.join(', ')}
+                canonicalUrl={pageSEO.canonical}
+                ogImage={pageSEO.image}
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
                 structuredData={howToSchema}
@@ -215,7 +239,7 @@ export default function DanDacBietPage() {
                         </div>
 
                         {/* LỌC, GHÉP DÀN ĐẶC BIỆT Section */}
-                        <div className={styles.locGhepSection} id="loc-ghep" data-aos="fade-up" data-aos-delay="100">
+                        <div className={styles.locGhepSection} id="loc-ghep" data-section="loc-ghep" data-aos="fade-up" data-aos-delay="100">
                             <HydrationSafeWrapper fallback={<div className={styles.loadingPlaceholder}>Đang tải bộ lọc dàn đặc biệt...</div>}>
                                 <LocGhepDanComponent />
                             </HydrationSafeWrapper>
@@ -223,25 +247,25 @@ export default function DanDacBietPage() {
 
                         {/* Main Tools Grid */}
                         <div className={styles.toolsGrid}>
-                            <div className={styles.toolCard} id="nhanh" data-aos="fade-up" data-aos-delay="100">
+                            <div className={styles.toolCard} id="nhanh" data-section="nhanh" data-aos="fade-up" data-aos-delay="100">
                                 <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
                                     <LayNhanhDacBiet />
                                 </Suspense>
                             </div>
 
-                            <div className={styles.toolCard} id="dau-duoi" data-aos="fade-up" data-aos-delay="200">
+                            <div className={styles.toolCard} id="dau-duoi" data-section="dau-duoi" data-aos="fade-up" data-aos-delay="200">
                                 <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
                                     <TaoDanDauDuoi />
                                 </Suspense>
                             </div>
 
-                            <div className={styles.toolCard} id="cham" data-aos="fade-up" data-aos-delay="300">
+                            <div className={styles.toolCard} id="cham" data-section="cham" data-aos="fade-up" data-aos-delay="300">
                                 <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
                                     <TaoDanCham />
                                 </Suspense>
                             </div>
 
-                            <div className={styles.toolCard} id="bo" data-aos="fade-up" data-aos-delay="400">
+                            <div className={styles.toolCard} id="bo" data-section="bo" data-aos="fade-up" data-aos-delay="400">
                                 <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
                                     <TaoDanBo />
                                 </Suspense>
@@ -308,6 +332,39 @@ export default function DanDacBietPage() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Featured Snippet - Definition */}
+                        <DefinitionSnippet
+                            term="Dàn Đề Đặc Biệt (Dàn Đề Bất Tử)"
+                            definition="Dàn đề đặc biệt là dàn số được lọc và ghép theo các điều kiện đặc biệt như chạm, tổng, kép, tài xỉu, chẵn lẻ, đầu đuôi. Thường là dàn 10-60 số được nuôi trong khung 2-5 ngày với tỷ lệ trúng rất cao, gọi là dàn đề bất tử. Có thể lấy nhanh dàn đặc biệt theo template hoặc tùy chỉnh theo nhu cầu."
+                            examples={[
+                                'Dàn 36 số khung 3 ngày - Siêu kinh điển, tỷ lệ trúng 95%+',
+                                'Dàn 50 số khung 3 ngày - Cho người chơi có vốn lớn',
+                                'Dàn 10 số khung 5 ngày - An toàn nhất, ít rủi ro',
+                                'Lọc theo kép bằng: 00, 11, 22, 33... 99',
+                                'Lấy nhanh theo chạm: Tất cả số có chứa 5'
+                            ]}
+                        />
+
+                        {/* List of Templates */}
+                        <ListSnippet
+                            title="Các Loại Dàn Đề Đặc Biệt Phổ Biến"
+                            ordered={false}
+                            items={[
+                                { text: '📊 Dàn 10 số khung 5 ngày - Phù hợp người mới, vốn nhỏ (50-100k)' },
+                                { text: '📊 Dàn 16 số khung 3 ngày - Cân bằng rủi ro và lợi nhuận (160-300k)' },
+                                { text: '📊 Dàn 20 số khung 3 ngày - Tỷ lệ trúng tốt (200-400k)' },
+                                { text: '⭐ Dàn 36 số khung 3 ngày - PHỔ BIẾN NHẤT, siêu kinh điển (360-700k)' },
+                                { text: '⭐ Dàn 50 số khung 3 ngày - Cho người chơi có kinh nghiệm (500-1000k)' },
+                                { text: '📊 Dàn 60 số khung 2 ngày - Nhanh gọn, tỷ lệ cao (600-1200k)' }
+                            ]}
+                        />
+
+                        {/* User Testimonials */}
+                        <Testimonials />
+
+                        {/* Author Bio */}
+                        <AuthorBio />
 
                     </div>
                 </AOSWrapper>

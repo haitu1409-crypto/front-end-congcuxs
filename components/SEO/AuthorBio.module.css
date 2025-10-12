@@ -1,0 +1,122 @@
+.authorBio {
+    background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 40px 0;
+    border: 1px solid #e1e8ed;
+}
+
+.authorHeader {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.authorIcon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8555 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.authorInfo h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.authorTitle {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.authorDescription {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    margin: 16px 0;
+}
+
+.authorStats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.stat {
+    text-align: center;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e1e8ed;
+}
+
+.statValue {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: #FF6B35;
+    margin-bottom: 4px;
+}
+
+.statLabel {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
+
+.credentials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #e8f5e9;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #2e7d32;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .authorBio {
+        padding: 20px 16px;
+    }
+
+    .authorStats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .stat {
+        padding: 8px;
+    }
+
+    .statValue {
+        font-size: 20px;
+    }
+
+    .statLabel {
+        font-size: 11px;
+    }
+
+    .credentials {
+        flex-direction: column;
+    }
+}

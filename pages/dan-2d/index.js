@@ -11,6 +11,9 @@ import SEOOptimized from '../../components/SEOOptimized';
 import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import MobileNavbar from '../../components/MobileNavbar';
 import styles from '../../styles/Dan2D.module.css';
+import { getPageSEO } from '../../config/seoConfig';
+import AuthorBio from '../../components/SEO/AuthorBio';
+import { DefinitionSnippet, DirectAnswer } from '../../components/SEO/FeaturedSnippet';
 
 // ✅ Dynamic icon import for better performance
 const Target = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Target })), { ssr: false });
@@ -24,6 +27,9 @@ const Dan2DGenerator = dynamic(() => import('../../components/DanDe/Dan2DGenerat
 // ✅ Memoized Dan2D Page component
 const Dan2DPage = memo(function Dan2DPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003';
+
+    // Get SEO config
+    const pageSEO = getPageSEO('dan2d');
 
     // ✅ Memoized breadcrumbs
     const breadcrumbs = useMemo(() => [
@@ -114,9 +120,11 @@ const Dan2DPage = memo(function Dan2DPage() {
         <>
             <SEOOptimized
                 pageType="dan-2d"
-                customTitle="Tạo Dàn Đề 2D Chuyên Nghiệp - Công Cụ Miễn Phí"
-                customDescription="Tạo dàn đề 2D (00-99) chuyên nghiệp với phân loại theo mức độ xuất hiện, hỗ trợ chuyển đổi 1D sang 2D. Công cụ miễn phí, nhanh chóng, chính xác cho xổ số 3 miền."
-                customKeywords="tạo dàn đề 2D, dàn đề 2D, công cụ tạo dàn đề 2D, dàn đề 00-99, lô đề 2 số, xổ số 2D, chuyển đổi 1D sang 2D, phân loại dàn đề 2D, thống kê dàn đề 2D, mẹo chơi dàn đề 2D"
+                customTitle={pageSEO.title}
+                customDescription={pageSEO.description}
+                customKeywords={pageSEO.keywords.join(', ')}
+                canonicalUrl={pageSEO.canonical}
+                ogImage={pageSEO.image}
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
                 structuredData={howToSchema}
@@ -131,7 +139,7 @@ const Dan2DPage = memo(function Dan2DPage() {
                     <header className={styles.pageHeader}>
                         <h1 className={styles.pageTitle}>
                             <Target size={20} style={{ display: 'inline', marginRight: '8px' }} />
-                            Tạo Dàn Đề 2D Chuyên Nghiệp - Công Cụ Miễn Phí 2024
+                            Tạo Dàn Đề 2D Chuyên Nghiệp - Công Cụ Miễn Phí 2025
                         </h1>
                         <p className={styles.pageDescription}>
                             Tạo dàn đề 2D (00-99) chuyên nghiệp với phân loại theo mức độ xuất hiện • Hỗ trợ chuyển đổi 1D sang 2D • Thuật toán Fisher-Yates chuẩn quốc tế • Miễn phí 100%
@@ -204,6 +212,26 @@ const Dan2DPage = memo(function Dan2DPage() {
                             </div>
                         </div>
                     </section>
+
+                    {/* Featured Snippet - Definition */}
+                    <DefinitionSnippet
+                        term="Dàn 2D (Tạo Mức Số 2D)"
+                        definition="Dàn 2D là tập hợp các số có 2 chữ số từ 00 đến 99, được sử dụng để đánh lô đề 2 số hoặc xổ số miền Bắc, miền Nam, miền Trung. Đây là loại dàn đề phổ biến nhất với tỷ lệ trúng cao (1/100) và dễ chơi. Có thể tạo bạch thủ (1 số), song thủ (2 số), hoặc dàn lớn (10-20 số) tùy theo chiến lược."
+                        examples={[
+                            'Bạch thủ lô 2D: Chọn 1 số duy nhất, ví dụ: 36',
+                            'Song thủ lô 2D: Chọn 2 số, ví dụ: 36, 63',
+                            'Dàn 10 số: 01, 05, 09, 15, 25, 35, 45, 55, 65, 75'
+                        ]}
+                    />
+
+                    {/* Direct Answer - How to */}
+                    <DirectAnswer
+                        question="Cách Tạo Dàn 2D Hiệu Quả?"
+                        answer="Để tạo dàn 2D hiệu quả, bạn nên kết hợp giữa tạo ngẫu nhiên và lọc theo điều kiện. Sử dụng công cụ tạo mức số 2D của chúng tôi, chọn số theo chạm (ví dụ: tất cả số có chứa số 5), theo tổng (ví dụ: tổng = 7 như 16, 25, 34), hoặc theo đầu đuôi (ví dụ: đầu 1 đuôi 5 = 15). Sau đó áp dụng lọc ghép dàn để loại bỏ số trùng và tối ưu hóa dàn số."
+                    />
+
+                    {/* Author Bio - E-E-A-T */}
+                    <AuthorBio />
                 </div>
             </Layout>
         </>

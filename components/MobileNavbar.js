@@ -26,6 +26,28 @@ export default function MobileNavbar({
     const router = useRouter();
     const [activeNavItem, setActiveNavItem] = useState('generator');
 
+    // Helper: Smooth scroll to section with navbar offset
+    const smoothScrollToSection = useCallback((sectionId) => {
+        const element = document.querySelector(`[data-section="${sectionId}"]`);
+        if (!element) return;
+
+        // Get navbar height for offset
+        const navbar = document.querySelector('.mobile-navbar');
+        const navbarHeight = navbar ? navbar.offsetHeight : 60;
+
+        // Calculate position with offset (20px extra padding)
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - 20;
+
+        // Use requestAnimationFrame for better performance
+        requestAnimationFrame(() => {
+            window.scrollTo({
+                top: Math.max(0, offsetPosition),
+                behavior: 'smooth'
+            });
+        });
+    }, []);
+
     // Auto update active nav item based on scroll position
     useEffect(() => {
         const handleScroll = () => {
@@ -91,35 +113,35 @@ export default function MobileNavbar({
         // Handle navigation to dan-dac-biet page with specific sections
         if (itemId.startsWith('dac-biet-')) {
             const section = itemId.replace('dac-biet-', '');
-            const targetUrl = `/dan-dac-biet${section ? `#${section}` : ''}`;
-            // ✅ Fix router abort errors - add error handling
-            try {
-                router.push(targetUrl);
-            } catch (error) {
-                console.warn('Router push failed, using window.location:', error);
-                window.location.href = targetUrl;
+
+            // Use shallow routing for hash navigation to avoid route change errors
+            if (router.pathname === '/dan-dac-biet') {
+                // Already on dan-dac-biet page, just scroll to section
+                smoothScrollToSection(section);
+            } else {
+                // Navigate to dan-dac-biet page, then scroll after load
+                router.push('/dan-dac-biet').then(() => {
+                    setTimeout(() => smoothScrollToSection(section), 500);
+                }).catch((err) => {
+                    // Fallback to window.location if router fails
+                    if (!err.cancelled) {
+                        console.warn('Router push failed, using window.location:', err);
+                        window.location.href = `/dan-dac-biet#${section}`;
+                    }
+                });
             }
             return;
         }
 
         // Scroll to section based on itemId (for current page)
         if (itemId === 'generator') {
-            const generatorSection = document.querySelector('[data-section="generator"]');
-            if (generatorSection) {
-                generatorSection.scrollIntoView({ behavior: 'smooth' });
-            }
+            smoothScrollToSection('generator');
         } else if (itemId === 'filter') {
-            const filterSection = document.querySelector('[data-section="filter"]');
-            if (filterSection) {
-                filterSection.scrollIntoView({ behavior: 'smooth' });
-            }
+            smoothScrollToSection('filter');
         } else if (itemId === 'guide') {
-            const guideSection = document.querySelector('[data-section="guide"]');
-            if (guideSection) {
-                guideSection.scrollIntoView({ behavior: 'smooth' });
-            }
+            smoothScrollToSection('guide');
         }
-    }, [router]);
+    }, [router, smoothScrollToSection]);
 
     // Define navbar items based on current page
     const getNavbarItems = () => {

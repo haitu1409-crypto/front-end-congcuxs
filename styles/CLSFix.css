@@ -46,12 +46,12 @@ img {
 }
 
 /* ✅ Fix font loading shifts */
-@font-face {
+/* Font-face commented out - using system fonts for better performance */
+/* @font-face {
     font-family: 'Inter';
     font-display: swap;
-    /* Prevents layout shift during font load */
     src: url('/fonts/Inter-Regular.woff2') format('woff2');
-}
+} */
 
 /* ✅ Reserve space for navigation */
 .navbar {

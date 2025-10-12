@@ -25,6 +25,10 @@ const DanDeFilter = memo(() => {
     const [selectedSpecialSets, setSelectedSpecialSets] = useState([]);
     const [error, setError] = useState(null);
 
+    // States cho validation errors
+    const [combinationError, setCombinationError] = useState(null);
+    const [excludeError, setExcludeError] = useState(null);
+
     // States cho copy và undo
     const [copyStatus, setCopyStatus] = useState(false);
     const [undoData, setUndoData] = useState(null);
@@ -91,31 +95,38 @@ const DanDeFilter = memo(() => {
 
                 // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
                 if (uniqueNumbers.length > 40) {
-                    setError('Thêm số mong muốn không được quá 40 số (đã loại bỏ số trùng lặp)');
+                    setCombinationError(`❌ Quá nhiều số! Chỉ được thêm tối đa 40 số. Hiện tại: ${uniqueNumbers.length} số. Vui lòng xóa bớt ${uniqueNumbers.length - 40} số.`);
                     return;
                 }
 
                 const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
 
                 if (invalidNumbers.length > 0) {
-                    setError('Thêm số phải là số 2 chữ số (00-99), cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng');
+                    setCombinationError(`❌ Số không hợp lệ: ${invalidNumbers.join(', ')}. Chỉ chấp nhận số 2 chữ số từ 00-99, cách nhau bằng dấu phẩy.`);
                 } else {
                     // Kiểm tra xung đột với số loại bỏ
-                    const excludeNums = parseExcludeNumbers();
-                    const combinationNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
-                    const conflicts = combinationNums.filter(num => excludeNums.includes(num));
+                    if (excludeNumbers.trim()) {
+                        const excludeProcessedValue = excludeNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                        const excludeNums = excludeProcessedValue.split(',').map(n => n.trim()).filter(n => n !== '');
+                        const validExcludeNums = excludeNums.filter(n => /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
 
-                    if (conflicts.length > 0) {
-                        setError(`Số ${conflicts.join(', ')} không thể vừa là Thêm số vừa là Loại bỏ số`);
+                        const combinationNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
+                        const conflicts = combinationNums.filter(num => validExcludeNums.includes(num));
+
+                        if (conflicts.length > 0) {
+                            setCombinationError(`❌ Xung đột! Số ${conflicts.join(', ')} đã được thêm vào "Loại bỏ số". Không thể vừa thêm vừa loại bỏ cùng lúc.`);
+                        } else {
+                            setCombinationError(null);
+                        }
                     } else {
-                        setError(null);
+                        setCombinationError(null);
                     }
                 }
             } else {
-                setError(null);
+                setCombinationError(null);
             }
         });
-    }, []);
+    }, [excludeNumbers]);
 
     // Xử lý thay đổi input loại bỏ số mong muốn
     const handleExcludeChange = useCallback((e) => {
@@ -140,32 +151,51 @@ const DanDeFilter = memo(() => {
                 }
 
                 // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
-                if (uniqueNumbers.length > 5) {
-                    setError('Loại bỏ số mong muốn không được quá 5 số (đã loại bỏ số trùng lặp)');
+                if (uniqueNumbers.length > 10) {
+                    setExcludeError(`❌ Quá nhiều số! Chỉ được loại bỏ tối đa 10 số. Hiện tại: ${uniqueNumbers.length} số. Vui lòng xóa bớt ${uniqueNumbers.length - 10} số.`);
                     return;
                 }
 
                 const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
 
                 if (invalidNumbers.length > 0) {
-                    setError('Loại bỏ số phải là số 2 chữ số (00-99), cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng');
+                    setExcludeError(`❌ Số không hợp lệ: ${invalidNumbers.join(', ')}. Chỉ chấp nhận số 2 chữ số từ 00-99, cách nhau bằng dấu phẩy.`);
                 } else {
                     // Kiểm tra xung đột với số kết hợp
-                    const combinationNums = parseCombinationNumbers();
-                    const excludeNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
-                    const conflicts = combinationNums.filter(num => excludeNums.includes(num));
+                    if (combinationNumbers.trim()) {
+                        const combinationProcessedValue = combinationNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                        const combinationNums = combinationProcessedValue.split(',').map(n => n.trim()).filter(n => n !== '');
 
-                    if (conflicts.length > 0) {
-                        setError(`Số ${conflicts.join(', ')} không thể vừa là Thêm số vừa là Loại bỏ số`);
+                        // Thêm touch numbers nếu có
+                        if (selectedTouches.length > 0) {
+                            const touchNumbers = getNumbersByTouch(selectedTouches);
+                            combinationNums.push(...touchNumbers);
+                        }
+
+                        // Thêm sum numbers nếu có
+                        if (selectedSums.length > 0) {
+                            const sumNumbers = getNumbersBySum(selectedSums);
+                            combinationNums.push(...sumNumbers);
+                        }
+
+                        const validCombinationNums = combinationNums.filter(n => /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
+                        const excludeNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
+                        const conflicts = excludeNums.filter(num => validCombinationNums.includes(num));
+
+                        if (conflicts.length > 0) {
+                            setExcludeError(`❌ Xung đột! Số ${conflicts.join(', ')} đã được thêm vào "Thêm số". Không thể vừa thêm vừa loại bỏ cùng lúc.`);
+                        } else {
+                            setExcludeError(null);
+                        }
                     } else {
-                        setError(null);
+                        setExcludeError(null);
                     }
                 }
             } else {
-                setError(null);
+                setExcludeError(null);
             }
         });
-    }, []);
+    }, [combinationNumbers, selectedTouches, selectedSums]);
 
     // Xử lý checkbox loại bỏ kép bằng
     const handleExcludeDoublesChange = useCallback((e) => {
@@ -212,29 +242,40 @@ const DanDeFilter = memo(() => {
 
     // Validate input
     const validateInput = useCallback(() => {
+        // Kiểm tra lỗi validation
+        if (combinationError) {
+            setError(combinationError);
+            return false;
+        }
+
+        if (excludeError) {
+            setError(excludeError);
+            return false;
+        }
+
         const combinationNums = parseCombinationNumbers();
         const excludeNums = parseExcludeNumbers();
 
         // Kiểm tra giới hạn số lượng
         if (combinationNums.length > 40) {
-            setError('Thêm số mong muốn không được quá 40 số');
+            setError('❌ Quá nhiều số! Chỉ được thêm tối đa 40 số vào "Thêm số mong muốn".');
             return false;
         }
 
-        if (excludeNums.length > 5) {
-            setError('Loại bỏ số mong muốn không được quá 5 số');
+        if (excludeNums.length > 10) {
+            setError('❌ Quá nhiều số! Chỉ được loại bỏ tối đa 10 số trong "Loại bỏ số mong muốn".');
             return false;
         }
 
         if (selectedSpecialSets.length > 5) {
-            setError('Chỉ được chọn tối đa 5 bộ số đặc biệt');
+            setError('❌ Quá nhiều bộ số! Chỉ được chọn tối đa 5 bộ số đặc biệt.');
             return false;
         }
 
-        // Kiểm tra xung đột
+        // Kiểm tra xung đột giữa "Thêm số" và "Loại bỏ số"
         const conflicts = combinationNums.filter(num => excludeNums.includes(num));
         if (conflicts.length > 0) {
-            setError(`Số ${conflicts.join(', ')} không thể vừa là số mong muốn vừa là loại bỏ số`);
+            setError(`❌ Xung đột! Số ${conflicts.join(', ')} không thể vừa có trong "Thêm số mong muốn" vừa có trong "Loại bỏ số mong muốn".\n\n💡 Vui lòng xóa số ${conflicts.join(', ')} khỏi một trong hai ô.`);
             return false;
         }
 
@@ -243,14 +284,14 @@ const DanDeFilter = memo(() => {
             const specialNumbers = getCombinedSpecialSetNumbers(selectedSpecialSets);
             const specialConflicts = specialNumbers.filter(num => excludeNums.includes(num));
             if (specialConflicts.length > 0) {
-                setError(`Số ${specialConflicts.join(', ')} từ bộ số đặc biệt không thể vừa là số mong muốn vừa là loại bỏ số`);
+                setError(`❌ Xung đột! Số ${specialConflicts.join(', ')} từ bộ số đặc biệt đã được chọn không thể vừa có trong "Loại bỏ số mong muốn".\n\n💡 Vui lòng xóa số ${specialConflicts.join(', ')} khỏi ô "Loại bỏ số mong muốn".`);
                 return false;
             }
         }
 
         setError(null);
         return true;
-    }, [combinationNumbers, excludeNumbers, selectedSpecialSets]);
+    }, [combinationNumbers, excludeNumbers, selectedSpecialSets, combinationError, excludeError]);
 
     // Handler cho quantity change
     const handleQuantityChange = useCallback((e) => {
@@ -262,8 +303,8 @@ const DanDeFilter = memo(() => {
     const handleFilterInputChange = useCallback((e) => {
         const value = e.target.value;
 
-        // Chỉ cho phép số 2 chữ số, dấu phẩy, dấu cách, dấu chấm phẩy
-        const sanitizedValue = value.replace(/[^0-9,;\s]/g, '');
+        // Chỉ cho phép số 2 chữ số, dấu phẩy, dấu cách, dấu chấm phẩy, xuống dòng
+        const sanitizedValue = value.replace(/[^0-9,;\s\r\n]/g, '');
 
         // Chỉ cập nhật state với giá trị đã sanitize, không xử lý thêm
         setFilterInput(sanitizedValue);
@@ -321,18 +362,19 @@ const DanDeFilter = memo(() => {
 
     const handleFilterDan = useCallback(() => {
         if (!filterInput.trim()) {
-            setFilterResult('Vui lòng nhập dàn số cần lọc.');
+            setFilterResult('❌ Thiếu thông tin! Vui lòng nhập dàn số cần lọc vào ô "Nhập dàn số" bên phải.\n\n💡 Ví dụ: 12,25,38,45,67,89,01,34,56,78');
             return;
         }
 
         if (filterSelectedLevels.length === 0) {
-            setFilterResult('Vui lòng chọn ít nhất một cấp độ (0X, 1X, 2X, ...).');
+            setFilterResult('❌ Thiếu lựa chọn! Vui lòng chọn ít nhất một cấp độ lọc (0X, 1X, 2X, 3X, 4X, 5X, 6X, 7X, 8X, 9X).\n\n💡 Ví dụ: Chọn 4X để lọc dàn 4 số, 3X để lọc dàn 3 số...');
             return;
         }
 
         // Validate các tùy chọn bổ sung
         if (!validateInput()) {
-            setFilterResult(`Lỗi: ${error}`);
+            const errorMessage = error || 'Có lỗi xảy ra trong quá trình validation.';
+            setFilterResult(`❌ Lỗi cấu hình!\n\n${errorMessage}\n\n💡 Vui lòng kiểm tra lại các thông tin đã nhập và thử lại.`);
             return;
         }
 
@@ -355,7 +397,7 @@ const DanDeFilter = memo(() => {
                 .map(n => n.padStart(2, '0'));
 
             if (inputNumbers.length === 0) {
-                setFilterResult('Không tìm thấy số hợp lệ trong input.');
+                setFilterResult('❌ Không tìm thấy số hợp lệ! Vui lòng kiểm tra lại:\n\n🔍 Chỉ chấp nhận số 2 chữ số từ 00-99\n🔍 Cách nhau bằng dấu phẩy, chấm phẩy hoặc khoảng trắng\n\n💡 Ví dụ đúng: 12,25,38,45,67,89,01,34,56,78');
                 setFilterLoading(false);
                 return;
             }
@@ -539,7 +581,7 @@ const DanDeFilter = memo(() => {
             });
 
             if (filteredResults.length === 0) {
-                setFilterResult(`Không tìm thấy số nào phù hợp với các cấp độ đã chọn: ${filterSelectedLevels.join(', ')}X`);
+                setFilterResult(`❌ Không tìm thấy kết quả! Các cấp độ đã chọn (${filterSelectedLevels.join(', ')}X) không có số phù hợp.\n\n💡 Gợi ý:\n🔹 Thử chọn cấp độ khác (ví dụ: 4X, 5X, 6X)\n🔹 Thêm nhiều số hơn vào dàn input\n🔹 Bỏ bớt các điều kiện loại bỏ quá nghiêm ngặt`);
             } else {
                 // Tạo kết quả hiển thị
                 const sortedResults = filteredResults.sort((a, b) => {
@@ -583,52 +625,40 @@ const DanDeFilter = memo(() => {
                         // Hiển thị tất cả số có tần suất > 1
                         if (highFreqNumbers.length > 0) {
                             frequencyStats.push('📊 THỐNG KÊ TẦN SUẤT SỐ (Tần suất > 1):');
-                            frequencyStats.push('');
-
                             const highFreqList = highFreqNumbers
                                 .map(([num, count]) => `${num}(${count} lần)`)
                                 .join('; ');
-
                             frequencyStats.push(highFreqList);
-                            frequencyStats.push('');
                         }
 
                         // Hiển thị một số số có tần suất = 1 (tối đa 30 số để không quá dài)
                         if (lowFreqNumbers.length > 0) {
                             const displayLowFreq = lowFreqNumbers.slice(0, 30);
-
                             frequencyStats.push('📊 THỐNG KÊ TẦN SUẤT SỐ (Tần suất = 1):');
-                            frequencyStats.push('');
-
                             const lowFreqList = displayLowFreq
                                 .map(([num, count]) => `${num}(${count} lần)`)
                                 .join('; ');
-
                             frequencyStats.push(lowFreqList);
-
                             if (lowFreqNumbers.length > 30) {
                                 frequencyStats.push(`... và ${lowFreqNumbers.length - 30} số khác`);
                             }
-
-                            frequencyStats.push('');
                         }
 
                         frequencyStats.push(`📋 KẾT QUẢ LỌC (${uniqueNumbers.length} số từ kho dữ liệu):`);
-                        frequencyStats.push('');
                     }
                 }
 
                 const optionsText = appliedOptions.length > 0 ? `\n\nĐã áp dụng: ${appliedOptions.join(', ')}` : '';
                 const resultContent = frequencyStats.length > 0
-                    ? `${frequencyStats.join('\n')}${sortedResultLines.join('\n\n')}${optionsText}`
-                    : `${sortedResultLines.join('\n\n')}${optionsText}`;
+                    ? `${frequencyStats.join('\n')}\n${sortedResultLines.join('\n')}${optionsText}`
+                    : `${sortedResultLines.join('\n')}${optionsText}`;
 
                 setFilterResult(resultContent);
             }
 
         } catch (error) {
             console.error('Lỗi khi xử lý dữ liệu:', error);
-            setFilterResult('Lỗi khi xử lý dữ liệu: ' + error.message);
+            setFilterResult(`❌ Lỗi hệ thống! Không thể xử lý dữ liệu.\n\n🔧 Thông tin lỗi: ${error.message}\n\n💡 Vui lòng:\n🔹 Kiểm tra lại dữ liệu đầu vào\n🔹 Thử lại sau vài giây\n🔹 Liên hệ hỗ trợ nếu vấn đề tiếp tục`);
         }
 
         setFilterLoading(false);
@@ -661,6 +691,8 @@ const DanDeFilter = memo(() => {
         setSelectedTouches([]);
         setSelectedSums([]);
         setError(null);
+        setCombinationError(null);
+        setExcludeError(null);
     }, [filterResult, filterInput, filterSelectedLevels, quantity, excludeDoubles, combinationNumbers, excludeNumbers, selectedSpecialSets, selectedTouches, selectedSums]);
 
     const handleCopyResult = useCallback(() => {
@@ -819,49 +851,39 @@ const DanDeFilter = memo(() => {
     }, []);
 
     return (
-        <div className={styles.card} style={{ marginTop: 'var(--spacing-6)' }}>
-            <h2 className={styles.sectionTitles} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
-                <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} />
-                Lọc Dàn Đề Siêu Cấp
-            </h2>
+        <div className={styles.card1} style={{ marginTop: 'var(--spacing-6)' }}>
 
             {/* Mẹo hay section */}
             <div className={styles.tipsSection} style={{
                 backgroundColor: '#f0f9ff',
                 border: '1px solid #0ea5e9',
-                borderRadius: '8px',
-                padding: '16px',
-                marginBottom: 'var(--spacing-4)',
+                borderRadius: '6px',
+                padding: '8px 12px',
+                marginBottom: 'var(--spacing-2)',
                 textAlign: 'center'
             }}>
                 <h3 style={{
                     color: '#0369a1',
-                    fontSize: '16px',
+                    fontSize: '14px',
                     fontWeight: 'bold',
-                    margin: '0 0 12px 0',
+                    margin: '0 0 6px 0',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px'
+                    gap: '6px'
                 }}>
                     💡 Mẹo Hay
                 </h3>
                 <div style={{
                     color: '#0c4a6e',
-                    fontSize: '14px',
-                    lineHeight: '1.5',
-                    textAlign: 'left',
+                    fontSize: '12px',
+                    lineHeight: '1.3',
+                    textAlign: 'center',
                     maxWidth: '600px',
                     margin: '0 auto'
                 }}>
-                    <p style={{ margin: '0 0 8px 0' }}>
-                        <strong>Bạn hãy copy các dàn tùy ý từ bất cứ ai chốt dàn 4X, 3X, 2X, 1X, 0X</strong> +
-                    </p>
-                    <p style={{ margin: '0 0 8px 0' }}>
-                        <strong>"loại bỏ các số đặc biệt đã ra gần đây"</strong> +
-                    </p>
                     <p style={{ margin: '0' }}>
-                        <strong>loại bỏ kép bằng</strong> = <span style={{ color: '#dc2626', fontWeight: 'bold' }}>kết quả đầu ra dàn mong muốn</span>
+                        <strong>Bạn hãy copy các dàn tùy ý từ bất cứ ai chốt dàn 4X, 3X, 2X, 1X, 0X</strong> + <strong>"loại bỏ các số đặc biệt đã ra gần đây"</strong> + <strong>loại bỏ kép bằng</strong> = <span style={{ color: '#dc2626', fontWeight: 'bold' }}>kết quả đầu ra dàn mong muốn</span>
                     </p>
                 </div>
             </div>
@@ -900,10 +922,6 @@ const DanDeFilter = memo(() => {
                 </div>
             </div>
 
-            <p className={styles.sectionTitle} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
-                {/* <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} /> */}
-                Đây là công cụ lọc dàn chuyên nghiệp, bạn có thể nhập tổng hợp dàn đề của các cao thủ khác nhau, với công cụ này sẽ cho bạn dàn đề cuối cùng tốt nhất
-            </p>
             <div className={styles.twoColumnLayout}>
                 {/* Left Column: Inputs and Controls */}
                 <div className={styles.leftColumn}>
@@ -919,7 +937,7 @@ const DanDeFilter = memo(() => {
                                 <button
                                     onClick={handleFilterDan}
                                     className={`${styles.button} ${styles.primaryButton}`}
-                                    disabled={filterLoading || !filterInput.trim() || filterSelectedLevels.length === 0}
+                                    disabled={filterLoading || !filterInput.trim() || filterSelectedLevels.length === 0 || combinationError || excludeError}
                                 >
                                     {filterLoading ? (
                                         <>
@@ -989,10 +1007,14 @@ const DanDeFilter = memo(() => {
                                     value={combinationNumbers}
                                     onChange={handleCombinationChange}
                                     placeholder="45,50,67"
-                                    title="Nhập các số 2 chữ số (00-99) muốn ưu tiên trong kết quả lọc"
                                     className={styles.input}
                                     disabled={filterLoading}
                                 />
+                                {combinationError && (
+                                    <div className={styles.inputErrorText}>
+                                        {combinationError}
+                                    </div>
+                                )}
                             </div>
                             <div className={styles.inputGroup}>
                                 <label htmlFor="filterExcludeNumbers" className={styles.inputLabel}>Loại bỏ số:</label>
@@ -1002,10 +1024,14 @@ const DanDeFilter = memo(() => {
                                     value={excludeNumbers}
                                     onChange={handleExcludeChange}
                                     placeholder="83,84,85"
-                                    title="Nhập các số 2 chữ số (00-99) cần loại bỏ khỏi kết quả lọc"
                                     className={styles.input}
                                     disabled={filterLoading}
                                 />
+                                {excludeError && (
+                                    <div className={styles.inputErrorText}>
+                                        {excludeError}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -1027,9 +1053,9 @@ const DanDeFilter = memo(() => {
                                         <label htmlFor="filterExcludeDoubles" className={styles.checkboxLabel}>
                                             Loại bỏ kép bằng
                                         </label>
-                                    </div>
-                                    <div className={styles.helpText}>
-                                        Chú ý: Loại bỏ kép bằng 95s sẽ thành 90s
+                                        <div className={styles.helpTextInline}>
+                                            Chú ý: Loại bỏ kép bằng 95s sẽ thành 90s
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1196,10 +1222,6 @@ const DanDeFilter = memo(() => {
                             </div>
                             {/* Help text and Stats row for mobile */}
                             <div className={styles.mobileHelpStatsRow}>
-                                <div className={styles.mobileHelpText}>
-                                    Chú ý: Loại bỏ kép bằng 95s sẽ thành 90s
-                                </div>
-
                                 {/* Mobile Stats Grid */}
                                 <div className={styles.mobileStatsSection}>
                                     {(selectedSpecialSets.length > 0 || combinationNumbers.trim() || excludeNumbers.trim() || selectedTouches.length || selectedSums.length || excludeDoubles) ? (

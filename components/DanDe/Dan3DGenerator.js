@@ -12,11 +12,18 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // Parse và chuẩn hóa input 3D
 const parseInput3D = (input) => {
-    if (!/^[0-9\s,;]*$/.test(input)) {
+    // Chấp nhận số, dấu phẩy, chấm phẩy, khoảng trắng, xuống dòng
+    if (!/^[0-9\s,;\r\n]*$/.test(input)) {
         return { normalized: '', numbers: [], error: 'Vui lòng chỉ nhập số và các ký tự phân tách (, ; hoặc khoảng trắng)' };
     }
 
-    const normalized = input.replace(/[;\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+    // Xử lý tất cả dấu phân tách (bao gồm cả xuống dòng) thành dấu phẩy
+    const normalized = input
+        .replace(/[\r\n]+/g, ',')      // Xuống dòng → dấu phẩy
+        .replace(/[;\s]+/g, ',')       // Chấm phẩy, space → dấu phẩy
+        .replace(/,+/g, ',')           // Nhiều dấu phẩy → 1 dấu phẩy
+        .replace(/^,|,$/g, '');        // Xóa dấu phẩy đầu/cuối
+
     const nums = normalized.split(',').map(num => num.trim()).filter(n => n);
     const validNumbers = [];
 
@@ -50,12 +57,10 @@ export default function Dan3DGenerator() {
     const [copyStatus, setCopyStatus] = useState(false);
     const [deleteStatus, setDeleteStatus] = useState(false);
     const [levelCopyStatus, setLevelCopyStatus] = useState({});
-    const [selectedLevels, setSelectedLevels] = useState({});
-    const [copySelectedStatus, setCopySelectedStatus] = useState(false);
     const [viewMode, setViewMode] = useState('3D');
     const [lastApiCallTime, setLastApiCallTime] = useState(0);
     const [offlineMode, setOfflineMode] = useState(false);
-    
+
     // Refs để cleanup setTimeout
     const timeoutRefs = useRef([]);
 
@@ -91,7 +96,7 @@ export default function Dan3DGenerator() {
             }
         } catch (err) {
             console.error('API Error:', err);
-            
+
             if (err.response?.status === 429) {
                 setOfflineMode(true);
                 setError('Quá nhiều yêu cầu. Đang sử dụng tính toán offline.');
@@ -126,7 +131,7 @@ export default function Dan3DGenerator() {
     useEffect(() => {
         if (inputNumbers && inputNumbers.trim() !== '') {
             calculateLevelsLocal(inputNumbers);
-            
+
             const timeoutId = setTimeout(() => {
                 const now = Date.now();
                 if (!offlineMode && now - lastApiCallTime > 3000) {
@@ -134,7 +139,7 @@ export default function Dan3DGenerator() {
                     fetchLevels(inputNumbers);
                 }
             }, 2000);
-            
+
             timeoutRefs.current.push(timeoutId);
         }
     }, [inputNumbers, fetchLevels, lastApiCallTime, calculateLevelsLocal, offlineMode]);
@@ -142,10 +147,6 @@ export default function Dan3DGenerator() {
     // Handle input change - Optimized
     const handleInputChange = useCallback((e) => {
         const value = e.target.value;
-        if (value.length > 1000) {
-            setError('Input quá dài (max 1000 ký tự)');
-            return;
-        }
 
         setDisplayInput(value);
         setError('');
@@ -203,7 +204,6 @@ export default function Dan3DGenerator() {
         setDisplayInput('');
         setLevels({});
         setTotalSelected(0);
-        setSelectedLevels({});
         setShowUndo(true);
         setDeleteStatus(true);
         const timeoutId = setTimeout(() => setDeleteStatus(false), 2000);
@@ -249,43 +249,7 @@ export default function Dan3DGenerator() {
         });
     }, [levels]);
 
-    // Handle level selection
-    const handleLevelSelect = useCallback((level) => {
-        setSelectedLevels(prev => ({
-            ...prev,
-            [level]: !prev[level]
-        }));
-    }, []);
 
-    // Copy selected levels
-    const handleCopySelected = useCallback(() => {
-        const selectedTexts = [];
-
-        Object.entries(levels)
-            .sort(([a], [b]) => parseInt(b) - parseInt(a))
-            .forEach(([level, nums]) => {
-                if (selectedLevels[level] && nums.length > 0) {
-                    selectedTexts.push(`Mức ${level} (${nums.length} số)\n${nums.join(',')}`);
-                }
-            });
-
-        if (selectedTexts.length === 0) {
-            setModalMessage('Vui lòng chọn ít nhất một mức để copy');
-            setShowModal(true);
-            return;
-        }
-
-        const copyText = selectedTexts.join('\n\n');
-
-        navigator.clipboard.writeText(copyText.trim()).then(() => {
-            setCopySelectedStatus(true);
-            const timeoutId = setTimeout(() => setCopySelectedStatus(false), 2000);
-            timeoutRefs.current.push(timeoutId);
-        }).catch(() => {
-            setModalMessage('Lỗi khi sao chép');
-            setShowModal(true);
-        });
-    }, [levels, selectedLevels]);
 
     const closeModal = useCallback(() => {
         setShowModal(false);
@@ -411,9 +375,12 @@ export default function Dan3DGenerator() {
                         <button
                             onClick={handleUndo}
                             className={`${styles.button} ${styles.undoButton}`}
+                            disabled={loading}
                         >
                             <Undo2 size={16} />
-                            Hoàn Tác
+                            <span className={styles.buttonText}>
+                                Hoàn Tác
+                            </span>
                         </button>
                     )}
 
@@ -428,54 +395,9 @@ export default function Dan3DGenerator() {
                         </span>
                     </button>
 
-                    <button
-                        onClick={handleCopySelected}
-                        className={`${styles.button} ${styles.infoButton} ${copySelectedStatus ? styles.successButton : ''}`}
-                        disabled={loading || Object.values(selectedLevels).every(v => !v)}
-                    >
-                        {copySelectedStatus ? <Check size={16} /> : <Copy size={16} />}
-                        <span className={styles.buttonText}>
-                            {copySelectedStatus ? 'Đã Copy!' : 'Copy Đã Chọn'}
-                        </span>
-                    </button>
                 </div>
             </div>
 
-            {/* Results Table - Below textareas */}
-            {totalSelected > 0 && Object.keys(levels).length > 0 && (
-                <div className={`${styles.section} ${styles.resultsTableSection}`}>
-                    <h3 className={styles.sectionTitle}>Bảng kết quả chi tiết</h3>
-                    <div className={styles.resultsTable}>
-                        {Object.entries(levels)
-                            .sort(([a], [b]) => parseInt(b) - parseInt(a))
-                            .map(([level, nums]) => (
-                                nums.length > 0 && (
-                                    <div key={level} className={styles.levelRow}>
-                                        <div className={styles.levelHeader}>
-                                            <input
-                                                type="checkbox"
-                                                id={`level-3d-${level}`}
-                                                checked={selectedLevels[level] || false}
-                                                onChange={() => handleLevelSelect(level)}
-                                                className={styles.levelCheckbox}
-                                            />
-                                            <label htmlFor={`level-3d-${level}`} className={styles.levelTitle}>
-                                                Mức {level} ({nums.length} số)
-                                            </label>
-                                        </div>
-                                        <div className={styles.numbersGrid}>
-                                            {nums.map((num, idx) => (
-                                                <span key={idx} className={styles.numberBadge}>
-                                                    {num}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )
-                            ))}
-                    </div>
-                </div>
-            )}
 
             {/* Modal */}
             {showModal && (

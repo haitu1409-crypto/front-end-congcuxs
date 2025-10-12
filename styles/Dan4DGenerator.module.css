@@ -6,8 +6,20 @@
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 24px;
-    padding: 40px;
+    padding: 10px;
     animation: slideIn 0.7s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Di chuyển buttons lên trên textareas */
+.buttonSection {
+    order: -1;
+    margin-bottom: 24px;
+}
+
+.textareaSection {
+    order: 1;
 }
 
 /* Textarea Section - 2 Equal Columns */
@@ -96,7 +108,7 @@
     border: 2px solid #E5E7EB;
     border-radius: 12px;
     font-size: 18px;
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-weight: 700;
     line-height: 1.4;
     resize: none;
@@ -418,13 +430,32 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
-        padding: 20px;
+        padding: 5px;
         border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .resultsTitle,
+    .sectionTitle {
+        font-size: 1rem;
+    }
+
+    /* Di chuyển buttons lên trên textareas */
+    .buttonSection {
+        order: -1;
+        margin-bottom: 16px;
+        margin-top: 16px;
     }
 
     .textareaSection {
         grid-template-columns: 1fr;
         gap: 20px;
+        order: 1;
+    }
+
+    .resultsTableSection {
+        order: 2;
     }
 
     .inputTextarea,
@@ -434,13 +465,29 @@
     }
 
     .buttonGroup {
-        gap: 8px;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 6px;
+        justify-content: space-between;
+        overflow-x: auto;
     }
 
     .button {
-        padding: 10px 16px;
-        font-size: 0.8rem;
-        min-height: 44px;
+        flex: 1;
+        min-width: 70px;
+        padding: 8px 6px;
+        font-size: 0.7rem;
+        min-height: 38px;
+        white-space: nowrap;
+    }
+
+    .button span {
+        display: inline;
+    }
+
+    .button svg {
+        width: 14px;
+        height: 14px;
     }
 
     .numbersGrid {
@@ -469,6 +516,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -480,11 +528,11 @@
     .container {
         animation: none;
     }
-    
+
     .button {
         transition: none;
     }
-    
+
     .button:hover:not(:disabled) {
         transform: none;
     }

@@ -12,11 +12,18 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // Parse và chuẩn hóa input
 const parseInput = (input) => {
-    if (!/^[0-9\s,;]*$/.test(input)) {
+    // Chấp nhận số, dấu phẩy, chấm phẩy, khoảng trắng, xuống dòng
+    if (!/^[0-9\s,;\r\n]*$/.test(input)) {
         return { normalized: '', pairs: [], error: 'Vui lòng chỉ nhập số và các ký tự phân tách (, ; hoặc khoảng trắng)' };
     }
 
-    const normalized = input.replace(/[;\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+    // Xử lý tất cả dấu phân tách (bao gồm cả xuống dòng) thành dấu phẩy
+    const normalized = input
+        .replace(/[\r\n]+/g, ',')      // Xuống dòng → dấu phẩy
+        .replace(/[;\s]+/g, ',')       // Chấm phẩy, space → dấu phẩy
+        .replace(/,+/g, ',')           // Nhiều dấu phẩy → 1 dấu phẩy
+        .replace(/^,|,$/g, '');        // Xóa dấu phẩy đầu/cuối
+
     const nums = normalized.split(',').map(num => num.trim()).filter(n => n);
     const pairs = [];
 
@@ -77,7 +84,7 @@ export default function Dan2DGenerator() {
     const [offlineMode, setOfflineMode] = useState(false);
     const [lastOfflineWarning, setLastOfflineWarning] = useState(0);
     const [inputSource, setInputSource] = useState('text'); // 'text' or 'grid'
-    
+
     // Refs để cleanup setTimeout
     const timeoutRefs = useRef([]);
 
@@ -205,10 +212,6 @@ export default function Dan2DGenerator() {
     // Handle input change - Optimized
     const handleInputChange = useCallback((e) => {
         const value = e.target.value;
-        if (value.length > 1000) {
-            setError('Input quá dài (max 1000 ký tự)');
-            return;
-        }
 
         setDisplayInput(value);
         setError('');

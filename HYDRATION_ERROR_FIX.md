@@ -77,3 +77,8 @@ Thay vì sử dụng `ComponentLoader` với `Suspense`, sử dụng trực ti�
 - Build thành công: `npm run build`
 - Không có lỗi hydration trong console
 - Component hoạt động bình thường trên client
+
+
+
+
+

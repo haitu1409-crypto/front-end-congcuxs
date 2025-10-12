@@ -48,15 +48,33 @@ module.exports = {
 
     // Transform function to customize each URL
     transform: async (config, path) => {
-        // Customize priority and changefreq based on page type
+        // Customize priority and changefreq based on page type (from SEO analysis)
         let priority = 0.7;
         let changefreq = 'weekly';
 
+        // Homepage - highest priority
         if (path === '/') {
             priority = 1.0;
             changefreq = 'daily';
-        } else if (path.match(/\/(dan-2d|dan-3d4d|dan-dac-biet)/)) {
+        }
+        // Main tool pages - very high priority (high search volume)
+        else if (path.match(/\/(dan-9x0x|dan-2d|dan-3d4d|dan-dac-biet)/)) {
             priority = 0.9;
+            changefreq = 'daily';
+        }
+        // High-value pages (good search volume)
+        else if (path.match(/\/(ghep-lo-xien|bang-tinh-chao)/)) {
+            priority = 0.85;
+            changefreq = 'weekly';
+        }
+        // Statistics & content pages
+        else if (path.match(/\/(thong-ke|content)/)) {
+            priority = 0.8;
+            changefreq = 'daily';
+        }
+        // News/blog pages
+        else if (path.match(/\/tin-tuc/)) {
+            priority = 0.7;
             changefreq = 'daily';
         }
 
@@ -82,26 +100,28 @@ module.exports = {
     additionalPaths: async (config) => {
         const result = [];
 
-        // Add custom paths
+        // Add custom paths (sorted by SEO priority)
         const customPaths = [
-            '/',
-            '/dan-2d',
-            '/dan-3d4d',
-            '/dan-dac-biet',
-            '/dan-9x0x',
-            '/thong-ke',
-            '/content',
-            '/tin-tuc',
+            '/',                    // Priority 1.0
+            '/dan-9x0x',           // Priority 0.9 - High search volume
+            '/dan-2d',             // Priority 0.9 - High search volume
+            '/dan-3d4d',           // Priority 0.9 - High search volume
+            '/dan-dac-biet',       // Priority 0.9 - High search volume
+            '/ghep-lo-xien',       // Priority 0.85 - NEW: High search volume (3,600/month)
+            '/bang-tinh-chao',     // Priority 0.85 - NEW: Medium search volume (880/month)
+            '/thong-ke',           // Priority 0.8
+            '/content',            // Priority 0.8
+            '/tin-tuc',            // Priority 0.7
         ];
 
-        // Image sitemap configuration
+        // Image sitemap configuration (with SEO-optimized captions)
         const imageSitemap = {
             '/': {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/wukong.png`,
-                        caption: 'Dàn Đề Tôn Ngộ Không - Công cụ tạo dàn đề chuyên nghiệp',
-                        title: 'Homepage - Dàn Đề Tôn Ngộ Không'
+                        caption: 'Dàn Đề Tôn Ngộ Không - Công cụ tạo dàn đề chuyên nghiệp miễn phí #1 Việt Nam',
+                        title: 'Tạo Dàn Đề Online - Miễn Phí 100%'
                     }
                 ]
             },
@@ -109,8 +129,8 @@ module.exports = {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/dan9x0x (1).png`,
-                        caption: 'Tạo dàn đề 9x-0x ngẫu nhiên chuyên nghiệp',
-                        title: 'Dàn Đề 9x-0x - Thuật toán Fisher-Yates'
+                        caption: 'Tạo dàn 9x-0x ngẫu nhiên, cắt dàn thông minh, bảng tính chào gấp thếp',
+                        title: 'Dàn 9x-0x - Thuật toán Fisher-Yates chuẩn'
                     }
                 ]
             },
@@ -118,8 +138,8 @@ module.exports = {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/dan2d1d (1).png`,
-                        caption: 'Tạo dàn đề 2D (00-99) chuyên nghiệp',
-                        title: 'Dàn Đề 2D - Phân loại theo mức độ'
+                        caption: 'Tạo dàn 2D (00-99) với phân loại mức độ, chuyển đổi 1D sang 2D',
+                        title: 'Dàn 2D - Công cụ tạo dàn đề 2 số'
                     }
                 ]
             },
@@ -127,8 +147,8 @@ module.exports = {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/dan3d4d (1).png`,
-                        caption: 'Tạo dàn đề 3D/4D cho cao thủ',
-                        title: 'Dàn Đề 3D/4D - Công cụ cao thủ'
+                        caption: 'Tạo dàn 3D-4D, ghép dàn BC-CD-DE từ giải đặc biệt',
+                        title: 'Dàn 3D/4D - Công cụ 3 càng 4 càng'
                     }
                 ]
             },
@@ -136,8 +156,26 @@ module.exports = {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/dandacbiet (1).png`,
-                        caption: 'Ghép dàn đề đặc biệt với bộ lọc thông minh',
-                        title: 'Dàn Đề Đặc Biệt - Bộ lọc AI'
+                        caption: 'Lọc ghép dàn đề, lấy nhanh dàn đặc biệt, tạo dàn chạm/bộ/đầu đuôi',
+                        title: 'Dàn Đặc Biệt - Bộ lọc thông minh'
+                    }
+                ]
+            },
+            '/ghep-lo-xien': {
+                images: [
+                    {
+                        loc: `${config.siteUrl}/imgs/wukong.png`,
+                        caption: 'Ghép lô xiên 2-3-4 càng tự động, tính tiền cược nhanh chính xác',
+                        title: 'Ghép Lô Xiên - Xiên quay tự động'
+                    }
+                ]
+            },
+            '/bang-tinh-chao': {
+                images: [
+                    {
+                        loc: `${config.siteUrl}/imgs/wukong.png`,
+                        caption: 'Bảng tính chào gấp thếp dàn đề, tính lãi chào tự động',
+                        title: 'Bảng Tính Chào - Gấp thếp dàn đề'
                     }
                 ]
             },
@@ -145,8 +183,8 @@ module.exports = {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/thongke (1).png`,
-                        caption: 'Thống kê xổ số 3 miền chính xác',
-                        title: 'Thống Kê Xổ Số 3 Miền'
+                        caption: 'Thống kê xổ số 3 miền XSMB XSMN XSMT, phân tích tần suất',
+                        title: 'Thống Kê Xổ Số - Phân tích chi tiết'
                     }
                 ]
             },
@@ -154,8 +192,8 @@ module.exports = {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/wukong.png`,
-                        caption: 'Hướng dẫn chơi lô đề và mẹo vặt xổ số',
-                        title: 'Content - Hướng dẫn chơi lô đề'
+                        caption: 'Hướng dẫn chơi lô đề, mẹo chiến thuật xổ số hiệu quả',
+                        title: 'Hướng Dẫn - Mẹo chơi xổ số'
                     }
                 ]
             },
@@ -163,8 +201,8 @@ module.exports = {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/wukong.png`,
-                        caption: 'Tin tức xổ số và cập nhật kết quả mới nhất',
-                        title: 'Tin Tức Xổ Số - Cập nhật mới nhất'
+                        caption: 'Tin tức xổ số mới nhất, kết quả XSMB XSMN XSMT hôm nay',
+                        title: 'Tin Tức Xổ Số - Cập nhật 24/7'
                     }
                 ]
             }

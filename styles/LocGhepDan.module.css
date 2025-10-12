@@ -2,7 +2,7 @@
 
 /* New Feature Section - 3 Textareas */
 .newFeatureSection {
-    margin-top: 40px;
+
     padding: 25px;
     background: #FFFFFF;
     border-radius: 16px;
@@ -229,7 +229,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .newFeatureSection {
-        margin-top: 20px;
+      
         padding: 16px;
     }
 
@@ -260,7 +260,7 @@
 @media (max-width: 640px) {
     .newFeatureSection {
         padding: 12px;
-        margin-top: 16px;
+     
     }
 
     .threeTextareaSection {

@@ -7,12 +7,15 @@ import Link from 'next/link';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 import MobileNavbar from '../components/MobileNavbar';
-import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone } from 'lucide-react';
+import { Target, BarChart3, Star, Zap, CheckCircle } from 'lucide-react';
 import styles from '../styles/Dan9x0x.module.css';
 import SEOOptimized from '../components/SEOOptimized';
 import SEOAnalytics from '../components/SEOAnalytics';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import PerformanceMonitor from '../components/PerformanceMonitor';
+import { getPageSEO } from '../config/seoConfig';
+import AuthorBio from '../components/SEO/AuthorBio';
+import { DefinitionSnippet } from '../components/SEO/FeaturedSnippet';
 // import WukongSlider from '../components/WukongSlider';
 import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
@@ -23,13 +26,27 @@ const DanDeGenerator = dynamic(() => import('../components/DanDeGenerator'), {
     ssr: false
 });
 
+const DanDeFilter = dynamic(() => import('../components/DanDeFilter'), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải bộ lọc...</div>,
+    ssr: false
+});
+
 const GuideSection = dynamic(() => import('../components/GuideSection'), {
     loading: () => <div className={styles.loadingSkeleton}>Đang tải hướng dẫn...</div>,
     ssr: false
 });
 
+// Lazy load Features section for better performance
+const FeaturesSection = dynamic(() => import('../components/FeaturesSection'), {
+    loading: () => <div className={styles.loadingSkeleton}>Đang tải tính năng...</div>,
+    ssr: false // Disable SSR to avoid hydration errors
+});
+
 export default function Dan9x0xPage() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+    // Get SEO config
+    const pageSEO = getPageSEO('dan9x0x');
 
     // Handle scroll to section when page loads with anchor
     useEffect(() => {
@@ -221,9 +238,11 @@ export default function Dan9x0xPage() {
         <>
             <SEOOptimized
                 pageType="dan-9x0x"
-                customTitle="Tạo Dàn Đề 9x-0x Chuyên Nghiệp - Miễn Phí 2025"
-                customDescription="Tạo dàn đề 9x-0x ngẫu nhiên chuyên nghiệp với thuật toán Fisher-Yates chuẩn quốc tế. Bộ lọc dàn đề tổng hợp thông minh, miễn phí 100%, chính xác cho xổ số 3 miền."
-                customKeywords="tạo dàn đề 9x-0x, dàn đề 9x-0x, công cụ tạo dàn đề, dàn đề ngẫu nhiên, bộ lọc dàn đề, thuật toán Fisher-Yates, xổ số 3 miền, lô đề, tạo dàn đề miễn phí, dàn đề chuyên nghiệp"
+                customTitle={pageSEO.title}
+                customDescription={pageSEO.description}
+                customKeywords={pageSEO.keywords.join(', ')}
+                canonicalUrl={pageSEO.canonical}
+                ogImage={pageSEO.image}
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
                 structuredData={[lotterySchema, breadcrumbSchema, faqSchema, howToSchema]}
@@ -335,65 +354,27 @@ export default function Dan9x0xPage() {
                             {/* <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} /> */}
                             Tạo Dàn Đề 9X-0X Ngẫu Nhiên
                         </h2>
-                        <p className={styles.sectionTitle} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
-
-                            Đặc biệt có thể thêm các điều kiện tạo dàn như: chọn bộ số từ 00-99, bỏ đi kép bằng , bỏ qua các số mong muốn hoặc thêm các số mong muốn
-                        </p>
                         <DanDeGenerator />
                     </main>
 
-                    {/* Guide Section */}
+
+
+
+                    {/* DanDeFilter Component */}
+                    <div data-section="filter" className={styles.main2}>
+                        <h2 className={styles.sectionTitles} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
+                            Lọc Dàn Đề Siêu Cấp
+                        </h2>
+                        <DanDeFilter />
+                    </div>
+
+                    {/* Features Section - Lazy loaded with SSR */}
+                    <FeaturesSection />
+
+                    {/* GuideSection Component */}
                     <div data-section="guide">
                         <GuideSection />
                     </div>
-
-                    {/* Features Section */}
-                    <section className={styles.features}>
-                        <div className={styles.featuresHeader}>
-                            <h2 className={styles.featuresTitle}>Tại sao chọn công cụ của chúng tôi?</h2>
-                            <p className={styles.featuresDescription}>
-                                Công cụ tạo dàn đề 9x-0x được thiết kế chuyên nghiệp với các tính năng tiên tiến
-                            </p>
-                        </div>
-                        <div className={styles.featuresGrid}>
-                            <div className={styles.featureCard}>
-                                <div className={styles.featureIcon}>
-                                    <Dice6 />
-                                </div>
-                                <h3 className={styles.featureTitle}>Thuật toán Fisher-Yates</h3>
-                                <p className={styles.featureDescription}>
-                                    Sử dụng thuật toán chuẩn quốc tế, đảm bảo tính ngẫu nhiên tuyệt đối cho dàn đề 9x-0x
-                                </p>
-                            </div>
-                            <div className={styles.featureCard}>
-                                <div className={styles.featureIcon}>
-                                    <BarChart3 />
-                                </div>
-                                <h3 className={styles.featureTitle}>Bộ lọc thông minh</h3>
-                                <p className={styles.featureDescription}>
-                                    Bộ lọc dàn đề tổng hợp phân tích và tối ưu kết quả dựa trên thống kê xổ số 3 miền
-                                </p>
-                            </div>
-                            <div className={styles.featureCard}>
-                                <div className={styles.featureIcon}>
-                                    <Smartphone />
-                                </div>
-                                <h3 className={styles.featureTitle}>Responsive Design</h3>
-                                <p className={styles.featureDescription}>
-                                    Giao diện tối ưu cho mọi thiết bị, từ desktop đến mobile, trải nghiệm mượt mà
-                                </p>
-                            </div>
-                            <div className={styles.featureCard}>
-                                <div className={styles.featureIcon}>
-                                    <Heart />
-                                </div>
-                                <h3 className={styles.featureTitle}>Hoàn toàn miễn phí</h3>
-                                <p className={styles.featureDescription}>
-                                    Không giới hạn số lần sử dụng, không cần đăng ký, hoàn toàn miễn phí 100%
-                                </p>
-                            </div>
-                        </div>
-                    </section>
 
                     {/* Quick Links Section */}
                     <section className={styles.quickLinks}>
@@ -421,6 +402,20 @@ export default function Dan9x0xPage() {
                             </Link>
                         </div>
                     </section>
+
+                    {/* Featured Snippet - Definition */}
+                    <DefinitionSnippet
+                        term="Dàn 9x-0x (Dàn Đề Bất Tử)"
+                        definition="Dàn 9x-0x là dàn số lớn gồm 70-95 số, được tạo ngẫu nhiên với 10 cấp độ rút dần. Thường dùng cho chiến thuật nuôi dàn khung 3-5 ngày hoặc đánh chào (gấp thếp). Có thể cắt dàn 9x và lọc dàn 9x để giảm số lượng nhưng vẫn giữ tỷ lệ trúng cao. Gọi là dàn đề bất tử vì tỷ lệ trúng rất cao khi nuôi đúng cách."
+                        examples={[
+                            'Dàn 90 số khung 3 ngày - Chiến lược nuôi phổ biến',
+                            'Cắt dàn 9x còn 60-70 số - Giảm vốn, vẫn hiệu quả',
+                            'Lọc dàn 9x theo chạm/tổng - Tăng độ chính xác'
+                        ]}
+                    />
+
+                    {/* Author Bio - E-E-A-T */}
+                    <AuthorBio />
                 </div>
             </Layout>
 

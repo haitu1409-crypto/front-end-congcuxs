@@ -17,19 +17,39 @@
   margin-bottom: var(--spacing-6);
   text-align: center;
   text-transform: uppercase;
+
 }
 
+.card1,
 .card {
   background: var(--color-white);
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-5);
+  padding: 10px;
+  background-image: linear-gradient(to top, #505285 0%, #585e92 12%, #65689f 25%, #7474b0 37%, #7e7ebb 50%, #8389c7 62%, #9795d4 75%, #a2a1dc 87%, #b5aee4 100%);
   border: 1px solid var(--color-gray-200);
   animation: slideIn var(--transition-slower) ease;
+}
+.resultsTitle {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-gray-800);
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 2px solid var(--color-primary-200);
+}
+.card1 {
+  background-image: linear-gradient(-225deg, #473B7B 0%, #3584A7 51%, #30D2BE 100%);
 }
 
 @media (min-width: 768px) {
   .card {
-    padding: var(--spacing-6);
+    padding: var(--spacing-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: var(--spacing-2);
   }
 }
 
@@ -114,8 +134,11 @@
     min-height: 32px;
   }
 
-  .card {
+  .card,
+  .card1 {
     padding: 0;
+    background-color: white;
+    background-image: none;
   }
 }
 
@@ -156,6 +179,17 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
+  accent-color: #059669;
+}
+
+.checkbox:checked {
+  background-color: #059669;
+  border-color: #059669;
+}
+
+.checkbox:focus {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
 }
 
 .checkboxLabel {
@@ -213,10 +247,23 @@
   min-height: 600px;
 }
 
+@media (min-width: 1024px) {
+  .twoColumnLayout {
+    gap: var(--spacing-2);
+    min-height: 400px;
+  }
+}
+
 .leftColumn {
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+@media (min-width: 1024px) {
+  .leftColumn {
+    gap: 2px;
+  }
 }
 
 .rightColumn {
@@ -232,11 +279,22 @@
   border: 1px solid var(--color-gray-200);
 }
 
+@media (min-width: 1024px) {
+  .inputsSection {
+    padding: var(--spacing-2);
+  }
+}
+
 .buttonsSection {
   background: var(--color-gray-50);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-4);
-  border: 1px solid var(--color-gray-200);
+}
+
+@media (min-width: 1024px) {
+  .buttonsSection {
+    padding: var(--spacing-2);
+  }
 }
 
 .sectionTitle {
@@ -248,9 +306,23 @@
   border-bottom: 2px solid var(--color-primary-200);
 }
 
+@media (min-width: 1024px) {
+  .sectionTitle {
+    font-size: 14px;
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-1);
+  }
+}
+
 .inputGroup {
   margin-bottom: var(--spacing-4);
   flex: 1;
+}
+
+@media (min-width: 1024px) {
+  .inputGroup {
+    margin-bottom: var(--spacing-2);
+  }
 }
 
 .inputGroup:last-child {
@@ -262,6 +334,12 @@
   gap: var(--spacing-4);
 }
 
+@media (min-width: 1024px) {
+  .inputRow {
+    gap: var(--spacing-2);
+  }
+}
+
 .inputRow:last-child {
   margin-bottom: 0;
 }
@@ -269,10 +347,18 @@
 .inputLabel {
   display: block;
   font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  font-weight: 600;
   color: var(--color-gray-700);
   margin-bottom: var(--spacing-2);
+  color: blue;
   line-height: var(--line-height-tight);
+}
+
+@media (min-width: 1024px) {
+  .inputLabel {
+    font-size: 14px;
+    margin-bottom: var(--spacing-1);
+  }
 }
 
 .input {
@@ -285,6 +371,15 @@
   background: var(--color-white);
   line-height: var(--line-height-normal);
   min-height: 44px;
+}
+
+@media (min-width: 1024px) {
+  .input {
+    padding: 6px 8px;
+    font-size: 14px;
+    min-height: 32px;
+    height: 32px;
+  }
 }
 
 .input:focus {
@@ -311,10 +406,26 @@
   height: 100%;
 }
 
+@media (min-width: 1024px) {
+  .checkboxContainer {
+    gap: var(--spacing-1);
+    padding: 2px;
+    min-height: 28px;
+    height: 28px;
+  }
+}
+
 .checkbox {
   width: 18px;
   height: 18px;
   cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .checkbox {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .checkboxLabel {
@@ -324,6 +435,12 @@
   cursor: pointer;
   line-height: var(--line-height-tight);
   margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .checkboxLabel {
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -361,6 +478,29 @@
   font-style: italic;
 }
 
+.inputHelpText {
+  font-size: var(--text-xs);
+  color: var(--color-gray-500);
+  line-height: var(--line-height-relaxed);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.inputErrorText {
+  font-size: var(--text-xs);
+  color: #dc2626;
+  line-height: var(--line-height-relaxed);
+  margin-top: 4px;
+  font-weight: var(--font-medium);
+}
+
+@media (min-width: 1024px) {
+  .helpText {
+    font-size: 10px;
+    margin-top: 2px;
+  }
+}
+
 @media (max-width: 768px) {
   .helpText {
     font-size: 0.6875rem;
@@ -371,13 +511,22 @@
   .helpText {
     font-size: 0.625rem;
   }
+        .resultsTitle {
+          /* display: none; */
+          border: none;
+          margin-bottom: 0;
+        }
 }
 
 @media (max-width: 360px) {
   .helpText {
     font-size: 0.5625rem;
   }
-
+    .resultsTitle {
+      /* display: none; */
+      border: none;
+      margin-bottom: 0;
+    }
   .mobileOptionsRow {
     gap: 2px;
   }
@@ -832,7 +981,9 @@
 
   /* Hide results title on mobile */
   .resultsTitle {
-    display: none;
+    /* display: none; */
+    border: none;
+    margin-bottom: 0;
   }
 
   /* Adjust spacing when titles are hidden */
@@ -1073,6 +1224,12 @@
   flex-wrap: wrap;
 }
 
+@media (min-width: 1024px) {
+  .buttonRow {
+    gap: 2px;
+  }
+}
+
 .button {
   display: flex;
   align-items: center;
@@ -1089,6 +1246,16 @@
   flex: 1;
   min-width: 120px;
   min-height: 44px;
+}
+
+@media (min-width: 1024px) {
+  .button {
+    padding: 6px 12px;
+    font-size: 14px;
+    min-width: 100px;
+    min-height: 32px;
+    height: 32px;
+  }
 }
 
 .button:disabled {
@@ -1177,13 +1344,14 @@
   flex-direction: column;
 }
 
-.resultsTitle {
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-800);
-  margin-bottom: var(--spacing-4);
-  padding-bottom: var(--spacing-2);
-  border-bottom: 2px solid var(--color-primary-200);
+
+
+@media (min-width: 1024px) {
+  .resultsTitle {
+    font-size: 14px;
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-1);
+  }
 }
 
 .resultsTextarea {
@@ -1193,8 +1361,9 @@
   font-size: 18px;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   line-height: var(--line-height-relaxed);
-  border: 2px solid var(--color-primary-300);
+  border: 2px solid #4e4376;
   border-radius: var(--border-radius-lg);
+  /* background-image: linear-gradient(-20deg, #2b5876 0%, #4e4376 100%); */
   color: #000;
   resize: none;
   min-height: 500px;
@@ -1211,6 +1380,14 @@
   -webkit-touch-callout: default;
   /* Remove any pointer events restrictions */
   pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+  .resultsTextarea {
+    padding: var(--spacing-3);
+    font-size: 14px;
+    min-height: 400px;
+  }
 }
 
 .resultsTextarea:focus {
@@ -1252,17 +1429,32 @@
 /* ===== SPECIAL SETS STYLES ===== */
 .specialSetsContainer {
   max-height: 300px;
+
   overflow-y: auto;
-  border: 2px solid var(--color-gray-300);
+  border: 2px solid #7e7ebb;
   border-radius: var(--border-radius-lg);
   background: var(--color-gray-50);
   padding: var(--spacing-3);
+}
+
+@media (min-width: 1024px) {
+  .specialSetsContainer {
+    max-height: 220px;
+    padding: var(--spacing-1);
+  }
 }
 
 .specialSetsList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--spacing-2);
+}
+
+@media (min-width: 1024px) {
+  .specialSetsList {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2px;
+  }
 }
 
 .specialSetItem {
@@ -1273,6 +1465,12 @@
   cursor: pointer;
   transition: all var(--transition-fast) ease;
   position: relative;
+}
+
+@media (min-width: 1024px) {
+  .specialSetItem {
+    padding: var(--spacing-1);
+  }
 }
 
 .specialSetItem:hover {
@@ -1308,10 +1506,22 @@
   margin-bottom: var(--spacing-2);
 }
 
+@media (min-width: 1024px) {
+  .specialSetHeader {
+    margin-bottom: 2px;
+  }
+}
+
 .specialSetId {
   font-weight: var(--font-semibold);
   color: var(--color-primary-700);
   font-size: var(--text-sm);
+}
+
+@media (min-width: 1024px) {
+  .specialSetId {
+    font-size: 13px;
+  }
 }
 
 .specialSetCount {
@@ -1322,11 +1532,24 @@
   border-radius: var(--border-radius-sm);
 }
 
+@media (min-width: 1024px) {
+  .specialSetCount {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}
+
 .specialSetNumbers {
   font-size: var(--text-xs);
   color: var(--color-gray-700);
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   line-height: var(--line-height-tight);
+}
+
+@media (min-width: 1024px) {
+  .specialSetNumbers {
+    font-size: 11px;
+  }
 }
 
 .selectedSpecialSets {
@@ -1339,6 +1562,14 @@
   color: blue;
 }
 
+@media (min-width: 1024px) {
+  .selectedSpecialSets {
+    margin-top: var(--spacing-1);
+    padding: 2px;
+    font-size: 13px;
+  }
+}
+
 
 /* ===== DESKTOP SELECTION ROW ===== */
 .desktopSelectionRow {
@@ -1346,6 +1577,13 @@
   flex-direction: column;
   gap: var(--spacing-4);
   margin-bottom: var(--spacing-4);
+}
+
+@media (min-width: 1024px) {
+  .desktopSelectionRow {
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+  }
 }
 
 /* Special sets row - full width */
@@ -1361,14 +1599,27 @@
   gap: var(--spacing-3);
 }
 
+@media (min-width: 1024px) {
+  .desktopTouchSumRow {
+    gap: var(--spacing-1);
+  }
+}
+
 /* ===== TOUCH SELECTION STYLES ===== */
 .touchSelectionContainer {
   max-height: 300px;
   overflow-y: auto;
-  border: 2px solid var(--color-gray-300);
+  border: 2px solid #1e3c72;
   border-radius: var(--border-radius-lg);
   background: var(--color-gray-50);
   padding: var(--spacing-3);
+}
+
+@media (min-width: 1024px) {
+  .touchSelectionContainer {
+    max-height: 220px;
+    padding: var(--spacing-1);
+  }
 }
 
 .touchSelectionList {
@@ -1377,7 +1628,15 @@
   gap: var(--spacing-2);
 }
 
+@media (min-width: 1024px) {
+  .touchSelectionList {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2px;
+  }
+}
+
 .touchSelectionItem {
+
   padding: var(--spacing-3);
   border: 2px solid var(--color-gray-300);
   border-radius: var(--border-radius-md);
@@ -1385,6 +1644,12 @@
   cursor: pointer;
   transition: all var(--transition-fast) ease;
   position: relative;
+}
+
+@media (min-width: 1024px) {
+  .touchSelectionItem {
+    padding: var(--spacing-1);
+  }
 }
 
 .touchSelectionItem:hover {
@@ -1426,6 +1691,12 @@
   font-size: var(--text-base);
 }
 
+@media (min-width: 1024px) {
+  .touchSelectionId {
+    font-size: 12px;
+  }
+}
+
 .touchSelectionCount {
   font-size: var(--text-sm);
   color: var(--color-gray-600);
@@ -1433,6 +1704,13 @@
   padding: 2px 8px;
   border-radius: var(--border-radius-sm);
   font-weight: var(--font-medium);
+}
+
+@media (min-width: 1024px) {
+  .touchSelectionCount {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
 }
 
 .touchSelectionNumbers {
@@ -1447,6 +1725,14 @@
   -webkit-box-orient: vertical;
 }
 
+@media (min-width: 1024px) {
+  .touchSelectionNumbers {
+    font-size: 10px;
+    max-height: 60px;
+    -webkit-line-clamp: 3;
+  }
+}
+
 .selectedTouches {
   margin-top: var(--spacing-3);
   padding: var(--spacing-2);
@@ -1457,20 +1743,42 @@
   color: blue;
 }
 
+@media (min-width: 1024px) {
+  .selectedTouches {
+    margin-top: var(--spacing-1);
+    padding: 2px;
+    font-size: 12px;
+  }
+}
+
 /* ===== SUM SELECTION STYLES ===== */
 .sumSelectionContainer {
   max-height: 300px;
   overflow-y: auto;
-  border: 2px solid var(--color-gray-300);
+  border: 2px solid #1e3c72;
   border-radius: var(--border-radius-lg);
   background: var(--color-gray-50);
   padding: var(--spacing-3);
+}
+
+@media (min-width: 1024px) {
+  .sumSelectionContainer {
+    max-height: 220px;
+    padding: var(--spacing-1);
+  }
 }
 
 .sumSelectionList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--spacing-2);
+}
+
+@media (min-width: 1024px) {
+  .sumSelectionList {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2px;
+  }
 }
 
 .sumSelectionItem {
@@ -1481,6 +1789,12 @@
   cursor: pointer;
   transition: all var(--transition-fast) ease;
   position: relative;
+}
+
+@media (min-width: 1024px) {
+  .sumSelectionItem {
+    padding: var(--spacing-1);
+  }
 }
 
 .sumSelectionItem:hover {
@@ -1522,6 +1836,12 @@
   font-size: var(--text-base);
 }
 
+@media (min-width: 1024px) {
+  .sumSelectionId {
+    font-size: 12px;
+  }
+}
+
 .sumSelectionCount {
   font-size: var(--text-sm);
   color: var(--color-gray-600);
@@ -1529,6 +1849,13 @@
   padding: 2px 8px;
   border-radius: var(--border-radius-sm);
   font-weight: var(--font-medium);
+}
+
+@media (min-width: 1024px) {
+  .sumSelectionCount {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
 }
 
 .sumSelectionNumbers {
@@ -1543,6 +1870,14 @@
   -webkit-box-orient: vertical;
 }
 
+@media (min-width: 1024px) {
+  .sumSelectionNumbers {
+    font-size: 10px;
+    max-height: 60px;
+    -webkit-line-clamp: 3;
+  }
+}
+
 .selectedSums {
   margin-top: var(--spacing-3);
   padding: var(--spacing-2);
@@ -1551,6 +1886,14 @@
   border-radius: var(--border-radius-md);
   font-size: var(--text-sm);
   color: blue;
+}
+
+@media (min-width: 1024px) {
+  .selectedSums {
+    margin-top: var(--spacing-1);
+    padding: 2px;
+    font-size: 12px;
+  }
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -1734,6 +2077,11 @@
     gap: 4px;
   }
 
+  .card,
+  .card1 {
+    background-color: white;
+  }
+
   .inputsSection {
     border: none;
   }
@@ -1772,6 +2120,12 @@
 @media (max-width: 360px) {
   .buttonRow {
     gap: 2px;
+  }
+
+  .card,
+  .card1 {
+    background-color: white;
+    padding: 0 0;
   }
 
   .button {
@@ -2303,6 +2657,164 @@
 
   .mobileOptionsLayout {
     display: none;
+  }
+}
+
+/* Desktop Stats Section Optimization */
+@media (min-width: 1024px) {
+  .desktopStatsSection .helpText {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .desktopStatsSection .helpText h4 {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .desktopStatsSection .helpText div {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .desktopStatsSection .helpText span {
+    font-size: 9px;
+  }
+}
+
+/* Additional Desktop Compact Optimizations */
+@media (min-width: 1024px) {
+
+  /* Reduce border radius for more compact look */
+  .card {
+    border-radius: var(--border-radius-md);
+  }
+
+  .inputsSection,
+  .buttonsSection {
+    border-radius: var(--border-radius-md);
+  }
+
+  .specialSetsContainer,
+  .touchSelectionContainer,
+  .sumSelectionContainer {
+    border-radius: var(--border-radius-md);
+    border-width: 1px;
+  }
+
+  .specialSetItem,
+  .touchSelectionItem,
+  .sumSelectionItem {
+    border-radius: var(--border-radius-sm);
+    border-width: 1px;
+  }
+
+  .input,
+  .button {
+    border-radius: var(--border-radius-sm);
+  }
+
+  /* Reduce results textarea padding */
+  .resultsTextarea {
+    padding: var(--spacing-2);
+  }
+
+  /* Reduce section title margins */
+  .sectionTitle {
+    margin-bottom: var(--spacing-2);
+    padding-bottom: 2px;
+  }
+
+  .resultsTitle {
+    margin-bottom: var(--spacing-2);
+    padding-bottom: 2px;
+  }
+
+  /* Compact checkbox styling */
+  .checkboxContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    min-height: 28px;
+    height: 28px;
+    padding: 2px 4px;
+    gap: 4px;
+  }
+
+  .checkbox {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    accent-color: #059669;
+    cursor: pointer;
+  }
+
+  .checkbox:checked {
+    background-color: #059669;
+    border-color: #059669;
+  }
+
+  .checkbox:focus {
+    outline: 2px solid #059669;
+    outline-offset: 2px;
+  }
+
+  .checkboxLabel {
+    font-size: 13px;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Compact help text for checkbox */
+  .helpText {
+    font-size: 9px;
+    margin-top: 1px;
+    line-height: 1.1;
+  }
+
+  .inputHelpText {
+    font-size: 12px;
+    margin-top: 4px;
+    color: var(--color-gray-500);
+  }
+
+  .inputErrorText {
+    font-size: 12px;
+    margin-top: 4px;
+    color: #dc2626;
+  }
+
+  /* Inline help text with red color */
+  .helpTextInline {
+    font-size: 11px;
+    color: #dc2626;
+    margin-left: 8px;
+    line-height: 1.1;
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  /* Hide section titles on desktop to save space */
+  .inputsSection .sectionTitle,
+  .buttonsSection .sectionTitle,
+  .resultsTitle {
+    display: none;
+  }
+
+  /* Adjust spacing when titles are hidden */
+  .inputsSection {
+    padding-top: var(--spacing-1);
+  }
+
+  .buttonsSection {
+    padding-top: var(--spacing-1);
+    margin-top: 2px;
+  }
+
+  .resultsSection {
+    padding-top: var(--spacing-1);
   }
 }
 

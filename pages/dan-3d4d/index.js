@@ -11,6 +11,9 @@ import SEOOptimized from '../../components/SEOOptimized';
 import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import MobileNavbar from '../../components/MobileNavbar';
 import styles from '../../styles/Dan3D4D.module.css';
+import { getPageSEO } from '../../config/seoConfig';
+import AuthorBio from '../../components/SEO/AuthorBio';
+import { DefinitionSnippet, TableSnippet } from '../../components/SEO/FeaturedSnippet';
 
 // ✅ Dynamic icon import for better performance
 const BarChart3 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.BarChart3 })), { ssr: false });
@@ -30,6 +33,9 @@ const Dan4DGenerator = dynamic(() => import('../../components/DanDe/Dan4DGenerat
 const Dan3D4DPage = memo(function Dan3D4DPage() {
     const [selectedType, setSelectedType] = useState('3D');
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003';
+
+    // Get SEO config
+    const pageSEO = getPageSEO('dan3d4d');
 
     // ✅ Memoized type change handler
     const handleTypeChange = useCallback((type) => {
@@ -130,9 +136,11 @@ const Dan3D4DPage = memo(function Dan3D4DPage() {
         <>
             <SEOOptimized
                 pageType="dan-3d4d"
-                customTitle="Tạo Dàn Đề 3D/4D Chuyên Nghiệp - Công Cụ Cao Thủ 2024"
-                customDescription="Tạo dàn đề 3D (000-999) và 4D (0000-9999) chuyên nghiệp cho cao thủ. Công cụ miễn phí, thuật toán Fisher-Yates chuẩn quốc tế, phù hợp cho lô đề 3 số, 4 số và xổ số 3 miền."
-                customKeywords="tạo dàn đề 3D, tạo dàn đề 4D, dàn đề 3D, dàn đề 4D, công cụ tạo dàn đề 3D, công cụ tạo dàn đề 4D, lô đề 3 số, lô đề 4 số, xổ số 3D, xổ số 4D, cao thủ xổ số, dàn đề chuyên nghiệp"
+                customTitle={pageSEO.title}
+                customDescription={pageSEO.description}
+                customKeywords={pageSEO.keywords.join(', ')}
+                canonicalUrl={pageSEO.canonical}
+                ogImage={pageSEO.image}
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
                 structuredData={howToSchema}
@@ -147,7 +155,7 @@ const Dan3D4DPage = memo(function Dan3D4DPage() {
                     <header className={styles.pageHeader}>
                         <h1 className={styles.pageTitle}>
                             <BarChart3 size={20} style={{ display: 'inline', marginRight: '8px' }} />
-                            Tạo Dàn Đề 3D/4D Chuyên Nghiệp - Công Cụ Cao Thủ 2024
+                            Tạo Dàn Đề 3D/4D Chuyên Nghiệp - Công Cụ Cao Thủ 2025
                         </h1>
                         <p className={styles.pageDescription}>
                             Tạo dàn đề 3D (000-999) và 4D (0000-9999) chuyên nghiệp cho cao thủ • Thuật toán Fisher-Yates chuẩn quốc tế • Phù hợp cho lô đề 3 số, 4 số • Miễn phí 100%
@@ -235,6 +243,34 @@ const Dan3D4DPage = memo(function Dan3D4DPage() {
                             </div>
                         </div>
                     </section>
+
+                    {/* Featured Snippet - Definition */}
+                    <DefinitionSnippet
+                        term="Dàn 3D-4D (Tạo Dàn 3 Càng)"
+                        definition="Dàn 3D là tập hợp số có 3 chữ số (000-999), Dàn 4D là số có 4 chữ số (0000-9999). Thường dùng cho lô đề 3 càng, 4 càng hoặc giải đặc biệt. Có thể tách dàn nhanh thành AB-BC-CD (ví dụ: 1234 → AB=12, BC=23, CD=34) hoặc ghép lotto 4 càng để tăng khả năng trúng."
+                        examples={[
+                            'Dàn 3D: 123, 456, 789 (3 chữ số)',
+                            'Dàn 4D: 1234, 5678 (4 chữ số)',
+                            'Tách AB-BC-CD: 12345 → 12, 23, 34, 45'
+                        ]}
+                    />
+
+                    {/* Comparison Table */}
+                    <TableSnippet
+                        title="So Sánh Dàn 3D vs Dàn 4D"
+                        headers={['Tiêu Chí', 'Dàn 3D', 'Dàn 4D']}
+                        rows={[
+                            ['Số lượng', '1,000 số (000-999)', '10,000 số (0000-9999)'],
+                            ['Tỷ lệ trúng', '1/1,000', '1/10,000'],
+                            ['Tiền thưởng', 'Trung bình', 'Rất cao'],
+                            ['Độ khó', 'Trung bình', 'Khó'],
+                            ['Phù hợp', 'Người chơi trung cấp', 'Cao thủ xổ số'],
+                            ['Chiến lược', 'Nuôi 3-5 ngày', 'Chơi đặc biệt']
+                        ]}
+                    />
+
+                    {/* Author Bio */}
+                    <AuthorBio />
                 </div>
             </Layout>
         </>

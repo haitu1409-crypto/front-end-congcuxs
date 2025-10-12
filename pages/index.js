@@ -5,17 +5,17 @@
 
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { memo, useMemo, useCallback, Suspense } from 'react';
+import { memo, useMemo, useCallback } from 'react';
 import Layout from '../components/Layout';
 import styles from '../styles/Home.module.css';
 import SEOOptimized from '../components/SEOOptimized';
 import SEOAnalytics from '../components/SEOAnalytics';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
-// ✅ Lazy load WukongSlider for better LCP
-const WukongSlider = dynamic(() => import('../components/WukongSlider'), {
-    loading: () => <div className="sliderLoadingSkeleton"></div>,
-    ssr: false
-});
+import { getPageSEO } from '../config/seoConfig';
+import AuthorBio from '../components/SEO/AuthorBio';
+import TrustSignals from '../components/SEO/TrustSignals';
+import Testimonials from '../components/SEO/Testimonials';
+import { DirectAnswer, ListSnippet, TableSnippet } from '../components/SEO/FeaturedSnippet';
 
 // ✅ Dynamic icon imports for better performance
 const Dice6 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Dice6 })), { ssr: false });
@@ -32,6 +32,9 @@ const Sparkles = dynamic(() => import('lucide-react').then(mod => ({ default: mo
 // ✅ Memoized Homepage component for better performance
 const Home = memo(function Home() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+    // Get SEO config for homepage
+    const pageSEO = getPageSEO('home');
 
     // ✅ Memoized data arrays to prevent unnecessary re-renders
     const breadcrumbs = useMemo(() => [
@@ -174,9 +177,11 @@ const Home = memo(function Home() {
         <>
             <SEOOptimized
                 pageType="home"
-                customTitle="Dàn Đề Tôn Ngộ Không - Công Cụ Tạo Dàn Đề Miễn Phí 2024"
-                customDescription="Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam. Dàn đề 9x-0x, Dàn 2D, Dàn 3D/4D, Dàn đặc biệt, Thống kê xổ số 3 miền. Miễn phí 100%, thuật toán Fisher-Yates chuẩn quốc tế."
-                customKeywords="dàn đề tôn ngộ không, tạo dàn đề, công cụ dàn đề, dàn đề 9x-0x, dàn đề 2D, dàn đề 3D, thống kê xổ số, xổ số 3 miền, lô đề, tạo dàn đề miễn phí, công cụ xổ số chuyên nghiệp"
+                customTitle={pageSEO.title}
+                customDescription={pageSEO.description}
+                customKeywords={pageSEO.keywords.join(', ')}
+                canonicalUrl={pageSEO.canonical}
+                ogImage={pageSEO.image}
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
                 structuredData={softwareApplicationSchema}
@@ -213,10 +218,14 @@ const Home = memo(function Home() {
                         </div>
                     </header>
 
-                    {/* Wukong Slider - Lazy loaded for better LCP */}
-                    <Suspense fallback={<div className="sliderLoadingSkeleton"></div>}>
-                        <WukongSlider />
-                    </Suspense>
+                    {/* Trust Signals - E-E-A-T */}
+                    <TrustSignals />
+
+                    {/* Featured Snippet - Direct Answer */}
+                    <DirectAnswer
+                        question="Tạo Dàn Đề (Tao Dan De) Là Gì?"
+                        answer="Tạo dàn đề (tao dan de) là phương pháp chọn ra một tập hợp các con số (dàn số) để đánh lô đề hoặc xổ số, dựa trên các tiêu chí như tổng, chạm, đầu, đuôi, kép nhằm tăng khả năng trúng thưởng. Ứng dụng tạo dàn đề giúp bạn tạo tự động các tổ hợp số 2D (00-99), 3D (000-999), 4D (0000-9999), ghép lô xiên, và lọc dàn theo nhiều điều kiện đặc biệt một cách nhanh chóng, chính xác 100% với thuật toán Fisher-Yates chuẩn quốc tế."
+                    />
 
                     {/* Tools Grid */}
                     <section className={styles.toolsSection} aria-label="Các công cụ tạo dàn đề">
@@ -250,6 +259,34 @@ const Home = memo(function Home() {
                             })}
                         </div>
                     </section>
+
+                    {/* Featured Snippet - How To List */}
+                    <ListSnippet
+                        title="Cách Tạo Dàn Đề Online Miễn Phí"
+                        ordered={true}
+                        items={[
+                            { label: 'Bước 1', text: 'Truy cập công cụ tạo dàn đề TaoDanDe tại taodandewukong.pro' },
+                            { label: 'Bước 2', text: 'Chọn loại dàn cần tạo: Dàn 2D (00-99), Dàn 3D (000-999), Dàn 4D (0000-9999), Dàn 9x-0x, hoặc Ghép lô xiên' },
+                            { label: 'Bước 3', text: 'Nhập các số vào ô text (có thể copy/paste) hoặc click nút "Tạo Ngẫu Nhiên"' },
+                            { label: 'Bước 4', text: 'Áp dụng bộ lọc nếu cần: Lọc theo chạm, tổng, kép, tài xỉu, chẵn lẻ, đầu đuôi' },
+                            { label: 'Bước 5', text: 'Click "Tạo Dàn" hoặc "Lọc Ghép Dàn" để xem kết quả' },
+                            { label: 'Bước 6', text: 'Copy kết quả hoặc xuất file Excel để sử dụng' }
+                        ]}
+                    />
+
+                    {/* Featured Snippet - Comparison Table */}
+                    <TableSnippet
+                        title="So Sánh Các Loại Dàn Đề"
+                        headers={['Loại Dàn', 'Số Lượng', 'Độ Khó', 'Tỷ Lệ Trúng', 'Phù Hợp Cho']}
+                        rows={[
+                            ['Dàn 2D', '100 số (00-99)', 'Dễ', '1/100', 'Người mới bắt đầu'],
+                            ['Dàn 3D', '1,000 số (000-999)', 'Trung bình', '1/1,000', 'Người chơi trung cấp'],
+                            ['Dàn 4D', '10,000 số (0000-9999)', 'Khó', '1/10,000', 'Cao thủ xổ số'],
+                            ['Dàn 9x-0x', '70-95 số', 'Dễ', 'Cao (nuôi)', 'Chiến lược nuôi dàn'],
+                            ['Dàn 36 số', '36 số', 'Trung bình', 'Rất cao', 'Phổ biến nhất'],
+                            ['Lô Xiên 2-3-4', 'Tùy chỉnh', 'Trung bình', 'Cao', 'Tất cả mọi người']
+                        ]}
+                    />
 
                     {/* Quick Access Section */}
                     <section className={styles.quickAccess}>
@@ -316,6 +353,18 @@ const Home = memo(function Home() {
                             </div>
                         </div>
                     </section>
+
+                    {/* User Testimonials - Social Proof */}
+                    <Testimonials />
+
+                    {/* Author Bio - E-E-A-T Signal */}
+                    <AuthorBio
+                        name="Đội Ngũ Chuyên Gia TaoDanDe"
+                        title="Chuyên Gia Tạo Dàn Đề & Xổ Số"
+                        experience="10+"
+                        users="100,000+"
+                        description="Đội ngũ chuyên gia với hơn 10 năm kinh nghiệm trong lĩnh vực xổ số và lô đề. Phát triển các công cụ tạo dàn đề, tạo mức số, nuôi dàn khung 3-5 ngày chuyên nghiệp phục vụ hơn 100,000 người chơi trên toàn quốc."
+                    />
                 </div>
             </Layout>
         </>
