@@ -11,6 +11,8 @@ import Image from 'next/image';
 import SEOOptimized from '../../components/SEOOptimized';
 import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import Layout from '../../components/Layout';
+import ArticleSEO from '../../components/ArticleSEO';
+import SocialShareButtons from '../../components/SocialShareButtons';
 import dynamic from 'next/dynamic';
 import {
     Calendar,
@@ -36,7 +38,7 @@ import {
     MessageCircle,
     X
 } from 'lucide-react';
-import styles from '../../styles/ArticleDetail.module.css';
+import styles from '../../styles/ArticleDetailClassic.module.css';
 
 // Lazy load heavy components for better PageSpeed
 // Note: These components will be created when needed
@@ -313,9 +315,13 @@ export default function ArticleDetailPage() {
     if (loading) {
         return (
             <Layout>
-                <div className={styles.loading}>
-                    <div className={styles.loadingSpinner}></div>
-                    <p>Đang tải bài viết...</p>
+                <div className={styles.pageWrapper}>
+                    <div className={styles.container}>
+                        <div className={styles.loading}>
+                            <div className={styles.loadingSpinner}></div>
+                            <p className={styles.loadingText}>Đang tải bài viết...</p>
+                        </div>
+                    </div>
                 </div>
             </Layout>
         );
@@ -325,13 +331,17 @@ export default function ArticleDetailPage() {
     if (error || !article) {
         return (
             <Layout>
-                <div className={styles.error}>
-                    <h2>Không tìm thấy bài viết</h2>
-                    <p>{error || 'Bài viết này không tồn tại hoặc đã bị xóa.'}</p>
-                    <Link href="/tin-tuc" className={styles.backButton}>
-                        <ArrowLeft size={16} />
-                        Quay lại tin tức
-                    </Link>
+                <div className={styles.pageWrapper}>
+                    <div className={styles.container}>
+                        <div className={styles.error}>
+                            <h2 className={styles.errorTitle}>Không tìm thấy bài viết</h2>
+                            <p className={styles.errorMessage}>{error || 'Bài viết này không tồn tại hoặc đã bị xóa.'}</p>
+                            <Link href="/tin-tuc" className={styles.backButton}>
+                                <ArrowLeft size={16} />
+                                Quay lại tin tức
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </Layout>
         );
@@ -339,6 +349,20 @@ export default function ArticleDetailPage() {
 
     return (
         <>
+            {/* Enhanced SEO with JSON-LD Schema */}
+            <ArticleSEO
+                title={article.title}
+                description={article.summary || article.metaDescription}
+                author={article.author?.name || 'Tạo Dàn Đề Wukong'}
+                publishedTime={article.createdAt}
+                modifiedTime={article.updatedAt}
+                image={article.featuredImage?.url}
+                url={`${siteUrl}/tin-tuc/${article.slug}`}
+                keywords={article.keywords || article.tags || []}
+                category={getCategoryLabel(article.category)}
+                tags={article.tags || []}
+                readingTime={`${Math.ceil((article.content?.length || 0) / 1000)} phút đọc`}
+            />
             <SEOOptimized
                 pageType="article"
                 title={seoData.title}
@@ -353,329 +377,330 @@ export default function ArticleDetailPage() {
             />
             <PageSpeedOptimizer />
 
-            <Layout>
-                {/* Reading Progress Bar */}
-                <div
-                    className={styles.readingProgress}
-                    style={{ width: `${readingProgress}%` }}
-                />
+            {/* Reading Progress Bar */}
+            <div
+                className={styles.readingProgress}
+                style={{ width: `${readingProgress}%` }}
+            />
 
-                <div className={styles.pageContainer}>
-                    <main className={styles.mainContent}>
+            <Layout>
+                <div className={styles.pageWrapper}>
+                    <div className={styles.container}>
                         {/* Breadcrumb */}
                         <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-                            <Link href="/tin-tuc" className={styles.breadcrumbLink}>
-                                <ArrowLeft size={16} />
-                                Quay lại tin tức
-                            </Link>
-                            <div className={styles.breadcrumbPath}>
+                            <ul className={styles.breadcrumbList}>
                                 {breadcrumbs.map((crumb, index) => (
-                                    <span key={index} className={styles.breadcrumbItem}>
-                                        {index > 0 && <span className={styles.separator}>/</span>}
+                                    <li key={index} className={styles.breadcrumbItem}>
+                                        {index > 0 && <span className={styles.breadcrumbSeparator}>/</span>}
                                         {index === breadcrumbs.length - 1 ? (
-                                            <span className={styles.current}>{crumb.name}</span>
+                                            <span className={styles.breadcrumbCurrent}>{crumb.name}</span>
                                         ) : (
                                             <Link href={crumb.url} className={styles.breadcrumbLink}>
                                                 {crumb.name}
                                             </Link>
                                         )}
-                                    </span>
+                                    </li>
                                 ))}
-                            </div>
+                            </ul>
                         </nav>
 
-                        <article className={styles.articleContainer} itemScope itemType="https://schema.org/Article">
-                            {/* Article Header */}
-                            <header className={styles.articleHeader}>
-                                <div className={styles.articleCategory}>
-                                    {getCategoryLabel(article.category)}
-                                </div>
-                                <h1 className={styles.articleTitle} itemProp="headline">
-                                    {article.title}
-                                </h1>
-                                <div className={styles.articleMeta}>
-                                    <div className={styles.metaItem}>
-                                        <Calendar size={16} />
-                                        <time dateTime={article.publishedAt} itemProp="datePublished">
-                                            {formatDate(article.publishedAt)}
-                                        </time>
-                                    </div>
-                                    <div className={styles.metaItem}>
-                                        <Eye size={16} />
-                                        <span>{viewCount} lượt xem</span>
-                                    </div>
-                                    <div className={styles.metaItem}>
-                                        <Clock size={16} />
-                                        <span>{Math.ceil((article.content?.length || 0) / 1000)} phút đọc</span>
-                                    </div>
-                                    <div className={styles.metaItem}>
-                                        <Tag size={16} />
-                                        <span itemProp="author" itemScope itemType="https://schema.org/Person">
-                                            <span itemProp="name">{article.author}</span>
+                        {/* Main Content Layout */}
+                        <div className={styles.contentLayout}>
+                            {/* Article Main */}
+                            <main>
+                                <article className={styles.articleMain} itemScope itemType="https://schema.org/Article">
+                                    {/* Article Header */}
+                                    <header className={styles.articleHeader}>
+                                        <span
+                                            className={styles.categoryBadge}
+                                            style={{ background: getCategoryColor(article.category) }}
+                                        >
+                                            {getCategoryLabel(article.category)}
                                         </span>
-                                    </div>
-                                </div>
-                            </header>
 
-                            {/* Featured Image */}
-                            {article.featuredImage?.url && (
-                                <div className={styles.featuredImageContainer}>
-                                    <Image
-                                        src={article.featuredImage.url}
-                                        alt={article.featuredImage.alt || article.title}
-                                        width={800}
-                                        height={400}
-                                        className={styles.featuredImage}
-                                        style={{
-                                            width: '100%',
-                                            height: 'auto',
-                                            aspectRatio: '2/1'
-                                        }}
-                                        priority
-                                        itemProp="image"
-                                    />
-                                </div>
-                            )}
+                                        <h1 className={styles.articleTitle} itemProp="headline">
+                                            {article.title}
+                                        </h1>
 
-                            {/* Table of Contents */}
-                            {tableOfContents.length > 0 && (
-                                <div className={styles.tocContainer}>
-                                    <button
-                                        className={styles.tocToggle}
-                                        onClick={() => setShowTOC(!showTOC)}
-                                    >
-                                        <Menu size={16} />
-                                        Mục lục ({tableOfContents.length})
-                                    </button>
-                                    {showTOC && (
-                                        <div className={styles.tocContent}>
-                                            <h3 className={styles.tocTitle}>Mục lục</h3>
-                                            <ul className={styles.tocList}>
-                                                {tableOfContents.map((heading) => (
-                                                    <li key={heading.id} className={styles.tocItem}>
-                                                        <a
-                                                            href={`#${heading.id}`}
-                                                            className={`${styles.tocLink} ${activeHeading === heading.id ? styles.active : ''}`}
-                                                            style={{ paddingLeft: `${(heading.level - 1) * 16}px` }}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                const element = document.getElementById(heading.id);
-                                                                if (element) {
-                                                                    element.scrollIntoView({
-                                                                        behavior: 'smooth',
-                                                                        block: 'start'
-                                                                    });
-                                                                }
-                                                            }}
-                                                        >
-                                                            {heading.text}
-                                                        </a>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                        {article.excerpt && (
+                                            <p className={styles.articleSummary}>
+                                                {article.excerpt}
+                                            </p>
+                                        )}
 
-                            {/* Article Content */}
-                            <div
-                                className={styles.articleContent}
-                                itemProp="articleBody"
-                                dangerouslySetInnerHTML={{ __html: article.content }}
-                            />
-
-                            {/* Additional Images */}
-                            {article.images && article.images.length > 0 && (
-                                <div className={styles.additionalImages}>
-                                    <h3 className={styles.additionalImagesTitle}>
-                                        Hình ảnh bổ sung
-                                    </h3>
-                                    <div className={styles.additionalImagesGrid}>
-                                        {article.images.map((image, index) => (
-                                            <div key={index} className={styles.additionalImageItem}>
-                                                <Image
-                                                    src={image.url}
-                                                    alt={image.alt || `Hình ảnh ${index + 1}`}
-                                                    width={400}
-                                                    height={300}
-                                                    className={styles.additionalImage}
-                                                    style={{
-                                                        width: '100%',
-                                                        height: 'auto',
-                                                        aspectRatio: '4/3'
-                                                    }}
-                                                    loading="lazy"
-                                                />
+                                        <div className={styles.articleMeta}>
+                                            <div className={styles.metaItem}>
+                                                <Calendar size={14} className={styles.metaIcon} />
+                                                <time dateTime={article.publishedAt} itemProp="datePublished">
+                                                    {formatDate(article.publishedAt)}
+                                                </time>
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Social Sharing */}
-                            <div className={styles.socialSharing}>
-                                <h3 className={styles.socialTitle}>Chia sẻ bài viết</h3>
-                                <div className={styles.socialButtons}>
-                                    <button
-                                        className={`${styles.socialButton} facebook`}
-                                        onClick={shareToFacebook}
-                                        aria-label="Chia sẻ lên Facebook"
-                                    >
-                                        <Facebook size={16} />
-                                        Facebook
-                                    </button>
-                                    <button
-                                        className={`${styles.socialButton} twitter`}
-                                        onClick={shareToTwitter}
-                                        aria-label="Chia sẻ lên Twitter"
-                                    >
-                                        <Twitter size={16} />
-                                        Twitter
-                                    </button>
-                                    <button
-                                        className={`${styles.socialButton} telegram`}
-                                        onClick={shareToTelegram}
-                                        aria-label="Chia sẻ lên Telegram"
-                                    >
-                                        <Send size={16} />
-                                        Telegram
-                                    </button>
-                                    <button
-                                        className={`${styles.socialButton} zalo`}
-                                        onClick={shareToZalo}
-                                        aria-label="Chia sẻ lên Zalo"
-                                    >
-                                        <MessageCircle size={16} />
-                                        Zalo
-                                    </button>
-                                    <button
-                                        className={`${styles.socialButton} copy`}
-                                        onClick={copyLink}
-                                        aria-label="Sao chép liên kết"
-                                    >
-                                        <Link2 size={16} />
-                                        Sao chép
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-
-                        {/* Related Articles */}
-                        {relatedArticles.length > 0 && (
-                            <section className={styles.relatedArticles}>
-                                <h2 className={styles.relatedTitle}>Bài viết liên quan</h2>
-                                <div className={styles.relatedGrid}>
-                                    {relatedArticles.map((relatedArticle) => (
-                                        <Link
-                                            key={relatedArticle._id}
-                                            href={`/tin-tuc/${relatedArticle.slug}`}
-                                            className={styles.relatedCard}
-                                        >
-                                            <Image
-                                                src={relatedArticle.featuredImage?.url || '/images/default-news.jpg'}
-                                                alt={relatedArticle.title}
-                                                width={300}
-                                                height={200}
-                                                className={styles.relatedImage}
-                                                style={{
-                                                    width: '100%',
-                                                    height: 'auto',
-                                                    aspectRatio: '3/2'
-                                                }}
-                                                loading="lazy"
-                                            />
-                                            <div className={styles.relatedContent}>
-                                                <div className={styles.relatedMeta}>
-                                                    <span className={styles.relatedDate}>
-                                                        {formatDate(relatedArticle.publishedAt)}
-                                                    </span>
-                                                    <span
-                                                        className={styles.relatedCategory}
-                                                        style={{ '--category-color': getCategoryColor(relatedArticle.category) }}
-                                                    >
-                                                        {getCategoryLabel(relatedArticle.category)}
-                                                    </span>
-                                                </div>
-                                                <h3 className={styles.relatedTitle}>
-                                                    {relatedArticle.title}
-                                                </h3>
-                                                <p className={styles.relatedExcerpt}>
-                                                    {relatedArticle.excerpt}
-                                                </p>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-                    </main>
-
-                    {/* Sidebar */}
-                    <aside className={styles.sidebar}>
-                        {/* Related Articles */}
-                        {relatedArticles.length > 0 && (
-                            <div className={styles.sidebarCard}>
-                                <h3 className={styles.sidebarTitle}>
-                                    <Link2 size={16} />
-                                    Bài viết liên quan
-                                </h3>
-                                <div className={styles.sidebarList}>
-                                    {relatedArticles.slice(0, 5).map((relatedArticle) => (
-                                        <Link
-                                            key={relatedArticle._id}
-                                            href={`/tin-tuc/${relatedArticle.slug}`}
-                                            className={styles.sidebarItem}
-                                        >
-                                            <div className={styles.sidebarItemImage}>
-                                                <Image
-                                                    src={relatedArticle.featuredImage?.url || '/images/default-news.jpg'}
-                                                    alt={relatedArticle.title}
-                                                    width={60}
-                                                    height={60}
-                                                    style={{
-                                                        width: '100%',
-                                                        height: '100%',
-                                                        objectFit: 'cover',
-                                                        borderRadius: '6px'
-                                                    }}
-                                                    loading="lazy"
-                                                />
-                                            </div>
-                                            <div className={styles.sidebarItemContent}>
-                                                <h4 className={styles.sidebarItemTitle}>
-                                                    {relatedArticle.title}
-                                                </h4>
-                                                <span className={styles.sidebarItemDate}>
-                                                    {formatDate(relatedArticle.publishedAt)}
+                                            <div className={styles.metaItem}>
+                                                <Tag size={14} className={styles.metaIcon} />
+                                                <span className={styles.author} itemProp="author" itemScope itemType="https://schema.org/Person">
+                                                    <span itemProp="name">{article.author || 'Admin'}</span>
                                                 </span>
                                             </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                                            <div className={styles.metaItem}>
+                                                <Eye size={14} className={styles.metaIcon} />
+                                                <span>{viewCount.toLocaleString('vi-VN')} lượt xem</span>
+                                            </div>
+                                            <div className={styles.metaItem}>
+                                                <Clock size={14} className={styles.metaIcon} />
+                                                <span>{Math.ceil((article.content?.length || 0) / 1000)} phút đọc</span>
+                                            </div>
+                                        </div>
+                                    </header>
 
-                        {/* Category Articles */}
-                        <div className={styles.sidebarCard}>
-                            <h3 className={styles.sidebarTitle}>
-                                <FolderOpen size={16} />
-                                {getCategoryLabel(article.category)}
-                            </h3>
-                            <div className={styles.sidebarList}>
-                                <p className={styles.sidebarDescription}>
-                                    Khám phá thêm bài viết cùng chủ đề
-                                </p>
-                                <Link
-                                    href={`/tin-tuc?category=${article.category}`}
-                                    className={styles.sidebarButton}
-                                >
-                                    Xem tất cả
-                                    <ArrowRight size={14} />
-                                </Link>
-                            </div>
+                                    {/* Featured Image */}
+                                    {article.featuredImage?.url && (
+                                        <div className={styles.featuredImageWrapper}>
+                                            <Image
+                                                src={article.featuredImage.url}
+                                                alt={article.featuredImage.alt || article.title}
+                                                width={500}
+                                                height={380}
+                                                className={styles.featuredImage}
+                                                style={{
+                                                    width: '100%',
+                                                    maxWidth: '500px',
+                                                    height: 'auto'
+                                                }}
+                                                priority
+                                                quality={75}
+                                                placeholder="blur"
+                                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                                itemProp="image"
+                                            />
+                                            {article.featuredImage.caption && (
+                                                <p className={styles.imageCaption}>{article.featuredImage.caption}</p>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Table of Contents */}
+                                    {tableOfContents.length > 0 && (
+                                        <div className={styles.articleContent}>
+                                            <div className={styles.tocBox}>
+                                                <div
+                                                    className={styles.tocHeader}
+                                                    onClick={() => setShowTOC(!showTOC)}
+                                                >
+                                                    <span>📑 Mục lục bài viết</span>
+                                                    <span>{showTOC ? '▲' : '▼'}</span>
+                                                </div>
+                                                {showTOC && (
+                                                    <div className={styles.tocContent}>
+                                                        <ul className={styles.tocList}>
+                                                            {tableOfContents.map((heading) => (
+                                                                <li key={heading.id} className={styles.tocItem}>
+                                                                    <a
+                                                                        href={`#${heading.id}`}
+                                                                        className={`${styles.tocLink} ${activeHeading === heading.id ? styles.active : ''}`}
+                                                                        style={{ paddingLeft: `${(heading.level - 1) * 15}px` }}
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            const element = document.getElementById(heading.id);
+                                                                            if (element) {
+                                                                                element.scrollIntoView({
+                                                                                    behavior: 'smooth',
+                                                                                    block: 'start'
+                                                                                });
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        {heading.text}
+                                                                    </a>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Article Content */}
+                                    <div
+                                        className={styles.articleContent}
+                                        itemProp="articleBody"
+                                        dangerouslySetInnerHTML={{ __html: article.content }}
+                                    />
+
+                                    {/* Article Footer - Tags & Sharing */}
+                                    <footer className={styles.articleFooter}>
+                                        {/* Tags */}
+                                        {article.tags && article.tags.length > 0 && (
+                                            <div className={styles.articleTags}>
+                                                <h3 className={styles.tagsTitle}>Từ khóa:</h3>
+                                                <div className={styles.tagsList}>
+                                                    {article.tags.map((tag, index) => (
+                                                        <Link
+                                                            key={index}
+                                                            href={`/tin-tuc?tag=${tag}`}
+                                                            className={styles.tag}
+                                                        >
+                                                            {tag}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Enhanced Social Sharing */}
+                                        <SocialShareButtons
+                                            url={`${siteUrl}/tin-tuc/${article.slug}`}
+                                            title={article.title}
+                                            description={article.summary || article.metaDescription}
+                                            image={article.featuredImage?.url}
+                                            hashtags={article.tags || []}
+                                        />
+                                    </footer>
+                                </article>
+
+                                {/* Related Articles - Below Main Article */}
+                                {relatedArticles.length > 0 && (
+                                    <section className={styles.relatedSection}>
+                                        <h2 className={styles.relatedTitle}>Bài viết liên quan</h2>
+                                        <div className={styles.relatedGrid}>
+                                            {relatedArticles.slice(0, 3).map((relatedArticle) => (
+                                                <Link
+                                                    key={relatedArticle._id}
+                                                    href={`/tin-tuc/${relatedArticle.slug}`}
+                                                    className={styles.relatedCard}
+                                                >
+                                                    <Image
+                                                        src={relatedArticle.featuredImage?.url || '/images/default-news.jpg'}
+                                                        alt={relatedArticle.title}
+                                                        width={300}
+                                                        height={160}
+                                                        className={styles.relatedCardImage}
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '160px',
+                                                            objectFit: 'cover'
+                                                        }}
+                                                        loading="lazy"
+                                                        quality={60}
+                                                        placeholder="blur"
+                                                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                                    />
+                                                    <div className={styles.relatedCardContent}>
+                                                        <h3 className={styles.relatedCardTitle}>
+                                                            {relatedArticle.title}
+                                                        </h3>
+                                                        <div className={styles.relatedCardMeta}>
+                                                            <span>{formatDate(relatedArticle.publishedAt)}</span>
+                                                            <span>•</span>
+                                                            <span>{relatedArticle.views || 0} lượt xem</span>
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </section>
+                                )}
+                            </main>
+
+                            {/* Sidebar */}
+                            <aside className={styles.sidebar}>
+                                {/* Most Viewed Articles */}
+                                {relatedArticles.length > 0 && (
+                                    <div className={styles.sidebarBox}>
+                                        <div className={styles.sidebarHeader}>
+                                            📊 Xem nhiều nhất
+                                        </div>
+                                        <div className={styles.sidebarContent}>
+                                            <div className={styles.sidebarArticleList}>
+                                                {relatedArticles.slice(0, 5).map((relatedArticle) => (
+                                                    <Link
+                                                        key={relatedArticle._id}
+                                                        href={`/tin-tuc/${relatedArticle.slug}`}
+                                                        className={styles.sidebarArticle}
+                                                    >
+                                                        <Image
+                                                            src={relatedArticle.featuredImage?.url || '/images/default-news.jpg'}
+                                                            alt={relatedArticle.title}
+                                                            width={80}
+                                                            height={60}
+                                                            className={styles.sidebarArticleImage}
+                                                            loading="lazy"
+                                                        />
+                                                        <div className={styles.sidebarArticleContent}>
+                                                            <h4 className={styles.sidebarArticleTitle}>
+                                                                {relatedArticle.title}
+                                                            </h4>
+                                                            <div className={styles.sidebarArticleMeta}>
+                                                                <Clock size={12} />
+                                                                <span>{formatDate(relatedArticle.publishedAt)}</span>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Categories */}
+                                <div className={styles.sidebarBox}>
+                                    <div className={styles.sidebarHeader}>
+                                        📁 Chuyên mục
+                                    </div>
+                                    <div className={styles.sidebarContent}>
+                                        <div className={styles.categoriesList}>
+                                            <Link href="/tin-tuc?category=giai-ma-giac-mo" className={styles.categoryItem}>
+                                                Giải Mã Giấc Mơ
+                                            </Link>
+                                            <Link href="/tin-tuc?category=kinh-nghiem-choi-lo-de" className={styles.categoryItem}>
+                                                Kinh Nghiệm Chơi Lô Đề
+                                            </Link>
+                                            <Link href="/tin-tuc?category=thong-ke-xo-so" className={styles.categoryItem}>
+                                                Thống Kê Xổ Số
+                                            </Link>
+                                            <Link href="/tin-tuc?category=meo-vat-xo-so" className={styles.categoryItem}>
+                                                Mẹo Vặt Xổ Số
+                                            </Link>
+                                            <Link href="/tin-tuc?category=tin-tuc-xo-so" className={styles.categoryItem}>
+                                                Tin Tức Xổ Số
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Useful Tools */}
+                                <div className={styles.sidebarBox}>
+                                    <div className={styles.sidebarHeader}>
+                                        🛠️ Công cụ hữu ích
+                                    </div>
+                                    <div className={styles.sidebarContent}>
+                                        <div className={styles.toolsList}>
+                                            <Link href="/" className={styles.toolButton}>
+                                                <span>Tạo Dàn Đề 9x-0x</span>
+                                                <ArrowRight size={14} />
+                                            </Link>
+                                            <Link href="/dan-2d" className={styles.toolButton}>
+                                                <span>Tạo Dàn 2D</span>
+                                                <ArrowRight size={14} />
+                                            </Link>
+                                            <Link href="/dan-3d4d" className={styles.toolButton}>
+                                                <span>Tạo Dàn 3D/4D</span>
+                                                <ArrowRight size={14} />
+                                            </Link>
+                                            <Link href="/dan-dac-biet" className={styles.toolButton}>
+                                                <span>Dàn Đặc Biệt</span>
+                                                <ArrowRight size={14} />
+                                            </Link>
+                                            <Link href="/thong-ke" className={styles.toolButton}>
+                                                <span>Thống Kê 3 Miền</span>
+                                                <ArrowRight size={14} />
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aside>
                         </div>
-                    </aside>
+                    </div>
                 </div>
             </Layout>
         </>

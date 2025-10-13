@@ -1,0 +1,206 @@
+/* Optimized Image Component Styles */
+
+.optimizedImageContainer {
+    position: relative;
+    overflow: hidden;
+    /* Performance optimizations */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.optimizedImage {
+    width: 100%;
+    height: auto;
+    transition: opacity 0.3s ease-in-out;
+    /* Performance optimizations */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    /* Lazy loading optimization */
+    content-visibility: auto;
+}
+
+.optimizedImage.loading {
+    opacity: 0.7;
+    filter: blur(1px);
+}
+
+.optimizedImage.loaded {
+    opacity: 1;
+    filter: none;
+}
+
+.imagePlaceholder {
+    width: 100%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 14px;
+    /* Performance optimizations */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Featured Image Specific */
+.featuredImage {
+    max-width: 500px;
+    max-height: 380px;
+    border-radius: 4px;
+    display: block;
+    object-fit: cover;
+    /* Performance optimizations */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    /* Lazy loading optimization */
+    content-visibility: auto;
+    contain-intrinsic-size: 500px 380px;
+}
+
+/* Content Images */
+.contentImage {
+    max-width: 500px;
+    max-height: 280px;
+    margin: 20px auto;
+    border-radius: 4px;
+    display: block;
+    object-fit: cover;
+    /* Performance optimizations */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    /* Lazy loading optimization */
+    content-visibility: auto;
+    contain-intrinsic-size: 500px 280px;
+}
+
+/* Related Card Images */
+.relatedCardImage {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    /* Performance optimizations */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    /* Lazy loading optimization */
+    content-visibility: auto;
+    contain-intrinsic-size: 300px 160px;
+}
+
+/* Popular Card Images */
+.popularCardImage {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    display: block;
+    /* Performance optimizations */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    /* Lazy loading optimization */
+    content-visibility: auto;
+    contain-intrinsic-size: 80px 60px;
+}
+
+/* Responsive optimizations */
+@media (max-width: 768px) {
+    .featuredImage {
+        max-height: 220px;
+        contain-intrinsic-size: 100% 220px;
+    }
+
+    .contentImage {
+        max-height: 220px;
+        contain-intrinsic-size: 100% 220px;
+    }
+
+    .relatedCardImage {
+        height: 140px;
+        contain-intrinsic-size: 100% 140px;
+    }
+}
+
+@media (max-width: 480px) {
+    .featuredImage {
+        max-height: 180px;
+        contain-intrinsic-size: 100% 180px;
+    }
+
+    .contentImage {
+        max-height: 180px;
+        contain-intrinsic-size: 100% 180px;
+    }
+
+    .relatedCardImage {
+        height: 120px;
+        contain-intrinsic-size: 100% 120px;
+    }
+}
+
+/* Loading animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+.imagePlaceholder {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* High DPI optimizations */
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+    .optimizedImage {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .optimizedImage {
+        transition: none;
+    }
+
+    .imagePlaceholder {
+        animation: none;
+    }
+}
+
+/* Print styles */
+@media print {
+    .optimizedImage {
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+}

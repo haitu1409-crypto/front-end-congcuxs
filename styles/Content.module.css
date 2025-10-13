@@ -439,60 +439,60 @@
     .pageContainer {
         padding: 0 0.5rem;
     }
-    
+
     .pageTitle {
         font-size: 2rem;
         flex-direction: column;
         text-align: center;
     }
-    
+
     .pageDescription {
         font-size: 1rem;
         padding: 0 1rem;
     }
-    
+
     .mainContent {
         padding: 2rem 1rem;
         margin-top: 1rem;
     }
-    
+
     .contentGrid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .contentCard {
         padding: 1.5rem;
     }
-    
+
     .cardTitle {
         font-size: 1.3rem;
     }
-    
+
     .tabNavigation {
         gap: 0.25rem;
     }
-    
+
     .tabButton {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
     }
-    
+
     .toolsGrid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .benefitsGrid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .faqGrid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .footerLinks {
         gap: 1rem;
     }
@@ -502,31 +502,31 @@
     .pageTitle {
         font-size: 1.75rem;
     }
-    
+
     .sectionTitle {
         font-size: 1.5rem;
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .contentCard {
         padding: 1rem;
     }
-    
+
     .stepItem {
         padding: 0.75rem;
     }
-    
+
     .stepNumber {
         width: 28px;
         height: 28px;
         font-size: 0.8rem;
     }
-    
+
     .toolCard {
         padding: 1.5rem;
     }
-    
+
     .benefitItem {
         padding: 1.5rem 1rem;
     }

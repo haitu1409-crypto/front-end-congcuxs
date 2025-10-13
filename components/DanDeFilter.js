@@ -242,19 +242,44 @@ const DanDeFilter = memo(() => {
 
     // Validate input
     const validateInput = useCallback(() => {
-        // Kiểm tra lỗi validation
-        if (combinationError) {
-            setError(combinationError);
-            return false;
-        }
-
-        if (excludeError) {
-            setError(excludeError);
-            return false;
-        }
-
         const combinationNums = parseCombinationNumbers();
         const excludeNums = parseExcludeNumbers();
+
+        // Re-validate combination numbers inline
+        if (combinationNumbers.trim() !== '') {
+            const processedValue = combinationNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+            const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
+            const uniqueNumbers = [...new Set(numbers)];
+
+            if (uniqueNumbers.length > 40) {
+                setError(`❌ Quá nhiều số! Chỉ được thêm tối đa 40 số. Hiện tại: ${uniqueNumbers.length} số.`);
+                return false;
+            }
+
+            const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
+            if (invalidNumbers.length > 0) {
+                setError(`❌ Số không hợp lệ: ${invalidNumbers.join(', ')}. Chỉ chấp nhận số 2 chữ số từ 00-99.`);
+                return false;
+            }
+        }
+
+        // Re-validate exclude numbers inline
+        if (excludeNumbers.trim() !== '') {
+            const processedValue = excludeNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+            const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
+            const uniqueNumbers = [...new Set(numbers)];
+
+            if (uniqueNumbers.length > 10) {
+                setError(`❌ Quá nhiều số! Chỉ được loại bỏ tối đa 10 số. Hiện tại: ${uniqueNumbers.length} số.`);
+                return false;
+            }
+
+            const invalidNumbers = uniqueNumbers.filter(n => !/^\d{2}$/.test(n) || parseInt(n) > 99);
+            if (invalidNumbers.length > 0) {
+                setError(`❌ Số không hợp lệ: ${invalidNumbers.join(', ')}. Chỉ chấp nhận số 2 chữ số từ 00-99.`);
+                return false;
+            }
+        }
 
         // Kiểm tra giới hạn số lượng
         if (combinationNums.length > 40) {
@@ -291,7 +316,7 @@ const DanDeFilter = memo(() => {
 
         setError(null);
         return true;
-    }, [combinationNumbers, excludeNumbers, selectedSpecialSets, combinationError, excludeError]);
+    }, [combinationNumbers, excludeNumbers, selectedSpecialSets, selectedTouches, selectedSums, parseCombinationNumbers, parseExcludeNumbers]);
 
     // Handler cho quantity change
     const handleQuantityChange = useCallback((e) => {
@@ -371,10 +396,13 @@ const DanDeFilter = memo(() => {
             return;
         }
 
-        // Validate các tùy chọn bổ sung
-        if (!validateInput()) {
-            const errorMessage = error || 'Có lỗi xảy ra trong quá trình validation.';
+        // Validate các tùy chọn bổ sung trước khi xử lý
+        const validationPassed = validateInput();
+        if (!validationPassed) {
+            // Error message đã được set trong validateInput
+            const errorMessage = error || 'Có lỗi xảy ra trong quá trình validation. Vui lòng kiểm tra lại dữ liệu nhập vào.';
             setFilterResult(`❌ Lỗi cấu hình!\n\n${errorMessage}\n\n💡 Vui lòng kiểm tra lại các thông tin đã nhập và thử lại.`);
+            setFilterLoading(false);
             return;
         }
 
@@ -937,7 +965,7 @@ const DanDeFilter = memo(() => {
                                 <button
                                     onClick={handleFilterDan}
                                     className={`${styles.button} ${styles.primaryButton}`}
-                                    disabled={filterLoading || !filterInput.trim() || filterSelectedLevels.length === 0 || combinationError || excludeError}
+                                    disabled={filterLoading || !filterInput.trim() || filterSelectedLevels.length === 0}
                                 >
                                     {filterLoading ? (
                                         <>

@@ -46,3 +46,21 @@ next-env.d.ts
 public/sitemap*.xml
 public/robots.txt
 
+# Backup & Old Files
+*.backup
+*-old.*
+*-backup.*
+*.old
+
+# Sample & Example Files
+*-sample.*
+*-example.*
+*.sample.*
+content-*.html
+
+# Temporary & Test Files
+*.tmp
+*.temp
+*-test.js
+*-test.css
+

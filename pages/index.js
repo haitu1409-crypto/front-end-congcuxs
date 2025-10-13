@@ -225,7 +225,7 @@ const Home = memo(function Home() {
                             <span>Bộ công cụ chuyên nghiệp</span>
                         </div>
                         <h1 className={styles.mainTitle}>
-                            Công Cụ Xổ Số, <span className={styles.heroTitleHighlight}>Tạo Dàn Đề Wukong</span>
+                            Công Cụ Xổ Số, <span className={styles.heroTitleHighlight}>Tạo Dàn ĐỀ Wukong</span>
                         </h1>
                         <p className={styles.subtitle}>
                             Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam.

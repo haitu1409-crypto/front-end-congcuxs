@@ -3,22 +3,23 @@
  * Enhanced UI with better image rendering and user experience
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
 import Layout from '../components/Layout';
 import SEOOptimized from '../components/SEOOptimized';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
-import styles from '../styles/tintuc.module.css';
+import WebVitalsOptimizer from '../components/WebVitalsOptimizer';
+import styles from '../styles/NewsClassic.module.css';
 
 // API functions with caching and error handling
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // Enhanced in-memory cache with better performance
 const cache = new Map();
-const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes for better caching
-const MAX_CACHE_SIZE = 100; // Limit cache size
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes for better caching
+const MAX_CACHE_SIZE = 200; // Limit cache size
 
 const fetchWithCache = async (url, cacheKey, retries = 3) => {
     const now = Date.now();
@@ -40,6 +41,10 @@ const fetchWithCache = async (url, cacheKey, retries = 3) => {
             });
 
             if (!response.ok) {
+                if (response.status === 429) {
+                    // If rate limited, wait longer before retry
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 2000));
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -67,27 +72,45 @@ const fetchWithCache = async (url, cacheKey, retries = 3) => {
                 return getFallbackData(cacheKey);
             }
 
-            // Wait before retry (exponential backoff)
-            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+            // Wait before retry (exponential backoff) - longer wait for 429 errors
+            const baseDelay = Math.pow(2, attempt) * 1000;
+            const delay = attempt === 1 ? baseDelay * 3 : baseDelay; // Extra delay for first retry
+            await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
 };
 
 const fetchArticles = async (params = {}) => {
-    const queryParams = new URLSearchParams({
-        page: params.page || 1,
-        limit: params.limit || 12,
-        sort: params.sort || '-publishedAt',
-        ...params
-    });
+    const queryParams = new URLSearchParams();
+
+    // Only add params that have values
+    queryParams.append('page', params.page || 1);
+    queryParams.append('limit', params.limit || 12);
+    queryParams.append('sort', params.sort || '-publishedAt');
+
+    // Only add category if it has a value
+    if (params.category) {
+        queryParams.append('category', params.category);
+    }
+
+    // Only add search if it has a value
+    if (params.search) {
+        queryParams.append('search', params.search);
+    }
 
     const cacheKey = `articles_${queryParams.toString()}`;
     return fetchWithCache(`${apiUrl}/api/articles?${queryParams}`, cacheKey);
 };
 
-const fetchFeaturedArticles = async (limit = 5) => {
-    const cacheKey = `featured_${limit}`;
-    return fetchWithCache(`${apiUrl}/api/articles/featured?limit=${limit}`, cacheKey);
+const fetchFeaturedArticles = async (limit = 3, category = null) => {
+    const queryParams = new URLSearchParams();
+    queryParams.append('limit', limit);
+    if (category) {
+        queryParams.append('category', category);
+    }
+
+    const cacheKey = `featured_${limit}_${category || 'all'}`;
+    return fetchWithCache(`${apiUrl}/api/articles/featured?${queryParams}`, cacheKey);
 };
 
 const fetchTrendingArticles = async (limit = 8) => {
@@ -148,47 +171,84 @@ const getFallbackData = (cacheKey) => {
                             url: '/imgs/wukong.png',
                             alt: 'Mẹo vặt xổ số'
                         }
+                    },
+                    {
+                        _id: '4',
+                        title: 'Dự đoán kết quả xổ số miền Bắc ngày mai',
+                        excerpt: 'Phân tích và dự đoán kết quả xổ số miền Bắc dựa trên thuật toán AI và thống kê lịch sử. Dự đoán chính xác cao.',
+                        slug: 'du-doan-ket-qua-xo-so-mien-bac',
+                        category: 'du-doan-ket-qua-xo-so',
+                        publishedAt: new Date(Date.now() - 259200000).toISOString(),
+                        views: 1890,
+                        author: 'Admin',
+                        featuredImage: {
+                            url: '/imgs/wukong.png',
+                            alt: 'Dự đoán xổ số'
+                        }
                     }
                 ],
-                totalPages: 1,
-                currentPage: 1
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 1,
+                    totalArticles: 4,
+                    hasNext: false,
+                    hasPrev: false
+                }
             }
         };
     }
 
     if (cacheKey.includes('featured_')) {
+        // Return different featured articles based on category
+        const allFeaturedArticles = [
+            {
+                _id: 'f1',
+                title: 'Công cụ tạo dàn số chuyên nghiệp - Wukong',
+                excerpt: 'Công cụ tạo dàn số và thống kê xổ số 3 miền chuyên nghiệp. Miễn phí, nhanh chóng, chính xác 100%.',
+                slug: 'cong-cu-tao-dan-de-chuyen-nghiep',
+                category: 'dan-de-chuyen-nghiep',
+                publishedAt: new Date().toISOString(),
+                views: 2100,
+                author: 'Admin',
+                featuredImage: {
+                    url: '/imgs/wukong.png',
+                    alt: 'Công cụ tạo dàn số'
+                }
+            },
+            {
+                _id: 'f2',
+                title: 'Phương pháp soi cầu xổ số hiệu quả',
+                excerpt: 'Các phương pháp soi cầu xổ số được các chuyên gia khuyên dùng. Tăng cơ hội trúng thưởng.',
+                slug: 'phuong-phap-soi-cau-xo-so',
+                category: 'phuong-phap-soi-cau',
+                publishedAt: new Date(Date.now() - 43200000).toISOString(),
+                views: 1580,
+                author: 'Admin',
+                featuredImage: {
+                    url: '/imgs/wukong.png',
+                    alt: 'Phương pháp soi cầu'
+                }
+            },
+            {
+                _id: 'f3',
+                title: 'Dự đoán kết quả xổ số tuần này',
+                excerpt: 'Dự đoán kết quả xổ số 3 miền dựa trên thuật toán AI và phân tích xu hướng. Dự đoán chính xác cao.',
+                slug: 'du-doan-ket-qua-xo-so-tuan-nay',
+                category: 'du-doan-ket-qua-xo-so',
+                publishedAt: new Date(Date.now() - 86400000).toISOString(),
+                views: 1320,
+                author: 'Admin',
+                featuredImage: {
+                    url: '/imgs/wukong.png',
+                    alt: 'Dự đoán xổ số'
+                }
+            }
+        ];
+
+        // For fallback, return all articles (simulate "all" category)
         return {
             success: true,
-            data: [
-                {
-                    _id: 'f1',
-                    title: 'Công cụ tạo dàn số chuyên nghiệp - Wukong',
-                    excerpt: 'Công cụ tạo dàn số và thống kê xổ số 3 miền chuyên nghiệp. Miễn phí, nhanh chóng, chính xác 100%.',
-                    slug: 'cong-cu-tao-dan-de-chuyen-nghiep',
-                    category: 'dan-de-chuyen-nghiep',
-                    publishedAt: new Date().toISOString(),
-                    views: 2100,
-                    author: 'Admin',
-                    featuredImage: {
-                        url: '/imgs/wukong.png',
-                        alt: 'Công cụ tạo dàn số'
-                    }
-                },
-                {
-                    _id: 'f2',
-                    title: 'Phương pháp soi cầu xổ số hiệu quả',
-                    excerpt: 'Các phương pháp soi cầu xổ số được các chuyên gia khuyên dùng. Tăng cơ hội trúng thưởng.',
-                    slug: 'phuong-phap-soi-cau-xo-so',
-                    category: 'phuong-phap-soi-cau',
-                    publishedAt: new Date(Date.now() - 43200000).toISOString(),
-                    views: 1580,
-                    author: 'Admin',
-                    featuredImage: {
-                        url: '/imgs/wukong.png',
-                        alt: 'Phương pháp soi cầu'
-                    }
-                }
-            ]
+            data: allFeaturedArticles
         };
     }
 
@@ -232,13 +292,15 @@ const getFallbackData = (cacheKey) => {
         return {
             success: true,
             data: [
-                { key: 'huong-dan-choi', count: 15 },
+                { key: 'du-doan-ket-qua-xo-so', count: 5 },
+                { key: 'dan-de-chuyen-nghiep', count: 7 },
                 { key: 'thong-ke-xo-so', count: 12 },
-                { key: 'meo-vat-xo-so', count: 8 },
-                { key: 'kinh-nghiem-choi-lo-de', count: 10 },
-                { key: 'phuong-phap-soi-cau', count: 6 },
                 { key: 'giai-ma-giac-mo', count: 9 },
-                { key: 'dan-de-chuyen-nghiep', count: 7 }
+                { key: 'tin-tuc-xo-so', count: 3 },
+                { key: 'kinh-nghiem-choi-lo-de', count: 10 },
+                { key: 'meo-vat-xo-so', count: 8 },
+                { key: 'phuong-phap-soi-cau', count: 6 },
+                { key: 'huong-dan-choi', count: 15 }
             ]
         };
     }
@@ -352,21 +414,23 @@ const getCategoryColor = (category) => {
         'tin-tuc-xo-so': '#ef4444',
         'huong-dan-choi': '#06b6d4',
         'phuong-phap-soi-cau': '#84cc16',
-        'dan-de-chuyen-nghiep': '#f97316'
+        'dan-de-chuyen-nghiep': '#f97316',
+        'du-doan-ket-qua-xo-so': '#ec4899'
     };
     return colors[category] || '#6b7280';
 };
 
 const getCategoryLabel = (category) => {
     const labels = {
-        'giai-ma-giac-mo': 'Giải Mã Giấc Mơ',
-        'kinh-nghiem-choi-lo-de': 'Kinh Nghiệm Chơi Lô Đề',
+        'du-doan-ket-qua-xo-so': 'Dự Đoán Kết Quả Xổ Số',
+        'dan-de-chuyen-nghiep': 'Dàn Đề Chuyên Nghiệp',
         'thong-ke-xo-so': 'Thống Kê Xổ Số',
-        'meo-vat-xo-so': 'Mẹo Vặt Xổ Số',
+        'giai-ma-giac-mo': 'Giải Mã Giấc Mơ',
         'tin-tuc-xo-so': 'Tin Tức Xổ Số',
-        'huong-dan-choi': 'Hướng Dẫn Chơi',
+        'kinh-nghiem-choi-lo-de': 'Kinh Nghiệm Chơi Lô Đề',
+        'meo-vat-xo-so': 'Mẹo Vặt Xổ Số',
         'phuong-phap-soi-cau': 'Phương Pháp Soi Cầu',
-        'dan-de-chuyen-nghiep': 'Dàn Đề Chuyên Nghiệp'
+        'huong-dan-choi': 'Hướng Dẫn Chơi'
     };
     return labels[category] || 'Tin Tức';
 };
@@ -409,7 +473,7 @@ const ErrorMessage = React.memo(({ message, onRetry }) => (
     </div>
 ));
 
-// Optimized Hero Article Component
+// Optimized Hero Article Component - Horizontal Layout
 const HeroArticle = React.memo(({ article }) => {
     if (!article) return null;
 
@@ -419,32 +483,30 @@ const HeroArticle = React.memo(({ article }) => {
                 <OptimizedImage
                     src={article.featuredImage?.url}
                     alt={article.featuredImage?.alt || article.title}
-                    width={800}
-                    height={400}
+                    width={300}
+                    height={300}
                     className={styles.heroImage}
                     priority
                     blurDataURL={blurDataURL}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 800px"
+                    sizes="(max-width: 768px) 100vw, 300px"
                 />
-                <div className={styles.heroOverlay}>
-                    <div className={styles.heroCategory}>
-                        {getCategoryLabel(article.category)}
-                    </div>
-                </div>
             </div>
             <div className={styles.heroContent}>
-                <div className={styles.heroMeta}>
-                    <span className={styles.heroDate}>
-                        📅 {formatDate(article.publishedAt)}
-                    </span>
-                    <span className={styles.heroViews}>
-                        👁️ {article.views || 0} lượt xem
-                    </span>
-                </div>
+                <span
+                    className={styles.heroCategory}
+                    style={{ backgroundColor: getCategoryColor(article.category) }}
+                >
+                    {getCategoryLabel(article.category)}
+                </span>
                 <h1 className={styles.heroTitle}>{article.title}</h1>
                 <p className={styles.heroExcerpt}>{article.excerpt}</p>
-                <div className={styles.heroReadMore}>
-                    Đọc thêm →
+                <div className={styles.heroMeta}>
+                    <span className={styles.heroDate}>
+                        {formatDate(article.publishedAt)}
+                    </span>
+                    <span className={styles.heroViews}>
+                        {article.views || 0} lượt xem
+                    </span>
                 </div>
             </div>
         </Link>
@@ -489,38 +551,23 @@ const FeaturedCard = React.memo(({ article, index }) => (
     </Link>
 ));
 
-// Optimized Article Card Component
+// Optimized Article Card Component - List View
 const ArticleCard = React.memo(({ article, index }) => (
-    <Link href={`/tin-tuc/${article.slug}`} className={styles.articleCard}>
-        <div className={styles.articleImageContainer}>
-            <OptimizedImage
-                src={article.featuredImage?.url}
-                alt={article.featuredImage?.alt || article.title}
-                width={200}
-                height={120}
-                className={styles.articleImage}
-                loading="lazy"
-                blurDataURL={blurDataURL}
-                sizes="(max-width: 768px) 100vw, 200px"
-            />
-            <div className={styles.articleOverlay}>
-                <span
-                    className={styles.articleCategory}
-                    style={{ '--category-color': getCategoryColor(article.category) }}
-                >
-                    {getCategoryLabel(article.category)}
+    <Link href={`/tin-tuc/${article.slug}`} className={styles.articleListItem}>
+        <span
+            className={styles.articleListCategory}
+            style={{ backgroundColor: getCategoryColor(article.category) }}
+        >
+            {getCategoryLabel(article.category)}
+        </span>
+        <div className={styles.articleListContent}>
+            <h3 className={styles.articleListTitle}>{article.title}</h3>
+            <div className={styles.articleListMeta}>
+                <span className={styles.articleListDate}>
+                    {formatDate(article.publishedAt)}
                 </span>
-            </div>
-        </div>
-        <div className={styles.articleContent}>
-            <h3 className={styles.articleTitle}>{article.title}</h3>
-            <p className={styles.articleExcerpt}>{article.excerpt}</p>
-            <div className={styles.articleMeta}>
-                <span className={styles.articleDate}>
-                    📅 {formatDate(article.publishedAt)}
-                </span>
-                <span className={styles.articleViews}>
-                    👁️ {article.views || 0}
+                <span className={styles.articleListViews}>
+                    {article.views || 0} lượt xem
                 </span>
             </div>
         </div>
@@ -570,11 +617,21 @@ export default function NewsPage() {
         sortBy: '-publishedAt'
     });
 
+    // Ref to prevent multiple simultaneous API calls
+    const isLoadingRef = useRef(false);
+
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
 
     // Enhanced data loading with better error handling and performance optimization
     const loadData = useCallback(async () => {
+        // Prevent multiple simultaneous API calls
+        if (isLoadingRef.current) {
+            console.log('⏳ Already loading, skipping API call');
+            return;
+        }
+
         try {
+            isLoadingRef.current = true;
             setState(prev => ({ ...prev, loading: true, error: null }));
 
             // Optimize API calls with better caching and error handling
@@ -584,19 +641,47 @@ export default function NewsPage() {
                     category: state.selectedCategory,
                     sort: state.sortBy,
                     search: state.searchQuery,
-                    limit: 12 // Limit articles for better performance
+                    limit: 10 // 10 articles per page
                 }),
-                fetchFeaturedArticles(4), // Reduce featured articles
+                fetchFeaturedArticles(3, state.selectedCategory), // Featured articles from selected category
                 fetchTrendingArticles(6), // Reduce trending articles
                 fetchCategories()
             ]);
 
+            // Extract articles data
+            const articles = articlesRes.status === 'fulfilled' && articlesRes.value.success
+                ? articlesRes.value.data.articles : [];
+            const totalPages = articlesRes.status === 'fulfilled' && articlesRes.value.success
+                ? articlesRes.value.data.totalPages : 1;
+
+            // Debug log
+            console.log('📰 Articles loaded:', {
+                category: state.selectedCategory || 'Tất cả',
+                currentPage: state.currentPage,
+                articlesCount: articles.length,
+                totalPages: totalPages,
+                pagination: {
+                    currentPage: state.currentPage,
+                    totalPages: totalPages,
+                    hasNext: state.currentPage < totalPages,
+                    hasPrev: state.currentPage > 1
+                },
+                heroArticle: articles.length > 0 ? {
+                    title: articles[0].title,
+                    category: articles[0].category,
+                    publishedAt: articles[0].publishedAt
+                } : null,
+                featuredArticles: featuredRes.status === 'fulfilled' && featuredRes.value.success ? {
+                    count: featuredRes.value.data.length,
+                    articles: featuredRes.value.data.map(a => ({ title: a.title, category: a.category }))
+                } : null,
+                response: articlesRes.status === 'fulfilled' ? articlesRes.value : null
+            });
+
             setState(prev => ({
                 ...prev,
-                articles: articlesRes.status === 'fulfilled' && articlesRes.value.success
-                    ? articlesRes.value.data.articles : [],
-                totalPages: articlesRes.status === 'fulfilled' && articlesRes.value.success
-                    ? articlesRes.value.data.totalPages : 1,
+                articles: articles,
+                totalPages: totalPages,
                 featuredArticles: featuredRes.status === 'fulfilled' && featuredRes.value.success
                     ? featuredRes.value.data : [],
                 trendingArticles: trendingRes.status === 'fulfilled' && trendingRes.value.success
@@ -621,13 +706,25 @@ export default function NewsPage() {
                 loading: false,
                 error: 'Không thể tải dữ liệu. Vui lòng kiểm tra kết nối mạng và thử lại.'
             }));
+        } finally {
+            isLoadingRef.current = false;
         }
     }, [state.currentPage, state.selectedCategory, state.sortBy, state.searchQuery]);
 
+    // Debounced data loading to prevent too many API calls
+    const debouncedLoadData = useCallback(() => {
+        const timeoutId = setTimeout(() => {
+            loadData();
+        }, 300); // 300ms debounce
+
+        return () => clearTimeout(timeoutId);
+    }, [loadData]);
+
     // Effects
     useEffect(() => {
-        loadData();
-    }, [loadData]);
+        const cleanup = debouncedLoadData();
+        return cleanup;
+    }, [debouncedLoadData]);
 
     // Enhanced SEO Data
     const seoData = useMemo(() => ({
@@ -681,12 +778,13 @@ export default function NewsPage() {
         { name: 'Tin Tức', url: `${siteUrl}/tin-tuc` }
     ];
 
-    // Enhanced handlers
+    // Enhanced handlers with debounce
     const handleCategorySelect = useCallback((category) => {
         setState(prev => ({
             ...prev,
             selectedCategory: category,
-            currentPage: 1
+            currentPage: 1,
+            loading: true // Show loading immediately
         }));
     }, []);
 
@@ -742,6 +840,7 @@ export default function NewsPage() {
                 breadcrumbs={breadcrumbs}
                 structuredData={structuredData}
             />
+            <WebVitalsOptimizer />
             <PageSpeedOptimizer />
 
             <Layout>
@@ -749,7 +848,7 @@ export default function NewsPage() {
                 <div className={styles.pageHeader}>
                     <div className={styles.container}>
                         <h1 className={styles.pageTitle}>
-                            📰 Tin Tức Xổ Số & Lô Đề
+                            Tin Tức Xổ Số & Lô Đề
                         </h1>
                         <p className={styles.pageSubtitle}>
                             Cập nhật tin tức mới nhất, kinh nghiệm chơi và thống kê chuyên nghiệp 24/7
@@ -760,7 +859,7 @@ export default function NewsPage() {
                             <div className={styles.searchBox}>
                                 <input
                                     type="text"
-                                    placeholder="🔍 Tìm kiếm bài viết..."
+                                    placeholder="Tìm kiếm bài viết..."
                                     value={state.searchQuery}
                                     onChange={(e) => handleSearch(e.target.value)}
                                     className={styles.searchInput}
@@ -772,10 +871,10 @@ export default function NewsPage() {
                                     onChange={(e) => handleSortChange(e.target.value)}
                                     className={styles.sortSelect}
                                 >
-                                    <option value="-publishedAt">📅 Mới nhất</option>
-                                    <option value="publishedAt">📅 Cũ nhất</option>
-                                    <option value="-views">👁️ Xem nhiều</option>
-                                    <option value="-likes">❤️ Yêu thích</option>
+                                    <option value="-publishedAt">Mới nhất</option>
+                                    <option value="publishedAt">Cũ nhất</option>
+                                    <option value="-views">Xem nhiều</option>
+                                    <option value="-likes">Yêu thích</option>
                                 </select>
                             </div>
                         </div>
@@ -790,7 +889,7 @@ export default function NewsPage() {
                                 className={`${styles.categoryButton} ${!state.selectedCategory ? styles.active : ''}`}
                                 onClick={() => handleCategorySelect(null)}
                             >
-                                🏠 Tất cả
+                                Tất cả
                             </button>
                             {state.categories.map((category) => (
                                 <button
@@ -810,10 +909,22 @@ export default function NewsPage() {
                     <div className={styles.mainContent}>
                         {/* Main Content */}
                         <main>
-                            {/* Hero Article */}
+                            {/* Hero Article - Shows latest article from selected category or all articles */}
                             {state.articles.length > 0 && (
                                 <div className={styles.heroSection}>
                                     <HeroArticle article={state.articles[0]} />
+                                </div>
+                            )}
+
+                            {/* Show message when no articles found for selected category */}
+                            {state.articles.length === 0 && !state.loading && (
+                                <div className={styles.noArticles}>
+                                    <p>
+                                        {state.selectedCategory
+                                            ? `Không tìm thấy bài viết nào trong danh mục "${getCategoryLabel(state.selectedCategory)}"`
+                                            : 'Không tìm thấy bài viết nào'
+                                        }
+                                    </p>
                                 </div>
                             )}
 
@@ -821,31 +932,42 @@ export default function NewsPage() {
                             {state.featuredArticles.length > 0 && (
                                 <div className={styles.articlesSection}>
                                     <h2 className={styles.sectionTitle}>
-                                        ⭐ Bài Viết Nổi Bật
+                                        Bài Viết Nổi Bật
                                     </h2>
                                     <div className={styles.featuredGrid}>
-                                        {state.featuredArticles.slice(0, 4).map((article, index) => (
+                                        {state.featuredArticles.map((article, index) => (
                                             <FeaturedCard key={article._id} article={article} index={index} />
                                         ))}
                                     </div>
                                 </div>
                             )}
 
-                            {/* Articles List */}
+                            {/* Articles List - Show all articles when "Tất cả" is selected, or filtered articles for specific category */}
                             <div className={styles.articlesSection}>
                                 <h2 className={styles.sectionTitle}>
                                     {state.selectedCategory
-                                        ? `📂 ${getCategoryLabel(state.selectedCategory)}`
-                                        : '📰 Tất Cả Bài Viết'
+                                        ? getCategoryLabel(state.selectedCategory)
+                                        : 'Tất Cả Bài Viết'
                                     }
                                     <span className={styles.articleCount}>
                                         ({state.articles.length} bài viết)
                                     </span>
                                 </h2>
                                 <div className={styles.articlesList}>
-                                    {state.articles.map((article, index) => (
-                                        <ArticleCard key={article._id} article={article} index={index} />
-                                    ))}
+                                    {state.articles.length > 0 ? (
+                                        state.articles.map((article, index) => (
+                                            <ArticleCard key={article._id} article={article} index={index} />
+                                        ))
+                                    ) : (
+                                        <div className={styles.noArticles}>
+                                            <p>
+                                                {state.selectedCategory
+                                                    ? `Không tìm thấy bài viết nào trong danh mục "${getCategoryLabel(state.selectedCategory)}"`
+                                                    : 'Không tìm thấy bài viết nào'
+                                                }
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -902,7 +1024,7 @@ export default function NewsPage() {
                             {state.trendingArticles.length > 0 && (
                                 <div className={styles.sidebarCard}>
                                     <h3 className={styles.sidebarTitle}>
-                                        🔥 Tin Nổi Bật
+                                        Tin Nổi Bật
                                     </h3>
                                     <div className={styles.sidebarList}>
                                         {state.trendingArticles.slice(0, 6).map((article, index) => (
@@ -915,23 +1037,41 @@ export default function NewsPage() {
                             {/* Categories */}
                             {state.categories.length > 0 && (
                                 <div className={styles.sidebarCard}>
-                                    <h3 className={styles.sidebarTitle}>📂 Danh Mục</h3>
+                                    <h3 className={styles.sidebarTitle}>Danh Mục</h3>
                                     <div className={styles.sidebarList}>
+                                        {/* Tất cả button */}
+                                        <button
+                                            onClick={() => handleCategorySelect(null)}
+                                            className={`${styles.sidebarItem} ${!state.selectedCategory ? styles.active : ''}`}
+                                            style={{ '--category-color': '#6b7280' }}
+                                        >
+                                            <div className={styles.sidebarItemContent}>
+                                                <h4 className={styles.sidebarItemTitle}>
+                                                    Tất cả
+                                                </h4>
+                                                <span className={styles.sidebarItemDate}>
+                                                    {state.categories.reduce((total, cat) => total + cat.count, 0)} bài viết
+                                                </span>
+                                            </div>
+                                        </button>
+
+                                        {/* Individual categories */}
                                         {state.categories.map((category) => (
-                                            <Link
+                                            <button
                                                 key={category.key}
-                                                href={`/tin-tuc?category=${category.key}`}
-                                                className={styles.sidebarItem}
+                                                onClick={() => handleCategorySelect(category.key)}
+                                                className={`${styles.sidebarItem} ${state.selectedCategory === category.key ? styles.active : ''}`}
+                                                style={{ '--category-color': getCategoryColor(category.key) }}
                                             >
                                                 <div className={styles.sidebarItemContent}>
                                                     <h4 className={styles.sidebarItemTitle}>
                                                         {getCategoryLabel(category.key)}
                                                     </h4>
                                                     <span className={styles.sidebarItemDate}>
-                                                        📄 {category.count} bài viết
+                                                        {category.count} bài viết
                                                     </span>
                                                 </div>
-                                            </Link>
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
@@ -939,7 +1079,7 @@ export default function NewsPage() {
 
                             {/* Quick Stats */}
                             <div className={styles.sidebarCard}>
-                                <h3 className={styles.sidebarTitle}>📊 Thống Kê</h3>
+                                <h3 className={styles.sidebarTitle}>Thống Kê</h3>
                                 <div className={styles.statsList}>
                                     <div className={styles.statItem}>
                                         <span className={styles.statLabel}>Tổng bài viết:</span>
