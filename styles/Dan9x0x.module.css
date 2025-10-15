@@ -223,6 +223,9 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--color-gray-200);
     background-image: linear-gradient(-20deg, #f794a4 0%, #fdd6bd 100%);
+    /* ✅ FIX: Reserve space to prevent CLS when DanDeGenerator loads */
+    min-height: 850px;
+    contain: layout style paint;
 }
 
 .main2 {
@@ -233,12 +236,25 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--color-gray-200);
     background-image: linear-gradient(-225deg, #FFE29F 0%, #FFA99F 48%, #FF719A 100%);
+    /* ✅ FIX: Reserve space to prevent CLS when DanDeFilter loads */
+    min-height: 850px;
+    contain: layout style paint;
+}
+
+/* ===== GUIDE WRAPPER ===== */
+.guideWrapper {
+    /* ✅ FIX: Reserve space to prevent CLS when GuideSection loads */
+    min-height: 600px;
+    contain: layout style paint;
 }
 
 /* ===== FEATURES SECTION ===== */
 .features {
     margin: 60px 0;
     padding: 40px 0;
+    /* ✅ FIX: Reserve space to prevent CLS when FeaturesSection loads */
+    min-height: 500px;
+    contain: layout style paint;
 }
 
 .featuresHeader {
@@ -550,6 +566,20 @@
         font-size: 0.75rem;
         margin-bottom: var(--spacing-1);
     }
+
+    /* ✅ FIX: Adjust wrapper heights for tablet */
+    .main,
+    .main2 {
+        min-height: 700px;
+    }
+
+    .guideWrapper {
+        min-height: 500px;
+    }
+
+    .features {
+        min-height: 450px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -664,6 +694,20 @@
     /* ✅ FIX: Reduce loading skeleton height on mobile to prevent excessive CLS */
     .loadingSkeleton {
         min-height: 600px;
+    }
+
+    /* ✅ FIX: Adjust wrapper heights for mobile */
+    .main,
+    .main2 {
+        min-height: 650px;
+    }
+
+    .guideWrapper {
+        min-height: 450px;
+    }
+
+    .features {
+        min-height: 400px;
     }
 }
 
@@ -786,5 +830,19 @@
     /* ✅ FIX: Further reduce loading skeleton height on extra small screens */
     .loadingSkeleton {
         min-height: 500px;
+    }
+
+    /* ✅ FIX: Adjust wrapper heights for extra small screens */
+    .main,
+    .main2 {
+        min-height: 550px;
+    }
+
+    .guideWrapper {
+        min-height: 400px;
+    }
+
+    .features {
+        min-height: 350px;
     }
 }

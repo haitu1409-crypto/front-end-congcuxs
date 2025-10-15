@@ -381,7 +381,7 @@ export default function Dan9x0xPage() {
                     <FeaturesSection />
 
                     {/* GuideSection Component */}
-                    <div data-section="guide">
+                    <div data-section="guide" className={styles.guideWrapper}>
                         <GuideSection />
                     </div>
 
