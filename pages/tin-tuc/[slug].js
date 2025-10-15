@@ -14,6 +14,7 @@ import Layout from '../../components/Layout';
 import ArticleSEO from '../../components/ArticleSEO';
 import SocialShareButtons from '../../components/SocialShareButtons';
 import dynamic from 'next/dynamic';
+import '../../styles/XoSoMienBac.module.css'; // ✅ Import CSS cho lottery tables
 import {
     Calendar,
     Eye,
@@ -522,7 +523,7 @@ export default function ArticleDetailPage() {
 
                                     {/* Article Content */}
                                     <div
-                                        className={styles.articleContent}
+                                        className={`${styles.articleContent} xsmbContainer`}
                                         itemProp="articleBody"
                                         dangerouslySetInnerHTML={{ __html: article.content }}
                                     />

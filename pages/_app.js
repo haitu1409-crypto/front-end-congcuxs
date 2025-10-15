@@ -17,6 +17,12 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import reportWebVitals from '../lib/reportWebVitals';
 
+// ✅ Multi-Search Engine Optimizer - For Bing, Cốc Cốc, Google
+const MultiSearchEngineOptimizer = dynamic(() => import('../components/MultiSearchEngineOptimizer'), {
+    ssr: true,  // SSR for SEO
+    loading: () => null
+});
+
 // Lazy load heavy components with proper error handling
 const Analytics = dynamic(() => import('../components/Analytics'), {
     ssr: false,
@@ -92,7 +98,19 @@ function MyApp({ Component, pageProps }) {
                 {/* ✅ Preload critical images */}
                 <link rel="preload" as="image" href="/imgs/monkey.png" />
                 <link rel="preload" as="image" href="/imgs/wukong.png" />
+
+                {/* ✅ Search Engine Verification - Placeholder (Replace with actual codes) */}
+                <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" />
+                <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" />
+                <meta name="coccoc-verification" content="YOUR_COCCOC_VERIFICATION_CODE" />
             </Head>
+
+            {/* ✅ Multi-Search Engine Optimizer */}
+            <MultiSearchEngineOptimizer
+                title="Tạo Dàn Đề Wukong (Tao Dan De) | Ứng Dụng Tạo Mức Số 2025"
+                description="Tạo dàn đề (tao dan de) online miễn phí. Công cụ tạo dàn số, mức số chuyên nghiệp. Hỗ trợ: taodande, lô đề, dan de."
+                keywords="tạo dàn đề wukong, tao dan de wukong, taodandewukong, tạo dàn số, tao dan so, lô đề, lo de"
+            />
 
             {/* Google Analytics */}
             <Analytics />

@@ -153,11 +153,19 @@ const PerformanceMonitor = () => {
                             }
                             break;
                         case 'layout-shift':
-                            // ✅ Temporarily disable CLS warnings to reduce console spam
+                            // ✅ Enhanced CLS monitoring with debugging info
                             if (entry.value > 0.5) {
                                 console.warn('CLS is very high:', entry.value, '- Critical layout shift detected');
+                                // ✅ Log which elements caused the shift
+                                if (entry.sources && entry.sources.length > 0) {
+                                    console.warn('Layout shift sources:', entry.sources.map(source => ({
+                                        element: source.node?.tagName || 'unknown',
+                                        previousRect: source.previousRect,
+                                        currentRect: source.currentRect
+                                    })));
+                                }
                             } else if (entry.value > 0.1) {
-                                // Silent monitoring - no console spam
+                                console.log('CLS is moderate:', entry.value);
                             } else {
                                 console.log('CLS is good:', entry.value);
                             }

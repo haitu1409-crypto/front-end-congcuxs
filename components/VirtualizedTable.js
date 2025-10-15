@@ -13,7 +13,13 @@ const VirtualizedTable = memo(({
     className = ''
 }) => {
     const [scrollTop, setScrollTop] = useState(0);
+    const [isReady, setIsReady] = useState(false);
     const containerRef = useRef(null);
+
+    // ✅ Mark component as ready after mount to prevent CLS
+    useEffect(() => {
+        setIsReady(true);
+    }, []);
 
     // Tính toán các rows hiển thị
     const visibleRange = useMemo(() => {
@@ -47,12 +53,20 @@ const VirtualizedTable = memo(({
             style={{
                 height: containerHeight,
                 overflow: 'auto',
-                position: 'relative'
+                position: 'relative',
+                // ✅ FIX: Add containment and stability optimizations to prevent CLS
+                contain: 'layout style paint',
+                willChange: isReady ? 'auto' : 'transform',
+                minHeight: containerHeight
             }}
             onScroll={handleScroll}
         >
             {/* Total height spacer */}
-            <div style={{ height: totalHeight, position: 'relative' }}>
+            <div style={{
+                height: totalHeight,
+                position: 'relative',
+                minHeight: totalHeight // ✅ Ensure consistent height
+            }}>
                 {/* Visible items container */}
                 <div
                     style={{
@@ -60,7 +74,9 @@ const VirtualizedTable = memo(({
                         position: 'absolute',
                         top: 0,
                         left: 0,
-                        right: 0
+                        right: 0,
+                        // ✅ Prevent layout shifts during scroll
+                        willChange: 'transform'
                     }}
                 >
                     {visibleItems.map((item, index) =>

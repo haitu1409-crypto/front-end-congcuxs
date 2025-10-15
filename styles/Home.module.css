@@ -25,6 +25,10 @@
     margin: 1rem 0;
     color: #666;
     font-weight: 500;
+    /* ✅ FIX: Add proper height to prevent CLS */
+    min-height: 800px;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 @keyframes loading {

@@ -16,12 +16,20 @@
     margin: 1rem 0;
     color: #666;
     font-weight: 500;
-    min-height: 200px;
+    /* ✅ FIX: Increased min-height to prevent CLS when stats load */
+    min-height: 400px;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 @keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 .adminContainer {

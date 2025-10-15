@@ -8,10 +8,11 @@ import dynamic from 'next/dynamic';
 import { memo, useMemo, useCallback } from 'react';
 import Layout from '../components/Layout';
 import styles from '../styles/Home.module.css';
-import SEOOptimized from '../components/SEOOptimized';
+import EnhancedSEOHead from '../components/EnhancedSEOHead';
 import SEOAnalytics from '../components/SEOAnalytics';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import { getPageSEO } from '../config/seoConfig';
+import { getAllKeywordsForPage } from '../config/keywordVariations';
 
 // ✅ Lazy load SEO components for better performance
 const AuthorBio = dynamic(() => import('../components/SEO/AuthorBio'), {
@@ -62,6 +63,9 @@ const Home = memo(function Home() {
 
     // Get SEO config for homepage
     const pageSEO = getPageSEO('home');
+
+    // ✅ Get all keyword variations for homepage
+    const allKeywords = getAllKeywordsForPage('home');
 
     // ✅ Memoized data arrays to prevent unnecessary re-renders
     const breadcrumbs = useMemo(() => [
@@ -202,11 +206,12 @@ const Home = memo(function Home() {
 
     return (
         <>
-            <SEOOptimized
+            {/* ✅ Enhanced SEO with multi-search engine optimization */}
+            <EnhancedSEOHead
                 pageType="home"
                 customTitle={pageSEO.title}
                 customDescription={pageSEO.description}
-                customKeywords={pageSEO.keywords.join(', ')}
+                customKeywords={allKeywords.join(', ')}
                 canonicalUrl={pageSEO.canonical}
                 ogImage={pageSEO.image}
                 breadcrumbs={breadcrumbs}

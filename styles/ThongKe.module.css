@@ -1467,7 +1467,10 @@
     margin: 1rem 0;
     color: #666;
     font-weight: 500;
-    min-height: 200px;
+    /* ✅ FIX: Increased min-height to prevent CLS when statistics tables load */
+    min-height: 1000px;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 @keyframes loading {

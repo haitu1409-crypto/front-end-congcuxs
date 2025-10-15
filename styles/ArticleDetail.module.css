@@ -16,7 +16,10 @@
     margin: 1rem 0;
     color: #666;
     font-weight: 500;
-    min-height: 200px;
+    /* ✅ FIX: Increased min-height to prevent CLS when article loads */
+    min-height: 600px;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 @keyframes loading {

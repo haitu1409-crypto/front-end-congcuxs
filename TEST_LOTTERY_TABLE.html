@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Lottery Table - Bảng Kết Quả Xổ Số</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f3f4f6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .note {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background: #d1fae5;
+            border-left-color: #10b981;
+        }
+
+        /* ============ LOTTERY TABLE STYLES ============ */
+
+        .kqsx-today {
+            width: 100%;
+            margin: 30px 0;
+        }
+
+        .v-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+        }
+
+        .df-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .site-link {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f3f4f6;
+            border-radius: 6px;
+        }
+
+        .site-link a {
+            color: #4f46e5;
+            text-decoration: none;
+            margin: 0 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .site-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        table.kqmb,
+        table.kqsx-mt {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table thead tr.bg-pr,
+        table tr.bg-pr {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        table th {
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        table th a {
+            color: white;
+            text-decoration: none;
+        }
+
+        table th.first {
+            width: 80px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        table tr {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        table tr:hover {
+            background: #f9fafb;
+        }
+
+        table td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+        }
+
+        table td:first-child {
+            font-weight: 600;
+            color: #1f2937;
+            background: #f3f4f6;
+        }
+
+        table span[data-id] {
+            display: inline-block;
+            padding: 6px 10px;
+            margin: 2px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1f2937;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        table span[data-id]:hover {
+            background: #4f46e5;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Giải 8 */
+        table tr.g8 {
+            background: #fef3c7;
+        }
+
+        table .v-g8 {
+            background: #fbbf24;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Giải đặc biệt */
+        table tr.gdb {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+        }
+
+        table tr.gdb td {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        table .v-gdb {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Control panel */
+        .control-panel {
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .digits-form {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px 16px;
+            border-radius: 6px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+
+        .radio:hover {
+            border-color: #4f46e5;
+            background: #f0f9ff;
+        }
+
+        .radio input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        .radio input[type="radio"]:checked~span {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .df-title {
+                font-size: 1rem;
+            }
+
+            table th,
+            table td {
+                padding: 8px 4px;
+                font-size: 0.85rem;
+            }
+
+            table span[data-id] {
+                padding: 4px 6px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>✅ Test Bảng Kết Quả Xổ Số</h1>
+
+        <div class="note success">
+            <strong>✅ Test Successful!</strong><br>
+            Bảng kết quả xổ số hiển thị đúng với HTML raw. Bạn có thể copy toàn bộ HTML bên dưới và paste vào content
+            field của bài viết.
+        </div>
+
+        <div class="note">
+            <strong>📋 Hướng dẫn sử dụng:</strong><br>
+            1. Copy toàn bộ HTML từ &lt;div class="kqsx-today"&gt; đến &lt;/div&gt; cuối cùng<br>
+            2. Paste vào content field khi tạo bài viết<br>
+            3. Frontend sẽ tự động render với dangerouslySetInnerHTML<br>
+            4. Xem hướng dẫn chi tiết: <code>docs/LOTTERY_TABLE_GUIDE.md</code>
+        </div>
+
+        <!-- ============================================
+             BẢNG KẾT QUẢ XỔ SỐ - COPY TỪ ĐÂY
+             ============================================ -->
+
+        <div class="kqsx-today text-center v-card mb-3">
+            <h1 class="lead df-title pt-3 d-block" id="mtLiveTitle">XSMT - Kết Quả Xổ Số Miền Trung - SXMT Hôm Nay</h1>
+
+            <h2 class="site-link" id="tnListLink">
+                <a href="/xsmt-xo-so-mien-trung" title="Kết quả xổ số Miền Trung">XSMT</a>
+                <a href="/xsmt-thu-2" title="Xổ số Miền Trung Thứ 2">XSMT Thứ 2</a>
+                <a href="/xsmt-13-10-2025" title="Xổ số Miền Trung ngày 13/10/2025">XSMT 13/10/2025</a>
+            </h2>
+
+            <table class="kqmb kqsx-mt w-100" data-zone="kqmt">
+                <tbody>
+                    <tr class="bg-pr">
+                        <th class="first"></th>
+                        <th data-pid="41467">
+                            <a href="https://xosovn.com/xspy-xo-so-phu-yen" title="XSPY">
+                                <b>Phú Yên</b>
+                            </a>
+                        </th>
+                        <th data-pid="41468">
+                            <a href="https://xosovn.com/xstth-xo-so-hue" title="XSTTH">
+                                <b>Huế</b>
+                            </a>
+                        </th>
+                    </tr>
+                    <tr class="g8">
+                        <td>G8</td>
+                        <td>
+                            <span id="PY_prize_8_item_0" data-nc="2" class="v-g8 " data-id="20">20</span>
+                        </td>
+                        <td>
+                            <span id="TTH_prize_8_item_0" data-nc="2" class="v-g8 " data-id="03">03</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>G7</td>
+                        <td>
+                            <span id="PY_prize_7_item_0" data-nc="3" class="v-g7 " data-id="475">475</span>
+                        </td>
+                        <td>
+                            <span id="TTH_prize_7_item_0" data-nc="3" class="v-g7 " data-id="264">264</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>G6</td>
+                        <td>
+                            <span id="PY_prize_6_item_0" data-nc="4" class="v-g6-0 " data-id="4601">4601</span>
+                            <span id="PY_prize_6_item_1" data-nc="4" class="v-g6-1 " data-id="4307">4307</span>
+                            <span id="PY_prize_6_item_2" data-nc="4" class="v-g6-2 " data-id="7413">7413</span>
+                        </td>
+                        <td>
+                            <span id="TTH_prize_6_item_0" data-nc="4" class="v-g6-0 " data-id="4634">4634</span>
+                            <span id="TTH_prize_6_item_1" data-nc="4" class="v-g6-1 " data-id="7241">7241</span>
+                            <span id="TTH_prize_6_item_2" data-nc="4" class="v-g6-2 " data-id="8885">8885</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>G5</td>
+                        <td>
+                            <span id="PY_prize_5_item_0" data-nc="4" class="v-g5 " data-id="1885">1885</span>
+                        </td>
+                        <td>
+                            <span id="TTH_prize_5_item_0" data-nc="4" class="v-g5 " data-id="2671">2671</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>G4</td>
+                        <td>
+                            <span id="PY_prize_4_item_0" data-nc="5" class="v-g4-0 " data-id="20895">20895</span>
+                            <span id="PY_prize_4_item_1" data-nc="5" class="v-g4-1 " data-id="93450">93450</span>
+                            <span id="PY_prize_4_item_2" data-nc="5" class="v-g4-2 " data-id="26104">26104</span>
+                            <span id="PY_prize_4_item_3" data-nc="5" class="v-g4-3 " data-id="82476">82476</span>
+                            <span id="PY_prize_4_item_4" data-nc="5" class="v-g4-4 " data-id="13731">13731</span>
+                            <span id="PY_prize_4_item_5" data-nc="5" class="v-g4-5 " data-id="02852">02852</span>
+                            <span id="PY_prize_4_item_6" data-nc="5" class="v-g4-6 " data-id="13745">13745</span>
+                        </td>
+                        <td>
+                            <span id="TTH_prize_4_item_0" data-nc="5" class="v-g4-0 " data-id="29693">29693</span>
+                            <span id="TTH_prize_4_item_1" data-nc="5" class="v-g4-1 " data-id="25767">25767</span>
+                            <span id="TTH_prize_4_item_2" data-nc="5" class="v-g4-2 " data-id="42319">42319</span>
+                            <span id="TTH_prize_4_item_3" data-nc="5" class="v-g4-3 " data-id="56408">56408</span>
+                            <span id="TTH_prize_4_item_4" data-nc="5" class="v-g4-4 " data-id="62141">62141</span>
+                            <span id="TTH_prize_4_item_5" data-nc="5" class="v-g4-5 " data-id="62681">62681</span>
+                            <span id="TTH_prize_4_item_6" data-nc="5" class="v-g4-6 " data-id="13102">13102</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>G3</td>
+                        <td>
+                            <span id="PY_prize_3_item_0" data-nc="5" class="v-g3-0 " data-id="76322">76322</span>
+                            <span id="PY_prize_3_item_1" data-nc="5" class="v-g3-1 " data-id="74963">74963</span>
+                        </td>
+                        <td>
+                            <span id="TTH_prize_3_item_0" data-nc="5" class="v-g3-0 " data-id="37716">37716</span>
+                            <span id="TTH_prize_3_item_1" data-nc="5" class="v-g3-1 " data-id="06422">06422</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>G2</td>
+                        <td>
+                            <span id="PY_prize_2_item_0" data-nc="5" class="v-g2 " data-id="75845">75845</span>
+                        </td>
+                        <td>
+                            <span id="TTH_prize_2_item_0" data-nc="5" class="v-g2 " data-id="88727">88727</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>G1</td>
+                        <td>
+                            <span id="PY_prize_1_item_0" data-nc="5" class="v-g1 " data-id="42642">42642</span>
+                        </td>
+                        <td>
+                            <span id="TTH_prize_1_item_0" data-nc="5" class="v-g1 " data-id="87740">87740</span>
+                        </td>
+                    </tr>
+                    <tr class="gdb">
+                        <td>ĐB</td>
+                        <td>
+                            <span id="PY_prize_Db_item_0" data-nc="6" class="v-gdb " data-id="201723">201723</span>
+                        </td>
+                        <td>
+                            <span id="TTH_prize_Db_item_0" data-nc="6" class="v-gdb " data-id="931457">931457</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="control-panel" id="showNumberMT">
+                <form class="digits-form mt-3 mb-3 text-left" data-control="kqmb">
+                    <label class="radio" data-value="0">
+                        <input type="radio" name="showed-digits" value="0" checked="checked">
+                        <b></b>
+                        <span>Tất cả</span>
+                    </label>
+                    <label class="radio" data-value="2">
+                        <input type="radio" name="showed-digits" value="2">
+                        <b></b>
+                        <span>2 số cuối</span>
+                    </label>
+                    <label class="radio" data-value="3">
+                        <input type="radio" name="showed-digits" value="3">
+                        <b></b>
+                        <span>3 số cuối</span>
+                    </label>
+                </form>
+            </div>
+        </div>
+
+        <!-- ============================================
+             KẾT THÚC BẢNG KẾT QUẢ - COPY ĐẾN ĐÂY
+             ============================================ -->
+
+        <div class="note success">
+            <strong>🎉 Perfect!</strong><br>
+            Bảng hiển thị hoàn hảo! Bây giờ bạn có thể:
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>✅ Copy HTML này và paste vào content field</li>
+                <li>✅ Frontend sẽ render đúng với dangerouslySetInnerHTML</li>
+                <li>✅ Styles đã được import từ LotteryResultTable.module.css</li>
+                <li>✅ Responsive trên mobile</li>
+            </ul>
+        </div>
+
+        <div class="note">
+            <strong>📚 Tài liệu tham khảo:</strong><br>
+            • <code>components/LotteryResultTable.js</code> - Component chuyên dụng<br>
+            • <code>styles/LotteryResultTable.module.css</code> - Styles đầy đủ<br>
+            • <code>docs/LOTTERY_TABLE_GUIDE.md</code> - Hướng dẫn chi tiết<br>
+            • <code>TEST_LOTTERY_TABLE.html</code> - File test này
+        </div>
+    </div>
+
+    <script>
+        // Optional: Add functionality for radio buttons
+        document.querySelectorAll('.radio input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const value = this.value;
+                const spans = document.querySelectorAll('table span[data-id]');
+
+                spans.forEach(span => {
+                    const nc = span.getAttribute('data-nc');
+                    const id = span.getAttribute('data-id');
+
+                    if (value === '0') {
+                        span.textContent = id; // Show all digits
+                    } else {
+                        span.textContent = id.slice(-value); // Show last N digits
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
+

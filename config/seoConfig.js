@@ -4,7 +4,10 @@
  * 
  * Based on competitor analysis and keyword research
  * Last Updated: 2025-01-12
+ * Enhanced: Multi-search engine optimization (Google, Bing, Cốc Cốc)
  */
+
+const { getAllKeywordsForPage, generateMetaDescription } = require('./keywordVariations');
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
 const SITE_NAME = 'Dàn Đề Wukong';
@@ -28,30 +31,64 @@ const SEO_CONFIG = {
      * HOMEPAGE
      * PRIMARY: tạo dàn số (74,000), tao dan de (74,000), taodande (8,100)
      * SECONDARY: ứng dụng tạo dàn (1,000), tạo dàn số (4,400), tạo dàn xổ số (2,900)
+     * ENHANCED: Keyword variations for multi-search engine optimization
      */
     home: {
-        title: 'Tạo Dàn Đề (Tao Dan De) | Ứng Dụng Tạo Mức Số - Nuôi Dàn Miễn Phí 2025',
-        description: 'Ứng dụng tạo dàn đề, tạo mức số (tao dan de) online miễn phí. Công cụ tạo dàn lô đề, ghép lotto, nuôi dàn khung 3-5 ngày, soi cầu. Dàn 36-50 số, bạch thủ, xiên quay. Chuyên nghiệp!',
+        title: 'Tạo Dàn Đề Wukong (Tao Dan De) | Ứng Dụng Tạo Mức Số - Nuôi Dàn Miễn Phí 2025',
+        description: generateMetaDescription('home', true),
         keywords: [
-            // Primary keywords (có dấu + không dấu)
-            'tạo dàn đề', 'tạo dàn số', 'tao dan de', 'taodande',
+            // ✅ BRAND VARIATIONS - Tất cả cách gõ tìm kiếm
+            'tạo dàn đề wukong',
+            'tao dan de wukong',
+            'tạo dàn đề wu kong',
+            'tao dan de wu kong',
+            'tạo dan đề wukong',
+            'tao dàn de wukong',
+            'taodandewukong',
+            'taodande wukong',
+            'tao dande wukong',
+            'tạo đàn đề wukong',
+            'tao dan wukong',
+            'tạo dàn wukong',
+            'dan de wukong',
+            'taodandewukong.pro',
+            'web tạo dàn đề wukong',
 
-            // Core features
-            'tạo mức số', 'ứng dụng mức số', 'tạo dàn lô đề', 'tạo dàn lô số',
-            'công cụ lô đề', 'công cụ lô số',
+            // ✅ CORE KEYWORDS - Từ khóa chính (có dấu + không dấu)
+            'tạo dàn đề', 'tao dan de', 'tạo dan đề', 'tao dàn de', 'tạo đàn đề',
+            'taodande', 'tao-dan-de', 'tạo-dàn-đề', 'taodàndề',
+            'tạo dàn số', 'tao dan so', 'tạo dan số', 'tao dàn so', 'taodanso',
+            'tạo mức số', 'tao muc so', 'tạo muc số', 'taomucso',
 
-            // No diacritics (lươn lẹo)
-            'lo de', 'lo to', 'dan de', 'tao dan so', 'tao muc so', 'lo đe',
+            // ✅ LÔ ĐỀ VARIATIONS - Tất cả cách viết lô đề
+            'lô đề', 'lo de', 'lô de', 'lo đề', 'ló đề', 'lo đe', 'lô đe',
+            'lô tô', 'lo to', 'ló tô', 'loto', 'lotô',
+            'dàn đề', 'dan de', 'dàn de', 'dan đề', 'đàn đề', 'dande',
 
-            // Common misspellings
-            'tạo dan đê', 'ló tô', 'dan đe', 'tạo dàn dề',
+            // ✅ COMMON MISSPELLINGS - Sai chính tả phổ biến
+            'tạo dan đê', 'tao dàn đề', 'tạo dàn đê', 'tao dan đe',
+            'ló tô', 'dan đe', 'tạo dàn dề', 'tạo đan de',
 
-            // Long-tail (question-based)
+            // ✅ LONG-TAIL QUESTIONS - Tối ưu cho Google
             'cách tạo dàn đề', 'tạo dàn đề online', 'tạo dàn đề miễn phí',
             'web tạo dàn đề', 'tool tạo dàn đề', 'app tạo dàn đề',
+            'cách tạo dàn đề hiệu quả', 'tạo dàn đề như thế nào',
+            'app tạo dàn đề nào tốt', 'web tạo dàn đề uy tín',
+            'công cụ tạo dàn đề chuyên nghiệp', 'phần mềm tạo dàn đề miễn phí',
 
-            // Competitive
-            'kangdh', 'taodanxoso', 'giai ma so hoc',
+            // ✅ BING OPTIMIZATION - Formal queries
+            'ứng dụng tạo dàn đề', 'phần mềm tạo mức số',
+            'công cụ lô đề online', 'hệ thống tạo dàn số',
+            'giải pháp tạo dàn đề',
+
+            // ✅ CỐC CỐC OPTIMIZATION - Vietnamese-specific
+            'tạo dàn đề việt nam', 'app tạo dàn đề tiếng việt',
+            'web tạo dàn đề vn', 'công cụ lô đề việt',
+            'tạo dàn số miền bắc', 'tạo dàn số 3 miền',
+
+            // ✅ COMPETITIVE KEYWORDS
+            'kangdh', 'kang dh', 'taodanxoso', 'tao dan xo so',
+            'giai ma so hoc', 'giải mã số học', 'dan de pro', 'dande pro',
 
             // Advanced features
             'ghép lotto', 'tách dàn nhanh', 'lọc ghép dàn đề', 'lọc ghép dàn',
