@@ -219,7 +219,7 @@
 }
 
 .cardSubtitle {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: red;
     font-weight: 600;
     margin: 0;
@@ -491,12 +491,38 @@
     padding: 6px 8px;
     border: 1px solid #e2e8f0;
     background: #f7fafc;
-    width: 45%;
+    width: 38%;
+    font-size: 1.05rem;
+    line-height: 1.3;
+    vertical-align: middle;
 }
 
 .cardContent :global(.table-prediction) :global(td.value) {
     padding: 6px 8px;
     border: 1px solid #e2e8f0;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    vertical-align: middle;
+}
+
+.cardContent :global(.table-prediction) :global(td.value) span,
+.cardContent :global(.table-prediction) :global(td.value) strong,
+.cardContent :global(.table-prediction) :global(td.value) b {
+    color: #ff0000 !important;
+}
+
+.cardContent :global(.table-prediction) strong,
+.cardContent :global(.table-prediction) b {
+    font-weight: 600;
+    font-size: 1.15rem;
+}
+
+.cardContent :global(.table-prediction) :global(.emoji),
+.cardContent :global(.table-prediction) :global(img.emoji) {
+    width: 1.1em !important;
+    height: 1.1em !important;
+    margin-right: 0.25em !important;
+    vertical-align: -0.12em !important;
 }
 
 /* Ẩn clearfix và các wrapper không cần */
@@ -612,7 +638,7 @@
     }
 
     .cardSubtitle {
-        font-size: 0.7rem;
+        font-size: 0.8rem;
     }
 
     .cardContent {
@@ -641,7 +667,7 @@
         all: unset;
         display: inline-block;
         color: #2d3748;
-        font-size: 0.95rem !important;
+        font-size: 1.15rem !important;
         font-weight: 600;
         font-family: Arial, sans-serif !important;
         line-height: 1.5;
@@ -675,17 +701,23 @@
     .cardContent :global(.table-prediction) :global(td.name) {
         padding: 3px 4px;
         border-width: 0.5px;
-        line-height: 1.2;
-        font-size: 0.75rem;
+        line-height: 1;
+        font-size: 1rem;
         vertical-align: middle;
     }
 
     .cardContent :global(.table-prediction) :global(td.value) {
         padding: 3px 4px;
         border-width: 0.5px;
-        line-height: 1.2;
-        font-size: 0.9rem;
+        line-height: 1;
+        font-size: 1.05rem;
         vertical-align: middle;
+    }
+
+    .cardContent :global(.table-prediction) :global(td.value) span,
+    .cardContent :global(.table-prediction) :global(td.value) strong,
+    .cardContent :global(.table-prediction) :global(td.value) b {
+        color: #ff0000 !important;
     }
 
     .cardContent :global(.table-prediction) th {
@@ -695,16 +727,16 @@
     .cardContent :global(.table-prediction) strong,
     .cardContent :global(.table-prediction) b {
         font-weight: 600;
-        font-size: 0.95rem;
-        line-height: 1.2;
+        font-size: 1.1rem;
+        line-height: 1;
     }
 
     .cardContent :global(.table-prediction) :global(.emoji),
     .cardContent :global(.table-prediction) :global(img.emoji) {
-        width: 0.9em !important;
-        height: 0.9em !important;
-        margin-right: 0.15em !important;
-        vertical-align: -0.1em !important;
+        width: 1.05em !important;
+        height: 1.05em !important;
+        margin-right: 0.2em !important;
+        vertical-align: -0.12em !important;
     }
 
     .cardContent h2,
@@ -800,7 +832,7 @@
     }
 
     .cardSubtitle {
-        font-size: 0.65rem;
+        font-size: 0.75rem;
     }
 
     .cardContent {
@@ -829,7 +861,7 @@
         all: unset;
         display: inline-block;
         color: #2d3748;
-        font-size: 0.9rem !important;
+        font-size: 1.1rem !important;
         font-weight: 600;
         font-family: Arial, sans-serif !important;
         line-height: 1.5;
@@ -861,19 +893,23 @@
     }
 
     .cardContent :global(.table-prediction) :global(td.name) {
-        padding: 2px 3px;
         border-width: 0.5px;
-        line-height: 1.1;
-        font-size: 0.7rem;
+        line-height: 0.9;
         vertical-align: middle;
     }
 
     .cardContent :global(.table-prediction) :global(td.value) {
         padding: 2px 3px;
         border-width: 0.5px;
-        line-height: 1.1;
-        font-size: 0.85rem;
+        line-height: 0.9;
+        font-size: 1rem;
         vertical-align: middle;
+    }
+
+    .cardContent :global(.table-prediction) :global(td.value) span,
+    .cardContent :global(.table-prediction) :global(td.value) strong,
+    .cardContent :global(.table-prediction) :global(td.value) b {
+        color: #ff0000 !important;
     }
 
     .cardContent :global(.table-prediction) th {
@@ -883,16 +919,16 @@
     .cardContent :global(.table-prediction) strong,
     .cardContent :global(.table-prediction) b {
         font-weight: 600;
-        font-size: 0.9rem;
-        line-height: 1.1;
+        font-size: 1.05rem;
+        line-height: 0.9;
     }
 
     .cardContent :global(.table-prediction) :global(.emoji),
     .cardContent :global(.table-prediction) :global(img.emoji) {
-        width: 0.85em !important;
-        height: 0.85em !important;
-        margin-right: 0.15em !important;
-        vertical-align: -0.1em !important;
+        width: 1em !important;
+        height: 1em !important;
+        margin-right: 0.2em !important;
+        vertical-align: -0.12em !important;
     }
 
     .cardContent h2,
