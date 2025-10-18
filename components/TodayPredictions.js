@@ -337,12 +337,12 @@ const TodayPredictions = () => {
                         <div className={styles.headerLeft}>
                             <TrendingUp size={20} className={styles.headerIcon} aria-hidden="true" />
                             <h2 className={styles.headerTitle} itemProp="headline">
-                                Dự Đoán XỔ SỐ MIỀN BẮC {isToday ? 'Hôm Nay' : formattedDate}
+                                Dự Đoán XỔ SỐ MIỀN BẮC {isToday ? '' : formattedDate}
                             </h2>
                             <p className={styles.headerSubtitle}>
                                 <Calendar size={14} aria-hidden="true" />
                                 <time dateTime={prediction.predictionDate} itemProp="datePublished">
-                                    {isToday ? `Hôm nay, ${formattedDate}` : formattedDate}
+                                    {isToday ? `${formattedDate}` : formattedDate}
                                 </time>
                             </p>
                         </div>
