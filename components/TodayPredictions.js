@@ -73,6 +73,7 @@ const TodayPredictions = () => {
     const [error, setError] = useState(null);
     const [hasFetched, setHasFetched] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
+    const [isToday, setIsToday] = useState(true);
 
     // Load visibility state from localStorage with error handling
     useEffect(() => {
@@ -134,10 +135,11 @@ const TodayPredictions = () => {
 
             if (result.success) {
                 setPrediction(result.data);
-                console.log('✅ Prediction loaded successfully');
+                setIsToday(result.isToday !== false); // Default to true if not specified
+                console.log('✅ Prediction loaded successfully', result.isToday ? '(Hôm nay)' : '(Bài mới nhất)');
             } else {
-                console.warn('⚠️ No prediction for today:', result.message);
-                setError('Chưa có dự đoán cho hôm nay');
+                console.warn('⚠️ No prediction available:', result.message);
+                setError('Chưa có dự đoán nào');
             }
         } catch (err) {
             console.error('❌ Error fetching prediction:', err);
@@ -166,11 +168,12 @@ const TodayPredictions = () => {
     // Memoized predictions array để tránh re-create mỗi lần render
     const predictions = useMemo(() => {
         if (!prediction) return [];
+        const dateText = `Ngày ${formatDate(prediction.predictionDate)}`;
         return [
             {
                 id: 'lotto',
-                title: `Cầu Lotto đẹp nhất hôm này`,
-                subtitle: `Ngày ${formatDate(prediction.predictionDate)}`,
+                title: `Cầu Lotto đẹp nhất`,
+                subtitle: dateText,
                 content: prediction.lottoContent,
                 icon: Target,
                 gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -179,8 +182,8 @@ const TodayPredictions = () => {
             },
             {
                 id: 'special',
-                title: `Cầu Đặc biệt đẹp nhất hôm nay`,
-                subtitle: `Ngày ${formatDate(prediction.predictionDate)}`,
+                title: `Cầu Đặc biệt đẹp nhất`,
+                subtitle: dateText,
                 content: prediction.specialContent,
                 icon: Star,
                 gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
@@ -189,8 +192,8 @@ const TodayPredictions = () => {
             },
             {
                 id: 'double-jump',
-                title: `Cầu 2 nháy đẹp nhất hôm nay`,
-                subtitle: `Ngày ${formatDate(prediction.predictionDate)}`,
+                title: `Cầu 2 nháy đẹp nhất`,
+                subtitle: dateText,
                 content: prediction.doubleJumpContent,
                 icon: Zap,
                 gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
@@ -200,7 +203,7 @@ const TodayPredictions = () => {
             {
                 id: 'top-table',
                 title: `Bảng lô top`,
-                subtitle: `Ngày ${formatDate(prediction.predictionDate)}`,
+                subtitle: dateText,
                 content: prediction.topTableContent,
                 icon: BarChart3,
                 gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
@@ -210,7 +213,7 @@ const TodayPredictions = () => {
             {
                 id: 'wukong',
                 title: `Dự đoán wukong`,
-                subtitle: `Ngày ${formatDate(prediction.predictionDate)}`,
+                subtitle: dateText,
                 content: prediction.wukongContent,
                 icon: Sparkles,
                 gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
@@ -254,13 +257,16 @@ const TodayPredictions = () => {
     }, [prediction, predictions, formatDate]);
 
     // SEO meta data
-    const seoData = useMemo(() => ({
-        title: `Dự Đoán Xổ Số Miền Bắc Hôm Nay ${formattedDate} - Chuẩn Xác Nhất`,
-        description: `Dự đoán XSMB ${formattedDate}: Cầu lotto đẹp, cầu đặc biệt, cầu 2 nháy, bảng lô top, dự đoán wukong. Cập nhật hàng ngày, độ chính xác cao ✓`,
-        keywords: 'dự đoán xsmb, dự đoán xổ số miền bắc, cầu lotto, cầu đặc biệt, cầu 2 nháy, bảng lô top, dự đoán wukong, soi cầu miền bắc, dàn đề wukong',
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}`,
-        image: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}/imgs/monkey.png`,
-    }), [formattedDate]);
+    const seoData = useMemo(() => {
+        const timeContext = isToday ? 'Hôm Nay' : `Ngày ${formattedDate}`;
+        return {
+            title: `Dự Đoán Xổ Số Miền Bắc ${timeContext} - Chuẩn Xác Nhất`,
+            description: `Dự đoán XSMB ${formattedDate}: Cầu lotto đẹp, cầu đặc biệt, cầu 2 nháy, bảng lô top, dự đoán wukong. Cập nhật hàng ngày, độ chính xác cao ✓`,
+            keywords: 'dự đoán xsmb, dự đoán xổ số miền bắc, cầu lotto, cầu đặc biệt, cầu 2 nháy, bảng lô top, dự đoán wukong, soi cầu miền bắc, dàn đề wukong',
+            url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}`,
+            image: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}/imgs/monkey.png`,
+        };
+    }, [formattedDate, isToday]);
 
     // Early returns after all hooks have been called (Rules of Hooks)
     // Don't render anything if there's an error or no prediction
@@ -331,12 +337,12 @@ const TodayPredictions = () => {
                         <div className={styles.headerLeft}>
                             <TrendingUp size={20} className={styles.headerIcon} aria-hidden="true" />
                             <h2 className={styles.headerTitle} itemProp="headline">
-                                Dự Đoán XỔ SỐ MIỀN BẮC Hôm Nay
+                                Dự Đoán XỔ SỐ MIỀN BẮC {isToday ? 'Hôm Nay' : formattedDate}
                             </h2>
                             <p className={styles.headerSubtitle}>
                                 <Calendar size={14} aria-hidden="true" />
                                 <time dateTime={prediction.predictionDate} itemProp="datePublished">
-                                    {formattedDate}
+                                    {isToday ? `Hôm nay, ${formattedDate}` : formattedDate}
                                 </time>
                             </p>
                         </div>

@@ -304,3 +304,4 @@ console.log('Article lottery HTML:', article.lotteryTableHTML);
 
 
 
+
