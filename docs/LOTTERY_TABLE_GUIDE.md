@@ -299,3 +299,8 @@ console.log('Article lottery HTML:', article.lotteryTableHTML);
 **Version:** 1.0.0
 
 
+
+
+
+
+

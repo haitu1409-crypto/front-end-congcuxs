@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings } from 'lucide-react';
 import Image from 'next/image';
 import RouterErrorBoundary, { useRouterErrorHandler } from './RouterErrorBoundary';
+import TodayPredictions from './TodayPredictions';
 import styles from '../styles/Layout.module.css';
 
 export default function Layout({ children, className = '' }) {
@@ -76,10 +77,10 @@ export default function Layout({ children, className = '' }) {
         { href: '/dan-2d', label: 'Dàn 2D', icon: Target, description: 'Dàn đề 2 chữ số (00-99)' },
         { href: '/dan-3d4d', label: 'Dàn 3D/4D', icon: BarChart3, description: 'Dàn đề 3-4 chữ số' },
         { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star, description: 'Bộ lọc dàn số thông minh' },
-        { href: '/thong-ke', label: 'Lập Thống Kê', icon: TrendingUp, description: 'Thống kê xổ số 3 miền' },
+        { href: '#', label: 'Lập Thống Kê', icon: TrendingUp, description: 'Thống kê xổ số 3 miền' },
         { href: '/content', label: 'Hướng dẫn & Mẹo chơi', icon: HelpCircle, description: 'Hướng dẫn chơi xổ số' },
         { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper, description: 'Tin tức xổ số mới nhất' },
-        { href: '/admin/thong-ke', label: 'Admin', icon: Settings, description: 'Quản trị hệ thống' }
+        { href: '/admin', label: 'Admin', icon: Settings, description: 'Quản trị hệ thống' }
     ];
 
     return (
@@ -190,6 +191,9 @@ export default function Layout({ children, className = '' }) {
                         )}
                     </nav>
                 </header>
+
+                {/* Today Predictions - Hiển thị ở tất cả các trang */}
+                <TodayPredictions />
 
                 {/* Main Content */}
                 <main id="main-content" className={`${styles.main} ${className}`}>
