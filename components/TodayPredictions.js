@@ -72,7 +72,7 @@ const TodayPredictions = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [hasFetched, setHasFetched] = useState(false);
-    const [isVisible, setIsVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
     const [isToday, setIsToday] = useState(true);
 
     // Load visibility state from localStorage with error handling
@@ -81,9 +81,14 @@ const TodayPredictions = () => {
             const saved = localStorage.getItem('predictions-visible');
             if (saved !== null) {
                 setIsVisible(saved === 'true');
+            } else {
+                // Default to hidden if no saved state
+                setIsVisible(false);
             }
         } catch (err) {
             console.warn('localStorage not available:', err);
+            // Default to hidden if localStorage fails
+            setIsVisible(false);
         }
     }, []);
 

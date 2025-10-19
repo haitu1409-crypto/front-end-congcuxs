@@ -342,6 +342,11 @@
     min-height: 60px;
     contain: layout style;
     font-display: swap;
+    /* ✅ CRITICAL: Prevent layout shift during font loading */
+    height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 @media (min-width: 768px) {
@@ -349,6 +354,11 @@
         font-size: var(--text-3xl);
         /* ✅ Fix CLS: Adjust height for desktop */
         min-height: 70px;
+        /* ✅ CRITICAL: Prevent layout shift during font loading */
+        height: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 
@@ -367,6 +377,11 @@
     font-display: swap;
     /* ✅ Additional space reservation for better CLS */
     padding: 8px 0;
+    /* ✅ CRITICAL: Prevent layout shift during font loading */
+    height: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 @media (min-width: 768px) {
@@ -378,6 +393,11 @@
         will-change: auto;
         /* ✅ Additional space reservation for better CLS */
         padding: 12px 0;
+        /* ✅ CRITICAL: Prevent layout shift during font loading */
+        height: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 

@@ -33,7 +33,6 @@ const CLSOptimizer = () => {
             style.textContent = `
                 /* Reserve space for TodayPredictions */
                 .today-predictions-container {
-                    min-height: 200px !important;
                     contain: layout style !important;
                 }
                 

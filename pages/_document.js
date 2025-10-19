@@ -142,15 +142,60 @@ export default function Document() {
             /* ✅ CLS Prevention for TodayPredictions */
             .today-predictions-container,
             [class*="TodayPredictions"] {
-              min-height: 200px;
               contain: layout style;
+              min-height: 50px;
+              height: auto;
             }
             
             /* ✅ CLS Prevention for dynamic components */
             [class*="dynamic"],
             [class*="lazy"] {
               min-height: 150px;
+              height: 150px;
               contain: layout style;
+              overflow: hidden;
+            }
+            
+            /* ✅ CRITICAL: Prevent layout shift for subtitle element */
+            [class*="subtitle"],
+            p[class*="subtitle"] {
+              min-height: 60px !important;
+              height: 60px !important;
+              contain: layout style !important;
+              font-display: swap !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+              white-space: nowrap !important;
+            }
+            
+            /* ✅ CRITICAL: Prevent layout shift for text elements */
+            h1, h2, h3, h4, h5, h6 {
+              font-display: swap !important;
+              contain: layout style !important;
+            }
+            
+            h1 {
+              min-height: 2.5rem !important;
+              height: 2.5rem !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+              white-space: nowrap !important;
+            }
+            
+            h2 {
+              min-height: 2rem !important;
+              height: 2rem !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+              white-space: nowrap !important;
+            }
+            
+            h3 {
+              min-height: 1.75rem !important;
+              height: 1.75rem !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+              white-space: nowrap !important;
             }
             
             @keyframes loading {
