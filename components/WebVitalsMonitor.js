@@ -7,44 +7,6 @@
 import { useEffect } from 'react';
 
 export default function WebVitalsMonitor() {
-    useEffect(() => {
-        // Chỉ load Web Vitals trong production hoặc khi cần thiết
-        if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-            import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-                // Largest Contentful Paint (LCP) - < 2.5s
-                getLCP((metric) => {
-                    console.log('LCP:', metric);
-                    // Gửi metric đến analytics service
-                    sendToAnalytics('LCP', metric.value, metric.rating);
-                });
-
-                // First Input Delay (FID) - < 100ms
-                getFID((metric) => {
-                    console.log('FID:', metric);
-                    sendToAnalytics('FID', metric.value, metric.rating);
-                });
-
-                // Cumulative Layout Shift (CLS) - < 0.1
-                getCLS((metric) => {
-                    console.log('CLS:', metric);
-                    sendToAnalytics('CLS', metric.value, metric.rating);
-                });
-
-                // First Contentful Paint (FCP) - < 1.8s
-                getFCP((metric) => {
-                    console.log('FCP:', metric);
-                    sendToAnalytics('FCP', metric.value, metric.rating);
-                });
-
-                // Time to First Byte (TTFB) - < 800ms
-                getTTFB((metric) => {
-                    console.log('TTFB:', metric);
-                    sendToAnalytics('TTFB', metric.value, metric.rating);
-                });
-            });
-        }
-    }, []);
-
     // Function để gửi metrics đến analytics
     const sendToAnalytics = (metricName, value, rating) => {
         // Gửi đến Google Analytics 4
@@ -83,6 +45,46 @@ export default function WebVitalsMonitor() {
             console.log(`✅ Good ${metricName}: ${value}ms`);
         }
     };
+
+    useEffect(() => {
+        // Chỉ load Web Vitals trong production hoặc khi cần thiết
+        if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+            import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+                // Largest Contentful Paint (LCP) - < 2.5s
+                getLCP((metric) => {
+                    console.log('LCP:', metric);
+                    // Gửi metric đến analytics service
+                    sendToAnalytics('LCP', metric.value, metric.rating);
+                });
+
+                // First Input Delay (FID) - < 100ms
+                getFID((metric) => {
+                    console.log('FID:', metric);
+                    sendToAnalytics('FID', metric.value, metric.rating);
+                });
+
+                // Cumulative Layout Shift (CLS) - < 0.1
+                getCLS((metric) => {
+                    console.log('CLS:', metric);
+                    sendToAnalytics('CLS', metric.value, metric.rating);
+                });
+
+                // First Contentful Paint (FCP) - < 1.8s
+                getFCP((metric) => {
+                    console.log('FCP:', metric);
+                    sendToAnalytics('FCP', metric.value, metric.rating);
+                });
+
+                // Time to First Byte (TTFB) - < 800ms
+                getTTFB((metric) => {
+                    console.log('TTFB:', metric);
+                    sendToAnalytics('TTFB', metric.value, metric.rating);
+                });
+            }).catch(err => {
+                console.error('Failed to load web-vitals:', err);
+            });
+        }
+    }, []);
 
     return null; // Component không render gì
 }

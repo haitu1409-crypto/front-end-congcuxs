@@ -7,9 +7,6 @@ const nextConfig = {
     compress: true,
     poweredByHeader: false,
 
-    // Transpile packages for better performance
-    transpilePackages: ['lucide-react'],
-
     // Images configuration
     images: {
         remotePatterns: [
