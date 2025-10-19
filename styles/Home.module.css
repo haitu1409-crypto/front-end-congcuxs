@@ -338,11 +338,17 @@
     margin-bottom: var(--spacing-2);
     letter-spacing: var(--letter-spacing-tight);
     line-height: var(--line-height-tight);
+    /* ✅ Fix CLS: Reserve space to prevent layout shift */
+    min-height: 60px;
+    contain: layout style;
+    font-display: swap;
 }
 
 @media (min-width: 768px) {
     .mainTitle {
         font-size: var(--text-3xl);
+        /* ✅ Fix CLS: Adjust height for desktop */
+        min-height: 70px;
     }
 }
 
@@ -352,22 +358,26 @@
     font-weight: var(--font-normal);
     line-height: var(--line-height-normal);
     /* ✅ Fix CLS: Reserve space to prevent layout shift */
-    min-height: 60px;
+    min-height: 80px;
     display: block;
     /* ✅ Additional CLS fixes */
     contain: layout style;
     will-change: auto;
     /* ✅ Prevent font loading shifts */
     font-display: swap;
+    /* ✅ Additional space reservation for better CLS */
+    padding: 8px 0;
 }
 
 @media (min-width: 768px) {
     .subtitle {
         font-size: var(--text-base);
-        min-height: 48px;
+        min-height: 60px;
         /* ✅ Additional CLS fixes for desktop */
         contain: layout style;
         will-change: auto;
+        /* ✅ Additional space reservation for better CLS */
+        padding: 12px 0;
     }
 }
 

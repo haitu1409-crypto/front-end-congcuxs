@@ -74,6 +74,11 @@ body {
   overflow-x: hidden;
   /* Better text rendering */
   text-rendering: optimizeLegibility;
+  /* ✅ Fix CLS: Optimize font loading */
+  font-display: swap;
+  /* ✅ Prevent layout shifts during font loading */
+  contain: layout style;
+  will-change: auto;
   /* Enable font kerning */
   font-feature-settings: "kern" 1;
   font-kerning: normal;

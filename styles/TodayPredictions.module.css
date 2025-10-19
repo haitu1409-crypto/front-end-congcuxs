@@ -28,7 +28,7 @@
     contain: layout style;
     will-change: auto;
     /* ✅ Fix CLS: Reserve minimum height to prevent layout shift */
-    min-height: 200px;
+    min-height: 300px;
     /* ✅ Prevent font loading shifts */
     font-display: swap;
 }
@@ -130,9 +130,9 @@
     gap: 12px;
     contain: layout;
     /* ✅ Fix CLS: Reserve minimum height for grid */
-    min-height: 300px;
+    min-height: 400px;
     /* ✅ Prevent layout shifts during loading */
-    contain-intrinsic-size: 300px;
+    contain-intrinsic-size: 400px;
 }
 
 /* Prediction Card - Hardware Accelerated */
@@ -152,11 +152,11 @@
     contain: layout style paint;
     will-change: transform;
     transform: translateZ(0);
-    backface-visibility: hidden;
     /* ✅ Fix CLS: Reserve minimum height for cards */
     min-height: 200px;
     /* ✅ Prevent layout shifts during content loading */
     contain-intrinsic-size: 200px;
+    backface-visibility: hidden;
 }
 
 .predictionCard::before {
@@ -575,7 +575,7 @@
     color: white;
     padding: 15px;
     /* ✅ Fix CLS: Reserve space for loading state */
-    min-height: 200px;
+    min-height: 300px;
     /* ✅ Prevent layout shifts during loading */
     contain: layout style;
     will-change: auto;
