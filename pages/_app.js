@@ -23,6 +23,12 @@ const MultiSearchEngineOptimizer = dynamic(() => import('../components/MultiSear
     loading: () => null
 });
 
+// ✅ SEO Schema Components
+const OrganizationSchema = dynamic(() => import('../components/seo/OrganizationSchema'), {
+    ssr: true,
+    loading: () => null
+});
+
 // Lazy load heavy components with proper error handling
 const Analytics = dynamic(() => import('../components/Analytics'), {
     ssr: false,
@@ -36,10 +42,11 @@ const WebVitalsMonitor = dynamic(() => import('../components/WebVitalsMonitor'),
     ssr: false,
     loading: () => null
 });
-const SEOAnalyticsEnhanced = dynamic(() => import('../components/SEOAnalyticsEnhanced'), {
-    ssr: false,
-    loading: () => null
-});
+// ✅ Temporarily disabled due to web-vitals dependency issue
+// const SEOAnalyticsEnhanced = dynamic(() => import('../components/SEOAnalyticsEnhanced'), {
+//     ssr: false,
+//     loading: () => null
+// });
 const GoogleAnalytics = dynamic(() => import('../components/GoogleAnalytics'), {
     ssr: false,
     loading: () => null
@@ -99,10 +106,11 @@ function MyApp({ Component, pageProps }) {
                 <link rel="preload" as="image" href="/imgs/monkey.png" />
                 <link rel="preload" as="image" href="/imgs/wukong.png" />
 
-                {/* ✅ Search Engine Verification - Placeholder (Replace with actual codes) */}
-                <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" />
-                <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" />
-                <meta name="coccoc-verification" content="YOUR_COCCOC_VERIFICATION_CODE" />
+                {/* ✅ Search Engine Verification */}
+                {/* TODO: Thay YOUR_GOOGLE_VERIFICATION_CODE bằng code thật từ Search Console */}
+                <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "YOUR_GOOGLE_VERIFICATION_CODE"} />
+                <meta name="msvalidate.01" content={process.env.NEXT_PUBLIC_BING_VERIFICATION || "YOUR_BING_VERIFICATION_CODE"} />
+                <meta name="coccoc-verification" content={process.env.NEXT_PUBLIC_COCCOC_VERIFICATION || "YOUR_COCCOC_VERIFICATION_CODE"} />
             </Head>
 
             {/* ✅ Multi-Search Engine Optimizer */}
@@ -111,6 +119,9 @@ function MyApp({ Component, pageProps }) {
                 description="Tạo dàn đề (tao dan de) online miễn phí. Công cụ tạo dàn số, mức số chuyên nghiệp. Hỗ trợ: taodande, lô đề, dan de."
                 keywords="tạo dàn đề wukong, tao dan de wukong, taodandewukong, tạo dàn số, tao dan so, lô đề, lo de"
             />
+
+            {/* ✅ SEO Schema - Organization */}
+            <OrganizationSchema />
 
             {/* Google Analytics */}
             <Analytics />
@@ -122,8 +133,8 @@ function MyApp({ Component, pageProps }) {
             {/* Enhanced Web Vitals Monitor */}
             <WebVitalsMonitor />
 
-            {/* SEO Analytics Enhanced */}
-            <SEOAnalyticsEnhanced />
+            {/* SEO Analytics Enhanced - Temporarily disabled */}
+            {/* <SEOAnalyticsEnhanced /> */}
 
             {/* Global Widget - Quản lý widget toàn cục */}
             <SimpleOnlineWidget />

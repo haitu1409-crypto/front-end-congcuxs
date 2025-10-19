@@ -5,17 +5,22 @@
 
 import Link from 'next/link';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
 import Layout from '../components/Layout';
 import MobileNavbar from '../components/MobileNavbar';
+// ✅ Optimized: Import all icons at once
 import { Target, BarChart3, Star, Zap, CheckCircle } from 'lucide-react';
 import styles from '../styles/Dan9x0x.module.css';
 import SEOOptimized from '../components/SEOOptimized';
-import SEOAnalytics from '../components/SEOAnalytics';
-import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
-import PerformanceMonitor from '../components/PerformanceMonitor';
 import { getPageSEO } from '../config/seoConfig';
 
-// ✅ Lazy load SEO components
+// ✅ Lazy load non-critical components
+const SEOAnalytics = dynamic(() => import('../components/SEOAnalytics'), { ssr: false });
+const PageSpeedOptimizer = dynamic(() => import('../components/PageSpeedOptimizer'), { ssr: false });
+const PerformanceMonitor = dynamic(() => import('../components/PerformanceMonitor'), { ssr: false });
+
+// ✅ Lazy load SEO components (non-critical)
 const AuthorBio = dynamic(() => import('../components/SEO/AuthorBio'), {
     loading: () => null,
     ssr: false
@@ -25,9 +30,6 @@ const DefinitionSnippet = dynamic(() =>
     import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DefinitionSnippet })),
     { ssr: false, loading: () => null }
 );
-// import WukongSlider from '../components/WukongSlider';
-import dynamic from 'next/dynamic';
-import { useEffect } from 'react';
 
 // Lazy load heavy components for better PageSpeed
 const DanDeGenerator = dynamic(() => import('../components/DanDeGenerator'), {

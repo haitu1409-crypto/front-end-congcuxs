@@ -51,27 +51,23 @@ const LocGhepDanComponent = dynamic(() => import('../../components/DanDe/LocGhep
 });
 
 const LayNhanhDacBiet = dynamic(() => import('../../components/DanDe/LayNhanhDacBiet'), {
-    loading: () => <div style={{ padding: '20px', textAlign: 'center' }}>Đang tải lấy nhanh đặc biệt...</div>,
-    ssr: false,
-    suspense: true
+    loading: () => <div style={{ padding: '20px', textAlign: 'center', minHeight: '200px' }}>Đang tải lấy nhanh đặc biệt...</div>,
+    ssr: false
 });
 
 const TaoDanDauDuoi = dynamic(() => import('../../components/DanDe/TaoDanDauDuoi'), {
-    loading: () => <div style={{ padding: '20px', textAlign: 'center' }}>Đang tải tạo dàn đầu đuôi...</div>,
-    ssr: false,
-    suspense: true
+    loading: () => <div style={{ padding: '20px', textAlign: 'center', minHeight: '200px' }}>Đang tải tạo dàn đầu đuôi...</div>,
+    ssr: false
 });
 
 const TaoDanCham = dynamic(() => import('../../components/DanDe/TaoDanCham'), {
-    loading: () => <div style={{ padding: '20px', textAlign: 'center' }}>Đang tải tạo dàn chạm...</div>,
-    ssr: false,
-    suspense: true
+    loading: () => <div style={{ padding: '20px', textAlign: 'center', minHeight: '200px' }}>Đang tải tạo dàn chạm...</div>,
+    ssr: false
 });
 
 const TaoDanBo = dynamic(() => import('../../components/DanDe/TaoDanBo'), {
-    loading: () => <div style={{ padding: '20px', textAlign: 'center' }}>Đang tải tạo dàn bộ...</div>,
-    ssr: false,
-    suspense: true
+    loading: () => <div style={{ padding: '20px', textAlign: 'center', minHeight: '200px' }}>Đang tải tạo dàn bộ...</div>,
+    ssr: false
 });
 
 export default function DanDacBietPage() {
@@ -266,27 +262,27 @@ export default function DanDacBietPage() {
                         {/* Main Tools Grid */}
                         <div className={styles.toolsGrid}>
                             <div className={styles.toolCard} id="nhanh" data-section="nhanh" data-aos="fade-up" data-aos-delay="100">
-                                <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
+                                <HydrationSafeWrapper fallback={<div className={styles.loadingPlaceholder}>Đang tải lấy nhanh đặc biệt...</div>}>
                                     <LayNhanhDacBiet />
-                                </Suspense>
+                                </HydrationSafeWrapper>
                             </div>
 
                             <div className={styles.toolCard} id="dau-duoi" data-section="dau-duoi" data-aos="fade-up" data-aos-delay="200">
-                                <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
+                                <HydrationSafeWrapper fallback={<div className={styles.loadingPlaceholder}>Đang tải tạo dàn đầu đuôi...</div>}>
                                     <TaoDanDauDuoi />
-                                </Suspense>
+                                </HydrationSafeWrapper>
                             </div>
 
                             <div className={styles.toolCard} id="cham" data-section="cham" data-aos="fade-up" data-aos-delay="300">
-                                <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
+                                <HydrationSafeWrapper fallback={<div className={styles.loadingPlaceholder}>Đang tải tạo dàn chạm...</div>}>
                                     <TaoDanCham />
-                                </Suspense>
+                                </HydrationSafeWrapper>
                             </div>
 
                             <div className={styles.toolCard} id="bo" data-section="bo" data-aos="fade-up" data-aos-delay="400">
-                                <Suspense fallback={<div className={styles.loadingPlaceholder}>Đang tải...</div>}>
+                                <HydrationSafeWrapper fallback={<div className={styles.loadingPlaceholder}>Đang tải tạo dàn bộ...</div>}>
                                     <TaoDanBo />
-                                </Suspense>
+                                </HydrationSafeWrapper>
                             </div>
                         </div>
 

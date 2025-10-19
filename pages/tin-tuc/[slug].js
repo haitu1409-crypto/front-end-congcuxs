@@ -14,7 +14,8 @@ import Layout from '../../components/Layout';
 import ArticleSEO from '../../components/ArticleSEO';
 import SocialShareButtons from '../../components/SocialShareButtons';
 import dynamic from 'next/dynamic';
-import '../../styles/XoSoMienBac.module.css'; // ✅ Import CSS cho lottery tables
+// ✅ Removed duplicate CSS import to reduce bundle size
+// import '../../styles/XoSoMienBac.module.css';
 import {
     Calendar,
     Eye,

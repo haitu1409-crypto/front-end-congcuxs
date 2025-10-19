@@ -11,51 +11,42 @@ import styles from '../styles/Home.module.css';
 import EnhancedSEOHead from '../components/EnhancedSEOHead';
 import SEOAnalytics from '../components/SEOAnalytics';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
+import CLSOptimizer from '../components/CLSOptimizer';
 import { getPageSEO } from '../config/seoConfig';
 import { getAllKeywordsForPage } from '../config/keywordVariations';
+// ✅ Optimized: Import all icons at once (better than 10 dynamic imports)
+import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, ArrowRight, Sparkles } from 'lucide-react';
 
-// ✅ Lazy load SEO components for better performance
+// ✅ Lazy load SEO components for better performance with CLS fixes
 const AuthorBio = dynamic(() => import('../components/SEO/AuthorBio'), {
-    loading: () => null,
+    loading: () => <div style={{ minHeight: '200px', contain: 'layout style' }}></div>,
     ssr: false
 });
 
 const TrustSignals = dynamic(() => import('../components/SEO/TrustSignals'), {
-    loading: () => null,
+    loading: () => <div style={{ minHeight: '150px', contain: 'layout style' }}></div>,
     ssr: false
 });
 
 const Testimonials = dynamic(() => import('../components/SEO/Testimonials'), {
-    loading: () => null,
+    loading: () => <div style={{ minHeight: '300px', contain: 'layout style' }}></div>,
     ssr: false
 });
 
 const DirectAnswer = dynamic(() =>
     import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DirectAnswer })),
-    { ssr: false, loading: () => null }
+    { ssr: false, loading: () => <div style={{ minHeight: '200px', contain: 'layout style' }}></div> }
 );
 
 const ListSnippet = dynamic(() =>
     import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.ListSnippet })),
-    { ssr: false, loading: () => null }
+    { ssr: false, loading: () => <div style={{ minHeight: '250px', contain: 'layout style' }}></div> }
 );
 
 const TableSnippet = dynamic(() =>
     import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.TableSnippet })),
-    { ssr: false, loading: () => null }
+    { ssr: false, loading: () => <div style={{ minHeight: '300px', contain: 'layout style' }}></div> }
 );
-
-// ✅ Dynamic icon imports for better performance
-const Dice6 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Dice6 })), { ssr: false });
-const Target = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Target })), { ssr: false });
-const BarChart3 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.BarChart3 })), { ssr: false });
-const Star = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Star })), { ssr: false });
-const Zap = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Zap })), { ssr: false });
-const CheckCircle = dynamic(() => import('lucide-react').then(mod => ({ default: mod.CheckCircle })), { ssr: false });
-const Heart = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Heart })), { ssr: false });
-const Smartphone = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Smartphone })), { ssr: false });
-const ArrowRight = dynamic(() => import('lucide-react').then(mod => ({ default: mod.ArrowRight })), { ssr: false });
-const Sparkles = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Sparkles })), { ssr: false });
 
 // ✅ Memoized Homepage component for better performance
 const Home = memo(function Home() {
@@ -220,6 +211,7 @@ const Home = memo(function Home() {
             />
             <SEOAnalytics />
             <PageSpeedOptimizer />
+            <CLSOptimizer />
 
             <Layout>
                 <div className={styles.container}>

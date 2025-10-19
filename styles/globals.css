@@ -80,6 +80,10 @@ body {
   /* Prevent horizontal scroll on all devices */
   max-width: 100vw;
   position: relative;
+  /* ✅ Fix CLS: Optimize font loading */
+  font-display: swap;
+  /* ✅ Prevent layout shifts during font loading */
+  contain: layout style;
 }
 
 /* ===== TYPOGRAPHY ===== */

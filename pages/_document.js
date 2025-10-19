@@ -22,6 +22,10 @@ export default function Document() {
                 {/* Only preload critical resources that are used immediately above the fold */}
                 {/* Removed unnecessary preloads to avoid browser warnings */}
 
+                {/* ===== CRITICAL CSS FOR CLS PREVENTION ===== */}
+                <link rel="preload" href="/styles/critical.css" as="style" onLoad="this.onload=null;this.rel='stylesheet'" />
+                <noscript><link rel="stylesheet" href="/styles/critical.css" /></noscript>
+
                 {/* ===== GOOGLE ANALYTICS (gtag.js) - DEFER LOADING ===== */}
                 <script
                     async
@@ -105,6 +109,10 @@ export default function Document() {
               font-size: 0.875rem;
               color: #6b7280;
               line-height: 1.5;
+              /* ✅ Fix CLS: Reserve space to prevent layout shift */
+              min-height: 60px;
+              contain: layout style;
+              font-display: swap;
             }
             
             /* Focus visible for accessibility */
@@ -126,6 +134,23 @@ export default function Document() {
               margin: 1rem 0;
               color: #666;
               font-weight: 500;
+              /* ✅ Fix CLS: Reserve space for loading states */
+              min-height: 200px;
+              contain: layout style;
+            }
+            
+            /* ✅ CLS Prevention for TodayPredictions */
+            .today-predictions-container,
+            [class*="TodayPredictions"] {
+              min-height: 200px;
+              contain: layout style;
+            }
+            
+            /* ✅ CLS Prevention for dynamic components */
+            [class*="dynamic"],
+            [class*="lazy"] {
+              min-height: 150px;
+              contain: layout style;
             }
             
             @keyframes loading {

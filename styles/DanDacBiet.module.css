@@ -3,7 +3,7 @@
  */
 
 .pageContainer {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 1rem;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -63,12 +63,16 @@
     margin: 2rem 0;
     padding: 0;
     background: transparent;
+    /* ✅ Fix CLS: Reserve space to prevent layout shift */
+    min-height: 400px;
+    contain: layout style;
 }
 
 /* ===== TẠO DÀN CHẠM LAYOUT ===== */
 .chamLayout {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 10px;
     align-items: start;
 }
 
@@ -275,6 +279,7 @@
 .twoColumnLayout {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 10px;
     align-items: start;
 }
 
@@ -548,9 +553,12 @@
     border-radius: 24px;
     color: #000;
     overflow: hidden;
-    /* min-height: 500px; */
+    /* ✅ Fix CLS: Reserve space to prevent layout shift */
+    min-height: 100px;
     display: flex;
     align-items: center;
+    /* ✅ Prevent font loading shifts */
+    contain: layout style;
 }
 
 .heroSection::before {
@@ -584,6 +592,9 @@
 
 .heroTitle {
     margin-bottom: 1.5rem;
+    /* ✅ Fix CLS: Reserve space for title to prevent layout shift */
+    min-height: 80px;
+    contain: layout style;
 }
 
 .heroTitleMain {
@@ -593,6 +604,9 @@
     color: #000;
     -webkit-background-clip: text;
     background-clip: text;
+    /* ✅ Fix CLS: Prevent font loading shifts */
+    font-display: swap;
+    contain: layout style;
 }
 
 .heroTitleSub {
@@ -606,10 +620,22 @@
 @media (min-width: 768px) {
     .heroTitleMain {
         font-size: 2rem;
+        /* ✅ Fix CLS: Maintain space reservation on desktop */
+        min-height: 60px;
     }
 
     .heroTitleSub {
         font-size: 1.4rem;
+    }
+
+    .heroSection {
+        /* ✅ Fix CLS: Adjust height for desktop */
+        min-height: 100px;
+    }
+
+    .toolsGrid {
+        /* ✅ Fix CLS: Adjust height for desktop */
+        min-height: 1000px;
     }
 }
 
@@ -621,12 +647,19 @@
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
+    /* ✅ Fix CLS: Reserve space to prevent layout shift */
+    min-height: 60px;
+    contain: layout style;
+    font-display: swap;
 }
 
 .heroStats {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+    /* ✅ Fix CLS: Reserve space to prevent layout shift */
+    min-height: 100px;
+    contain: layout style;
     margin-bottom: 2.5rem;
     max-width: 600px;
     margin-left: auto;
@@ -780,6 +813,9 @@
     grid-template-columns: 1fr;
     gap: 2rem;
     margin-bottom: 3rem;
+    /* ✅ Fix CLS: Reserve space to prevent layout shift */
+    min-height: 1200px;
+    contain: layout style;
 }
 
 .toolCard {
@@ -789,6 +825,10 @@
     border: 1px solid #e2e8f0;
     position: relative;
     overflow: hidden;
+    /* ✅ Fix CLS: Reserve minimum height to prevent layout shift */
+    min-height: 300px;
+    /* ✅ Prevent layout shifts during loading */
+    contain: layout style;
 }
 
 .toolCard::before {
@@ -1473,6 +1513,9 @@
     color: #64748b;
     font-size: 14px;
     font-weight: 500;
+    /* ✅ Fix CLS: Prevent layout shifts during loading */
+    contain: layout style;
+    will-change: auto;
     animation: pulse 2s infinite;
 }
 
@@ -2083,4 +2126,47 @@
     .floatingNumber {}
 
     /* AOS s disabled in globals.css */
+}
+
+/* ===== MOBILE CLS FIXES ===== */
+@media (max-width: 768px) {
+    .heroSection {
+        /* ✅ Fix CLS: Adjust height for mobile */
+        /* min-height: 100px; */
+    }
+
+    .heroTitle {
+        /* ✅ Fix CLS: Adjust height for mobile */
+        min-height: 60px;
+    }
+
+    .heroTitleMain {
+        /* ✅ Fix CLS: Adjust height for mobile */
+        min-height: 50px;
+    }
+
+    .heroSubtitle {
+        /* ✅ Fix CLS: Adjust height for mobile */
+        min-height: 40px;
+    }
+
+    .heroStats {
+        /* ✅ Fix CLS: Adjust height for mobile */
+        min-height: 80px;
+    }
+
+    .toolsGrid {
+        /* ✅ Fix CLS: Adjust height for mobile */
+        min-height: 1400px;
+    }
+
+    .toolCard {
+        /* ✅ Fix CLS: Adjust height for mobile */
+        min-height: 250px;
+    }
+
+    .locGhepSection {
+        /* ✅ Fix CLS: Adjust height for mobile */
+        min-height: 350px;
+    }
 }

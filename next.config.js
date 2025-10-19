@@ -1,6 +1,7 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-    enabled: process.env.ANALYZE === 'true',
-});
+// ✅ Bundle Analyzer - commented out to prevent build errors
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+//     enabled: process.env.ANALYZE === 'true',
+// });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -103,6 +104,21 @@ const nextConfig = {
                     {
                         key: 'Permissions-Policy',
                         value: 'camera=(), microphone=(), geolocation=()'
+                    },
+                    // Content Security Policy (CSP) - Chống XSS & injection attacks
+                    {
+                        key: 'Content-Security-Policy',
+                        value: [
+                            "default-src 'self'",
+                            "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+                            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                            "img-src 'self' data: https: http:",
+                            "font-src 'self' data: https://fonts.gstatic.com",
+                            "connect-src 'self' https://www.google-analytics.com https://api.taodandewukong.pro",
+                            "frame-ancestors 'self'",
+                            "base-uri 'self'",
+                            "form-action 'self'"
+                        ].join('; ')
                     },
                 ],
             },
@@ -322,7 +338,7 @@ const nextConfig = {
 
     // Experimental features for better performance
     experimental: {
-        optimizeCss: true,
+        optimizeCss: true, // Critical CSS extraction
         optimizePackageImports: ['lucide-react'],
         // Optimize server components
         serverComponentsExternalPackages: ['axios'],
@@ -358,5 +374,6 @@ const nextConfig = {
     },
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+// module.exports = withBundleAnalyzer(nextConfig);
+module.exports = nextConfig;
 
