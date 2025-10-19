@@ -24,7 +24,7 @@ const MultiSearchEngineOptimizer = dynamic(() => import('../components/MultiSear
 });
 
 // ✅ SEO Schema Components
-const OrganizationSchema = dynamic(() => import('../components/seo/OrganizationSchema'), {
+const OrganizationSchema = dynamic(() => import('../components/SEO/OrganizationSchema'), {
     ssr: true,
     loading: () => null
 });

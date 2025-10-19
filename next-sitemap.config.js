@@ -235,7 +235,7 @@ module.exports = {
         `${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}/news-sitemap.xml`,
     ],
 
-    // Output directory
-    outDir: './public',
+    // Output directory - disable to avoid conflicts with pages/sitemap.xml.js
+    // outDir: './public',
 };
 
