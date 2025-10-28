@@ -169,12 +169,6 @@ export default function MobileNavbar({
                 label: 'Tạo Dàn 3D/4D',
                 icon: BarChart3,
                 href: '/dan-3d4d'
-            },
-            {
-                id: 'page-thong-ke',
-                label: 'Thống Kê XS',
-                icon: TrendingUp,
-                href: '/thong-ke'
             }
         ];
 

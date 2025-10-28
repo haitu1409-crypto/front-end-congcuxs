@@ -7,10 +7,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings } from 'lucide-react';
+import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import RouterErrorBoundary, { useRouterErrorHandler } from './RouterErrorBoundary';
-import TodayPredictions from './TodayPredictions';
+import DesktopHeader from './DesktopHeader';
 import styles from '../styles/Layout.module.css';
 
 export default function Layout({ children, className = '' }) {
@@ -73,12 +73,14 @@ export default function Layout({ children, className = '' }) {
 
     const navLinks = [
         { href: '/', label: 'Trang chủ', icon: Home, description: 'Trang chủ chính' },
+        { href: '/kqxs', label: 'Kết Quả Xổ Số', icon: Calendar, description: 'Xem kết quả xổ số 3 miền mới nhất', isNew: true },
         { href: '/dan-9x0x', label: 'Dàn 9x-0x', icon: Target, description: 'Tạo dàn số 9x-0x chuyên nghiệp', isNew: true },
         { href: '/dan-2d', label: 'Dàn 2D', icon: Target, description: 'Dàn đề 2 chữ số (00-99)' },
         { href: '/dan-3d4d', label: 'Dàn 3D/4D', icon: BarChart3, description: 'Dàn đề 3-4 chữ số' },
         { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star, description: 'Bộ lọc dàn số thông minh' },
-        { href: '#', label: 'Lập Thống Kê', icon: TrendingUp, description: 'Thống kê xổ số 3 miền' },
-        { href: '/content', label: 'Hướng dẫn & Mẹo chơi', icon: HelpCircle, description: 'Hướng dẫn chơi xổ số' },
+        { href: '/soi-cau', label: 'Soi Cầu', icon: Target, description: 'Soi cầu bạch thủ miền Bắc' },
+        { href: '/soicau-bayesian', label: 'Soi Cầu AI', icon: BarChart3, description: 'Dự đoán XSMB bằng thuật toán AI tiên tiến', isNew: true },
+        { href: '/soi-cau-vi-tri', label: 'Soi Cầu Vị Trí', icon: Target, description: 'Soi cầu dựa trên vị trí số', isNew: true },
         { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper, description: 'Tin tức xổ số mới nhất' },
         { href: '/admin', label: 'Admin', icon: Settings, description: 'Quản trị hệ thống' }
     ];
@@ -90,6 +92,9 @@ export default function Layout({ children, className = '' }) {
                 <a href="#main-content" className={styles.skipToContent}>
                     Đi đến nội dung chính
                 </a>
+
+                {/* Desktop Header Box - Chỉ hiển thị trên desktop */}
+                <DesktopHeader />
 
                 {/* Header / Navigation */}
                 <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
@@ -192,9 +197,6 @@ export default function Layout({ children, className = '' }) {
                     </nav>
                 </header>
 
-                {/* Today Predictions - Hiển thị ở tất cả các trang */}
-                <TodayPredictions />
-
                 {/* Main Content */}
                 <main id="main-content" className={`${styles.main} ${className}`}>
                     {children}
@@ -243,6 +245,11 @@ export default function Layout({ children, className = '' }) {
                                 <h4 className={styles.footerSectionTitle}>Công cụ</h4>
                                 <ul className={styles.footerLinks}>
                                     <li>
+                                        <Link href="/kqxs" className={styles.footerLink}>
+                                            Kết Quả Xổ Số
+                                        </Link>
+                                    </li>
+                                    <li>
                                         <Link href="/" className={styles.footerLink}>
                                             Dàn 9x-0x
                                         </Link>
@@ -275,8 +282,13 @@ export default function Layout({ children, className = '' }) {
                                 <h4 className={styles.footerSectionTitle}>Hỗ trợ</h4>
                                 <ul className={styles.footerLinks}>
                                     <li>
-                                        <Link href="/content" className={styles.footerLink}>
-                                            Hướng dẫn & Mẹo chơi
+                                        <Link href="/soi-cau" className={styles.footerLink}>
+                                            Soi Cầu
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link href="/soicau-bayesian" className={styles.footerLink}>
+                                            Soi Cầu Bayesian
                                         </Link>
                                     </li>
                                     <li>

@@ -471,6 +471,168 @@ const SEO_CONFIG = {
             type: 'CollectionPage',
             additionalTypes: []
         }
+    },
+
+    /**
+     * SOI CẦU BAYESIAN - NEW HIGH PRIORITY
+     * PRIMARY: soi cầu miền bắc hôm nay (74,000), dự đoán XSMB (12,100), soi cầu MB (8,100)
+     * SECONDARY: thống kê vị trí XSMB (2,900), phân tích xổ số miền Bắc (1,600)
+     * ENHANCED: Multi-search engine optimization + User behavior keywords
+     */
+    soiCauBayesian: {
+        title: 'Soi Cầu Miền Bắc Hôm Nay | Dự Đoán XSMB Chính Xác 100% - Thuật Toán Bayesian 2025',
+        description: generateMetaDescription('soiCauBayesian', true),
+        keywords: [
+            // ✅ PRIMARY KEYWORDS - Từ khóa chính có volume cao
+            'soi cầu miền bắc hôm nay', 'soi cau mien bac hom nay',
+            'dự đoán XSMB hôm nay', 'du doan XSMB hom nay',
+            'soi cầu MB hôm nay', 'soi cau MB hom nay',
+            'soi cầu miền bắc', 'soi cau mien bac',
+            'dự đoán XSMB', 'du doan XSMB',
+            'soi cầu MB', 'soi cau MB',
+
+            // ✅ BRAND + FEATURE COMBINATIONS
+            'soi cầu wukong', 'soi cau wukong',
+            'soi cầu miền bắc wukong', 'soi cau mien bac wukong',
+            'dự đoán XSMB wukong', 'du doan XSMB wukong',
+            'soi cầu MB wukong', 'soi cau MB wukong',
+            'wukong soi cầu', 'wukong soi cau',
+            'wukong dự đoán XSMB', 'wukong du doan XSMB',
+
+            // ✅ LONG-TAIL KEYWORDS - Câu hỏi người dùng
+            'soi cầu miền bắc hôm nay chính xác', 'soi cau mien bac hom nay chinh xac',
+            'dự đoán XSMB hôm nay chuẩn', 'du doan XSMB hom nay chuan',
+            'soi cầu MB hôm nay miễn phí', 'soi cau MB hom nay mien phi',
+            'soi cầu miền bắc online', 'soi cau mien bac online',
+            'dự đoán xổ số miền bắc hôm nay', 'du doan xo so mien bac hom nay',
+            'soi cầu xổ số miền bắc', 'soi cau xo so mien bac',
+
+            // ✅ TIME-BASED KEYWORDS - Theo thời gian
+            'soi cầu miền bắc ngày mai', 'soi cau mien bac ngay mai',
+            'dự đoán XSMB ngày mai', 'du doan XSMB ngay mai',
+            'soi cầu MB ngày mai', 'soi cau MB ngay mai',
+            'soi cầu miền bắc tuần này', 'soi cau mien bac tuan nay',
+            'dự đoán XSMB tuần này', 'du doan XSMB tuan nay',
+
+            // ✅ METHOD-SPECIFIC KEYWORDS - Phương pháp cụ thể
+            'soi cầu Bayesian miền bắc', 'soi cau Bayesian mien bac',
+            'dự đoán Bayesian XSMB', 'du doan Bayesian XSMB',
+            'soi cầu thống kê miền bắc', 'soi cau thong ke mien bac',
+            'phân tích Bayesian XSMB', 'phan tich Bayesian XSMB',
+            'soi cầu AI miền bắc', 'soi cau AI mien bac',
+            'dự đoán AI XSMB', 'du doan AI XSMB',
+
+            // ✅ COMPETITIVE KEYWORDS - Đối thủ cạnh tranh
+            'soi cầu miền bắc xskt', 'soi cau mien bac xskt',
+            'soi cầu miền bắc xoso', 'soi cau mien bac xoso',
+            'soi cầu miền bắc atrungroi', 'soi cau mien bac atrungroi',
+            'soi cầu miền bắc xsmn247', 'soi cau mien bac xsmn247',
+            'soi cầu miền bắc xosothantai', 'soi cau mien bac xosothantai',
+
+            // ✅ STATISTICAL KEYWORDS - Thống kê
+            'thống kê vị trí XSMB', 'thong ke vi tri XSMB',
+            'phân tích xổ số miền Bắc', 'phan tich xo so mien Bac',
+            'thống kê XSMB hôm nay', 'thong ke XSMB hom nay',
+            'bảng thống kê XSMB', 'bang thong ke XSMB',
+            'tần suất xuất hiện XSMB', 'tan suat xuat hien XSMB',
+            'số nóng số lạnh XSMB', 'so nong so lanh XSMB',
+
+            // ✅ REGIONAL VARIATIONS - Biến thể theo vùng
+            'soi cầu xsmb', 'soi cau xsmb',
+            'dự đoán xsmb', 'du doan xsmb',
+            'soi cầu xổ số miền bắc', 'soi cau xo so mien bac',
+            'soi cầu miền bắc 3 miền', 'soi cau mien bac 3 mien',
+            'soi cầu miền bắc 24h', 'soi cau mien bac 24h',
+
+            // ✅ ACCURACY KEYWORDS - Độ chính xác
+            'soi cầu miền bắc chính xác 100%', 'soi cau mien bac chinh xac 100%',
+            'dự đoán XSMB chuẩn nhất', 'du doan XSMB chuan nhat',
+            'soi cầu MB siêu chuẩn', 'soi cau MB sieu chuan',
+            'soi cầu miền bắc uy tín', 'soi cau mien bac uy tin',
+            'soi cầu miền bắc chuyên nghiệp', 'soi cau mien bac chuyen nghiep',
+
+            // ✅ FREE KEYWORDS - Miễn phí
+            'soi cầu miền bắc miễn phí', 'soi cau mien bac mien phi',
+            'dự đoán XSMB miễn phí', 'du doan XSMB mien phi',
+            'soi cầu MB free', 'soi cau MB free',
+            'soi cầu miền bắc không mất phí', 'soi cau mien bac khong mat phi',
+
+            // ✅ MOBILE KEYWORDS - Di động
+            'soi cầu miền bắc mobile', 'soi cau mien bac mobile',
+            'soi cầu XSMB app', 'soi cau XSMB app',
+            'dự đoán XSMB điện thoại', 'du doan XSMB dien thoai',
+            'soi cầu miền bắc wap', 'soi cau mien bac wap',
+
+            // ✅ TECHNICAL KEYWORDS - Kỹ thuật
+            'soi cầu miền bắc thuật toán', 'soi cau mien bac thuat toan',
+            'dự đoán XSMB machine learning', 'du doan XSMB machine learning',
+            'soi cầu MB AI', 'soi cau MB AI',
+            'phân tích dữ liệu XSMB', 'phan tich du lieu XSMB',
+            'soi cầu miền bắc big data', 'soi cau mien bac big data',
+
+            // ✅ MISSING DIACRITICS - Thiếu dấu
+            'soi cau mien bac', 'soi cau MB',
+            'du doan XSMB', 'du doan xsmb',
+            'soi cau xo so mien bac', 'soi cau xsmb',
+            'thong ke vi tri XSMB', 'thong ke XSMB',
+
+            // ✅ SPACING VARIATIONS - Biến thể khoảng trắng
+            'soicau mien bac', 'soicauMB',
+            'dudoan XSMB', 'dudoanxsmb',
+            'soicau xsmb', 'soicauxsmb',
+            'thongke XSMB', 'thongkexsmb',
+
+            // ✅ HYPHEN VARIATIONS - Biến thể gạch ngang
+            'soi-cau-mien-bac', 'soi-cau-MB',
+            'du-doan-XSMB', 'du-doan-xsmb',
+            'soi-cau-xsmb', 'thong-ke-XSMB',
+
+            // ✅ QUESTION KEYWORDS - Câu hỏi
+            'soi cầu miền bắc hôm nay như thế nào', 'soi cau mien bac hom nay nhu the nao',
+            'dự đoán XSMB hôm nay ra sao', 'du doan XSMB hom nay ra sao',
+            'soi cầu MB hôm nay có chính xác không', 'soi cau MB hom nay co chinh xac khong',
+            'cách soi cầu miền bắc hôm nay', 'cach soi cau mien bac hom nay',
+            'làm sao để soi cầu XSMB', 'lam sao de soi cau XSMB',
+
+            // ✅ COMPARISON KEYWORDS - So sánh
+            'soi cầu miền bắc tốt nhất', 'soi cau mien bac tot nhat',
+            'dự đoán XSMB chính xác nhất', 'du doan XSMB chinh xac nhat',
+            'soi cầu MB uy tín nhất', 'soi cau MB uy tin nhat',
+            'soi cầu miền bắc nào tốt', 'soi cau mien bac nao tot',
+
+            // ✅ URGENCY KEYWORDS - Khẩn cấp
+            'soi cầu miền bắc hôm nay gấp', 'soi cau mien bac hom nay gap',
+            'dự đoán XSMB hôm nay nhanh', 'du doan XSMB hom nay nhanh',
+            'soi cầu MB hôm nay khẩn cấp', 'soi cau MB hom nay khan cap',
+            'soi cầu miền bắc hôm nay ngay', 'soi cau mien bac hom nay ngay'
+        ],
+        url: '/soi-cau-bayesian',
+        image: `${SITE_URL}/imgs/soi-cau-bayesian.png`,
+        canonical: `${SITE_URL}/soi-cau-bayesian`,
+        type: 'article',
+        priority: 0.95,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Article',
+            additionalTypes: ['FAQPage', 'SoftwareApplication']
+        },
+        sections: {
+            soiCauHomNay: {
+                title: 'Soi Cầu Miền Bắc Hôm Nay',
+                url: '/soi-cau-bayesian#soi-cau-hom-nay',
+                keywords: ['soi cầu miền bắc hôm nay', 'soi cau mien bac hom nay', 'dự đoán XSMB hôm nay']
+            },
+            thongKeViTri: {
+                title: 'Thống Kê Vị Trí XSMB',
+                url: '/soi-cau-bayesian#thong-ke-vi-tri',
+                keywords: ['thống kê vị trí XSMB', 'thong ke vi tri XSMB', 'phân tích xổ số miền Bắc']
+            },
+            phuongPhapBayesian: {
+                title: 'Phương Pháp Bayesian',
+                url: '/soi-cau-bayesian#phuong-phap-bayesian',
+                keywords: ['soi cầu Bayesian', 'dự đoán Bayesian XSMB', 'thuật toán Bayesian']
+            }
+        }
     }
 };
 

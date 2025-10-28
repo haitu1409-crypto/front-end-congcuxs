@@ -102,6 +102,7 @@
     margin: 0 auto;
     padding: 0 var(--spacing-4);
     padding-bottom: 40px;
+    background-color: white;
 }
 
 /* ===== SECTION TITLES ===== */

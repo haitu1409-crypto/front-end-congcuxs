@@ -14,7 +14,7 @@
 .filterSections {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    align-items: start;
+    align-items: flex-start;
 }
 
 .filterButtons {
@@ -73,7 +73,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    align-items: start;
+    align-items: flex-start;
 }
 
 /* ===== LẤY NHANH DÀN ĐẶC BIỆT LAYOUT ===== */
@@ -280,7 +280,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    align-items: start;
+    align-items: flex-start;
 }
 
 @media (max-width: 768px) {
@@ -1437,7 +1437,7 @@
     .filterSections {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
-        align-items: start;
+        align-items: flex-start;
     }
 
     .heroSection {

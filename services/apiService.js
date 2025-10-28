@@ -191,6 +191,76 @@ class ApiService {
     }
 
     /**
+     * Lấy soi cầu bạch thủ
+     */
+    async getSoiCauBachThu(params = {}) {
+        return this.fetchWithCache(API_CONFIG.ENDPOINTS.SOI_CAU.BACH_THU, {
+            params,
+            useCache: true
+        });
+    }
+
+    /**
+     * Lấy soi cầu bạch thủ trong khoảng thời gian
+     */
+    async getSoiCauRange(params = {}) {
+        return this.fetchWithCache(API_CONFIG.ENDPOINTS.SOI_CAU.RANGE, {
+            params,
+            useCache: true
+        });
+    }
+
+    /**
+     * Lấy dự đoán bạch thủ đề
+     */
+    async getBachThuDe(params = {}) {
+        return this.fetchWithCache(API_CONFIG.ENDPOINTS.BACH_THU_DE.BASE, {
+            params,
+            useCache: true
+        });
+    }
+
+    /**
+     * Lấy dự đoán bạch thủ đề hôm nay
+     */
+    async getBachThuDeToday() {
+        return this.fetchWithCache(API_CONFIG.ENDPOINTS.BACH_THU_DE.TODAY, {
+            useCache: true
+        });
+    }
+
+    /**
+     * Lấy kết quả soi cầu dựa trên vị trí số
+     */
+    async getPositionSoiCau(params = {}) {
+        return this.fetchWithCache('/api/position-soicau', {
+            params,
+            useCache: true
+        });
+    }
+
+    /**
+     * Lấy kết quả soi cầu vị trí trong khoảng thời gian
+     */
+    async getPositionSoiCauRange(params = {}) {
+        return this.fetchWithCache('/api/position-soicau/range', {
+            params,
+            useCache: true
+        });
+    }
+
+    /**
+     * Lấy thống kê pattern vị trí
+     */
+    async getPositionPatternStats(params = {}) {
+        return this.fetchWithCache('/api/position-soicau/stats', {
+            params,
+            useCache: true
+        });
+    }
+
+
+    /**
      * Xóa toàn bộ cache
      */
     clearCache() {

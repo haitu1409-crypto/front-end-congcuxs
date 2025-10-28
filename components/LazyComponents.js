@@ -9,29 +9,6 @@ import ErrorBoundary from './ErrorBoundary';
 import LoadingSpinner from './LoadingSpinner';
 
 // Lazy load các components chính
-export const StatisticsTable = lazy(() =>
-    import('./ThongKe/StatisticsTable').then(module => ({
-        default: module.default
-    }))
-);
-
-export const SummaryCards = lazy(() =>
-    import('./ThongKe/SummaryCards').then(module => ({
-        default: module.default
-    }))
-);
-
-export const ExportableTable = lazy(() =>
-    import('./ThongKe/ExportableTable').then(module => ({
-        default: module.default
-    }))
-);
-
-export const EditableCell = lazy(() =>
-    import('./ThongKe/EditableCell').then(module => ({
-        default: module.default
-    }))
-);
 
 // Lazy load các components DanDe
 export const DanDeGenerator = lazy(() =>
@@ -72,18 +49,6 @@ export const withLazyLoading = (LazyComponent, fallback = null, errorMessage = n
 };
 
 // Pre-configured lazy components với Error Boundary
-export const SafeStatisticsTable = withLazyLoading(
-    StatisticsTable,
-    <DefaultLoadingSpinner />,
-    'Lỗi khi tải bảng thống kê. Vui lòng thử lại.'
-);
-
-export const SafeSummaryCards = withLazyLoading(
-    SummaryCards,
-    <DefaultLoadingSpinner />,
-    'Lỗi khi tải thống kê tổng quan. Vui lòng thử lại.'
-);
-
 export const SafeDanDeGenerator = withLazyLoading(
     DanDeGenerator,
     <DefaultLoadingSpinner />,

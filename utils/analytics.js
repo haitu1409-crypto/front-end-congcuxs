@@ -61,7 +61,7 @@ export const trackPerformance = (metric, value, unit = 'ms') => {
 };
 
 // Auto-initialize analytics when module is imported
-// DISABLED: Widget được quản lý bởi SimpleOnlineWidget component
+// DISABLED: Widget đã được loại bỏ
 // if (typeof window !== 'undefined') {
 //     // Initialize tracking error handling first
 //     initTrackingErrorHandling();

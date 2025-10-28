@@ -1,0 +1,849 @@
+/**
+ * Position Soi Cau Styles
+ * CSS cho component soi cầu dựa trên vị trí số
+ */
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.titleGroup {
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin: 0;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.groupSelect {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid blue;
+}
+
+.selectGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+}
+
+.options {
+    font-weight: 600;
+    color: #374151;
+    white-space: nowrap;
+}
+
+.select {
+    padding: 8px 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 80px;
+}
+
+.select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.suggestedDateBtn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.suggestedDateBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.tablePositionSoiCau {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.tablePositionSoiCau th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.tablePositionSoiCau td {
+    padding: 15px 12px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+}
+
+.tablePositionSoiCau tr:hover {
+    background: #f8fafc;
+}
+
+.predictionNumber {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.position {
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.position small {
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+.confidence {
+    font-weight: 600;
+    color: #374151;
+}
+
+.confidenceBar {
+    width: 100%;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.confidenceFill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    transition: width 0.3s ease;
+}
+
+.noData {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 40px 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 30px 0 15px 0;
+}
+
+.detailedAnalysis {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #e5e7eb;
+}
+
+.analysisSection {
+    margin-bottom: 20px;
+}
+
+.analysisSection:last-child {
+    margin-bottom: 0;
+}
+
+.analysisSection h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.analysisSection p {
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.analysisSection ul {
+    margin: 8px 0 0 0;
+    padding-left: 20px;
+}
+
+.analysisSection li {
+    color: #6b7280;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.groupContent {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.contentWrapper {
+    line-height: 1.6;
+}
+
+.desc {
+    color: #6b7280;
+    margin-bottom: 15px;
+}
+
+.stepsList {
+    color: #6b7280;
+    margin: 15px 0;
+    padding-left: 20px;
+}
+
+.stepsList li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.stepsList strong {
+    color: #374151;
+}
+
+/* Statistics Table */
+.statisticsTable {
+    margin-bottom: 30px;
+}
+
+/* Grouped Table Styles */
+.groupedTableWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.countGroup {
+    flex: 1;
+    min-width: 200px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.countHeader {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 16px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.countLabel {
+    display: block;
+}
+
+.numbersList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px;
+    justify-content: center;
+}
+
+.numberItem {
+    background: white;
+    border: 1px solid #d97706;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+    min-width: 40px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.numberItem:hover {
+    background: #e0f2fe;
+    border-color: #0ea5e9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Legacy simple table styles */
+.simpleTableWrapper {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.simpleTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.simpleTable tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s ease;
+}
+
+.simpleTable tr:hover {
+    background: #f8fafc;
+}
+
+.simpleTable tr:last-child {
+    border-bottom: none;
+}
+
+.simpleNumber {
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+    background: #f8fafc;
+    border-right: 1px solid #e5e7eb;
+    width: 80px;
+}
+
+.simpleCount {
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    text-align: left;
+}
+
+/* Legacy styles for old table (keeping for compatibility) */
+.tableStatistics {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tableStatistics th {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tableStatistics th:last-child {
+    border-right: none;
+}
+
+.statisticsCell {
+    padding: 8px;
+    text-align: center;
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+    min-height: 60px;
+}
+
+.statisticsCell:last-child {
+    border-right: none;
+}
+
+.numberGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+}
+
+.numberItem {
+    background: #f8fafc;
+    border: 1px solid #d97706;
+    border-radius: 6px;
+    padding: 4px 6px;
+    min-width: 50px;
+    transition: all 0.2s ease;
+}
+
+.numberItem:hover {
+    background: #e0f2fe;
+    border-color: #0ea5e9;
+    transform: scale(1.05);
+}
+
+.number {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 2px;
+}
+
+.count {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.emptyCell {
+    color: #9ca3af;
+    font-style: italic;
+    font-size: 14px;
+}
+
+/* Predictions Grid */
+.predictionsGrid {
+    margin-bottom: 30px;
+}
+
+.gridTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 15px;
+    text-align: center;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.numbersGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.numberBox {
+    background: white;
+    border: 1px solid blue;
+    border-radius: 6px;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.numberBox:hover {
+    background: #e0f2fe;
+    border-color: #0ea5e9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.numberBox:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.numberBox.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #5a67d8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    font-weight: 700;
+}
+
+.gridInstructions {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.gridInstructions ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #0369a1;
+    font-size: 14px;
+}
+
+.gridInstructions li {
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+
+/* Skeleton Loading */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    height: 20px;
+    border-radius: 4px;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .selectGroup {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .select {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .tableWrapper {
+        font-size: 14px;
+    }
+
+    .tablePositionSoiCau th,
+    .tablePositionSoiCau td {
+        padding: 10px 8px;
+    }
+
+    .predictionNumber {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 1.75rem;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .tablePositionSoiCau th,
+    .tablePositionSoiCau td {
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+
+    .position {
+        font-size: 10px;
+    }
+
+    .position small {
+        font-size: 9px;
+    }
+
+    /* Grouped table responsive */
+    .groupedTableWrapper {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .countGroup {
+        min-width: 100%;
+    }
+
+    .countHeader {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .numbersList {
+        padding: 12px;
+        gap: 6px;
+    }
+
+    .numberItem {
+        padding: 6px 10px;
+        font-size: 12px;
+        min-width: 35px;
+    }
+
+    /* Simple table responsive */
+    .simpleNumber {
+        padding: 8px 12px;
+        font-size: 14px;
+        width: 60px;
+    }
+
+    .simpleCount {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    /* Statistics table responsive */
+    .tableStatistics th,
+    .tableStatistics td {
+        padding: 6px 4px;
+        font-size: 12px;
+    }
+
+    .number {
+        font-size: 12px;
+    }
+
+    .count {
+        font-size: 10px;
+    }
+
+    .numberItem {
+        padding: 3px 4px;
+        min-width: 40px;
+    }
+
+    /* Predictions grid responsive */
+    .numbersGrid {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 6px;
+        padding: 15px;
+    }
+
+    .numberBox {
+        font-size: 12px;
+        padding: 6px 3px;
+        min-height: 35px;
+    }
+
+    .gridInstructions {
+        padding: 12px;
+    }
+
+    .gridInstructions ul {
+        font-size: 13px;
+    }
+}
+
+/* ============================================
+   DATE BUTTONS
+   ============================================ */
+
+.dateButtonsContainer {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.biendoDate {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.biendoDate .item {
+    background: transparent;
+    border: 2px solid #3b82f6;
+    color: #3b82f6;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.biendoDate .item:hover {
+    background: #3b82f6;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.biendoDate .item.active {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+.biendoDate .item a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+}
+
+.biendoDate .item a:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Responsive for date buttons */
+@media (max-width: 768px) {
+    .biendoDate {
+        gap: 8px;
+    }
+
+    .biendoDate .item {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .biendoDate {
+        gap: 6px;
+    }
+
+    .biendoDate .item {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+}
+
+/* Yesterday Result Styles */
+.specialPrizeResult {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+}
+
+.resultDisplay {
+    text-align: center;
+}
+
+.fullNumber {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.fullNumber span {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 2px;
+    border-radius: 6px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+}
+
+.fullNumber span.highlighted {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+    font-weight: 700;
+}
+
+.lastTwoDigits {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin-top: 10px;
+}
+
+.lastTwoDigits strong {
+    color: #1f2937;
+    font-size: 1.2rem;
+}

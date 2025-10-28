@@ -1,0 +1,471 @@
+/**
+ * Position Detail Box Styles
+ * CSS cho component hiển thị chi tiết đường cầu
+ * Import styles từ XSMBSimpleTable để sử dụng thiết kế tương tự
+ */
+
+/* Import styles từ XSMBSimpleTable */
+@import './XSMBSimpleTable.module.css';
+
+/* ============================================
+   CONTAINER
+   ============================================ */
+
+.detailBox {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    position: relative;
+    width: 100%;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+
+
+/* ============================================
+   HIGHLIGHTED TABLE
+   ============================================ */
+
+.highlightedTable {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+
+.highlightedTable h4 {
+    margin: 0 0 15px 0;
+    color: #1f2937;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.resultTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background: white;
+}
+
+.resultTable td {
+    border: 1px solid #d1d5db;
+    padding: 8px 12px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.prizeLabel {
+    background: #D9EDF7 !important;
+    color: #333333 !important;
+    font-weight: bold !important;
+    font-size: 14px;
+    width: 50px;
+    text-align: center;
+}
+
+.prizeNumber {
+    background: #ffffff !important;
+    color: #333333 !important;
+    font-weight: bold !important;
+    font-size: 16px;
+    padding: 10px 15px !important;
+}
+
+.digit {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    margin: 0 2px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+/* Conclusion and tables container */
+.conclusionAndTables {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 20px;
+    margin-top: 20px;
+    align-items: flex-start;
+}
+
+/* Conclusion section */
+.conclusion {
+    color: red;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid blue;
+}
+
+.conclusionDate {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+.conclusionText {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.conclusionLabel {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.conclusionPrize {
+    font-size: 16px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.conclusionNumber {
+    font-size: 32px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Lotto Prediction Section */
+.lottoPrediction {
+    color: #000;
+    text-align: center;
+}
+
+.lottoPredictionText {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.predictionDate {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+
+.lottoNumber {
+    background: #ff6b6b;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0 4px;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+    animation: pulse 2s infinite;
+}
+
+/* Tables container */
+.tablesContainer {
+    display: flex;
+    flex-direction: row-reverse;
+    /* Đảo ngược thứ tự hiển thị */
+    gap: 20px;
+    flex: 1;
+    align-items: flex-start;
+    /* Căn chỉnh các bảng ở đầu */
+}
+
+.singleTable {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #00800061;
+    flex: 1;
+    /* Mỗi bảng chiếm 50% không gian */
+    min-width: 0;
+    /* Cho phép bảng co lại khi cần */
+}
+
+.singleTable h5 {
+    margin: 0 0 15px 0;
+    color: #374151;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.loading,
+.noData {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.loading {
+    background: #f3f4f6;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.noData {
+    background: #fef2f2;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+}
+
+/* Highlight digit styles */
+.highlightDigit {
+    display: inline-block;
+    margin: 0 1px;
+    border-radius: 3px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.highlightDigit.highlighted {
+    background: #ff6b6b !important;
+    color: white !important;
+    transform: scale(1.2);
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+    animation: pulse 1.5s infinite;
+}
+
+.highlightDigit.highlightedGreen {
+    background: #22c55e !important;
+    color: white !important;
+    transform: scale(1.2);
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+    animation: pulseGreen 1.5s infinite;
+}
+
+.digit.highlighted {
+    background: #ff6b6b !important;
+    color: white !important;
+    transform: scale(1.2);
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 4px 16px rgba(255, 107, 107, 0.6);
+    }
+
+    100% {
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+    }
+}
+
+@keyframes pulseGreen {
+    0% {
+        box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 4px 16px rgba(34, 197, 94, 0.6);
+    }
+
+    100% {
+        box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet responsive */
+@media (max-width: 1024px) {
+    .conclusionAndTables {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .conclusion {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .tablesContainer {
+        flex-direction: column;
+        /* Trên tablet cũng chuyển về dạng cột để dễ đọc */
+        gap: 15px;
+    }
+
+    .singleTable {
+        flex: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .overlay {
+        padding: 10px;
+    }
+
+    .detailBox {
+        max-height: 95vh;
+    }
+
+    .header {
+        padding: 15px 20px;
+    }
+
+    .header h3 {
+        font-size: 1.25rem;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .highlightedTable {
+        padding: 15px;
+    }
+
+    /* Responsive cho conclusion and tables */
+    .conclusionAndTables {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .conclusion {
+        min-width: auto;
+        width: 100%;
+        padding: 15px;
+    }
+
+    .conclusionNumber {
+        font-size: 28px;
+    }
+
+    /* Responsive cho tables container */
+    .tablesContainer {
+        flex-direction: column;
+        /* Trên mobile chuyển về dạng cột */
+        gap: 15px;
+    }
+
+    .singleTable {
+        flex: none;
+        /* Bỏ flex trên mobile */
+    }
+
+    .resultTable td {
+        padding: 6px 8px;
+        font-size: 14px;
+    }
+
+    .prizeLabel {
+        width: 40px;
+        font-size: 12px;
+    }
+
+    .prizeNumber {
+        font-size: 14px;
+        padding: 8px 10px !important;
+    }
+
+    .digit {
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .overlay {
+        padding: 5px;
+    }
+
+    .header {
+        padding: 12px 15px;
+    }
+
+    .header h3 {
+        font-size: 1.1rem;
+    }
+
+    .content {
+        padding: 15px;
+    }
+
+    .highlightedTable {
+        padding: 12px;
+    }
+
+    .resultTable td {
+        padding: 4px 6px;
+        font-size: 12px;
+    }
+
+    .prizeLabel {
+        width: 35px;
+        font-size: 11px;
+    }
+
+    .prizeNumber {
+        font-size: 12px;
+        padding: 6px 8px !important;
+    }
+
+    .digit {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        font-size: 12px;
+        margin: 0 1px;
+    }
+}

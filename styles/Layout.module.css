@@ -8,6 +8,10 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    /* ✅ Fix: Prevent double scroll */
+    height: 100%;
+    overflow-x: hidden;
+
 }
 
 /* ===== SKIP TO CONTENT (Accessibility) ===== */
@@ -39,7 +43,6 @@
     transition: all var(--transition-base);
     /* Ensure header doesn't cause horizontal scroll */
     max-width: 100vw;
-    overflow-x: hidden;
 }
 
 .header.scrolled {
@@ -87,6 +90,13 @@
     color: var(--color-gray-900);
     transition: all var(--transition-base);
     flex-shrink: 0;
+}
+
+/* Hide logo on desktop since it's in header box */
+@media (min-width: 1024px) {
+    .logo {
+        display: none;
+    }
 }
 
 .logo:hover {
@@ -148,6 +158,18 @@
 @media (min-width: 768px) {
     .desktopNav {
         display: flex;
+    }
+}
+
+/* On desktop, center the navigation when logo is hidden */
+@media (min-width: 1024px) {
+    .navContainer {
+        justify-content: center;
+    }
+
+    .desktopNav {
+        justify-content: center;
+        flex: 1;
     }
 }
 
@@ -259,8 +281,6 @@
     z-index: 1000;
     /* Fixed z-index to ensure it's above overlay */
     overflow-y: auto;
-    overflow-x: hidden;
-    /* Prevent horizontal scroll */
 }
 
 .mobileNavOpen {
@@ -365,8 +385,17 @@
 .main {
     flex: 1;
     width: 100%;
+    /* ✅ Fix: Prevent double scroll */
+    overflow-x: hidden;
     /* padding: var(--spacing-6) 0; */
     animation: fadeIn var(--transition-slow) ease-out;
+    background-image: url('/imgs/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* Fallback background color */
+    /* background-color: var(--bg-secondary); */
 }
 
 @media (min-width: 768px) {
@@ -550,7 +579,6 @@
     .mobileNavContent {
         padding: var(--spacing-16) var(--spacing-4) var(--spacing-6);
         max-width: 100%;
-        overflow-x: hidden;
     }
 
     /* Ensure mobile nav links don't overflow */

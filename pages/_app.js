@@ -51,10 +51,6 @@ const GoogleAnalytics = dynamic(() => import('../components/GoogleAnalytics'), {
     ssr: false,
     loading: () => null
 });
-const SimpleOnlineWidget = dynamic(() => import('../components/SimpleOnlineWidget'), {
-    ssr: false,
-    loading: () => null
-});
 
 function MyApp({ Component, pageProps }) {
     const router = useRouter();
@@ -136,8 +132,6 @@ function MyApp({ Component, pageProps }) {
             {/* SEO Analytics Enhanced - Temporarily disabled */}
             {/* <SEOAnalyticsEnhanced /> */}
 
-            {/* Global Widget - Quản lý widget toàn cục */}
-            <SimpleOnlineWidget />
 
             {/* Loading indicator */}
             {isLoading && (

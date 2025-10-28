@@ -96,10 +96,10 @@
     --font-heading: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     --font-serif: 'Georgia', 'Times New Roman', 'Noto Serif', 'Droid Serif', serif;
     --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
-    
+
     /* Font Display - Optimize Web Vitals */
     --font-display: swap;
-    
+
     /* Performance Optimizations */
     --contain-layout: layout style paint;
     --will-change-transform: transform;

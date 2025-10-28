@@ -7,6 +7,8 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { memo, useMemo, useCallback } from 'react';
 import Layout from '../components/Layout';
+import LatestXSMBResults from '../components/LatestXSMBResults';
+import TodayPredictions from '../components/TodayPredictions';
 import styles from '../styles/Home.module.css';
 import EnhancedSEOHead from '../components/EnhancedSEOHead';
 import SEOAnalytics from '../components/SEOAnalytics';
@@ -118,6 +120,13 @@ const Home = memo(function Home() {
             description: 'Bộ lọc thông minh theo đầu, đuôi, tổng, chạm, kép. Lấy nhanh dàn đề may mắn',
             link: '/dan-dac-biet',
             badge: 'Đặc biệt'
+        },
+        {
+            icon: Sparkles,
+            title: 'Soi Cầu AI',
+            description: '5 thuật toán AI cao cấp: LSTM, Transformer, Bayesian, Genetic, ARIMA',
+            link: '/soi-cau-ai',
+            badge: 'AI'
         }
     ], []);
 
@@ -242,153 +251,167 @@ const Home = memo(function Home() {
                         </div>
                     </header>
 
-                    {/* Trust Signals - E-E-A-T */}
-                    <TrustSignals />
+                    {/* Main Content Layout - 2 Columns */}
+                    <div className={styles.mainContentLayout}>
+                        {/* Left Column - Main Content */}
+                        <div className={styles.leftColumn}>
+                            {/* Latest XSMB Results */}
+                            <LatestXSMBResults />
 
-                    {/* Featured Snippet - Direct Answer */}
-                    <DirectAnswer
-                        question="Tạo Dàn Đề (Tao Dan De) Là Gì?"
-                        answer="Tạo dàn đề (tao dan de) là phương pháp chọn ra một tập hợp các con số (dàn đề) để đánh lô đề hoặc xổ số, dựa trên các tiêu chí như tổng, chạm, đầu, đuôi, kép nhằm tăng khả năng trúng thưởng. Ứng dụng tạo dàn đề giúp bạn tạo tự động các tổ hợp số 2D (00-99), 3D (000-999), 4D (0000-9999), ghép lô xiên, và lọc dàn theo nhiều điều kiện đặc biệt một cách nhanh chóng, chính xác 100% với thuật toán Fisher-Yates chuẩn quốc tế."
-                    />
+                            {/* Trust Signals - E-E-A-T */}
+                            <TrustSignals />
 
-                    {/* Tools Grid */}
-                    <section className={styles.toolsSection} aria-label="Các công cụ tạo dàn đề">
-                        <h2 className={styles.sectionTitle}>Chọn Công Cụ</h2>
+                            {/* Featured Snippet - Direct Answer */}
+                            <DirectAnswer
+                                question="Tạo Dàn Đề (Tao Dan De) Là Gì?"
+                                answer="Tạo dàn đề (tao dan de) là phương pháp chọn ra một tập hợp các con số (dàn đề) để đánh lô đề hoặc xổ số, dựa trên các tiêu chí như tổng, chạm, đầu, đuôi, kép nhằm tăng khả năng trúng thưởng. Ứng dụng tạo dàn đề giúp bạn tạo tự động các tổ hợp số 2D (00-99), 3D (000-999), 4D (0000-9999), ghép lô xiên, và lọc dàn theo nhiều điều kiện đặc biệt một cách nhanh chóng, chính xác 100% với thuật toán Fisher-Yates chuẩn quốc tế."
+                            />
 
-                        <div className={styles.toolsGrid}>
-                            {tools.map((tool, idx) => {
-                                const IconComponent = tool.icon;
-                                return (
-                                    <Link
-                                        href={tool.link}
-                                        key={idx}
-                                        className={styles.toolCard}
-                                        aria-label={`Đi đến ${tool.title}`}
-                                        prefetch={false} // Disable prefetch for better performance
-                                    >
-                                        {tool.badge && (
-                                            <span className={styles.toolBadge}>{tool.badge}</span>
-                                        )}
-                                        <div className={styles.toolIcon}>
-                                            <IconComponent size={24} />
-                                        </div>
-                                        <h3 className={styles.toolTitle}>{tool.title}</h3>
-                                        <p className={styles.toolDescription}>{tool.description}</p>
-                                        <div className={styles.toolArrow}>
-                                            <span>Truy cập</span>
-                                            <span>→</span>
-                                        </div>
+                            {/* Tools Grid */}
+                            <section className={styles.toolsSection} aria-label="Các công cụ tạo dàn đề">
+                                <h2 className={styles.sectionTitle}>Chọn Công Cụ</h2>
+
+                                <div className={styles.toolsGrid}>
+                                    {tools.map((tool, idx) => {
+                                        const IconComponent = tool.icon;
+                                        return (
+                                            <Link
+                                                href={tool.link}
+                                                key={idx}
+                                                className={styles.toolCard}
+                                                aria-label={`Đi đến ${tool.title}`}
+                                                prefetch={false} // Disable prefetch for better performance
+                                            >
+                                                {tool.badge && (
+                                                    <span className={styles.toolBadge}>{tool.badge}</span>
+                                                )}
+                                                <div className={styles.toolIcon}>
+                                                    <IconComponent size={24} />
+                                                </div>
+                                                <h3 className={styles.toolTitle}>{tool.title}</h3>
+                                                <p className={styles.toolDescription}>{tool.description}</p>
+                                                <div className={styles.toolArrow}>
+                                                    <span>Truy cập</span>
+                                                    <span>→</span>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </section>
+
+                            {/* Featured Snippet - How To List */}
+                            <ListSnippet
+                                title="Cách Tạo Dàn Đề Online Miễn Phí"
+                                ordered={true}
+                                items={[
+                                    { label: 'Bước 1', text: 'Truy cập công cụ tạo dàn số TaoDanDe tại taodandewukong.pro' },
+                                    { label: 'Bước 2', text: 'Chọn loại dàn cần tạo: Dàn 2D (00-99), Dàn 3D (000-999), Dàn 4D (0000-9999), Dàn 9x-0x, hoặc Ghép lô xiên' },
+                                    { label: 'Bước 3', text: 'Nhập các số vào ô text (có thể copy/paste) hoặc click nút "Tạo Ngẫu Nhiên"' },
+                                    { label: 'Bước 4', text: 'Áp dụng bộ lọc nếu cần: Lọc theo chạm, tổng, kép, tài xỉu, chẵn lẻ, đầu đuôi' },
+                                    { label: 'Bước 5', text: 'Click "Tạo Dàn" hoặc "Lọc Ghép Dàn" để xem kết quả' },
+                                    { label: 'Bước 6', text: 'Copy kết quả hoặc xuất file Excel để sử dụng' }
+                                ]}
+                            />
+
+                            {/* Featured Snippet - Comparison Table */}
+                            <TableSnippet
+                                title="So Sánh Các Loại Dàn Đề"
+                                headers={['Loại Dàn', 'Số Lượng', 'Độ Khó', 'Tỷ Lệ Trúng', 'Phù Hợp Cho']}
+                                rows={[
+                                    ['Dàn 2D', '100 số (00-99)', 'Dễ', '1/100', 'Người mới bắt đầu'],
+                                    ['Dàn 3D', '1,000 số (000-999)', 'Trung bình', '1/1,000', 'Người chơi trung cấp'],
+                                    ['Dàn 4D', '10,000 số (0000-9999)', 'Khó', '1/10,000', 'Cao thủ xổ số'],
+                                    ['Dàn 9x-0x', '70-95 số', 'Dễ', 'Cao (nuôi)', 'Chiến lược nuôi dàn'],
+                                    ['Dàn 36 số', '36 số', 'Trung bình', 'Rất cao', 'Phổ biến nhất'],
+                                    ['Lô Xiên 2-3-4', 'Tùy chỉnh', 'Trung bình', 'Cao', 'Tất cả mọi người']
+                                ]}
+                            />
+
+                            {/* Quick Access Section */}
+                            <section className={styles.quickAccess}>
+                                <div className={styles.quickAccessHeader}>
+                                    <h2>Bắt Đầu Ngay</h2>
+                                    <p>Chọn công cụ phù hợp với nhu cầu của bạn</p>
+                                </div>
+                                <div className={styles.quickAccessGrid}>
+                                    <Link href="/dan-9x0x" className={styles.quickAccessCard}>
+                                        <Dice6 className={styles.quickAccessIcon} />
+                                        <h3>Tạo Dàn Đề 9x-0x</h3>
+                                        <p>Công cụ phổ biến nhất với 10 cấp độ rút dần</p>
+                                        <div className={styles.quickAccessBadge}>Phổ biến</div>
                                     </Link>
-                                );
-                            })}
-                        </div>
-                    </section>
+                                    <Link href="/thong-ke" className={styles.quickAccessCard}>
+                                        <BarChart3 className={styles.quickAccessIcon} />
+                                        <h3>Thống Kê Xổ Số</h3>
+                                        <p>Phân tích dữ liệu xổ số 3 miền chi tiết</p>
+                                    </Link>
+                                    <Link href="/content" className={styles.quickAccessCard}>
+                                        <Heart className={styles.quickAccessIcon} />
+                                        <h3>Hướng Dẫn Chơi</h3>
+                                        <p>Mẹo và chiến thuật chơi xổ số hiệu quả</p>
+                                    </Link>
+                                </div>
+                            </section>
 
-                    {/* Featured Snippet - How To List */}
-                    <ListSnippet
-                        title="Cách Tạo Dàn Đề Online Miễn Phí"
-                        ordered={true}
-                        items={[
-                            { label: 'Bước 1', text: 'Truy cập công cụ tạo dàn số TaoDanDe tại taodandewukong.pro' },
-                            { label: 'Bước 2', text: 'Chọn loại dàn cần tạo: Dàn 2D (00-99), Dàn 3D (000-999), Dàn 4D (0000-9999), Dàn 9x-0x, hoặc Ghép lô xiên' },
-                            { label: 'Bước 3', text: 'Nhập các số vào ô text (có thể copy/paste) hoặc click nút "Tạo Ngẫu Nhiên"' },
-                            { label: 'Bước 4', text: 'Áp dụng bộ lọc nếu cần: Lọc theo chạm, tổng, kép, tài xỉu, chẵn lẻ, đầu đuôi' },
-                            { label: 'Bước 5', text: 'Click "Tạo Dàn" hoặc "Lọc Ghép Dàn" để xem kết quả' },
-                            { label: 'Bước 6', text: 'Copy kết quả hoặc xuất file Excel để sử dụng' }
-                        ]}
-                    />
+                            {/* Features Section - Compact */}
+                            <section className={styles.features} aria-label="Tính năng nổi bật">
+                                <div className={styles.featuresGrid}>
+                                    {features.map((feature, idx) => {
+                                        const IconComponent = feature.icon;
+                                        return (
+                                            <div key={idx} className={styles.featureItem}>
+                                                <div className={styles.featureIcon}>
+                                                    <IconComponent size={20} />
+                                                </div>
+                                                <h3>{feature.title}</h3>
+                                                <p>{feature.description}</p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </section>
 
-                    {/* Featured Snippet - Comparison Table */}
-                    <TableSnippet
-                        title="So Sánh Các Loại Dàn Đề"
-                        headers={['Loại Dàn', 'Số Lượng', 'Độ Khó', 'Tỷ Lệ Trúng', 'Phù Hợp Cho']}
-                        rows={[
-                            ['Dàn 2D', '100 số (00-99)', 'Dễ', '1/100', 'Người mới bắt đầu'],
-                            ['Dàn 3D', '1,000 số (000-999)', 'Trung bình', '1/1,000', 'Người chơi trung cấp'],
-                            ['Dàn 4D', '10,000 số (0000-9999)', 'Khó', '1/10,000', 'Cao thủ xổ số'],
-                            ['Dàn 9x-0x', '70-95 số', 'Dễ', 'Cao (nuôi)', 'Chiến lược nuôi dàn'],
-                            ['Dàn 36 số', '36 số', 'Trung bình', 'Rất cao', 'Phổ biến nhất'],
-                            ['Lô Xiên 2-3-4', 'Tùy chỉnh', 'Trung bình', 'Cao', 'Tất cả mọi người']
-                        ]}
-                    />
-
-                    {/* Quick Access Section */}
-                    <section className={styles.quickAccess}>
-                        <div className={styles.quickAccessHeader}>
-                            <h2>Bắt Đầu Ngay</h2>
-                            <p>Chọn công cụ phù hợp với nhu cầu của bạn</p>
-                        </div>
-                        <div className={styles.quickAccessGrid}>
-                            <Link href="/dan-9x0x" className={styles.quickAccessCard}>
-                                <Dice6 className={styles.quickAccessIcon} />
-                                <h3>Tạo Dàn Đề 9x-0x</h3>
-                                <p>Công cụ phổ biến nhất với 10 cấp độ rút dần</p>
-                                <div className={styles.quickAccessBadge}>Phổ biến</div>
-                            </Link>
-                            <Link href="/thong-ke" className={styles.quickAccessCard}>
-                                <BarChart3 className={styles.quickAccessIcon} />
-                                <h3>Thống Kê Xổ Số</h3>
-                                <p>Phân tích dữ liệu xổ số 3 miền chi tiết</p>
-                            </Link>
-                            <Link href="/content" className={styles.quickAccessCard}>
-                                <Heart className={styles.quickAccessIcon} />
-                                <h3>Hướng Dẫn Chơi</h3>
-                                <p>Mẹo và chiến thuật chơi xổ số hiệu quả</p>
-                            </Link>
-                        </div>
-                    </section>
-
-                    {/* Features Section - Compact */}
-                    <section className={styles.features} aria-label="Tính năng nổi bật">
-                        <div className={styles.featuresGrid}>
-                            {features.map((feature, idx) => {
-                                const IconComponent = feature.icon;
-                                return (
-                                    <div key={idx} className={styles.featureItem}>
-                                        <div className={styles.featureIcon}>
-                                            <IconComponent size={20} />
-                                        </div>
-                                        <h3>{feature.title}</h3>
-                                        <p>{feature.description}</p>
+                            {/* News Section */}
+                            <section className={styles.newsSection}>
+                                <div className={styles.newsHeader}>
+                                    <h2>Tin Tức Mới Nhất</h2>
+                                    <Link href="/tin-tuc" className={styles.newsLink}>
+                                        Xem tất cả →
+                                    </Link>
+                                </div>
+                                <div className={styles.newsGrid}>
+                                    <div className={styles.newsCard}>
+                                        <h3>Hướng dẫn sử dụng công cụ tạo dàn số hiệu quả</h3>
+                                        <p>Khám phá các mẹo và chiến thuật để tối ưu hóa việc sử dụng công cụ tạo dàn số...</p>
+                                        <Link href="/content" className={styles.newsReadMore}>Đọc thêm</Link>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    </section>
+                                    <div className={styles.newsCard}>
+                                        <h3>Thống kê xổ số 3 miền tháng gần đây</h3>
+                                        <p>Phân tích chi tiết xu hướng và tần suất xuất hiện của các số trong xổ số...</p>
+                                        <Link href="/thong-ke" className={styles.newsReadMore}>Xem thống kê</Link>
+                                    </div>
+                                </div>
+                            </section>
 
-                    {/* News Section */}
-                    <section className={styles.newsSection}>
-                        <div className={styles.newsHeader}>
-                            <h2>Tin Tức Mới Nhất</h2>
-                            <Link href="/tin-tuc" className={styles.newsLink}>
-                                Xem tất cả →
-                            </Link>
-                        </div>
-                        <div className={styles.newsGrid}>
-                            <div className={styles.newsCard}>
-                                <h3>Hướng dẫn sử dụng công cụ tạo dàn số hiệu quả</h3>
-                                <p>Khám phá các mẹo và chiến thuật để tối ưu hóa việc sử dụng công cụ tạo dàn số...</p>
-                                <Link href="/content" className={styles.newsReadMore}>Đọc thêm</Link>
-                            </div>
-                            <div className={styles.newsCard}>
-                                <h3>Thống kê xổ số 3 miền tháng gần đây</h3>
-                                <p>Phân tích chi tiết xu hướng và tần suất xuất hiện của các số trong xổ số...</p>
-                                <Link href="/thong-ke" className={styles.newsReadMore}>Xem thống kê</Link>
-                            </div>
-                        </div>
-                    </section>
+                            {/* User Testimonials - Social Proof */}
+                            <Testimonials />
 
-                    {/* User Testimonials - Social Proof */}
-                    <Testimonials />
+                            {/* Author Bio - E-E-A-T Signal */}
+                            <AuthorBio
+                                name="Đội Ngũ Chuyên Gia TaoDanDe"
+                                title="Chuyên Gia Tạo Dàn Đề & Xổ Số"
+                                experience="10+"
+                                users="100,000+"
+                                description="Đội ngũ chuyên gia với hơn 10 năm kinh nghiệm trong lĩnh vực xổ số và lô số. Phát triển các công cụ tạo dàn số, tạo mức số, nuôi dàn khung 3-5 ngày chuyên nghiệp phục vụ hơn 100,000 người chơi trên toàn quốc."
+                            />
+                        </div>
 
-                    {/* Author Bio - E-E-A-T Signal */}
-                    <AuthorBio
-                        name="Đội Ngũ Chuyên Gia TaoDanDe"
-                        title="Chuyên Gia Tạo Dàn Đề & Xổ Số"
-                        experience="10+"
-                        users="100,000+"
-                        description="Đội ngũ chuyên gia với hơn 10 năm kinh nghiệm trong lĩnh vực xổ số và lô số. Phát triển các công cụ tạo dàn số, tạo mức số, nuôi dàn khung 3-5 ngày chuyên nghiệp phục vụ hơn 100,000 người chơi trên toàn quốc."
-                    />
+                        {/* Right Column - Today Predictions */}
+                        <div className={styles.rightColumn}>
+                            <TodayPredictions />
+                        </div>
+                    </div>
                 </div>
             </Layout>
         </>

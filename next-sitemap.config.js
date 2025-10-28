@@ -57,6 +57,11 @@ module.exports = {
             priority = 1.0;
             changefreq = 'daily';
         }
+        // Soi cau Bayesian - highest priority (highest search volume)
+        else if (path === '/soi-cau-bayesian') {
+            priority = 0.95;
+            changefreq = 'daily';
+        }
         // Main tool pages - very high priority (high search volume)
         else if (path.match(/\/(dan-9x0x|dan-2d|dan-3d4d|dan-dac-biet)/)) {
             priority = 0.9;
@@ -103,12 +108,13 @@ module.exports = {
         // Add custom paths (sorted by SEO priority)
         const customPaths = [
             '/',                    // Priority 1.0
+            '/soi-cau-bayesian',   // Priority 0.95 - NEW: Highest search volume (74,000/month)
             '/dan-9x0x',           // Priority 0.9 - High search volume
             '/dan-2d',             // Priority 0.9 - High search volume
             '/dan-3d4d',           // Priority 0.9 - High search volume
             '/dan-dac-biet',       // Priority 0.9 - High search volume
-            '/ghep-lo-xien',       // Priority 0.85 - NEW: High search volume (3,600/month)
-            '/bang-tinh-chao',     // Priority 0.85 - NEW: Medium search volume (880/month)
+            '/ghep-lo-xien',       // Priority 0.85 - High search volume (3,600/month)
+            '/bang-tinh-chao',     // Priority 0.85 - Medium search volume (880/month)
             '/thong-ke',           // Priority 0.8
             '/content',            // Priority 0.8
             '/tin-tuc',            // Priority 0.7
@@ -203,6 +209,15 @@ module.exports = {
                         loc: `${config.siteUrl}/imgs/wukong.png`,
                         caption: 'Tin tức xổ số mới nhất, kết quả XSMB XSMN XSMT hôm nay',
                         title: 'Tin Tức Xổ Số - Cập nhật 24/7'
+                    }
+                ]
+            },
+            '/soi-cau-bayesian': {
+                images: [
+                    {
+                        loc: `${config.siteUrl}/imgs/soi-cau-bayesian.png`,
+                        caption: 'Soi cầu miền bắc hôm nay chính xác 100%, dự đoán XSMB bằng thuật toán Bayesian',
+                        title: 'Soi Cầu Bayesian - Dự đoán XSMB AI'
                     }
                 ]
             }

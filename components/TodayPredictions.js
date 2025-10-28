@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import Head from 'next/head';
-import { Calendar, TrendingUp, Target, Star, Zap, BarChart3, Sparkles } from 'lucide-react';
+import { Target, Star, Zap, BarChart3, Sparkles } from 'lucide-react';
 import styles from '../styles/TodayPredictions.module.css';
 
 // Memoized PredictionCard component để tránh re-render không cần thiết
@@ -72,25 +72,8 @@ const TodayPredictions = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [hasFetched, setHasFetched] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
     const [isToday, setIsToday] = useState(true);
 
-    // Load visibility state from localStorage with error handling
-    useEffect(() => {
-        try {
-            const saved = localStorage.getItem('predictions-visible');
-            if (saved !== null) {
-                setIsVisible(saved === 'true');
-            } else {
-                // Default to hidden if no saved state
-                setIsVisible(false);
-            }
-        } catch (err) {
-            console.warn('localStorage not available:', err);
-            // Default to hidden if localStorage fails
-            setIsVisible(false);
-        }
-    }, []);
 
     useEffect(() => {
         // Prevent duplicate fetches in React Strict Mode (development)
@@ -100,18 +83,21 @@ const TodayPredictions = () => {
         }
     }, [hasFetched]);
 
-    // Memoized toggle function để tránh re-render không cần thiết
-    const toggleVisibility = useCallback(() => {
-        setIsVisible(prev => {
-            const newValue = !prev;
-            try {
-                localStorage.setItem('predictions-visible', newValue.toString());
-            } catch (err) {
-                console.warn('Cannot save to localStorage:', err);
-            }
-            return newValue;
-        });
-    }, []);
+
+    // Fallback data khi API bị lỗi 429
+    const getFallbackData = () => {
+        const today = new Date();
+        const predictionDate = today.toISOString().split('T')[0];
+
+        return {
+            predictionDate,
+            lottoContent: "Dự đoán lotto hôm nay: 12, 23, 34, 45, 56, 67, 78, 89, 90, 01",
+            specialContent: "Cầu đặc biệt: 12345, 23456, 34567, 45678, 56789",
+            doubleJumpContent: "Cầu 2 nháy: 12-21, 23-32, 34-43, 45-54, 56-65",
+            topTableContent: "Bảng lô top: 12, 23, 34, 45, 56, 67, 78, 89, 90, 01",
+            wukongContent: "Dự đoán wukong: 12, 23, 34, 45, 56, 67, 78, 89, 90, 01"
+        };
+    };
 
     const fetchTodayPrediction = async () => {
         try {
@@ -120,12 +106,18 @@ const TodayPredictions = () => {
 
             const response = await fetch(`${apiUrl}/api/predictions/today`);
 
-            // Handle rate limiting
+            // Handle rate limiting and other errors
             if (response.status === 429) {
-                console.warn('⚠️ Rate limited, retrying in 2 seconds...');
-                setTimeout(() => {
-                    setHasFetched(false); // Retry
-                }, 2000);
+                console.warn('⚠️ Rate limited, using fallback data instead of retrying...');
+                setPrediction(getFallbackData());
+                setHasFetched(true);
+                return;
+            }
+
+            if (!response.ok) {
+                console.warn(`⚠️ API error ${response.status}, using fallback data...`);
+                setPrediction(getFallbackData());
+                setHasFetched(true);
                 return;
             }
 
@@ -337,43 +329,33 @@ const TodayPredictions = () => {
                 itemType="https://schema.org/Article"
                 aria-label="Dự đoán xổ số miền bắc hôm nay"
             >
-                <header className={styles.header}>
-                    <div className={styles.headerContent}>
-                        <div className={styles.headerLeft}>
-                            <TrendingUp size={20} className={styles.headerIcon} aria-hidden="true" />
-                            <h2 className={styles.headerTitle} itemProp="headline">
-                                Dự Đoán XỔ SỐ MIỀN BẮC {isToday ? '' : formattedDate}
-                            </h2>
-                            <p className={styles.headerSubtitle}>
-                                <Calendar size={14} aria-hidden="true" />
-                                <time dateTime={prediction.predictionDate} itemProp="datePublished">
-                                    {isToday ? `${formattedDate}` : formattedDate}
-                                </time>
-                            </p>
-                        </div>
-                        <button
-                            className={styles.toggleButton}
-                            onClick={toggleVisibility}
-                            aria-label={isVisible ? 'Ẩn dự đoán' : 'Xem dự đoán'}
-                            title={isVisible ? 'Ẩn dự đoán' : 'Xem dự đoán'}
-                        >
-                            {isVisible ? 'Ẩn' : 'Xem'}
-                        </button>
-                    </div>
-                </header>
 
-                {isVisible && (
-                    <div className={styles.predictionsGrid} itemProp="articleBody">
-                        {predictions.map((pred) => (
-                            <PredictionCard
-                                key={pred.id}
-                                pred={pred}
-                                predictionDate={prediction.predictionDate}
-                                formattedDate={formattedDate}
-                            />
-                        ))}
+                {/* Thông báo nguồn dữ liệu */}
+                {prediction && (
+                    <div style={{
+                        padding: '8px 12px',
+                        background: '#d4edda',
+                        border: '1px solid #c3e6cb',
+                        borderRadius: '4px',
+                        margin: '5px 0',
+                        fontSize: '12px',
+                        color: '#155724',
+                        textAlign: 'center'
+                    }}>
+                        Tham khảo kết quả dự đoán từ rồng bạch kim
                     </div>
                 )}
+
+                <div className={styles.predictionsGrid} itemProp="articleBody">
+                    {predictions.map((pred) => (
+                        <PredictionCard
+                            key={pred.id}
+                            pred={pred}
+                            predictionDate={prediction.predictionDate}
+                            formattedDate={formattedDate}
+                        />
+                    ))}
+                </div>
             </section>
         </>
     );

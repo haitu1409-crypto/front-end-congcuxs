@@ -4,13 +4,12 @@
  */
 
 .container {
-    max-width: var(--container-7xl);
-    max-width: 1100px;
+    max-width: 1350px;
     margin: 0 auto;
-    padding: 0 var(--spacing-4);
     min-height: 60vh;
     animation: fadeIn var(--transition-slow) ease;
     padding-bottom: 40px;
+    background: rgba(255, 255, 255, 0.95);
 }
 
 /* Loading skeleton for lazy components */
@@ -301,7 +300,6 @@
 
 @media (min-width: 768px) {
     .container {
-        padding: 0 var(--spacing-6);
         padding-bottom: 40px;
     }
 }
@@ -309,7 +307,6 @@
 @media (min-width: 1024px) {
     .container {
         margin-bottom: 30px;
-        padding: 0 var(--spacing-8);
     }
 }
 
@@ -405,8 +402,9 @@
 .toolsGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-2);
+    gap: var(--spacing-3);
     margin-bottom: var(--spacing-4);
+    max-width: 100%;
 }
 
 @media (min-width: 640px) {
@@ -440,32 +438,40 @@
 
 @media (min-width: 1024px) {
     .toolsGrid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: var(--spacing-4);
     }
+}
 
-    .toolCard {
-        min-height: 180px;
-        padding: var(--spacing-4);
-        padding-bottom: var(--spacing-12);
-    }
-
-    .toolTitle {
-        font-size: var(--text-base);
-    }
-
-    .toolDescription {
-        font-size: var(--text-xs);
-        -webkit-line-clamp: 4;
-    }
-
-    .toolArrow {
-        right: var(--spacing-3);
-        bottom: var(--spacing-3);
-        height: 36px;
-        font-size: var(--text-base);
+@media (min-width: 1200px) {
+    .toolsGrid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-5);
     }
 }
+
+.toolCard {
+    min-height: 180px;
+    padding: var(--spacing-4);
+    padding-bottom: var(--spacing-12);
+}
+
+.toolTitle {
+    font-size: var(--text-base);
+}
+
+.toolDescription {
+    font-size: var(--text-xs);
+    -webkit-line-clamp: 4;
+}
+
+.toolArrow {
+    right: var(--spacing-3);
+    bottom: var(--spacing-3);
+    height: 36px;
+    font-size: var(--text-base);
+}
+
 
 .toolCard {
     position: relative;
@@ -825,6 +831,8 @@
 /* ===== SECTION STYLES - COMPACT ===== */
 .toolsSection {
     margin-bottom: var(--spacing-8);
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .sectionTitle {
@@ -1151,5 +1159,114 @@
     .ctaPrimary:hover,
     .ctaSecondary:hover {
         transform: none;
+    }
+}
+
+/* ===== MAIN CONTENT LAYOUT - 2 COLUMNS ===== */
+.mainContentLayout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    margin-top: var(--spacing-8);
+    max-width: 100%;
+    padding: 10px;
+    background-color: white;
+}
+
+.leftColumn {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+}
+
+.rightColumn {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    position: sticky;
+    top: var(--spacing-6);
+    height: fit-content;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.sidebarContent {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.sidebarTitle {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-gray-900);
+    margin: 0 0 var(--spacing-2) 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.sidebarSubtitle {
+    font-size: var(--text-sm);
+    color: var(--color-gray-600);
+    margin: 0 0 var(--spacing-4) 0;
+    font-weight: var(--font-medium);
+}
+
+/* ===== RESPONSIVE LAYOUT ===== */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 100%;
+    }
+
+    .mainContentLayout {
+        grid-template-columns: 1fr 320px;
+        gap: var(--spacing-8);
+    }
+}
+
+@media (max-width: 1024px) {
+    .mainContentLayout {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-6);
+    }
+
+    .rightColumn {
+        position: static;
+        order: -1;
+    }
+
+    .sidebarContent {
+        padding: var(--spacing-4);
+    }
+}
+
+@media (max-width: 768px) {
+
+
+    .mainContentLayout {
+        gap: var(--spacing-4);
+    }
+
+    .sidebarContent {
+        padding: var(--spacing-3);
+    }
+
+    .sidebarTitle {
+        font-size: var(--text-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 var(--spacing-2);
+    }
+
+    .mainContentLayout {
+        gap: var(--spacing-3);
     }
 }

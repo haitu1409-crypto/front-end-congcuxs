@@ -1,0 +1,655 @@
+/**
+ * XSMB Simple Table Styles - Classic Simple Design
+ * Thiết kế cổ điển đơn giản cho bảng kết quả xổ số miền Bắc
+ */
+
+/* ============================================
+   CONTAINER & LAYOUT
+   ============================================ */
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    background: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+}
+
+/* Flex layout for horizontal alignment */
+.horizontalLayout {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.mainTableContainer {
+    width: auto;
+}
+
+.sideTablesContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-shrink: 0;
+    width: auto;
+}
+
+/* Table cell vertical alignment */
+.container td {
+    vertical-align: top;
+}
+
+/* Cell containing Đầu table */
+.dauCell {
+    padding: 10px 10px 10px 0 !important;
+    vertical-align: top !important;
+    width: auto !important;
+    text-align: left !important;
+}
+
+/* Cell containing Đuôi table */
+.ditCell {
+    padding: 10px 0 10px 10px !important;
+    vertical-align: top !important;
+    width: auto !important;
+    text-align: left !important;
+}
+
+/* ============================================
+   MAIN RESULTS TABLE (ketqua)
+   ============================================ */
+
+.ketqua {
+    border-collapse: collapse;
+    margin: 0;
+    background: #ffffff;
+    width: auto !important;
+    max-width: 100%;
+}
+
+.ketqua th,
+.ketqua td {
+    border: 1px solid blue;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* Header ngày */
+.kq_ngay {
+    background: #D9EDF7 !important;
+    color: #333333 !important;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 12px;
+}
+
+/* Left column (tên giải) */
+.leftcol {
+    background: #D9EDF7 !important;
+    color: #333333 !important;
+    font-weight: bold;
+    text-align: center;
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+    padding: 12px 8px;
+    font-size: 20px;
+}
+
+/* Kết quả cells */
+.kqcell {
+    background: #ffffff;
+    color: #333333;
+    font-weight: bold;
+    padding: 12px 8px;
+    font-size: 22px;
+}
+
+/* Màu sắc cho các giải */
+.kq_0 {
+    background: #ffffff !important;
+    color: #FF0000 !important;
+    font-weight: bold !important;
+}
+
+/* Giải đặc biệt */
+.kq_1 {
+    background: #ffffff !important;
+}
+
+/* Giải nhất */
+.kq_2,
+.kq_3 {
+    background: #ffffff !important;
+}
+
+/* Giải nhì */
+.kq_4,
+.kq_5,
+.kq_6,
+.kq_7,
+.kq_8,
+.kq_9 {
+    background: #ffffff !important;
+}
+
+/* Giải ba */
+.kq_10,
+.kq_11,
+.kq_12,
+.kq_13 {
+    background: #ffffff !important;
+}
+
+/* Giải tư */
+.kq_14,
+.kq_15,
+.kq_16,
+.kq_17,
+.kq_18,
+.kq_19 {
+    background: #ffffff !important;
+}
+
+/* Giải năm */
+.kq_20,
+.kq_21,
+.kq_22 {
+    background: #ffffff !important;
+}
+
+/* Giải sáu */
+.kq_23,
+.kq_24,
+.kq_25,
+.kq_26 {
+    background: #ffffff !important;
+}
+
+/* Giải bảy */
+.kq_maDB {
+    background: #ffffff !important;
+}
+
+/* Mã đặc biệt */
+
+/* Last row */
+.lastrow td {
+    border: none !important;
+    background: transparent !important;
+    height: 5px;
+}
+
+/* ============================================
+   LOTO ĐẦU TABLE (dau)
+   ============================================ */
+
+.dau {
+    border-collapse: collapse;
+    margin: 0;
+    background: #ffffff;
+    table-layout: fixed;
+    width: auto;
+    max-width: 220px;
+    align-self: flex-start;
+}
+
+.dau th,
+.dau td {
+    border: 1px solid orange;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    font-weight: normal;
+    padding: 8px 6px;
+}
+
+/* Cột số cho bảng Loto Đầu */
+.dauDigitCol {
+    width: 20px !important;
+    max-width: 20px !important;
+    min-width: 20px !important;
+    padding: 4px 2px !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    background-color: #FFE4B5 !important;
+    color: #333333 !important;
+    border: 1px solid orange !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+}
+
+/* Cột dữ liệu cho bảng Loto Đầu */
+.dauDataCol {
+    width: 160px !important;
+    max-width: 160px !important;
+    padding: 8px 4px !important;
+    font-size: 16px !important;
+    text-align: left !important;
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid orange !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+.dau th {
+    background: #FFE4B5 !important;
+    color: #333333 !important;
+    font-weight: bold;
+}
+
+.dauLeftCol {
+    background: #f0f0f0 !important;
+    font-weight: bold;
+    text-align: center;
+    width: 15px !important;
+    max-width: 15px !important;
+    min-width: 15px !important;
+    padding: 4px 1px !important;
+    border: 1px solid #cccccc;
+    font-size: 11px !important;
+}
+
+/* Màu sắc cho loto đầu */
+.dau_0 {
+    background: #ffffff !important;
+}
+
+.dau_1 {
+    background: #ffffff !important;
+}
+
+.dau_2 {
+    background: #ffffff !important;
+}
+
+.dau_3 {
+    background: #ffffff !important;
+}
+
+.dau_4 {
+    background: #ffffff !important;
+}
+
+.dau_5 {
+    background: #ffffff !important;
+}
+
+.dau_6 {
+    background: #ffffff !important;
+}
+
+.dau_7 {
+    background: #ffffff !important;
+}
+
+.dau_8 {
+    background: #ffffff !important;
+}
+
+.dau_9 {
+    background: #ffffff !important;
+}
+
+/* ============================================
+   LOTO ĐUÔI TABLE (dit)
+   ============================================ */
+
+.dit {
+    border-collapse: collapse;
+    margin: 0;
+    background: #ffffff;
+    table-layout: fixed;
+    width: auto;
+    max-width: 220px;
+    align-self: flex-start;
+}
+
+.dit th,
+.dit td {
+    border: 1px solid purple;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    font-weight: normal;
+    padding: 8px 6px;
+}
+
+/* Cột số cho bảng Loto Đuôi */
+.ditDigitCol {
+    width: 20px !important;
+    max-width: 20px !important;
+    min-width: 20px !important;
+    padding: 4px 2px !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    background-color: #E6E6FA !important;
+    color: #333333 !important;
+    border: 1px solid purple !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+}
+
+/* Cột dữ liệu cho bảng Loto Đuôi */
+.ditDataCol {
+    width: 160px !important;
+    max-width: 160px !important;
+    padding: 8px 4px !important;
+    font-size: 16px !important;
+    text-align: left !important;
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid purple !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+.dit th {
+    background: #E6E6FA !important;
+    color: #333333 !important;
+    font-weight: bold;
+}
+
+.ditLeftCol {
+    background: #f0f0f0 !important;
+    font-weight: bold;
+    text-align: center;
+    width: 15px !important;
+    max-width: 15px !important;
+    min-width: 15px !important;
+    padding: 4px 1px !important;
+    border: 1px solid #cccccc;
+    font-size: 11px !important;
+}
+
+/* Màu sắc cho loto đuôi */
+.dit_0 {
+    background: #ffffff !important;
+}
+
+.dit_1 {
+    background: #ffffff !important;
+}
+
+.dit_2 {
+    background: #ffffff !important;
+}
+
+.dit_3 {
+    background: #ffffff !important;
+}
+
+.dit_4 {
+    background: #ffffff !important;
+}
+
+.dit_5 {
+    background: #ffffff !important;
+}
+
+.dit_6 {
+    background: #ffffff !important;
+}
+
+.dit_7 {
+    background: #ffffff !important;
+}
+
+.dit_8 {
+    background: #ffffff !important;
+}
+
+.dit_9 {
+    background: #ffffff !important;
+}
+
+/* ============================================
+   LOAD MORE BUTTON
+   ============================================ */
+
+.loadMoreButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+    margin: 20px auto;
+    display: block;
+}
+
+.loadMoreButton:hover {
+    background-color: #0056b3;
+}
+
+.loadMoreButton:active {
+    background-color: #004085;
+    transform: translateY(1px);
+}
+
+.loadMoreContainer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+}
+
+.allLoadedMessage {
+    text-align: center;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* ============================================
+   LOADING & ERROR STATES
+   ============================================ */
+
+.loadingMessage {
+    padding: 40px 20px;
+    text-align: center;
+    color: #666666;
+    font-size: 14px;
+    background: #f9f9f9;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    margin: 20px;
+}
+
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #e0e0e0;
+    border-top: 3px solid #666666;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.errorMessage {
+    padding: 40px 20px;
+    text-align: center;
+    color: #666666;
+    font-size: 14px;
+    background: #f9f9f9;
+    border: 1px solid #ff6b6b;
+    border-radius: 4px;
+    margin: 20px;
+}
+
+.errorMessage h3 {
+    color: #ff6b6b;
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.errorMessage p {
+    margin: 0 0 20px 0;
+    line-height: 1.4;
+}
+
+.retryButton {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.retryButton:hover {
+    background: #ff5252;
+}
+
+.retryButton:active {
+    background: #e53935;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .horizontalLayout {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .mainTableContainer {
+        width: 100%;
+    }
+
+    .sideTablesContainer {
+        flex-direction: row;
+        gap: 15px;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        font-size: 11px;
+    }
+
+    .horizontalLayout {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .sideTablesContainer {
+        flex-direction: row;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .loadMoreButton {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    .loadMoreContainer {
+        padding: 15px;
+    }
+
+    .ketqua th,
+    .ketqua td,
+    .dau th,
+    .dau td,
+    .dit th,
+    .dit td {
+        font-size: 16px;
+        padding: 6px 3px;
+    }
+
+    .kq_ngay {
+        font-size: 16px;
+    }
+
+    .leftcol {
+        width: 60px !important;
+        min-width: 60px !important;
+        max-width: 60px !important;
+        padding: 6px 3px;
+        font-size: 16px;
+    }
+
+    .dauLeftCol,
+    .ditLeftCol {
+        width: 18px !important;
+        max-width: 18px !important;
+        min-width: 18px !important;
+        padding: 4px 1px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        font-size: 10px;
+    }
+
+    .sideTablesContainer {
+        flex-direction: row;
+        gap: 5px;
+        justify-content: center;
+    }
+
+    .ketqua th,
+    .ketqua td,
+    .dau th,
+    .dau td,
+    .dit th,
+    .dit td {
+        font-size: 14px;
+        padding: 4px 2px;
+    }
+
+    .kq_ngay {
+        font-size: 14px;
+    }
+
+    .leftcol {
+        width: 50px !important;
+        min-width: 50px !important;
+        max-width: 50px !important;
+        padding: 4px 2px;
+        font-size: 14px;
+    }
+
+    .dauLeftCol,
+    .ditLeftCol {
+        width: 16px !important;
+        max-width: 16px !important;
+        min-width: 16px !important;
+        padding: 3px 1px;
+        font-size: 12px;
+    }
+}

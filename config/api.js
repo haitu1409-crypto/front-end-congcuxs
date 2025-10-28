@@ -4,7 +4,7 @@
  */
 
 export const API_CONFIG = {
-    BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.taodandewukong.pro',
+    BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
     ENDPOINTS: {
         THONG_KE: {
             THREE_REGIONS: '/api/thongke/3-mien',
@@ -20,6 +20,14 @@ export const API_CONFIG = {
             GENERATE: '/api/dande/generate',
             SAVE: '/api/dande/save',
             STATS: '/api/dande/stats'
+        },
+        SOI_CAU: {
+            BACH_THU: '/api/soicau/soi-cau-bach-thu',
+            RANGE: '/api/soicau/bach-thu/range'
+        },
+        BACH_THU_DE: {
+            BASE: '/api/bach-thu-de',
+            TODAY: '/api/bach-thu-de/today'
         }
     }
 };
