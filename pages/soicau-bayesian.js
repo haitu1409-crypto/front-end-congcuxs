@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, memo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import Head from 'next/head';
 // Optimized date handling - using native Date for better performance
 const formatDate = (date) => {
@@ -17,8 +17,7 @@ import Layout from '../components/Layout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import PerformanceMonitor from '../components/PerformanceMonitor';
-// Lazy load heavy components for better performance
-const ProbabilityStatistics = lazy(() => import('../components/ProbabilityStatistics'));
+import SoiCauHistoryDe from '../components/SoiCauHistoryDe';
 
 // Utils
 import { fetchWithRetry, handle429Error } from '../utils/apiUtils';
@@ -45,7 +44,7 @@ const SoiCauBayesian = () => {
     const [hasDataForSelectedDate, setHasDataForSelectedDate] = useState(false);
     // Thêm states mới
     const [extendedFeatures, setExtendedFeatures] = useState(null);
-    const [lstmStats, setLstmStats] = useState(null);
+    const [lstmStats, setLstmStats] = useState({});
 
 
     // Fetch soi cầu by date
@@ -150,21 +149,30 @@ const SoiCauBayesian = () => {
             setLoading(true);
             setError(null);
 
-            // Always use ensemble method for final results
-            const predictions = await fetchPredictions(FORCED_METHOD, selectedType, selectedDate, 20);
-            if (predictions) {
-                setCurrentPredictions(predictions);
-                // Fetch extended
-                const response = await fetchWithRetry(`${API_BASE_URL}/api/soicau-page/date/${selectedDate}?includeFeatures=true`);
-                const data = await response.json();
-                if (data.success) {
-                    setExtendedFeatures(data.data.extendedFeatures);
-                    setLstmStats(data.data.lstmStats || {}); // Giả sử back-end trả thêm
+            // TỐI ƯU: Chỉ gọi 1 API duy nhất để lấy tất cả dữ liệu
+            const response = await fetchWithRetry(`${API_BASE_URL}/api/soicau-page/date/${selectedDate}`);
+            const data = await response.json();
+
+            if (data.success && data.data) {
+                // Lấy predictions từ data chính
+                if (data.data.predictions && data.data.predictions.ensemble) {
+                    const ensemblePredictions = data.data.predictions.ensemble[selectedType] || [];
+                    setCurrentPredictions({
+                        method: 'ensemble',
+                        type: selectedType,
+                        predictions: ensemblePredictions
+                    });
                 }
-                console.log('✅ Predictions loaded:', predictions);
+
+                // Lấy extended features từ data chính
+                setExtendedFeatures(data.data.extendedFeatures || null);
+                setLstmStats(data.data.lstmStats || {});
+                console.log('✅ Predictions loaded from single API call');
             } else {
-                // If no predictions found, clear current predictions
+                console.warn('⚠️ No data available:', data.message || 'No data available');
                 setCurrentPredictions(null);
+                setExtendedFeatures(null);
+                setLstmStats({});
             }
         } catch (err) {
             console.error('Load predictions error:', err);
@@ -324,14 +332,19 @@ const SoiCauBayesian = () => {
             console.log('🔍 Checking data exists for date:', date);
             const response = await fetchWithRetry(`${API_BASE_URL}/api/soicau-page/date/${date}`);
 
+            // Backend giờ trả về 200 ngay cả khi không có dữ liệu
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                console.log(`⚠️ API returned ${response.status}, treating as no data`);
+                setCurrentPredictions(null);
+                setDataDescription(null);
+                return false;
             }
 
             const result = await response.json();
             console.log('📊 Data check result:', result);
 
-            if (result.success && result.data) {
+            // Kiểm tra cả result.success và result.data (và result.hasData)
+            if (result.success && result.data && result.data !== null) {
                 // Data exists, set data description but don't load predictions yet
                 console.log('✅ Data exists for date:', date);
                 setDataDescription({
@@ -343,7 +356,7 @@ const SoiCauBayesian = () => {
                 setCurrentPredictions(null);
                 return true;
             } else {
-                // No data exists (result.data is null)
+                // No data exists (result.data is null hoặc result.hasData === false)
                 console.log(`📋 No data found for date ${date}: ${result.message || 'No data available'}`);
                 setCurrentPredictions(null);
                 setDataDescription(null);
@@ -351,6 +364,7 @@ const SoiCauBayesian = () => {
             }
         } catch (err) {
             console.error('❌ Check data exists error:', err);
+            // Xử lý lỗi một cách graceful - không crash app
             setCurrentPredictions(null);
             setDataDescription(null);
             return false;
@@ -363,11 +377,16 @@ const SoiCauBayesian = () => {
         // fetchDashboardData(); // Đã xóa dashboard
         const initialDate = formatDate(new Date());
         setCurrentProcessingDate(initialDate);
-        // Check if data exists for current selected date
+        // Check if data exists for current selected date and load predictions immediately
         const checkInitialData = async () => {
             try {
                 const hasData = await checkDataExists(initialDate);
                 setHasDataForSelectedDate(hasData);
+
+                // If data exists, load predictions immediately
+                if (hasData) {
+                    await loadPredictions();
+                }
             } catch (err) {
                 console.error('Error checking initial data:', err);
             } finally {
@@ -388,6 +407,11 @@ const SoiCauBayesian = () => {
         // Check if data exists for new date
         const hasData = await checkDataExists(date);
         setHasDataForSelectedDate(hasData);
+
+        // If data exists, load predictions immediately
+        if (hasData) {
+            await loadPredictions();
+        }
     };
 
     // Handle method change
@@ -412,10 +436,10 @@ const SoiCauBayesian = () => {
     // Get method display name
     const getMethodDisplayName = (method) => {
         const names = {
-            cdm: 'CDM (Bayesian cơ bản)',
+            cdm: 'CDM (AI cơ bản)',
             efdm: 'EFDM (Extended Flexible)',
             cf: 'Collaborative Filtering',
-            ensemble: '🎯 Ensemble (Kết hợp tất cả)',
+            ensemble: '🎯 Ensemble (Kết hợp tất cả phương pháp AI)',
             advanced: '🤖 Advanced Soi Cầu (7 phương pháp AI)'
         };
         return names[method] || method;
@@ -426,126 +450,16 @@ const SoiCauBayesian = () => {
         return type === 'de' ? 'Đề (2 số cuối giải đặc biệt)' : 'Lô (2 số cuối tất cả giải)';
     };
 
-    // Calculate algorithm statistics for one day
-    const calculateAlgorithmStats = useCallback((predictions) => {
-        if (!predictions || !predictions.predictions) {
-            return null;
-        }
-
-        const preds = predictions.predictions;
-        const method = predictions.method;
-
-        // Calculate statistics
-        const totalPredictions = preds.length;
-        const avgProbability = preds.reduce((sum, p) => sum + parseFloat(p.percentage), 0) / totalPredictions;
-        const maxProbability = Math.max(...preds.map(p => parseFloat(p.percentage)));
-        const minProbability = Math.min(...preds.map(p => parseFloat(p.percentage)));
-        const stdDev = Math.sqrt(preds.reduce((sum, p) => sum + Math.pow(parseFloat(p.percentage) - avgProbability, 2), 0) / totalPredictions);
-
-        // Calculate confidence score (higher is better)
-        const confidenceScore = (avgProbability / stdDev) * (maxProbability / avgProbability);
-
-        // Calculate prediction quality score
-        const qualityScore = (avgProbability * 0.4) + (confidenceScore * 0.3) + ((maxProbability - minProbability) * 0.3);
-
-        // Calculate occurrence probability (normalized to 0-1 range)
-        const occurrenceProbability = Math.min(1.0, (maxProbability * 0.6 + avgProbability * 0.4) / 100);
-
-        return {
-            method,
-            totalPredictions,
-            avgProbability: avgProbability.toFixed(2),
-            maxProbability: maxProbability.toFixed(2),
-            minProbability: minProbability.toFixed(2),
-            stdDev: stdDev.toFixed(2),
-            confidenceScore: confidenceScore.toFixed(2),
-            qualityScore: qualityScore.toFixed(2),
-            occurrenceProbability: occurrenceProbability.toFixed(4),
-            recommendation: qualityScore > 25 ? 'Xuất sắc' : qualityScore > 20 ? 'Tốt' : qualityScore > 15 ? 'Khá' : 'Trung bình'
-        };
-    }, []);
-
-    // Render algorithm statistics
-    const renderAlgorithmStats = (predictions) => {
-        const stats = calculateAlgorithmStats(predictions);
-        if (!stats) return null;
-
-        const getRecommendationColor = (recommendation) => {
-            switch (recommendation) {
-                case 'Xuất sắc': return '#28a745';
-                case 'Tốt': return '#17a2b8';
-                case 'Khá': return '#ffc107';
-                case 'Trung bình': return '#dc3545';
-                default: return '#6c757d';
-            }
-        };
-
-        return (
-            <div className={styles.algorithmStats}>
-                <h4>📊 Thống Kê Thuật Toán {getMethodDisplayName(stats.method)}</h4>
-                <div className={styles.statsGrid}>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Tổng Dự Đoán</div>
-                        <div className={styles.statValue}>{stats.totalPredictions}</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Xác Suất Trung Bình</div>
-                        <div className={styles.statValue}>{stats.avgProbability}%</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Xác Suất Cao Nhất</div>
-                        <div className={styles.statValue}>{stats.maxProbability}%</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Xác Suất Thấp Nhất</div>
-                        <div className={styles.statValue}>{stats.minProbability}%</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Độ Lệch Chuẩn</div>
-                        <div className={styles.statValue}>{stats.stdDev}%</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Điểm Tin Cậy</div>
-                        <div className={styles.statValue}>{stats.confidenceScore}</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Điểm Chất Lượng</div>
-                        <div className={styles.statValue}>{stats.qualityScore}</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Khả Năng Ra Số</div>
-                        <div className={styles.statValue}>{Math.min(100, parseFloat(stats.occurrenceProbability) * 100).toFixed(2)}%</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Đánh Giá</div>
-                        <div
-                            className={styles.statValue}
-                            style={{ color: getRecommendationColor(stats.recommendation) }}
-                        >
-                            {stats.recommendation}
-                        </div>
-                    </div>
-                </div>
-                <div className={styles.recommendationBox}>
-                    <div className={styles.recommendationTitle}>🎯 Khuyến Nghị:</div>
-                    <div className={styles.recommendationText}>
-                        {stats.recommendation === 'Xuất sắc' && 'Thuật toán này cho kết quả dự đoán rất tốt với độ tin cậy cao. Nên ưu tiên sử dụng.'}
-                        {stats.recommendation === 'Tốt' && 'Thuật toán này cho kết quả dự đoán tốt với độ tin cậy khá cao. Có thể tin tưởng.'}
-                        {stats.recommendation === 'Khá' && 'Thuật toán này cho kết quả dự đoán khá tốt. Cần cân nhắc thêm.'}
-                        {stats.recommendation === 'Trung bình' && 'Thuật toán này cho kết quả dự đoán trung bình. Nên kết hợp với phương pháp khác.'}
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
     // Render prediction card with statistical confidence - Memoized for performance
     const renderPredictionCard = useCallback((prediction, index, key, isHit = false) => {
         const isTop3 = index < 3;
         const cardClass = isTop3 ? styles.topPrediction : styles.prediction;
         const hitClass = isHit ? styles.hit : '';
 
-        const hotCold = extendedFeatures?.hotCold[prediction.number] || 'normal';
+        // Safe access to extendedFeatures with proper null checks
+        const hotCold = (extendedFeatures && extendedFeatures.hotCold && extendedFeatures.hotCold[prediction.number])
+            ? extendedFeatures.hotCold[prediction.number]
+            : 'normal';
         const badgeClass = hotCold === 'hot' ? styles.hotBadge : hotCold === 'cold' ? styles.coldBadge : '';
 
         // Tính độ tin cậy dựa trên xác suất - Cập nhật cho realistic scoring
@@ -637,7 +551,7 @@ const SoiCauBayesian = () => {
 
     // Render extended features
     const renderExtendedFeatures = () => {
-        if (!extendedFeatures) return null;
+        if (!extendedFeatures || !extendedFeatures.hotCold) return null;
         return (
             <div className={styles.extendedSection}>
                 <h4>📊 Extended Features</h4>
@@ -660,17 +574,52 @@ const SoiCauBayesian = () => {
         <Layout>
             <PerformanceMonitor />
             <Head>
-                <title>Soi Cầu AI - Dự Đoán XSMB Hôm Nay</title>
-                <meta name="description" content="Soi cầu XSMB sử dụng thuật toán AI (CDM, EFDM, Collaborative Filtering, Ensemble) với độ chính xác cao" />
-                <meta name="keywords" content="soi cầu, dự đoán, xsmb, bayesian, cdm, efdm, collaborative filtering, ensemble" />
+                <title>Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay Miễn Phí | Soi Cầu AI</title>
+                <meta name="description" content="Soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay, soi cầu MB, soi cầu miền bắc với AI. Soi cầu bạch thủ, lô gan, thống kê vị trí XSMB. Soi cầu chính xác 100%." />
+                <meta name="keywords" content="soi cầu miền bắc, soi cau mien bac, soi cầu MB, soi cau MB, dự đoán XSMB, du doan XSMB, soi cầu XSMB, soi cầu miễn phí, soi cầu chính xác, soi cầu bạch thủ, lô gan XSMB, thống kê vị trí MB, cầu MB, dự đoán kết quả xổ số, soi cầu AI, soi cau AI" />
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Soi Cầu AI" />
+                <meta property="og:title" content="Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay Miễn Phí" />
+                <meta property="og:description" content="Soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay với AI. Soi cầu bạch thủ, lô gan, thống kê vị trí XSMB." />
+                <meta property="og:type" content="website" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content="Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay" />
+                <meta name="twitter:description" content="Soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay với AI." />
+                <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro'}/soicau-bayesian`} />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "WebPage",
+                            "name": "Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay",
+                            "description": "Soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay với AI. Soi cầu bạch thủ, lô gan, thống kê vị trí XSMB.",
+                            "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro'}/soicau-bayesian`,
+                            "mainEntity": {
+                                "@type": "Service",
+                                "name": "Soi Cầu AI",
+                                "description": "Dịch vụ soi cầu miền bắc miễn phí sử dụng AI",
+                                "provider": {
+                                    "@type": "Organization",
+                                    "name": "Soi Cầu AI"
+                                },
+                                "areaServed": {
+                                    "@type": "Country",
+                                    "name": "Vietnam"
+                                }
+                            },
+                            "keywords": "soi cầu miền bắc, soi cau mien bac, soi cầu MB, dự đoán XSMB, soi cầu XSMB, soi cầu miễn phí, soi cầu AI"
+                        })
+                    }}
+                />
             </Head>
 
             <div className={styles.container}>
 
                 <div className={styles.header}>
-                    <h1 className={styles.title}>Soi Cầu AI XSMB</h1>
+                    <h1 className={styles.title}>Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay</h1>
                     <p className={styles.subtitle}>
-                        Dự đoán XSMB sử dụng thuật toán AI tiên tiến với độ chính xác cao
+                        Soi cầu miền bắc miễn phí chính xác nhất với AI. Dự đoán XSMB hôm nay, soi cầu MB, soi cầu bạch thủ, lô gan. Soi cầu chính xác 100%.
                     </p>
                 </div>
 
@@ -732,10 +681,10 @@ const SoiCauBayesian = () => {
                     <div className={styles.predictionsContent}>
                         <div className={styles.predictionsHeader}>
                             <div>
-                                <h3>🎯 Kết Quả Soi Cầu Tổng Hợp AI - {getTypeDisplayName(selectedType)}</h3>
+                                <h3>🎯 Dự Đoán XSMB Hôm Nay - Soi Cầu Miền Bắc - {getTypeDisplayName(selectedType)}</h3>
                                 <p>📅 Ngày: {formatDisplayDate(selectedDate)}</p>
                                 <p style={{ color: '#28a745', fontSize: '14px', marginTop: '8px' }}>
-                                    ✨ Tích hợp tất cả phương pháp: CDM, EFDM, CF, Advanced (7 methods), LSTM
+                                    ✨ Soi cầu miễn phí với AI: Tích hợp CDM, EFDM, CF, Advanced (7 methods), LSTM
                                 </p>
                             </div>
                         </div>
@@ -747,19 +696,11 @@ const SoiCauBayesian = () => {
                                 <div className={styles.predictionGrid}>
                                     {memoizedPredictionCards}
                                 </div>
-                                {/* Algorithm Statistics */}
-                                {renderAlgorithmStats(currentPredictions)}
 
                                 {/* Extended Features */}
                                 {renderExtendedFeatures()}
 
-                                {/* Probability Statistics Component - Show all methods */}
-                                <Suspense fallback={<div className={styles.loading}>Đang tải thống kê...</div>}>
-                                    <ProbabilityStatistics
-                                        date={currentProcessingDate}
-                                        showAllMethods={true}
-                                    />
-                                </Suspense>
+
                             </>
                         ) : hasDataForSelectedDate ? (
                             <div className={styles.noData}>
@@ -774,6 +715,36 @@ const SoiCauBayesian = () => {
                                 <p>Sau khi tạo bộ dữ liệu, nhấn nút "Soi Cầu" để xem kết quả dự đoán.</p>
                             </div>
                         )}
+                    </div>
+                </div>
+
+                {/* Soi Cau History Components - Always visible */}
+                <SoiCauHistoryDe
+                    limit={14}
+                    days={14}
+                />
+
+                {/* SEO Content - Giải thích về soi cầu miền bắc */}
+                <div className={styles.seoContent} style={{ marginTop: '40px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+                    <h2 style={{ fontSize: '24px', marginBottom: '15px' }}>Soi Cầu Miền Bắc - Dự Đoán XSMB Hôm Nay Miễn Phí</h2>
+                    <div style={{ fontSize: '16px', lineHeight: '1.8', color: '#333' }}>
+                        <p><strong>Soi cầu miền bắc</strong> (soi cầu MB, soi cầu XSMB) là công cụ dự đoán xổ số miền Bắc miễn phí sử dụng trí tuệ nhân tạo (AI). Hệ thống soi cầu AI của chúng tôi tích hợp nhiều phương pháp tiên tiến:</p>
+                        <ul style={{ marginLeft: '20px', marginTop: '10px' }}>
+                            <li><strong>Soi cầu CDM:</strong> Phương pháp AI cơ bản cho soi cầu đề và lô</li>
+                            <li><strong>Soi cầu EFDM:</strong> Phương pháp mở rộng với phân tích linh hoạt</li>
+                            <li><strong>Soi cầu Collaborative Filtering:</strong> Tìm kiếm các ngày tương tự trong lịch sử</li>
+                            <li><strong>Soi cầu Advanced:</strong> Tích hợp 7 phương pháp AI cao cấp</li>
+                            <li><strong>Soi cầu Ensemble:</strong> Kết hợp tất cả phương pháp để cho kết quả chính xác nhất</li>
+                        </ul>
+                        <p style={{ marginTop: '15px' }}><strong>Dự đoán XSMB hôm nay</strong> bao gồm:</p>
+                        <ul style={{ marginLeft: '20px', marginTop: '10px' }}>
+                            <li><strong>Soi cầu đề:</strong> Dự đoán 2 số cuối giải đặc biệt XSMB</li>
+                            <li><strong>Soi cầu lô:</strong> Dự đoán 2 số cuối tất cả các giải XSMB</li>
+                            <li><strong>Soi cầu bạch thủ:</strong> Dự đoán số có khả năng cao nhất</li>
+                            <li><strong>Lô gan:</strong> Thống kê số chưa ra trong nhiều ngày</li>
+                            <li><strong>Thống kê vị trí:</strong> Phân tích số xuất hiện ở các vị trí khác nhau</li>
+                        </ul>
+                        <p style={{ marginTop: '15px' }}>Soi cầu miền bắc của chúng tôi hoàn toàn <strong>miễn phí</strong> và sử dụng công nghệ AI tiên tiến để đảm bảo độ chính xác cao nhất. Hãy thử nghiệm <strong>soi cầu MB</strong> ngay hôm nay!</p>
                     </div>
                 </div>
 

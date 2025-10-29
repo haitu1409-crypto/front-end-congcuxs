@@ -88,7 +88,7 @@
 
 @media (max-width: 768px) {
     .container {
-        padding: var(--spacing-4);
+      
         margin: var(--spacing-4) 0;
     }
 
@@ -107,7 +107,7 @@
 
 @media (max-width: 480px) {
     .container {
-        padding: var(--spacing-3);
+       
         margin: var(--spacing-3) 0;
     }
 

@@ -269,6 +269,16 @@ class ApiService {
     }
 
     /**
+     * Lấy lịch sử dự đoán bạch thủ lô từ database
+     */
+    async getHistoryLo(params = {}) {
+        return this.fetchWithCache('/api/soicau-page/history-lo', {
+            params,
+            useCache: true
+        });
+    }
+
+    /**
      * Lấy thông tin cache (để debug)
      */
     getCacheInfo() {

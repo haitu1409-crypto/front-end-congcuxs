@@ -248,6 +248,14 @@ const Home = memo(function Home() {
                                 <Target className={styles.heroButtonIcon} />
                                 <span>Dàn 2D</span>
                             </Link>
+                            <Link href="/soi-cau" className={styles.heroSecondaryButton}>
+                                <BarChart3 className={styles.heroButtonIcon} />
+                                <span>Soi Cầu Truyền Thống</span>
+                            </Link>
+                            <Link href="/soicau-bayesian" className={styles.heroSecondaryButton}>
+                                <Sparkles className={styles.heroButtonIcon} />
+                                <span>Soi Cầu AI</span>
+                            </Link>
                         </div>
                     </header>
 

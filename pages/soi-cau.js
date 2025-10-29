@@ -60,7 +60,7 @@ const SoiCauPage = ({ initialSoiCauData, initialDate, initialHistory, initialBac
             setCombinedPrediction(cachedData.soiCau.combinedPrediction || '');
             setAdditionalSuggestions(cachedData.soiCau.additionalSuggestions || []);
             setMetadata(cachedData.soiCau.metadata || {});
-            setHistory(cachedData.soiCau.history || []);
+            setHistory(cachedData.historyLo || []);
             setBachThuDeResults(cachedData.bachThuDe.predictions || []);
             setBachThuDeCombined(cachedData.bachThuDe.combinedPrediction || '');
             setBachThuDeHistory(cachedData.bachThuDe.history || []);
@@ -71,18 +71,27 @@ const SoiCauPage = ({ initialSoiCauData, initialDate, initialHistory, initialBac
         setError(null);
         try {
             console.log(`🔄 Fetching fresh data for ${date} (optimized)`);
-            // Fetch cả soi cầu và bạch thủ đề song song
+            // Fetch cả soi cầu, bạch thủ đề và lịch sử bạch thủ lô song song
             console.log('📅 Fetching data for date:', date, 'days:', days);
-            const [soiCauResponse, bachThuDeResponse] = await Promise.all([
+            const [soiCauResponse, bachThuDeResponse, historyLoResponse] = await Promise.all([
                 apiService.getSoiCauBachThu({ date, days }),
-                apiService.getBachThuDe({ date, days })
+                apiService.getBachThuDe({ date, days }),
+                apiService.getHistoryLo({ limit: 14, days: 14 })
             ]);
 
             // Set soi cầu data
             setSoiCauResults(soiCauResponse.predictions || []);
             setCombinedPrediction(soiCauResponse.combinedPrediction || '');
             setAdditionalSuggestions(soiCauResponse.additionalSuggestions || []);
-            setHistory(soiCauResponse.history || []);
+
+            // Set lịch sử bạch thủ lô từ database thực tế
+            if (historyLoResponse?.success && historyLoResponse?.data?.history) {
+                setHistory(historyLoResponse.data.history);
+                console.log('✅ Bach thu lo history loaded from database:', historyLoResponse.data.history.length, 'records');
+            } else {
+                console.warn('⚠️ No bach thu lo history data');
+                setHistory([]);
+            }
 
             // Set bạch thủ đề data
             console.log('🔍 Bach thu de response:', bachThuDeResponse);
@@ -121,6 +130,7 @@ const SoiCauPage = ({ initialSoiCauData, initialDate, initialHistory, initialBac
             const cacheData = {
                 soiCau: soiCauResponse,
                 bachThuDe: bachThuDeResponse?.data || {},
+                historyLo: historyLoResponse?.data?.history || [],
                 timestamp: Date.now()
             };
             dataCache.set(cacheKey, cacheData);
@@ -407,18 +417,20 @@ const SoiCauPage = ({ initialSoiCauData, initialDate, initialHistory, initialBac
                                             {history.map((entry, index) => (
                                                 <tr key={index}>
                                                     <td>{entry.date}</td>
-                                                    <td>{entry.predictions.filter(p => p.number).map(p => p.number).join(', ') || ''}</td>
+                                                    <td>{entry.predictedNumbers || ''}</td>
                                                     <td>
-                                                        {entry.actualNumbers.length > 0 ? (
+                                                        {entry.actualNumbers && entry.actualNumbers.length > 0 ? (
                                                             entry.actualNumbers.map((num, idx) => (
                                                                 <span key={idx} className={styles.matchedNumber}>
                                                                     {num}{idx < entry.actualNumbers.length - 1 ? ', ' : ''}
                                                                 </span>
                                                             ))
-                                                        ) : ''}
+                                                        ) : (
+                                                            <span className={styles.waitingResult}>Chưa có kết quả</span>
+                                                        )}
                                                     </td>
-                                                    <td className={entry.isHit ? styles.hit : styles.miss}>
-                                                        {entry.isHit ? 'Trúng' : 'Trượt'}
+                                                    <td className={entry.isHit ? styles.hit : (entry.actualNumbers && entry.actualNumbers.length > 0 ? styles.miss : styles.waiting)}>
+                                                        {entry.isHit ? 'Trúng' : (entry.actualNumbers && entry.actualNumbers.length > 0 ? 'Trượt' : 'Chưa có kết quả')}
                                                     </td>
                                                 </tr>
                                             ))}

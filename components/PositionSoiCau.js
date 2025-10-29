@@ -358,34 +358,44 @@ const PositionSoiCau = ({ initialData, initialDate, initialDays }) => {
 
             <div className={styles.groupSelect}>
                 <div className={styles.selectGroup}>
-                    <span className={styles.options}>Ngày:</span>
-                    <select className={styles.select} value={selectedDate.day} onChange={handleDateChange('day')}>
-                        {days.map((day) => (
-                            <option key={day} value={day}>{day}</option>
-                        ))}
-                    </select>
-                    <span className={styles.options}>Tháng:</span>
-                    <select className={styles.select} value={selectedDate.month} onChange={handleDateChange('month')}>
-                        {months.map((month) => (
-                            <option key={month} value={month}>{month}</option>
-                        ))}
-                    </select>
-                    <span className={styles.options}>Năm:</span>
-                    <select className={styles.select} value={selectedDate.year} onChange={handleDateChange('year')}>
-                        {years.map((year) => (
-                            <option key={year} value={year}>{year}</option>
-                        ))}
-                    </select>
-                    <span className={styles.options}>Số ngày phân tích:</span>
-                    <select className={styles.select} value={selectedDays} onChange={handleDaysChange}>
-                        {dayOptions.map((day) => (
-                            <option key={day} value={day}>{day} ngày</option>
-                        ))}
-                    </select>
+                    <div className={styles.selectItem}>
+                        <span className={styles.options}>Ngày:</span>
+                        <select className={styles.select} value={selectedDate.day} onChange={handleDateChange('day')}>
+                            {days.map((day) => (
+                                <option key={day} value={day}>{day}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className={styles.selectItem}>
+                        <span className={styles.options}>Tháng:</span>
+                        <select className={styles.select} value={selectedDate.month} onChange={handleDateChange('month')}>
+                            {months.map((month) => (
+                                <option key={month} value={month}>{month}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className={styles.selectItem}>
+                        <span className={styles.options}>Năm:</span>
+                        <select className={styles.select} value={selectedDate.year} onChange={handleDateChange('year')}>
+                            {years.map((year) => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className={styles.selectItem}>
+                        <span className={styles.options}>Số ngày phân tích:</span>
+                        <select className={styles.select} value={selectedDays} onChange={handleDaysChange}>
+                            {dayOptions.map((day) => (
+                                <option key={day} value={day}>{day} ngày</option>
+                            ))}
+                        </select>
+                    </div>
                     {suggestedDate && (
-                        <button className={styles.suggestedDateBtn} onClick={handleSuggestedDate}>
-                            Dùng ngày gợi ý: {suggestedDate}
-                        </button>
+                        <div className={styles.suggestedDateContainer}>
+                            <button className={styles.suggestedDateBtn} onClick={handleSuggestedDate}>
+                                Dùng ngày gợi ý: {suggestedDate}
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>

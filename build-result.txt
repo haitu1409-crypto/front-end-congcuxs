@@ -1,0 +1,33 @@
+
+> front_end_dande@1.0.0 build
+> next build
+
+node.exe :  â¨¯ Failed to load next.config.js, see more info here https://nextj
+s.org/docs/messages/next-config-error
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( â¨¯ Failed to ...xt-config-error 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+> Build error occurred
+Error: Cannot find module '@next/bundle-analyzer'
+Require stack:
+- C:\webSite_xs\front_end_dande\next.config.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\webSite_xs\front_end_dande\node_modules\next\dist\server\require-hook
+.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\webSite_xs\front_end_dande\node_modules\next\dist\server
+\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ 'C:\\webSite_xs\\front_end_dande\\next.config.js' ]
+}

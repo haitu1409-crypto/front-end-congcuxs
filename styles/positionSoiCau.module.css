@@ -9,6 +9,8 @@
     padding: 20px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: rgba(255, 255, 255, 0.95);
+    overflow-x: visible;
+    word-wrap: break-word;
 }
 
 .titleGroup {
@@ -24,14 +26,24 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
+    word-wrap: break-word;
+    hyphens: auto;
 }
 
 .subtitle {
     font-size: 1.1rem;
     color: #6b7280;
-    margin: 0;
-    max-width: 600px;
     margin: 0 auto;
+    max-width: 100%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.4;
 }
 
 .groupSelect {
@@ -47,6 +59,20 @@
     gap: 15px;
     align-items: center;
     justify-content: center;
+}
+
+.selectItem {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
+
+.suggestedDateContainer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
 }
 
 .options {
@@ -115,6 +141,11 @@
     color: #1f2937;
     margin-bottom: 20px;
     text-align: center;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
+    word-wrap: break-word;
+    hyphens: auto;
 }
 
 .tableWrapper {
@@ -288,7 +319,6 @@
 .groupedTableWrapper {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
     background: white;
     border-radius: 8px;
     padding: 20px;
@@ -302,7 +332,7 @@
     background: #f8fafc;
     border-radius: 8px;
     border: 1px solid #e5e7eb;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .countHeader {
@@ -312,10 +342,16 @@
     text-align: center;
     font-weight: 700;
     font-size: 16px;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
 }
 
 .countLabel {
     display: block;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
 }
 
 .numbersList {
@@ -586,43 +622,150 @@
 
     .title {
         font-size: 2rem;
+        white-space: normal;
+        word-wrap: break-word;
+        hyphens: auto;
+        line-height: 1.2;
     }
 
     .subtitle {
         font-size: 1rem;
+        white-space: normal;
+        word-wrap: break-word;
+        hyphens: auto;
+        line-height: 1.3;
+    }
+
+    .heading {
+        font-size: 1.25rem;
+        white-space: normal;
+        word-wrap: break-word;
+        hyphens: auto;
+        line-height: 1.2;
     }
 
     .selectGroup {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        align-items: start;
+    }
+
+    .selectItem {
+        display: flex;
         flex-direction: column;
-        align-items: stretch;
+        gap: 5px;
+        align-items: center;
+    }
+
+    .suggestedDateContainer {
+        grid-column: 1 / -1;
+        margin-top: 10px;
+    }
+
+    .options {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        text-align: center;
     }
 
     .select {
         width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .tableWrapper {
+        padding: 10px 12px;
         font-size: 14px;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
 
-    .tablePositionSoiCau th,
-    .tablePositionSoiCau td {
-        padding: 10px 8px;
-    }
-
-    .predictionNumber {
-        font-size: 1.25rem;
+    .select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 }
 
+.tableWrapper {
+    font-size: 14px;
+}
+
+.tablePositionSoiCau th,
+.tablePositionSoiCau td {
+    padding: 10px 8px;
+}
+
+.predictionNumber {
+    font-size: 1.25rem;
+}
+
+
 @media (max-width: 480px) {
     .title {
-        font-size: 1.75rem;
+        font-size: 1.2rem;
+        white-space: normal;
+        word-wrap: break-word;
+        -webkit-hyphens: auto;
+        hyphens: auto;
+        line-height: 1.1;
     }
 
-    .content {
-        padding: 20px;
+    .subtitle {
+        font-size: 0.9rem;
+        white-space: normal;
+        word-wrap: break-word;
+        hyphens: auto;
+        line-height: 1.2;
+    }
+
+    .heading {
+        font-size: 1.1rem;
+        white-space: normal;
+        word-wrap: break-word;
+        hyphens: auto;
+        line-height: 1.1;
+    }
+
+
+
+    .selectGroup {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .selectItem {
+        gap: 3px;
+    }
+
+    .options {
+        font-size: 12px;
+    }
+
+    .select {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    /* Count group mobile small */
+    .countGroup {
+        min-width: 100%;
+        width: 100%;
+    }
+
+    .countHeader {
+        padding: 8px 10px;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: unset;
+    }
+
+    .countLabel {
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: unset;
     }
 
     .tablePositionSoiCau th,
@@ -642,17 +785,26 @@
     /* Grouped table responsive */
     .groupedTableWrapper {
         flex-direction: column;
-        gap: 15px;
         padding: 15px;
     }
 
     .countGroup {
         min-width: 100%;
+        width: 100%;
     }
 
     .countHeader {
         padding: 10px 12px;
         font-size: 14px;
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: unset;
+    }
+
+    .countLabel {
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: unset;
     }
 
     .numbersList {

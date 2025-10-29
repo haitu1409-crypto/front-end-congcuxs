@@ -1,0 +1,261 @@
+/* Soi Cau History Component Styles */
+
+.tablesRow {
+    margin: 20px 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+}
+
+.heading {
+    background: #f8f9fa;
+    color: #495057;
+    line-height: 1.2;
+    margin-top: 5px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+    background: #fff;
+    padding: 0;
+}
+
+.historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 800px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.historyTable thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.historyTable th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: white;
+    border-bottom: 2px solid #5a67d8;
+    white-space: nowrap;
+    font-size: 14px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.historyTable td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e9ecef;
+    border-right: 1px solid #f1f3f4;
+    vertical-align: top;
+    line-height: 1.4;
+    font-size: 14px;
+}
+
+.historyTable td:last-child {
+    border-right: none;
+}
+
+.historyTable tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+/* Row status borders */
+.historyTable tbody tr[data-status="hit"] {
+    border-left: 4px solid #28a745;
+    background: linear-gradient(90deg, rgba(40, 167, 69, 0.05) 0%, transparent 100%);
+}
+
+.historyTable tbody tr[data-status="miss"] {
+    border-left: 4px solid #dc3545;
+    background: linear-gradient(90deg, rgba(220, 53, 69, 0.05) 0%, transparent 100%);
+}
+
+.historyTable tbody tr[data-status="waiting"] {
+    border-left: 4px solid #ffc107;
+    background: linear-gradient(90deg, rgba(255, 193, 7, 0.05) 0%, transparent 100%);
+}
+
+/* Status Classes */
+.waiting {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.hit {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.miss {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.matchedNumber {
+    color: #28a745;
+    font-weight: 600;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(40, 167, 69, 0.05) 100%);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.1);
+}
+
+.waitingResult {
+    color: #6c757d;
+    font-style: italic;
+    background: rgba(255, 193, 7, 0.1);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    display: inline-block;
+}
+
+.missResult {
+    color: #dc3545;
+    font-weight: 500;
+    background: rgba(220, 53, 69, 0.1);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    display: inline-block;
+}
+
+/* Framing Strategy */
+.framingStrategy {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.framingItem {
+    margin-bottom: 0;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #495057;
+    background: linear-gradient(135deg, rgba(108, 117, 125, 0.1) 0%, rgba(108, 117, 125, 0.05) 100%);
+    border-radius: 6px;
+    border: 1px solid rgba(108, 117, 125, 0.2);
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.2s ease;
+    display: inline-block;
+    min-width: 60px;
+}
+
+.framingItem:hover {
+    background: linear-gradient(135deg, rgba(108, 117, 125, 0.15) 0%, rgba(108, 117, 125, 0.08) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+}
+
+/* Predictions */
+.predictions {
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    color: #495057;
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+/* Date */
+.date {
+    font-weight: 500;
+    color: #495057;
+    white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .heading {
+        font-size: 1.2rem;
+        padding: 15px;
+    }
+
+    .historyTable {
+        font-size: 12px;
+        min-width: 600px;
+    }
+
+    .historyTable th,
+    .historyTable td {
+        padding: 8px 6px;
+    }
+
+    .predictions {
+        font-size: 11px;
+    }
+
+    .framingStrategy {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .heading {
+        font-size: 1rem;
+        padding: 12px;
+    }
+
+    .historyTable {
+        font-size: 11px;
+        min-width: 500px;
+    }
+
+    .historyTable th,
+    .historyTable td {
+        padding: 6px 4px;
+    }
+}
+
+/* Loading and Error States */
+.loadingContainer {
+    padding: 40px 20px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 16px;
+}
+
+.errorContainer {
+    padding: 40px 20px;
+    text-align: center;
+    color: #dc3545;
+    font-size: 16px;
+}
+
+.noDataContainer {
+    padding: 40px 20px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 16px;
+}
+
+/* Animation for table rows */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.historyTable tbody tr {
+    animation: fadeIn 0.3s ease-in-out;
+}
