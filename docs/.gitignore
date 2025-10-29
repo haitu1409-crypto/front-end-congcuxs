@@ -1,7 +1,0 @@
-# Documentation folder - track all markdown files
-!*.md
-!README.md
-
-# Allow tracking all documentation
-!*
-

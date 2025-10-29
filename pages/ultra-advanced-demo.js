@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import styles from '../styles/SoiCau.module.css';
+import styles from '../styles/soi-cau.module.css';
 import moment from 'moment';
 
 export default function UltraAdvancedDemo() {

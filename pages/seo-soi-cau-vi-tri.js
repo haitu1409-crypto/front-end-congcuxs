@@ -264,7 +264,7 @@ const SEOPositionSoiCauPage = ({ initialData, initialDate, initialDays, seoData 
                             }}>
                                 <li>Phân tích dựa trên dữ liệu lịch sử 30 ngày</li>
                                 <li>Thuật toán AI tự động cập nhật pattern</li>
-                                <li>Độ chính xác cao với tỷ lệ thành công > 75%</li>
+                                <li>Độ chính xác cao với tỷ lệ thành công &gt; 75%</li>
                                 <li>Miễn phí 100%, không cần đăng ký</li>
                                 <li>Cập nhật kết quả real-time</li>
                             </ul>
@@ -420,7 +420,7 @@ const SEOPositionSoiCauPage = ({ initialData, initialDate, initialDays, seoData 
                                     color: '#6b7280',
                                     lineHeight: '1.6'
                                 }}>
-                                    Thuật toán AI của chúng tôi đạt độ chính xác > 75% trong việc dự đoán 2 số cuối giải đặc biệt,
+                                    Thuật toán AI của chúng tôi đạt độ chính xác &gt; 75% trong việc dự đoán 2 số cuối giải đặc biệt,
                                     dựa trên phân tích dữ liệu lịch sử và pattern recognition.
                                 </p>
                             </div>

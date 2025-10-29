@@ -64,3 +64,19 @@ content-*.html
 *-test.js
 *-test.css
 
+# Documentation files (keep only README.md)
+*.md
+!README.md
+
+# Build analysis files
+build-*.txt
+*-analysis.txt
+*-result.txt
+*-final.txt
+
+# Test HTML files
+TEST_*.html
+
+# Firebase config (not needed for Vercel)
+firebase.json
+

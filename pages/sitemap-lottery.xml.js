@@ -3,8 +3,6 @@
  * Sitemap tối ưu SEO cho kết quả xổ số
  */
 
-import { getServerSideProps } from 'next';
-
 const SitemapLottery = () => {
     return null;
 };
