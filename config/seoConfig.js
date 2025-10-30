@@ -638,30 +638,30 @@ const SEO_CONFIG = {
     /**
      * THỐNG KÊ ĐẦU ĐUÔI
      * PRIMARY: thống kê đầu đuôi (12,000), dau duoi lo to (5,400)
-     * ENHANCED: Competitive keywords vs xsmb.win, xosothantai
+     * ENHANCED: Competitive keywords vs xosothantai
      */
     'dau-duoi': {
-        title: 'Thống Kê Đầu Đuôi XSMB - Phân Tích Nhanh Hơn XSMB.WIN | Tần Suất Lô Tô - Miễn Phí 2025',
+        title: 'Thống Kê Đầu Đuôi XSMB - Phân Tích Nhanh Nhất | TAODANDEWUKONG.PRO - Miễn Phí 2025',
         description: generateMetaDescription('dau-duoi', true),
         keywords: [
             // ✅ PRIMARY KEYWORDS
             'thống kê đầu đuôi', 'thống kê đầu đuôi loto', 'thống kê đầu đuôi xsmb',
             'dau duoi lo to', 'dau duoi loto', 'thong ke dau duoi',
-            
+
             // ✅ COMPETITIVE KEYWORDS
-            'thống kê đầu đuôi xsmb.win', 'xsmb.win thống kê đầu đuôi',
+            'thống kê đầu đuôi tốt nhất', 'thong ke dau duoi tot nhat',
             'thống kê đầu đuôi xosothantai', 'xosothantai thống kê đầu đuôi',
-            'thống kê đầu đuôi tốt hơn xsmb.win', 'tốt hơn xsmb.win',
-            
+            'thống kê đầu đuôi nhanh nhất', 'thong ke dau duoi nhanh nhat',
+
             // ✅ LONG-TAIL KEYWORDS
             'thống kê đầu đuôi miền bắc', 'dau duoi mien bac',
             'tần suất đầu đuôi', 'phan tich dau duoi loto',
             'bảng thống kê đầu đuôi', 'bang thong ke dau duoi',
-            
+
             // ✅ BRAND VARIATIONS
             'thống kê đầu đuôi taodandewukong', 'taodandewukong thống kê đầu đuôi',
             'dau duoi wukong', 'wukong thống kê đầu đuôi',
-            
+
             // ✅ REGIONAL
             'thống kê đầu đuôi 3 miền', 'thống kê đầu đuôi xổ số'
         ],
@@ -680,27 +680,27 @@ const SEO_CONFIG = {
     /**
      * THỐNG KÊ LÔ GAN
      * PRIMARY: lô gan (8,100), lo gan (2,900), thống kê lô gan (2,100)
-     * COMPETITIVE: vs xosothantai, xskt, xsmb.win
+     * COMPETITIVE: vs xosothantai, xskt
      */
     'lo-gan': {
-        title: 'Thống Kê Lô Gan XSMB - Chi Tiết Hơn Xosothantai | Lô Khan Lâu Chưa Về - Miễn Phí 2025',
+        title: 'Thống Kê Lô Gan XSMB - Chi Tiết Hơn Xosothantai | TAODANDEWUKONG.PRO - Miễn Phí 2025',
         description: generateMetaDescription('lo-gan', true),
         keywords: [
             // ✅ PRIMARY
             'lô gan', 'lo gan', 'thống kê lô gan', 'thong ke lo gan',
             'lô khan', 'lo khan', 'số gan', 'lô gan miền bắc',
-            
+
             // ✅ COMPETITIVE
             'lô gan xosothantai', 'xosothantai lô gan',
-            'lô gan xsmb.win', 'xsmb.win lô gan',
+            'lô gan tốt nhất', 'lo gan tot nhat',
             'lô gan xskt', 'xskt thống kê lô gan',
-            'tốt hơn xosothantai', 'chi tiết hơn xsmb.win',
-            
+            'tốt hơn xosothantai', 'chi tiết nhất',
+
             // ✅ LONG-TAIL
             'lô gan lâu chưa về', 'lo gan lau chua ve',
             'thống kê số gan', 'so gan xsmb',
             'bảng lô gan miền bắc', 'bang lo gan mien bac',
-            
+
             // ✅ VARIATIONS
             'ló gan', 'lo khan', 'số lâu chưa về',
             'gan cực đại', 'gan max'
@@ -720,28 +720,28 @@ const SEO_CONFIG = {
     /**
      * THỐNG KÊ GIẢI ĐẶC BIỆT
      * PRIMARY: giải đặc biệt (74,000), thống kê giải đặc biệt (8,100)
-     * COMPETITIVE: vs xskt, xsmb.win
+     * COMPETITIVE: vs xskt
      */
     'giai-dac-biet': {
-        title: 'Thống Kê Giải Đặc Biệt XSMB - Nhiều Tính Năng Hơn XSKT | Phân Tích Chi Tiết - Miễn Phí 2025',
+        title: 'Thống Kê Giải Đặc Biệt XSMB - Nhiều Tính Năng Hơn XSKT | TAODANDEWUKONG.PRO - Miễn Phí 2025',
         description: generateMetaDescription('giai-dac-biet', true),
         keywords: [
             // ✅ PRIMARY
             'giải đặc biệt', 'giai dac biet', 'thống kê giải đặc biệt',
             'giải đặc biệt xsmb', 'giai dac biet xsmb',
             'thống kê giải đặc biệt miền bắc',
-            
+
             // ✅ COMPETITIVE
             'giải đặc biệt xskt', 'xskt giải đặc biệt',
-            'giải đặc biệt xsmb.win', 'xsmb.win giải đặc biệt',
-            'nhiều tính năng hơn xskt', 'tốt hơn xsmb.win',
-            
+            'giải đặc biệt tốt nhất', 'giai dac biet tot nhat',
+            'nhiều tính năng hơn xskt', 'tốt nhất',
+
             // ✅ LONG-TAIL
             'thống kê giải đặc biệt theo tuần',
             'giải đặc biệt hôm nay', 'giai dac biet hom nay',
             'bảng giải đặc biệt', 'bang giai dac biet',
             'phân tích giải đặc biệt', 'phan tich giai dac biet',
-            
+
             // ✅ VARIATIONS
             'gải đặc biệt', 'giải đắc biệt',
             'giai đac biet', 'giai đắc biệt'
@@ -771,11 +771,11 @@ const SEO_CONFIG = {
             'tần suất lô tô', 'tan suat lo to', 'thống kê tần suất',
             'số nóng số lạnh', 'so nong so lanh',
             'tần suất xuất hiện', 'tan suat xuat hien',
-            
+
             // ✅ COMPETITIVE
             'tần suất lô tô tốt nhất', 'thống kê số nóng tốt hơn',
             'phân tích tần suất chi tiết', 'phan tich tan suat chi tiet',
-            
+
             // ✅ LONG-TAIL
             'số nào xuất hiện nhiều nhất', 'so nao xuat hien nhieu nhat',
             'số nào ít xuất hiện', 'so nao it xuat hien',
@@ -805,12 +805,12 @@ const SEO_CONFIG = {
             // ✅ PRIMARY
             'tần suất lô cặp', 'tan suat lo cap', 'thống kê lô cặp',
             'lô cặp', 'lo cap', 'cặp số loto',
-            
+
             // ✅ FEATURES
             'tần suất lô cặp xx yy', 'phan tich lo cap chi tiet',
             'bảng tần suất lô cặp', 'bang tan suat lo cap',
             'số lần xuất hiện riêng lẻ', 'so lan xuat hien rieng le',
-            
+
             // ✅ UNIQUE
             'tính năng độc quyền', 'cong cu doc quyen',
             'phân tích cặp số', 'phan tich cap so'
@@ -840,12 +840,12 @@ const SEO_CONFIG = {
             'giải đặc biệt theo tuần', 'giai dac biet theo tuan',
             'thống kê theo tuần', 'thong ke theo tuan',
             'giải đặc biệt tuần này', 'giai dac biet tuan nay',
-            
+
             // ✅ FEATURES
             'xem theo ngày trong tuần', 'xem theo tuan',
             'giải đặc biệt thứ 2', 'giai dac biet thu 2',
             'giải đặc biệt chủ nhật', 'giai dac biet chu nhat',
-            
+
             // ✅ UNIQUE
             'calendar view', 'view lịch',
             'chọn tháng năm', 'toggle thông tin'
@@ -859,6 +859,55 @@ const SEO_CONFIG = {
         structuredData: {
             type: 'Dataset',
             additionalTypes: ['Article', 'FAQPage']
+        }
+    },
+
+    /**
+     * KẾT QUẢ XỔ SỐ MIỀN BẮC
+     * PRIMARY: kết quả xổ số miền bắc (201,000), xsmb (673,000)
+     * SECONDARY: danh sách kết quả xổ số (8,100), xổ số mb (246,000)
+     * COMPETITIVE: vs xosothantai, xskt
+     */
+    'kqxs': {
+        title: 'Kết Quả Xổ Số Miền Bắc (XSMB) - Danh Sách KQXS Mới Nhất | TAODANDEWUKONG.PRO 2025',
+        description: generateMetaDescription('kqxs', true),
+        keywords: [
+            // ✅ PRIMARY KEYWORDS
+            'kết quả xổ số miền bắc', 'ket qua xo so mien bac',
+            'xsmb', 'xs mb', 'xo so mien bac',
+            'danh sách kết quả xổ số', 'danh sach ket qua xo so',
+            'kqxs', 'kq xs', 'ket qua xo so',
+
+            // ✅ COMPETITIVE KEYWORDS
+            'kết quả xổ số tốt nhất', 'ket qua xo so tot nhat',
+            'ket qua xoso thantai', 'xosothantai ket qua',
+            'kết quả xổ số chi tiết', 'chi tiết hơn đối thủ',
+            'kết quả xổ số nhanh nhất', 'ket qua xo so nhanh nhat',
+
+            // ✅ LONG-TAIL KEYWORDS
+            'xem kết quả xổ số hôm nay', 'xem ket qua xo so hom nay',
+            'kết quả xổ số miền bắc mới nhất', 'ket qua xo so mien bac moi nhat',
+            'danh sách kết quả xsmb', 'danh sach ket qua xsmb',
+            'bảng kết quả xổ số miền bắc', 'bang ket qua xo so mien bac',
+
+            // ✅ BRAND VARIATIONS
+            'taodandewukong kết quả xổ số', 'wukong kqxs',
+            'dan de wukong kqxs', 'wukong xsmb',
+            'taodandewukong.pro kết quả', 'kết quả xổ số wukong',
+
+            // ✅ REGIONAL
+            'kết quả xổ số 3 miền', 'ket qua xo so 3 mien',
+            'xsmb xsmn xsmt', 'kết quả xổ số đầy đủ'
+        ],
+        url: '/kqxs',
+        image: OG_IMAGES.default,
+        canonical: `${SITE_URL}/kqxs`,
+        type: 'website',
+        priority: 0.95,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Article',
+            additionalTypes: ['FAQPage', 'CollectionPage']
         }
     }
 };

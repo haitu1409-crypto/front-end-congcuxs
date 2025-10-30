@@ -7,38 +7,122 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
 
 function generateSiteMap(articles) {
+    const lastmod = new Date().toISOString().split('T')[0];
+    
     return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-    <!-- Homepage -->
+    
+    <!-- Homepage - Priority 1.0 -->
     <url>
         <loc>${SITE_URL}</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
-        <lastmod>${new Date().toISOString()}</lastmod>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Main Tool Pages - Priority 0.95 -->
+    <url>
+        <loc>${SITE_URL}/soi-cau-bayesian</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/dan-9x0x</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/dan-2d</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/dan-3d4d</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/dan-dac-biet</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Results Pages - Priority 0.95 -->
+    <url>
+        <loc>${SITE_URL}/kqxs</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Statistics Pages - Priority 0.85-0.90 -->
+    <url>
+        <loc>${SITE_URL}/thongke/dau-duoi</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/thongke/lo-gan</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/thongke/giai-dac-biet</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/thongke/giai-dac-biet-tuan</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.78</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/thongke/tan-suat-loto</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.88</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/thongke/tan-suat-lo-cap</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.80</priority>
+        <lastmod>${lastmod}</lastmod>
     </url>
     
     <!-- News List Page -->
     <url>
         <loc>${SITE_URL}/tin-tuc</loc>
         <changefreq>hourly</changefreq>
-        <priority>0.9</priority>
-        <lastmod>${new Date().toISOString()}</lastmod>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
     </url>
     
     <!-- Content Page -->
     <url>
         <loc>${SITE_URL}/content</loc>
         <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <!-- Tool Pages -->
-    <url>
-        <loc>${SITE_URL}</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.70</priority>
+        <lastmod>${lastmod}</lastmod>
     </url>
     
     <!-- Article Pages -->
@@ -108,18 +192,93 @@ export async function getServerSideProps({ res }) {
     } catch (error) {
         console.error('Sitemap generation error:', error);
 
-        // Return minimal sitemap on error
+        // Return comprehensive sitemap on error (without articles)
+        const lastmod = new Date().toISOString().split('T')[0];
         const minimalSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>${SITE_URL}</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/soi-cau-bayesian</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/dan-9x0x</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/dan-2d</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/dan-3d4d</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/dan-dac-biet</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/kqxs</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/thongke/dau-duoi</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/thongke/lo-gan</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/thongke/giai-dac-biet</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/thongke/giai-dac-biet-tuan</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.78</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/thongke/tan-suat-loto</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.88</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/thongke/tan-suat-lo-cap</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.80</priority>
+        <lastmod>${lastmod}</lastmod>
     </url>
     <url>
         <loc>${SITE_URL}/tin-tuc</loc>
         <changefreq>hourly</changefreq>
-        <priority>0.9</priority>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
     </url>
 </urlset>`;
 

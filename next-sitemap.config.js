@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro',
     generateRobotsTxt: true,
     generateIndexSitemap: true,
 
@@ -250,7 +250,7 @@ module.exports = {
         `${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}/news-sitemap.xml`,
     ],
 
-    // Output directory - disable to avoid conflicts with pages/sitemap.xml.js
-    // outDir: './public',
+    // Output directory
+    outDir: './public',
 };
 

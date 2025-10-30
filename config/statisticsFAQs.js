@@ -6,8 +6,8 @@
 module.exports = {
     'dau-duoi': [
         {
-            question: 'Thống kê Đầu Đuôi tốt hơn xsmb.win không?',
-            answer: 'Có! Thống kê Đầu Đuôi tại taodandewukong.pro cung cấp phân tích chi tiết hơn xsmb.win với biểu đồ trực quan, bảng thống kê theo ngày, và xu hướng thời gian thực. Không cần đăng ký tài khoản, miễn phí 100%, và tốc độ tải trang nhanh gấp 3 lần.'
+            question: 'Thống kê Đầu Đuôi tại TAODANDEWUKONG.PRO có tốt không?',
+            answer: 'Có! Thống kê Đầu Đuôi tại TAODANDEWUKONG.PRO cung cấp phân tích chi tiết với biểu đồ trực quan, bảng thống kê theo ngày, và xu hướng thời gian thực. Không cần đăng ký tài khoản, miễn phí 100%, và tốc độ tải trang cực nhanh.'
         },
         {
             question: 'So với xosothantai thì thống kê đầu đuôi ở đây khác gì?',
@@ -29,8 +29,8 @@ module.exports = {
             answer: 'Hoàn toàn có! Thống kê lô gan tại TAODANDEWUKONG.PRO cung cấp phân tích sâu hơn xosothantai với số ngày gan chính xác, gan cực đại (gan max), xu hướng thời gian, và bảng so sánh. Dữ liệu cập nhật realtime, không cần chờ đợi như xosothantai.'
         },
         {
-            question: 'Lô gan khác gì so với xsmb.win?',
-            answer: 'Khác biệt lớn nhất là tốc độ: TAODANDEWUKONG.PRO tải nhanh gấp 3 lần xsmb.win, giao diện đẹp hơn, phân tích chi tiết hơn với biểu đồ trực quan. Xsmb.win chỉ có bảng số cơ bản, còn chúng tôi cung cấp insights sâu để bạn đưa ra quyết định tốt nhất.'
+            question: 'Thống kê lô gan tại TAODANDEWUKONG.PRO có gì đặc biệt?',
+            answer: 'Khác biệt lớn nhất là tốc độ và độ chi tiết: TAODANDEWUKONG.PRO tải cực nhanh, giao diện đẹp và hiện đại, phân tích chi tiết với biểu đồ trực quan. Chúng tôi cung cấp insights sâu và đầy đủ để bạn đưa ra quyết định tốt nhất.'
         },
         {
             question: 'Lô gan là gì và ý nghĩa của nó?',
@@ -48,8 +48,8 @@ module.exports = {
             answer: 'Chắc chắn! TAODANDEWUKONG.PRO cung cấp nhiều tính năng độc đáo mà xskt không có: Xem theo ngày trong tuần (view lịch), toggle hiển thị thông tin (ngày, tổng, đầu, đuôi, chẵn lẻ), phân tích xu hướng theo tuần/tháng/năm, và nhiều filter thông minh khác.'
         },
         {
-            question: 'So với xsmb.win thì giải đặc biệt ở đây tốt hơn?',
-            answer: 'Có! Chúng tôi có nhiều view khác nhau (tuần, ngày, danh sách), xem được cả giải đặc biệt đặc biệt, toggle thông tin linh hoạt, và phân tích chi tiết hơn. Xsmb.win chỉ có bảng số đơn giản, còn chúng tôi cung cấp insights để bạn hiểu rõ xu hướng.'
+            question: 'Thống kê giải đặc biệt tại TAODANDEWUKONG.PRO có gì tốt?',
+            answer: 'Có! Chúng tôi có nhiều view khác nhau (tuần, ngày, danh sách), xem được cả giải đặc biệt đặc biệt, toggle thông tin linh hoạt, và phân tích chi tiết. TAODANDEWUKONG.PRO cung cấp insights sâu và nhiều công cụ để bạn hiểu rõ xu hướng.'
         },
         {
             question: 'Giải đặc biệt là gì?',

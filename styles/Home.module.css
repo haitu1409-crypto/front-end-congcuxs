@@ -45,15 +45,15 @@
 .heroBadge {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 8px 16px;
+    padding: 6px 12px;
     border-radius: 50px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
 }
 
 .heroBadgeIcon {
@@ -72,19 +72,25 @@
 /* Hero Actions */
 .heroActions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 32px;
-    /* ✅ Fix CLS: Reserve space & prevent shift */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
     min-height: 120px;
     align-items: center;
 }
 
 @media (min-width: 480px) {
     .heroActions {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        min-height: 80px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        min-height: 150px;
+    }
+}
+
+@media (min-width: 640px) {
+    .heroActions {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        min-height: 150px;
     }
 }
 
@@ -92,7 +98,7 @@
     .heroActions {
         display: flex;
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 10px;
         min-height: 56px;
     }
 }
@@ -101,18 +107,19 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 4px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 12px 16px;
-    border-radius: 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 12px;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
     text-align: center;
-    min-height: 48px;
+    min-height: 36px;
+    flex: 1;
 }
 
 .heroPrimaryButton:hover {
@@ -124,18 +131,18 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 3px;
     background: white;
     color: #667eea;
-    padding: 12px 16px;
-    border: 2px solid #667eea;
-    border-radius: 12px;
+    border: 1.5px solid #667eea;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 12px;
     text-decoration: none;
     transition: all 0.3s ease;
     text-align: center;
-    min-height: 48px;
+    min-height: 26px;
+    flex: 1;
 }
 
 .heroSecondaryButton:hover {
@@ -146,45 +153,47 @@
 
 @media (min-width: 480px) {
     .heroPrimaryButton {
-        gap: 10px;
-        padding: 14px 20px;
-        font-size: 15px;
-        min-height: 52px;
+        gap: 6px;
+        padding: 10px 14px;
+        font-size: 13px;
+        min-height: 42px;
     }
 
     .heroSecondaryButton {
-        gap: 8px;
-        padding: 14px 20px;
-        font-size: 15px;
-        min-height: 52px;
+        gap: 4px;
+        padding: 10px 14px;
+        font-size: 13px;
+        min-height: 42px;
     }
 }
 
 @media (min-width: 768px) {
     .heroPrimaryButton {
-        gap: 12px;
-        padding: 16px 32px;
-        font-size: 16px;
+        gap: 10px;
+        padding: 14px 24px;
+        font-size: 15px;
         min-height: auto;
+        flex: 0 0 auto;
     }
 
     .heroSecondaryButton {
-        gap: 8px;
-        padding: 16px 24px;
-        font-size: 16px;
+        gap: 6px;
+        padding: 14px 20px;
+        font-size: 15px;
         min-height: auto;
+        flex: 0 0 auto;
     }
 }
 
 .heroButtonIcon {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     flex-shrink: 0;
 }
 
 .heroButtonArrow {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     transition: transform 0.3s ease;
     flex-shrink: 0;
 }
@@ -195,20 +204,20 @@
 
 @media (min-width: 480px) {
     .heroButtonIcon {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
     }
 
     .heroButtonArrow {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
     }
 }
 
 @media (min-width: 768px) {
     .heroButtonIcon {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
     }
 
     .heroButtonArrow {
@@ -411,8 +420,8 @@
 /* ===== HEADER - COMPACT ===== */
 .header {
     text-align: center;
-    margin-bottom: var(--spacing-6);
-    padding: var(--spacing-5) var(--spacing-4);
+    margin-bottom: 20px;
+    padding: 15px;
     background: var(--color-white);
     border-radius: var(--border-radius-lg);
     border: 1px solid var(--color-gray-200);
@@ -420,17 +429,17 @@
 
 @media (min-width: 768px) {
     .header {
-        padding: var(--spacing-6) var(--spacing-5);
-        margin-bottom: var(--spacing-8);
+        padding: 20px;
+        margin-bottom: 30px;
     }
 }
 
 .mainTitle {
-    font-size: var(--text-2xl);
+    font-size: var(--text-xl);
     font-weight: var(--font-bold);
     text-transform: uppercase;
     color: var(--color-gray-900);
-    margin-bottom: var(--spacing-2);
+    margin-bottom: 10px;
     letter-spacing: var(--letter-spacing-tight);
     line-height: var(--line-height-tight);
     /* ✅ Fix CLS: Reserve space to prevent layout shift */
@@ -471,12 +480,13 @@
     /* ✅ Prevent font loading shifts */
     font-display: swap;
     /* ✅ Additional space reservation for better CLS */
-    padding: 8px 0;
+    padding: 4px 0;
     /* ✅ CRITICAL: Prevent layout shift during font loading */
     height: 80px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin-bottom: 10px;
 }
 
 @media (min-width: 768px) {
@@ -487,12 +497,13 @@
         contain: layout style;
         will-change: auto;
         /* ✅ Additional space reservation for better CLS */
-        padding: 12px 0;
+        padding: 6px 0;
         /* ✅ CRITICAL: Prevent layout shift during font loading */
         height: 60px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        margin-bottom: 15px;
     }
 }
 
@@ -1325,6 +1336,17 @@
     font-weight: var(--font-medium);
 }
 
+/* ===== MOBILE ONLY / DESKTOP ONLY ===== */
+/* Mobile Only Today Predictions - Hiển thị trên mobile, ẩn trên desktop */
+.mobileOnlyTodayPredictions {
+    display: none;
+}
+
+/* Desktop Only Today Predictions - Hiển thị trên desktop, ẩn trên mobile */
+.desktopOnlyTodayPredictions {
+    display: block;
+}
+
 /* ===== RESPONSIVE LAYOUT ===== */
 @media (max-width: 1200px) {
     .container {
@@ -1347,12 +1369,23 @@
 
     .rightColumn {
         position: static;
-        order: -1;
+        order: 2;
+        /* ✅ Di chuyển xuống cuối cho tablet */
         max-width: 100%;
     }
 
     .sidebarContent {
         padding: var(--spacing-4);
+    }
+
+    /* Ẩn desktop version trên tablet và mobile */
+    .desktopOnlyTodayPredictions {
+        display: none;
+    }
+
+    /* Hiển thị mobile version trên tablet và mobile */
+    .mobileOnlyTodayPredictions {
+        display: block;
     }
 }
 
@@ -1367,11 +1400,12 @@
 
     .leftColumn {
         gap: var(--spacing-6);
-        order: 2;
+        order: 1;
     }
 
     .rightColumn {
-        order: 1;
+        order: 2;
+        /* ✅ Di chuyển xuống cuối cho mobile */
         position: static;
         width: 100%;
         max-width: 100%;

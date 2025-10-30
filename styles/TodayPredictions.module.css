@@ -149,24 +149,22 @@
 .predictionCard {
     background: white;
     border-radius: 8px;
-    padding: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     position: relative;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: box-shadow 0.2s ease;
     max-height: 450px;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
     contain: layout style paint;
-    will-change: transform;
-    transform: translateZ(0);
+    will-change: auto;
     /* ✅ Fix: Allow cards to have natural height based on content */
     height: auto;
     /* ✅ Prevent layout shifts during content loading */
     contain-intrinsic-size: auto;
-    backface-visibility: hidden;
     /* ✅ Fix: Ensure cards don't break layout */
     width: 100%;
     box-sizing: border-box;
@@ -180,14 +178,13 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 3px;
     background: var(--card-gradient);
-    transform: translateZ(0);
+    border-radius: 8px 8px 0 0;
 }
 
 .predictionCard:hover {
-    transform: translateY(-2px) translateZ(0);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .predictionCard:focus-within {
@@ -227,13 +224,13 @@
     width: 36px;
     height: 36px;
     border-radius: 8px;
-    background: var(--card-gradient);
+    background: var(--card-color, #667eea);
     color: white;
+    min-height: 0 !important;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .cardTitle {
@@ -628,6 +625,7 @@
     .container {
         padding: 8px 5px;
         /* ✅ Fix: Ensure container doesn't overflow */
+        background: #f8f9fa;
     }
 
     .header {
@@ -643,16 +641,18 @@
     }
 
     .predictionsGrid {
-        gap: 5px;
+        gap: 8px;
         /* ✅ Fix: Allow cards to have natural height on mobile */
         width: 100%;
     }
 
     .predictionCard {
-        padding: 5px;
+        padding: 10px;
         max-height: none;
-        border: none;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e0e0e0;
+        background: white;
+        box-shadow: none;
+        border-radius: 6px;
         overflow: visible;
         /* ✅ Fix: Ensure cards don't break layout on mobile */
         width: 100%;
@@ -661,30 +661,35 @@
     }
 
     .predictionCard::before {
-        height: 2px;
+        display: none;
+        /* Simplified: hide gradient top border on mobile */
     }
 
     .cardHeader {
-        margin-bottom: 3px;
-        padding-bottom: 3px;
-        border-bottom-width: 1px;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #f0f0f0;
     }
 
     .cardIcon {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
+        background: var(--card-color, #667eea);
+        border-radius: 50%;
     }
 
     .cardTitle {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        color: #333;
     }
 
     .cardSubtitle {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        color: #666;
     }
 
     .cardContent {
-        font-size: 0.75rem;
+        font-size: 0.875rem;
     }
 
     .headerLeft {
@@ -708,37 +713,30 @@
     .cardContent :global(a.trend_number) {
         all: unset;
         display: inline-block;
-        color: #2d3748;
-        font-size: 1.15rem !important;
+        background: #f0f0f0;
+        color: #333;
+        font-size: 1rem !important;
         font-weight: 600;
         font-family: Arial, sans-serif !important;
-        line-height: 1.5;
+        line-height: 1.4;
+        padding: 4px 8px;
+        margin: 2px;
+        border-radius: 4px;
         cursor: text;
         pointer-events: none;
-        margin-right: 6px;
-        /* ✅ Fix: Prevent text overflow */
-        word-break: keep-all;
-        white-space: nowrap;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
     /* Thêm dấu gạch ngang sau mỗi số (trừ số cuối) */
     .cardContent :global(a.caudep):not(:last-of-type)::after,
     .cardContent :global(a.trend_number):not(:last-of-type)::after {
-        content: ' - ';
-        color: #718096;
-        font-weight: 400;
-        display: inline-block;
-        margin-left: 2px;
+        content: '';
     }
 
     .cardContent :global(.contentbox_body)>div,
     .cardContent :global(.trendholder) {
         gap: 0;
         display: block;
-        line-height: 1.8;
+        line-height: 1.6;
         /* ✅ Fix: Prevent content overflow */
         width: 100%;
         word-wrap: break-word;
@@ -804,15 +802,16 @@
 
 @media (max-width: 480px) {
     .container {
-        padding: 6px 3px;
+        padding: 8px 5px;
         margin-bottom: 8px;
         /* ✅ Fix: Ensure container doesn't overflow on very small screens */
         width: 100%;
         max-width: 100vw;
+        background: #f8f9fa;
     }
 
     .header {
-        margin-bottom: 6px;
+        margin-bottom: 8px;
     }
 
     .headerLeft {
@@ -854,7 +853,7 @@
     }
 
     .predictionsGrid {
-        gap: 4px;
+        gap: 8px;
         /* ✅ Fix: Allow cards to have natural height on very small screens */
         grid-auto-rows: auto;
         width: 100%;
@@ -862,10 +861,12 @@
     }
 
     .predictionCard {
-        padding: 4px;
+        padding: 10px;
         max-height: none;
-        border: none;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e0e0e0;
+        background: white;
+        box-shadow: none;
+        border-radius: 6px;
         margin: 0;
         overflow: visible;
         /* ✅ Fix: Ensure cards don't break layout on very small screens */
@@ -876,41 +877,46 @@
     }
 
     .predictionCard::before {
-        height: 2px;
+        display: none;
+        /* Simplified: hide gradient top border on mobile */
     }
 
     .cardHeader {
-        margin-bottom: 3px;
-        padding-bottom: 3px;
-        border-bottom-width: 1px;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #f0f0f0;
     }
 
     .cardIcon {
-        width: 22px;
-        height: 22px;
+        width: 30px;
+        height: 30px;
+        background: var(--card-color, #667eea);
+        border-radius: 50%;
     }
 
     .cardTitle {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        color: #333;
     }
 
     .cardSubtitle {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
+        color: #666;
     }
 
     .cardContent {
-        font-size: 0.7rem;
-        line-height: 1.3;
+        font-size: 0.85rem;
+        line-height: 1.4;
     }
 
     .cardContent table {
         font-size: 0.6rem;
-        margin: 2px 0;
+        margin: 4px 0;
     }
 
     .cardContent table th,
     .cardContent table td {
-        padding: 1px 2px;
+        padding: 3px 4px;
         border-width: 0.5px;
         line-height: 1.3;
     }
@@ -923,31 +929,30 @@
     .cardContent :global(a.trend_number) {
         all: unset;
         display: inline-block;
-        color: #2d3748;
-        font-size: 1.1rem !important;
+        background: #f0f0f0;
+        color: #333;
+        font-size: 0.95rem !important;
         font-weight: 600;
         font-family: Arial, sans-serif !important;
-        line-height: 1.5;
+        line-height: 1.4;
+        padding: 3px 6px;
+        margin: 2px 1px;
+        border-radius: 4px;
         cursor: text;
         pointer-events: none;
-        margin-right: 5px;
     }
 
-    /* Thêm dấu gạch ngang sau mỗi số (trừ số cuối) */
+    /* No separators between numbers */
     .cardContent :global(a.caudep):not(:last-of-type)::after,
     .cardContent :global(a.trend_number):not(:last-of-type)::after {
-        content: ' - ';
-        color: #718096;
-        font-weight: 400;
-        display: inline-block;
-        margin-left: 2px;
+        content: '';
     }
 
     .cardContent :global(.contentbox_body)>div,
     .cardContent :global(.trendholder) {
         gap: 0;
         display: block;
-        line-height: 1.8;
+        line-height: 1.6;
         /* ✅ Fix: Prevent content overflow on very small screens */
         width: 100%;
         overflow-x: hidden;
@@ -957,20 +962,20 @@
 
     .cardContent :global(.table-prediction) {
         font-size: 0.55rem;
-        margin: 1px 0;
+        margin: 4px 0;
     }
 
     .cardContent :global(.table-prediction) :global(td.name) {
         border-width: 0.5px;
-        line-height: 0.9;
+        line-height: 1.2;
         vertical-align: middle;
     }
 
     .cardContent :global(.table-prediction) :global(td.value) {
-        padding: 2px 3px;
+        padding: 3px 4px;
         border-width: 0.5px;
-        line-height: 0.9;
-        font-size: 1rem;
+        line-height: 1.2;
+        font-size: 0.95rem;
         vertical-align: middle;
     }
 
@@ -987,8 +992,8 @@
     .cardContent :global(.table-prediction) strong,
     .cardContent :global(.table-prediction) b {
         font-weight: 600;
-        font-size: 1.05rem;
-        line-height: 0.9;
+        font-size: 1rem;
+        line-height: 1.2;
     }
 
     .cardContent :global(.table-prediction) :global(.emoji),
@@ -1002,26 +1007,26 @@
     .cardContent h2,
     .cardContent h3,
     .cardContent h4 {
-        margin-top: 2px;
-        margin-bottom: 1px;
+        margin-top: 4px;
+        margin-bottom: 4px;
     }
 
     .cardContent p {
-        margin: 1px 0;
+        margin: 4px 0;
     }
 
     .cardContent ul,
     .cardContent ol {
-        margin: 1px 0;
-        padding-left: 12px;
+        margin: 4px 0;
+        padding-left: 16px;
     }
 
     .cardContent li {
-        margin: 1px 0;
+        margin: 2px 0;
     }
 
     .cardContent :global(.contentbox) {
-        margin: 1px 0;
+        margin: 4px 0;
     }
 
     .cardContent :global(.contentbox_body) {

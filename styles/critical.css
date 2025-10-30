@@ -48,6 +48,7 @@ h3 {
 .today-predictions-container,
 [class*="TodayPredictions"] {
   contain: layout style !important;
+  height: auto !important;
 }
 
 /* Reserve space for subtitle element (the one causing CLS) */
@@ -103,7 +104,7 @@ svg {
 
   .today-predictions-container,
   [class*="TodayPredictions"] {
-    min-height: 150px !important;
+    height: auto !important;
   }
 }
 

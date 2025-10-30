@@ -1,39 +1,49 @@
 /**
  * Kết Quả Xổ Số Page
  * Trang hiển thị danh sách kết quả xổ số với phân trang
+ * SEO Optimized with competitive keywords
+ * Auto-refresh enabled to show latest results
  */
 
-import { useState, useEffect } from 'react';
-import Head from 'next/head';
+import { useState, useEffect, useCallback, useMemo, memo, useRef } from 'react';
 import Layout from '../components/Layout';
 import XSMBLatest10Table from '../components/XSMBLatest10Table';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from '../styles/KQXS.module.css';
+import SEOOptimized from '../components/SEOOptimized';
 
-export default function KQXSPage() {
+const KQXSPage = memo(function KQXSPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pagination, setPagination] = useState(null);
+    const [lastUpdated, setLastUpdated] = useState(null);
 
-    // Handle page change
-    const handlePageChange = (newPage) => {
+    // Handle page change - Memoized with useCallback
+    const handlePageChange = useCallback((newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
             // Scroll to top when page changes
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    };
+    }, [totalPages]);
+
+    // Memoize pagination callback
+    const handlePaginationChange = useCallback((paginationData) => {
+        setPagination(paginationData);
+        setTotalPages(paginationData?.totalPages || 1);
+        setLastUpdated(new Date()); // Track last update
+    }, []);
+
+    // Note: Auto-refresh is handled by useXSMBLatest10 hook
+    // No need for manual refresh since the hook fetches latest data on mount
+    // and can be configured with refreshInterval if needed
 
     return (
         <>
-            <Head>
-                <title>Kết Quả Xổ Số Miền Bắc - Dàn Đề Wukong</title>
-                <meta name="description" content="Xem danh sách kết quả xổ số miền Bắc (XSMB). Cập nhật trực tiếp, chính xác 100%." />
-                <meta name="keywords" content="kết quả xổ số, xsmb, xổ số miền bắc, danh sách kết quả" />
-                <meta property="og:title" content="Kết Quả Xổ Số Miền Bắc - Dàn Đề Wukong" />
-                <meta property="og:description" content="Xem danh sách kết quả xổ số miền Bắc (XSMB). Cập nhật trực tiếp, chính xác 100%." />
-                <meta property="og:type" content="website" />
-            </Head>
+            <SEOOptimized
+                pageType="kqxs"
+                canonical="https://taodandewukong.pro/kqxs"
+            />
 
             <Layout>
                 <div className={styles.container}>
@@ -47,10 +57,8 @@ export default function KQXSPage() {
                         <XSMBLatest10Table
                             page={currentPage}
                             limit={10}
-                            onPaginationChange={(paginationData) => {
-                                setPagination(paginationData);
-                                setTotalPages(paginationData?.totalPages || 1);
-                            }}
+                            onPaginationChange={handlePaginationChange}
+                            key={currentPage} // Force re-render when page changes
                         />
                     </div>
 
@@ -135,4 +143,8 @@ export default function KQXSPage() {
             </Layout>
         </>
     );
-}
+});
+
+KQXSPage.displayName = 'KQXSPage';
+
+export default KQXSPage;

@@ -818,7 +818,7 @@ function generateMetaDescription(pageType, includeVariations = true) {
 
         soiCauBayesian: `Soi cầu miền bắc hôm nay (soi cau mien bac hom nay) chính xác 100%. Dự đoán XSMB, soi cầu MB bằng thuật toán Bayesian. ${includeVariations ? 'Hỗ trợ: du doan XSMB, soi cau MB, thong ke vi tri XSMB. ' : ''}Miễn phí 100%!`,
 
-        'dau-duoi': `Thống kê Đầu Đuôi XSMB chi tiết, nhanh hơn xsmb.win. Phân tích tần suất đầu đuôi loto (00-99), bảng thống kê theo ngày. ${includeVariations ? 'Hỗ trợ: dau duoi lo to, thong ke dau duoi, bang thong ke. ' : ''}Cập nhật realtime, miễn phí 100%!`,
+        'dau-duoi': `Thống kê Đầu Đuôi XSMB chi tiết, nhanh nhất. Phân tích tần suất đầu đuôi loto (00-99), bảng thống kê theo ngày. ${includeVariations ? 'Hỗ trợ: dau duoi lo to, thong ke dau duoi, bang thong ke. ' : ''}Cập nhật realtime, miễn phí 100% tại TAODANDEWUKONG.PRO!`,
 
         'lo-gan': `Thống kê Lô Gan XSMB chi tiết hơn xosothantai. Lô gan lâu chưa về, gan cực đại, số khan. ${includeVariations ? 'Hỗ trợ: lo gan, lo khan, so gan, gan max. ' : ''}Phân tích xu hướng, miễn phí 100%!`,
 
@@ -828,7 +828,9 @@ function generateMetaDescription(pageType, includeVariations = true) {
 
         'tan-suat-lo-cap': `Thống kê Tần Suất Lô Cặp XSMB công cụ độc quyền. Phân tích XX-YY, số lần xuất hiện riêng lẻ. ${includeVariations ? 'Hỗ trợ: tan suat lo cap, phan tich lo cap. ' : ''}Phần trăm tổng thể, miễn phí 100%!`,
 
-        'giai-dac-biet-tuan': `Thống kê Giải Đặc Biệt Theo Tuần với view lịch (Thứ 2-CN). Chọn tháng/năm, toggle thông tin chi tiết. ${includeVariations ? 'Hỗ trợ: giai dac biet theo tuan, xem theo ngay trong tuan. ' : ''}Phân tích xu hướng, miễn phí 100%!`
+        'giai-dac-biet-tuan': `Thống kê Giải Đặc Biệt Theo Tuần với view lịch (Thứ 2-CN). Chọn tháng/năm, toggle thông tin chi tiết. ${includeVariations ? 'Hỗ trợ: giai dac biet theo tuan, xem theo ngay trong tuan. ' : ''}Phân tích xu hướng, miễn phí 100%!`,
+
+        'kqxs': `Kết quả xổ số miền Bắc (XSMB) nhanh nhất, chi tiết nhất. Danh sách kết quả XSMB mới nhất, phân trang rõ ràng. ${includeVariations ? 'Hỗ trợ: ket qua xo so mien bac, xsmb, kqxs. ' : ''}Cập nhật hàng ngày 18h15, miễn phí 100% tại TAODANDEWUKONG.PRO!`
     };
 
     return descriptions[pageType] || descriptions.home;

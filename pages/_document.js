@@ -143,7 +143,6 @@ export default function Document() {
             .today-predictions-container,
             [class*="TodayPredictions"] {
               contain: layout style;
-              min-height: 50px;
               height: auto;
             }
             

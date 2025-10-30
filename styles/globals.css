@@ -118,7 +118,7 @@ h6 {
 }
 
 h1 {
-  font-size: var(--text-4xl);
+  font-size: var(--text-3xl);
   margin-bottom: 15px;
 }
 
@@ -442,6 +442,7 @@ body.mobile-menu-open {
   /* Better spacing on mobile */
   h1 {
     margin-bottom: var(--spacing-4);
+    font-size: var(--text-2xl);
   }
 
   h2 {

@@ -59,7 +59,7 @@ const MultiSearchEngineOptimizer = memo(function MultiSearchEngineOptimizer({
                 ============================================ */}
 
             {/* Bing Webmaster verification */}
-            <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" />
+            <meta name="msvalidate.01" content={process.env.NEXT_PUBLIC_BING_VERIFICATION || ""} />
 
             {/* Bing-specific meta tags */}
             <meta name="msnbot" content="index, follow" />
@@ -69,14 +69,14 @@ const MultiSearchEngineOptimizer = memo(function MultiSearchEngineOptimizer({
             <meta name="MSSmartTagsPreventParsing" content="true" />
 
             {/* Bing site verification */}
-            <meta name="bing-site-verification" content="YOUR_BING_SITE_VERIFICATION" />
+            <meta name="bing-site-verification" content={process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || ""} />
 
             {/* ============================================
                 CỐC CỐC OPTIMIZATION
                 ============================================ */}
 
             {/* Cốc Cốc bot directives */}
-            <meta name="coccoc-verification" content="YOUR_COCCOC_VERIFICATION_CODE" />
+            <meta name="coccoc-verification" content={process.env.NEXT_PUBLIC_COCCOC_VERIFICATION || ""} />
             <meta name="coccoc" content="index, follow" />
 
             {/* Cốc Cốc specific keywords (Vietnamese focus) */}

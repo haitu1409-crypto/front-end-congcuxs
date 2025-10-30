@@ -11,22 +11,14 @@ import LatestXSMBResults from '../components/LatestXSMBResults';
 import TodayPredictions from '../components/TodayPredictions';
 import styles from '../styles/Home.module.css';
 import EnhancedSEOHead from '../components/EnhancedSEOHead';
-import SEOAnalytics from '../components/SEOAnalytics';
-import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
-import CLSOptimizer from '../components/CLSOptimizer';
 import { getPageSEO } from '../config/seoConfig';
 import { getAllKeywordsForPage } from '../config/keywordVariations';
 // ✅ Optimized: Import all icons at once (better than 10 dynamic imports)
-import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, ArrowRight, Sparkles } from 'lucide-react';
+import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, ArrowRight, Sparkles, Calendar, Activity, TrendingUp, Award, Percent } from 'lucide-react';
 
 // ✅ Lazy load SEO components for better performance with CLS fixes
 const AuthorBio = dynamic(() => import('../components/SEO/AuthorBio'), {
     loading: () => <div style={{ minHeight: '200px', contain: 'layout style' }}></div>,
-    ssr: false
-});
-
-const TrustSignals = dynamic(() => import('../components/SEO/TrustSignals'), {
-    loading: () => <div style={{ minHeight: '150px', contain: 'layout style' }}></div>,
     ssr: false
 });
 
@@ -218,9 +210,6 @@ const Home = memo(function Home() {
                 faq={faqData}
                 structuredData={softwareApplicationSchema}
             />
-            <SEOAnalytics />
-            <PageSpeedOptimizer />
-            <CLSOptimizer />
 
             <Layout>
                 <div className={styles.container}>
@@ -233,11 +222,6 @@ const Home = memo(function Home() {
                         <h1 className={styles.mainTitle}>
                             Công Cụ Xổ Số, <span className={styles.heroTitleHighlight}>Tạo Dàn ĐỀ Wukong</span>
                         </h1>
-                        <p className={styles.subtitle}>
-                            Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam.
-                            Dàn đề 9x-0x, Dàn đề 2D, Dàn đề 3D/4D, Dàn đề đặc biệt, Thống kê xổ số 3 miền.
-                            Miễn phí 100%, thuật toán Fisher-Yates chuẩn quốc tế.
-                        </p>
                         <div className={styles.heroActions}>
                             <Link href="/dan-9x0x" className={styles.heroPrimaryButton}>
                                 <Dice6 className={styles.heroButtonIcon} />
@@ -248,13 +232,49 @@ const Home = memo(function Home() {
                                 <Target className={styles.heroButtonIcon} />
                                 <span>Dàn 2D</span>
                             </Link>
-                            <Link href="/soi-cau" className={styles.heroSecondaryButton}>
+                            <Link href="/kqxs" className={styles.heroSecondaryButton}>
+                                <Calendar className={styles.heroButtonIcon} />
+                                <span>Kết Quả Xổ Số</span>
+                            </Link>
+                            <Link href="/dan-3d4d" className={styles.heroSecondaryButton}>
                                 <BarChart3 className={styles.heroButtonIcon} />
-                                <span>Soi Cầu Truyền Thống</span>
+                                <span>Dàn 3D/4D</span>
+                            </Link>
+                            <Link href="/dan-dac-biet" className={styles.heroSecondaryButton}>
+                                <Star className={styles.heroButtonIcon} />
+                                <span>Dàn Đặc Biệt</span>
+                            </Link>
+                            <Link href="/soi-cau" className={styles.heroSecondaryButton}>
+                                <Target className={styles.heroButtonIcon} />
+                                <span>Soi Cầu</span>
                             </Link>
                             <Link href="/soicau-bayesian" className={styles.heroSecondaryButton}>
                                 <Sparkles className={styles.heroButtonIcon} />
                                 <span>Soi Cầu AI</span>
+                            </Link>
+                            <Link href="/thongke/lo-gan" className={styles.heroSecondaryButton}>
+                                <TrendingUp className={styles.heroButtonIcon} />
+                                <span>Lô Gan</span>
+                            </Link>
+                            <Link href="/thongke/giai-dac-biet" className={styles.heroSecondaryButton}>
+                                <Award className={styles.heroButtonIcon} />
+                                <span>Giải ĐB</span>
+                            </Link>
+                            <Link href="/thongke/giai-dac-biet-tuan" className={styles.heroSecondaryButton}>
+                                <Calendar className={styles.heroButtonIcon} />
+                                <span>ĐB Tuần</span>
+                            </Link>
+                            <Link href="/thongke/dau-duoi" className={styles.heroSecondaryButton}>
+                                <Percent className={styles.heroButtonIcon} />
+                                <span>Đầu Đuôi</span>
+                            </Link>
+                            <Link href="/thongke/Tan-Suat-Lo-to" className={styles.heroSecondaryButton}>
+                                <Activity className={styles.heroButtonIcon} />
+                                <span>Tần Suất Lô</span>
+                            </Link>
+                            <Link href="/thongke/Tan-Suat-Lo-Cap" className={styles.heroSecondaryButton}>
+                                <Target className={styles.heroButtonIcon} />
+                                <span>Tần Suất Cặp</span>
                             </Link>
                         </div>
                     </header>
@@ -266,47 +286,16 @@ const Home = memo(function Home() {
                             {/* Latest XSMB Results */}
                             <LatestXSMBResults />
 
-                            {/* Trust Signals - E-E-A-T */}
-                            <TrustSignals />
+                            {/* Today Predictions - Mobile Only */}
+                            <div className={styles.mobileOnlyTodayPredictions}>
+                                <TodayPredictions />
+                            </div>
 
                             {/* Featured Snippet - Direct Answer */}
                             <DirectAnswer
                                 question="Tạo Dàn Đề (Tao Dan De) Là Gì?"
                                 answer="Tạo dàn đề (tao dan de) là phương pháp chọn ra một tập hợp các con số (dàn đề) để đánh lô đề hoặc xổ số, dựa trên các tiêu chí như tổng, chạm, đầu, đuôi, kép nhằm tăng khả năng trúng thưởng. Ứng dụng tạo dàn đề giúp bạn tạo tự động các tổ hợp số 2D (00-99), 3D (000-999), 4D (0000-9999), ghép lô xiên, và lọc dàn theo nhiều điều kiện đặc biệt một cách nhanh chóng, chính xác 100% với thuật toán Fisher-Yates chuẩn quốc tế."
                             />
-
-                            {/* Tools Grid */}
-                            <section className={styles.toolsSection} aria-label="Các công cụ tạo dàn đề">
-                                <h2 className={styles.sectionTitle}>Chọn Công Cụ</h2>
-
-                                <div className={styles.toolsGrid}>
-                                    {tools.map((tool, idx) => {
-                                        const IconComponent = tool.icon;
-                                        return (
-                                            <Link
-                                                href={tool.link}
-                                                key={idx}
-                                                className={styles.toolCard}
-                                                aria-label={`Đi đến ${tool.title}`}
-                                                prefetch={false} // Disable prefetch for better performance
-                                            >
-                                                {tool.badge && (
-                                                    <span className={styles.toolBadge}>{tool.badge}</span>
-                                                )}
-                                                <div className={styles.toolIcon}>
-                                                    <IconComponent size={24} />
-                                                </div>
-                                                <h3 className={styles.toolTitle}>{tool.title}</h3>
-                                                <p className={styles.toolDescription}>{tool.description}</p>
-                                                <div className={styles.toolArrow}>
-                                                    <span>Truy cập</span>
-                                                    <span>→</span>
-                                                </div>
-                                            </Link>
-                                        );
-                                    })}
-                                </div>
-                            </section>
 
                             {/* Featured Snippet - How To List */}
                             <ListSnippet
@@ -335,32 +324,6 @@ const Home = memo(function Home() {
                                     ['Lô Xiên 2-3-4', 'Tùy chỉnh', 'Trung bình', 'Cao', 'Tất cả mọi người']
                                 ]}
                             />
-
-                            {/* Quick Access Section */}
-                            <section className={styles.quickAccess}>
-                                <div className={styles.quickAccessHeader}>
-                                    <h2>Bắt Đầu Ngay</h2>
-                                    <p>Chọn công cụ phù hợp với nhu cầu của bạn</p>
-                                </div>
-                                <div className={styles.quickAccessGrid}>
-                                    <Link href="/dan-9x0x" className={styles.quickAccessCard}>
-                                        <Dice6 className={styles.quickAccessIcon} />
-                                        <h3>Tạo Dàn Đề 9x-0x</h3>
-                                        <p>Công cụ phổ biến nhất với 10 cấp độ rút dần</p>
-                                        <div className={styles.quickAccessBadge}>Phổ biến</div>
-                                    </Link>
-                                    <Link href="/thong-ke" className={styles.quickAccessCard}>
-                                        <BarChart3 className={styles.quickAccessIcon} />
-                                        <h3>Thống Kê Xổ Số</h3>
-                                        <p>Phân tích dữ liệu xổ số 3 miền chi tiết</p>
-                                    </Link>
-                                    <Link href="/content" className={styles.quickAccessCard}>
-                                        <Heart className={styles.quickAccessIcon} />
-                                        <h3>Hướng Dẫn Chơi</h3>
-                                        <p>Mẹo và chiến thuật chơi xổ số hiệu quả</p>
-                                    </Link>
-                                </div>
-                            </section>
 
                             {/* Features Section - Compact */}
                             <section className={styles.features} aria-label="Tính năng nổi bật">
@@ -415,9 +378,11 @@ const Home = memo(function Home() {
                             />
                         </div>
 
-                        {/* Right Column - Today Predictions */}
+                        {/* Right Column - Today Predictions (Desktop Only) */}
                         <div className={styles.rightColumn}>
-                            <TodayPredictions />
+                            <div className={styles.desktopOnlyTodayPredictions}>
+                                <TodayPredictions />
+                            </div>
                         </div>
                     </div>
                 </div>
