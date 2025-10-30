@@ -119,11 +119,11 @@ const Testimonials = memo(function Testimonials({ reviews }) {
 
                             <div className={styles.reviewer}>
                                 <div className={styles.reviewerInfo}>
-                                    <strong itemProp="author">{review.author}</strong>
+                                    <strong itemProp="author" itemScope itemType="https://schema.org/Person">{review.author}</strong>
                                     <span className={styles.location}>{review.location}</span>
                                 </div>
-                                <div className={styles.reviewedTool}>
-                                    Đã dùng: <strong>{review.tool}</strong>
+                                <div className={styles.reviewedTool} itemProp="itemReviewed" itemScope itemType="https://schema.org/SoftwareApplication">
+                                    Đã dùng: <strong itemProp="name">{review.tool}</strong>
                                 </div>
                             </div>
                         </div>
