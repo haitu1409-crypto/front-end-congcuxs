@@ -633,6 +633,233 @@ const SEO_CONFIG = {
                 keywords: ['soi cầu Bayesian', 'dự đoán Bayesian XSMB', 'thuật toán Bayesian']
             }
         }
+    },
+
+    /**
+     * THỐNG KÊ ĐẦU ĐUÔI
+     * PRIMARY: thống kê đầu đuôi (12,000), dau duoi lo to (5,400)
+     * ENHANCED: Competitive keywords vs xsmb.win, xosothantai
+     */
+    'dau-duoi': {
+        title: 'Thống Kê Đầu Đuôi XSMB - Phân Tích Nhanh Hơn XSMB.WIN | Tần Suất Lô Tô - Miễn Phí 2025',
+        description: generateMetaDescription('dau-duoi', true),
+        keywords: [
+            // ✅ PRIMARY KEYWORDS
+            'thống kê đầu đuôi', 'thống kê đầu đuôi loto', 'thống kê đầu đuôi xsmb',
+            'dau duoi lo to', 'dau duoi loto', 'thong ke dau duoi',
+            
+            // ✅ COMPETITIVE KEYWORDS
+            'thống kê đầu đuôi xsmb.win', 'xsmb.win thống kê đầu đuôi',
+            'thống kê đầu đuôi xosothantai', 'xosothantai thống kê đầu đuôi',
+            'thống kê đầu đuôi tốt hơn xsmb.win', 'tốt hơn xsmb.win',
+            
+            // ✅ LONG-TAIL KEYWORDS
+            'thống kê đầu đuôi miền bắc', 'dau duoi mien bac',
+            'tần suất đầu đuôi', 'phan tich dau duoi loto',
+            'bảng thống kê đầu đuôi', 'bang thong ke dau duoi',
+            
+            // ✅ BRAND VARIATIONS
+            'thống kê đầu đuôi taodandewukong', 'taodandewukong thống kê đầu đuôi',
+            'dau duoi wukong', 'wukong thống kê đầu đuôi',
+            
+            // ✅ REGIONAL
+            'thống kê đầu đuôi 3 miền', 'thống kê đầu đuôi xổ số'
+        ],
+        url: '/thongke/dau-duoi',
+        image: OG_IMAGES.thongKe,
+        canonical: `${SITE_URL}/thongke/dau-duoi`,
+        type: 'article',
+        priority: 0.9,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Dataset',
+            additionalTypes: ['Article', 'FAQPage']
+        }
+    },
+
+    /**
+     * THỐNG KÊ LÔ GAN
+     * PRIMARY: lô gan (8,100), lo gan (2,900), thống kê lô gan (2,100)
+     * COMPETITIVE: vs xosothantai, xskt, xsmb.win
+     */
+    'lo-gan': {
+        title: 'Thống Kê Lô Gan XSMB - Chi Tiết Hơn Xosothantai | Lô Khan Lâu Chưa Về - Miễn Phí 2025',
+        description: generateMetaDescription('lo-gan', true),
+        keywords: [
+            // ✅ PRIMARY
+            'lô gan', 'lo gan', 'thống kê lô gan', 'thong ke lo gan',
+            'lô khan', 'lo khan', 'số gan', 'lô gan miền bắc',
+            
+            // ✅ COMPETITIVE
+            'lô gan xosothantai', 'xosothantai lô gan',
+            'lô gan xsmb.win', 'xsmb.win lô gan',
+            'lô gan xskt', 'xskt thống kê lô gan',
+            'tốt hơn xosothantai', 'chi tiết hơn xsmb.win',
+            
+            // ✅ LONG-TAIL
+            'lô gan lâu chưa về', 'lo gan lau chua ve',
+            'thống kê số gan', 'so gan xsmb',
+            'bảng lô gan miền bắc', 'bang lo gan mien bac',
+            
+            // ✅ VARIATIONS
+            'ló gan', 'lo khan', 'số lâu chưa về',
+            'gan cực đại', 'gan max'
+        ],
+        url: '/thongke/logan',
+        image: OG_IMAGES.thongKe,
+        canonical: `${SITE_URL}/thongke/logan`,
+        type: 'article',
+        priority: 0.85,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Dataset',
+            additionalTypes: ['Article', 'FAQPage']
+        }
+    },
+
+    /**
+     * THỐNG KÊ GIẢI ĐẶC BIỆT
+     * PRIMARY: giải đặc biệt (74,000), thống kê giải đặc biệt (8,100)
+     * COMPETITIVE: vs xskt, xsmb.win
+     */
+    'giai-dac-biet': {
+        title: 'Thống Kê Giải Đặc Biệt XSMB - Nhiều Tính Năng Hơn XSKT | Phân Tích Chi Tiết - Miễn Phí 2025',
+        description: generateMetaDescription('giai-dac-biet', true),
+        keywords: [
+            // ✅ PRIMARY
+            'giải đặc biệt', 'giai dac biet', 'thống kê giải đặc biệt',
+            'giải đặc biệt xsmb', 'giai dac biet xsmb',
+            'thống kê giải đặc biệt miền bắc',
+            
+            // ✅ COMPETITIVE
+            'giải đặc biệt xskt', 'xskt giải đặc biệt',
+            'giải đặc biệt xsmb.win', 'xsmb.win giải đặc biệt',
+            'nhiều tính năng hơn xskt', 'tốt hơn xsmb.win',
+            
+            // ✅ LONG-TAIL
+            'thống kê giải đặc biệt theo tuần',
+            'giải đặc biệt hôm nay', 'giai dac biet hom nay',
+            'bảng giải đặc biệt', 'bang giai dac biet',
+            'phân tích giải đặc biệt', 'phan tich giai dac biet',
+            
+            // ✅ VARIATIONS
+            'gải đặc biệt', 'giải đắc biệt',
+            'giai đac biet', 'giai đắc biệt'
+        ],
+        url: '/thongke/giai-dac-biet',
+        image: OG_IMAGES.thongKe,
+        canonical: `${SITE_URL}/thongke/giai-dac-biet`,
+        type: 'article',
+        priority: 0.88,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Dataset',
+            additionalTypes: ['Article', 'FAQPage']
+        }
+    },
+
+    /**
+     * THỐNG KÊ TẦN SUẤT LÔ TÔ
+     * PRIMARY: tần suất lô tô (1,600)
+     * COMPETITIVE: vs các trang thống kê khác
+     */
+    'tan-suat-loto': {
+        title: 'Thống Kê Tần Suất Lô Tô XSMB - Phân Tích Sâu Hơn Đối Thủ | Số Nóng Số Lạnh - Miễn Phí 2025',
+        description: 'Thống kê tần suất lô tô (00-99) Xổ số Miền Bắc với phân tích chi tiết số nóng số lạnh. So sánh với đối thủ: Cập nhật nhanh hơn, miễn phí 100%, biểu đồ trực quan. Dữ liệu chính xác từ 30 đến 365 ngày.',
+        keywords: [
+            // ✅ PRIMARY
+            'tần suất lô tô', 'tan suat lo to', 'thống kê tần suất',
+            'số nóng số lạnh', 'so nong so lanh',
+            'tần suất xuất hiện', 'tan suat xuat hien',
+            
+            // ✅ COMPETITIVE
+            'tần suất lô tô tốt nhất', 'thống kê số nóng tốt hơn',
+            'phân tích tần suất chi tiết', 'phan tich tan suat chi tiet',
+            
+            // ✅ LONG-TAIL
+            'số nào xuất hiện nhiều nhất', 'so nao xuat hien nhieu nhat',
+            'số nào ít xuất hiện', 'so nao it xuat hien',
+            'bảng tần suất loto', 'bang tan suat loto'
+        ],
+        url: '/thongke/tan-suat-loto',
+        image: OG_IMAGES.thongKe,
+        canonical: `${SITE_URL}/thongke/tan-suat-loto`,
+        type: 'article',
+        priority: 0.82,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Dataset',
+            additionalTypes: ['Article', 'FAQPage']
+        }
+    },
+
+    /**
+     * THỐNG KÊ TẦN SUẤT LÔ CẶP
+     * PRIMARY: tần suất lô cặp (320)
+     * COMPETITIVE: Unique feature
+     */
+    'tan-suat-lo-cap': {
+        title: 'Thống Kê Tần Suất Lô Cặp XSMB - Công Cụ Độc Quyền | Phân Tích XX-YY - Miễn Phí 2025',
+        description: 'Thống kê tần suất lô cặp (XX-YY) Xổ số Miền Bắc với phân tích độc đáo. Tính năng độc quyền: Số lần xuất hiện riêng lẻ XX và YY, phần trăm tổng thể. Cập nhật hàng ngày, miễn phí 100%.',
+        keywords: [
+            // ✅ PRIMARY
+            'tần suất lô cặp', 'tan suat lo cap', 'thống kê lô cặp',
+            'lô cặp', 'lo cap', 'cặp số loto',
+            
+            // ✅ FEATURES
+            'tần suất lô cặp xx yy', 'phan tich lo cap chi tiet',
+            'bảng tần suất lô cặp', 'bang tan suat lo cap',
+            'số lần xuất hiện riêng lẻ', 'so lan xuat hien rieng le',
+            
+            // ✅ UNIQUE
+            'tính năng độc quyền', 'cong cu doc quyen',
+            'phân tích cặp số', 'phan tich cap so'
+        ],
+        url: '/thongke/tan-suat-lo-cap',
+        image: OG_IMAGES.thongKe,
+        canonical: `${SITE_URL}/thongke/tan-suat-lo-cap`,
+        type: 'article',
+        priority: 0.80,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Dataset',
+            additionalTypes: ['Article', 'FAQPage']
+        }
+    },
+
+    /**
+     * THỐNG KÊ GIẢI ĐẶC BIỆT THEO TUẦN
+     * PRIMARY: giải đặc biệt theo tuần (590)
+     * COMPETITIVE: Unique calendar view
+     */
+    'giai-dac-biet-tuan': {
+        title: 'Thống Kê Giải Đặc Biệt Theo Tuần - Xem Theo Ngày Trong Tuần | Calendar View - Miễn Phí 2025',
+        description: 'Thống kê giải đặc biệt theo tuần với view lịch (Thứ 2-CN). Tính năng độc đáo: Xem giải đặc biệt theo từng ngày trong tuần, chọn tháng/năm. Phân tích xu hướng, toggle hiển thị thông tin chi tiết.',
+        keywords: [
+            // ✅ PRIMARY
+            'giải đặc biệt theo tuần', 'giai dac biet theo tuan',
+            'thống kê theo tuần', 'thong ke theo tuan',
+            'giải đặc biệt tuần này', 'giai dac biet tuan nay',
+            
+            // ✅ FEATURES
+            'xem theo ngày trong tuần', 'xem theo tuan',
+            'giải đặc biệt thứ 2', 'giai dac biet thu 2',
+            'giải đặc biệt chủ nhật', 'giai dac biet chu nhat',
+            
+            // ✅ UNIQUE
+            'calendar view', 'view lịch',
+            'chọn tháng năm', 'toggle thông tin'
+        ],
+        url: '/thongke/giai-dac-biet-tuan',
+        image: OG_IMAGES.thongKe,
+        canonical: `${SITE_URL}/thongke/giai-dac-biet-tuan`,
+        type: 'article',
+        priority: 0.78,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Dataset',
+            additionalTypes: ['Article', 'FAQPage']
+        }
     }
 };
 

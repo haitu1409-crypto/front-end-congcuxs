@@ -1,0 +1,120 @@
+/* Dropdown Menu Styles */
+.dropdown {
+    position: relative;
+}
+
+.dropdownToggle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-3);
+    border: none;
+    background: transparent;
+    color: var(--color-gray-700);
+    font-size: 15px;
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    border-radius: var(--border-radius-md);
+    white-space: nowrap;
+}
+
+.dropdownToggle:hover {
+    background: var(--color-gray-100);
+    color: var(--color-gray-900);
+    opacity: 1;
+}
+
+.dropdownLabel {
+    display: inline-block;
+}
+
+.dropdownIcon {
+    transition: transform var(--transition-base);
+    flex-shrink: 0;
+}
+
+.dropdownIcon.rotate {
+    transform: rotate(180deg);
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 220px;
+    z-index: 1000;
+    animation: slideDown 0.3s ease;
+    margin-top: 4px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdownMenuItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.dropdownMenuItem:last-child {
+    border-bottom: none;
+}
+
+.dropdownMenuItem:hover {
+    background: rgba(237, 28, 37, 0.05);
+    color: var(--primary-color);
+}
+
+.dropdownMenuItem.active {
+    background: rgba(237, 28, 37, 0.1);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.dropdownMenuIcon {
+    flex-shrink: 0;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .dropdownToggle {
+        padding: 12px 16px;
+        font-size: 1rem;
+    }
+
+    .dropdownMenu {
+        position: static;
+        min-width: 100%;
+        box-shadow: none;
+        border: none;
+        border-top: 1px solid #e5e7eb;
+        border-radius: 0;
+        animation: none;
+        margin-top: 0;
+    }
+
+    .dropdownMenuItem {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+}
+

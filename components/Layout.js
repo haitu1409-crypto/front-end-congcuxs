@@ -7,15 +7,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings, Calendar } from 'lucide-react';
+import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings, Calendar, Activity, Award, Percent, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import RouterErrorBoundary, { useRouterErrorHandler } from './RouterErrorBoundary';
 import DesktopHeader from './DesktopHeader';
+import DropdownMenu from './DropdownMenu';
 import styles from '../styles/Layout.module.css';
 
 export default function Layout({ children, className = '' }) {
     const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
     // ✅ Add router error handling
@@ -33,6 +35,7 @@ export default function Layout({ children, className = '' }) {
     // Close mobile menu on route change
     useEffect(() => {
         setIsMenuOpen(false);
+        setIsSubmenuOpen(false);
     }, [router.pathname]);
 
     // Optimize navigation - prevent default behavior for smooth transitions
@@ -71,6 +74,21 @@ export default function Layout({ children, className = '' }) {
         setIsMenuOpen(!isMenuOpen);
     };
 
+    // Thống kê submenu items
+    const thongKeMenu = {
+        label: 'Thống Kê',
+        icon: Activity,
+        description: 'Xem các thống kê chi tiết',
+        submenu: [
+            { href: '/thongke/lo-gan', label: 'Lô Gan', icon: TrendingUp },
+            { href: '/thongke/giai-dac-biet', label: 'Giải Đặc Biệt', icon: Award },
+            { href: '/thongke/giai-dac-biet-tuan', label: 'Giải Đặc Biệt Tuần', icon: Calendar },
+            { href: '/thongke/dau-duoi', label: 'Đầu Đuôi', icon: Percent },
+            { href: '/thongke/Tan-Suat-Lo-to', label: 'Tần Suất Lô Tô', icon: BarChart3 },
+            { href: '/thongke/Tan-Suat-Lo-Cap', label: 'Tần Suất Lô Cặp', icon: Target }
+        ]
+    };
+
     const navLinks = [
         { href: '/', label: 'Trang chủ', icon: Home, description: 'Trang chủ chính' },
         { href: '/kqxs', label: 'Kết Quả Xổ Số', icon: Calendar, description: 'Xem kết quả xổ số 3 miền mới nhất', isNew: true },
@@ -78,6 +96,7 @@ export default function Layout({ children, className = '' }) {
         { href: '/dan-2d', label: 'Dàn 2D', icon: Target, description: 'Dàn đề 2 chữ số (00-99)' },
         { href: '/dan-3d4d', label: 'Dàn 3D/4D', icon: BarChart3, description: 'Dàn đề 3-4 chữ số' },
         { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star, description: 'Bộ lọc dàn số thông minh' },
+        { isDropdown: true, ...thongKeMenu },
         { href: '/soi-cau', label: 'Soi Cầu', icon: Target, description: 'Soi cầu bạch thủ miền Bắc' },
         { href: '/soicau-bayesian', label: 'Soi Cầu AI', icon: BarChart3, description: 'Dự đoán XSMB bằng thuật toán AI tiên tiến', isNew: true },
         { href: '/soi-cau-vi-tri', label: 'Soi Cầu Vị Trí', icon: Target, description: 'Soi cầu dựa trên vị trí số', isNew: true },
@@ -121,7 +140,21 @@ export default function Layout({ children, className = '' }) {
 
                             {/* Desktop Navigation */}
                             <div className={styles.desktopNav} onClick={handleLinkClick}>
-                                {navLinks.map((link) => {
+                                {navLinks.map((link, index) => {
+                                    // Handle dropdown menu
+                                    if (link.isDropdown) {
+                                        return (
+                                            <DropdownMenu
+                                                key={`dropdown-${index}`}
+                                                items={[
+                                                    { label: link.label, icon: link.icon },
+                                                    ...link.submenu
+                                                ]}
+                                            />
+                                        );
+                                    }
+
+                                    // Handle regular links
                                     const IconComponent = link.icon;
                                     return (
                                         <Link
@@ -168,7 +201,53 @@ export default function Layout({ children, className = '' }) {
                                 {/* Mobile Navigation */}
                                 <div className={`${styles.mobileNav} ${isMenuOpen ? styles.mobileNavOpen : ''}`}>
                                     <div className={styles.mobileNavContent} onClick={handleLinkClick}>
-                                        {navLinks.map((link) => {
+                                        {navLinks.map((link, index) => {
+                                            // Handle dropdown menu in mobile
+                                            if (link.isDropdown) {
+                                                const IconComponent = link.icon;
+                                                return (
+                                                    <div key={`mobile-dropdown-${index}`}>
+                                                        <div className={styles.mobileDropdownWrapper}>
+                                                            <div 
+                                                                className={styles.mobileDropdownHeader}
+                                                                onClick={() => setIsSubmenuOpen(!isSubmenuOpen)}
+                                                            >
+                                                                <div className={styles.mobileNavLinkContent}>
+                                                                    <div className={styles.mobileNavLinkHeader}>
+                                                                        <IconComponent size={20} className={styles.mobileNavIcon} />
+                                                                        <span className={styles.mobileNavLinkLabel}>{link.label}</span>
+                                                                        <ChevronDown size={16} className={`${styles.mobileDropdownIcon} ${isSubmenuOpen ? styles.rotate : ''}`} />
+                                                                    </div>
+                                                                    <span className={styles.mobileNavLinkDescription}>{link.description}</span>
+                                                                </div>
+                                                            </div>
+                                                            {isSubmenuOpen && (
+                                                            <div className={styles.mobileDropdownSubmenu}>
+                                                                {link.submenu.map((subItem, subIndex) => {
+                                                                    const SubIconComponent = subItem.icon;
+                                                                    return (
+                                                                        <Link
+                                                                            key={subIndex}
+                                                                            href={subItem.href}
+                                                                            className={`${styles.mobileNavSubLink} ${router.pathname === subItem.href ? styles.active : ''}`}
+                                                                            onClick={() => {
+                                                                                setIsMenuOpen(false);
+                                                                                setIsSubmenuOpen(false);
+                                                                            }}
+                                                                        >
+                                                                            <SubIconComponent size={18} className={styles.mobileNavSubIcon} />
+                                                                            <span>{subItem.label}</span>
+                                                                        </Link>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+
+                                            // Handle regular links
                                             const IconComponent = link.icon;
                                             return (
                                                 <Link

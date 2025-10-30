@@ -124,7 +124,7 @@ h1 {
 
 h2 {
   font-size: var(--text-3xl);
-  margin-bottom: var(--spacing-5);
+
 }
 
 h3 {
@@ -445,7 +445,7 @@ body.mobile-menu-open {
   }
 
   h2 {
-    margin-bottom: 10px;
+  
     font-size: 16px;
   }
 

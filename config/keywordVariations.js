@@ -816,7 +816,19 @@ function generateMetaDescription(pageType, includeVariations = true) {
 
         thongKe: `Thống kê xổ số 3 miền (thong ke xo so). XSMB, XSMN, XSMT realtime. ${includeVariations ? 'Hỗ trợ: thống kê lô đề, bang thong ke, soi cầu. ' : ''}Chính xác 100%!`,
 
-        soiCauBayesian: `Soi cầu miền bắc hôm nay (soi cau mien bac hom nay) chính xác 100%. Dự đoán XSMB, soi cầu MB bằng thuật toán Bayesian. ${includeVariations ? 'Hỗ trợ: du doan XSMB, soi cau MB, thong ke vi tri XSMB. ' : ''}Miễn phí 100%!`
+        soiCauBayesian: `Soi cầu miền bắc hôm nay (soi cau mien bac hom nay) chính xác 100%. Dự đoán XSMB, soi cầu MB bằng thuật toán Bayesian. ${includeVariations ? 'Hỗ trợ: du doan XSMB, soi cau MB, thong ke vi tri XSMB. ' : ''}Miễn phí 100%!`,
+
+        'dau-duoi': `Thống kê Đầu Đuôi XSMB chi tiết, nhanh hơn xsmb.win. Phân tích tần suất đầu đuôi loto (00-99), bảng thống kê theo ngày. ${includeVariations ? 'Hỗ trợ: dau duoi lo to, thong ke dau duoi, bang thong ke. ' : ''}Cập nhật realtime, miễn phí 100%!`,
+
+        'lo-gan': `Thống kê Lô Gan XSMB chi tiết hơn xosothantai. Lô gan lâu chưa về, gan cực đại, số khan. ${includeVariations ? 'Hỗ trợ: lo gan, lo khan, so gan, gan max. ' : ''}Phân tích xu hướng, miễn phí 100%!`,
+
+        'giai-dac-biet': `Thống kê Giải Đặc Biệt XSMB nhiều tính năng hơn xskt. Xem giải đặc biệt hôm nay, theo tuần, theo tháng. ${includeVariations ? 'Hỗ trợ: giai dac biet, thong ke giai dac biet. ' : ''}Biểu đồ trực quan, miễn phí 100%!`,
+
+        'tan-suat-loto': `Thống kê Tần Suất Lô Tô XSMB phân tích sâu hơn đối thủ. Số nóng số lạnh (00-99), xuất hiện nhiều nhất. ${includeVariations ? 'Hỗ trợ: tan suat lo to, so nong so lanh. ' : ''}Dữ liệu 30-365 ngày, miễn phí 100%!`,
+
+        'tan-suat-lo-cap': `Thống kê Tần Suất Lô Cặp XSMB công cụ độc quyền. Phân tích XX-YY, số lần xuất hiện riêng lẻ. ${includeVariations ? 'Hỗ trợ: tan suat lo cap, phan tich lo cap. ' : ''}Phần trăm tổng thể, miễn phí 100%!`,
+
+        'giai-dac-biet-tuan': `Thống kê Giải Đặc Biệt Theo Tuần với view lịch (Thứ 2-CN). Chọn tháng/năm, toggle thông tin chi tiết. ${includeVariations ? 'Hỗ trợ: giai dac biet theo tuan, xem theo ngay trong tuan. ' : ''}Phân tích xu hướng, miễn phí 100%!`
     };
 
     return descriptions[pageType] || descriptions.home;

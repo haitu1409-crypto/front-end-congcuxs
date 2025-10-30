@@ -1,0 +1,112 @@
+.updateButtonContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.updateButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #0396FF;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.updateButton:hover:not(:disabled) {
+    background: #0284d1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.updateButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.updateButton:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.updating {
+    background: #10b981;
+}
+
+.icon {
+    transition: transform 0.3s ease;
+}
+
+.icon.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.lastUpdate {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .updateButton {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        gap: 6px;
+        /* Override global min-height from globals.css */
+        min-height: 0 !important;
+        height: auto !important;
+    }
+    
+    .icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .lastUpdate {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .updateButton {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        gap: 5px;
+        white-space: nowrap;
+        /* Override global min-height from globals.css */
+        min-height: 0 !important;
+        height: auto !important;
+        min-width: 0 !important;
+    }
+    
+    .icon {
+        width: 13px;
+        height: 13px;
+    }
+    
+    .updateButtonContainer {
+        gap: 4px;
+    }
+    
+    .lastUpdate {
+        font-size: 0.75rem;
+    }
+}
+
