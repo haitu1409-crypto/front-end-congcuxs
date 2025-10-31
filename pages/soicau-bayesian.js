@@ -144,32 +144,60 @@ const SoiCauBayesian = () => {
     }, []);
 
     // Load predictions for selected date and method - ALWAYS use ensemble
-    const loadPredictions = useCallback(async () => {
+    // QUAN TRỌNG: Nhận date và type làm parameters để tránh closure stale values
+    const loadPredictions = useCallback(async (targetDate = null, targetType = null) => {
         try {
             setLoading(true);
             setError(null);
 
+            // Sử dụng parameters nếu có, nếu không dùng state hiện tại
+            const dateToLoad = targetDate || selectedDate;
+            const typeToLoad = targetType || selectedType;
+
+            console.log(`🔄 Loading predictions for date: ${dateToLoad}, type: ${typeToLoad}`);
+
             // TỐI ƯU: Chỉ gọi 1 API duy nhất để lấy tất cả dữ liệu
-            const response = await fetchWithRetry(`${API_BASE_URL}/api/soicau-page/date/${selectedDate}`);
+            // Thêm timestamp để bypass browser cache (không phải server cache)
+            const response = await fetchWithRetry(`${API_BASE_URL}/api/soicau-page/date/${dateToLoad}?refresh=true&_t=${Date.now()}`);
             const data = await response.json();
 
-            if (data.success && data.data) {
+            // QUAN TRỌNG: Kiểm tra xem date trong response có khớp với date đang request không
+            // Tránh trường hợp response trả về dữ liệu của date khác do race condition
+            const responseDate = data.data?.predictionDate || data.data?.drawDate;
+            const expectedDate = dateToLoad;
+            
+            if (responseDate && formatDate(new Date(responseDate)) !== expectedDate) {
+                console.warn(`⚠️ Date mismatch: requested ${expectedDate}, got ${formatDate(new Date(responseDate))}, ignoring response`);
+                return; // Ignore response if date doesn't match
+            }
+
+            // QUAN TRỌNG: Kiểm tra cả data.success và data.data (phải khác null)
+            if (data.success && data.data !== null && data.data !== undefined) {
                 // Lấy predictions từ data chính
                 if (data.data.predictions && data.data.predictions.ensemble) {
-                    const ensemblePredictions = data.data.predictions.ensemble[selectedType] || [];
-                    setCurrentPredictions({
-                        method: 'ensemble',
-                        type: selectedType,
-                        predictions: ensemblePredictions
-                    });
+                    const ensemblePredictions = data.data.predictions.ensemble[typeToLoad] || [];
+                    if (ensemblePredictions.length > 0) {
+                        setCurrentPredictions({
+                            method: 'ensemble',
+                            type: typeToLoad,
+                            predictions: ensemblePredictions
+                        });
+                        console.log(`✅ Loaded ${ensemblePredictions.length} predictions for ${dateToLoad}`);
+                    } else {
+                        console.warn('⚠️ No ensemble predictions found for type:', typeToLoad);
+                        setCurrentPredictions(null);
+                    }
+                } else {
+                    console.warn('⚠️ No predictions object found in data');
+                    setCurrentPredictions(null);
                 }
 
                 // Lấy extended features từ data chính
                 setExtendedFeatures(data.data.extendedFeatures || null);
                 setLstmStats(data.data.lstmStats || {});
-                console.log('✅ Predictions loaded from single API call');
             } else {
-                console.warn('⚠️ No data available:', data.message || 'No data available');
+                // Không có dữ liệu (data.data === null hoặc undefined)
+                console.warn('⚠️ No data available for date:', dateToLoad, data.message || 'No data available');
                 setCurrentPredictions(null);
                 setExtendedFeatures(null);
                 setLstmStats({});
@@ -213,7 +241,8 @@ const SoiCauBayesian = () => {
                 console.log('✅ Soi cầu generated and saved successfully:', result.data);
 
                 // Immediately load predictions from API to ensure consistency
-                await loadPredictions();
+                // Truyền date và type trực tiếp để tránh stale closure
+                await loadPredictions(currentProcessingDate, selectedType);
 
                 // Refresh data description để hiển thị thông tin mới
                 if (result.data.cached) {
@@ -331,7 +360,8 @@ const SoiCauBayesian = () => {
     const checkDataExists = useCallback(async (date) => {
         try {
             console.log('🔍 Checking data exists for date:', date);
-            const response = await fetchWithRetry(`${API_BASE_URL}/api/soicau-page/date/${date}`);
+            // Thêm refresh=true để bypass cache và timestamp để bypass browser cache
+            const response = await fetchWithRetry(`${API_BASE_URL}/api/soicau-page/date/${date}?refresh=true&_t=${Date.now()}`);
 
             // Backend giờ trả về 200 ngay cả khi không có dữ liệu
             if (!response.ok) {
@@ -344,20 +374,33 @@ const SoiCauBayesian = () => {
             const result = await response.json();
             console.log('📊 Data check result:', result);
 
-            // Kiểm tra cả result.success và result.data (và result.hasData)
-            if (result.success && result.data && result.data !== null) {
-                // Data exists, set data description but don't load predictions yet
-                console.log('✅ Data exists for date:', date);
-                setDataDescription({
-                    predictionDate: date,
-                    dataSource: `Dữ liệu đã có sẵn`,
-                    explanation: `Dữ liệu dự đoán cho ngày ${formatDisplayDate(date)} đã được tạo trước đó`
-                });
-                // Don't set currentPredictions here, let user click "Soi Cầu" button
-                setCurrentPredictions(null);
-                return true;
+            // Kiểm tra cả result.success và result.data (phải khác null và undefined)
+            if (result.success && result.data !== null && result.data !== undefined) {
+                // Kiểm tra thêm xem có predictions không
+                const hasPredictions = result.data.predictions && 
+                                     result.data.predictions.ensemble && 
+                                     result.data.predictions.ensemble[selectedType] &&
+                                     result.data.predictions.ensemble[selectedType].length > 0;
+                
+                if (hasPredictions) {
+                    // Data exists với predictions, set data description but don't load predictions yet
+                    console.log('✅ Data exists with predictions for date:', date);
+                    setDataDescription({
+                        predictionDate: date,
+                        dataSource: `Dữ liệu đã có sẵn`,
+                        explanation: `Dữ liệu dự đoán cho ngày ${formatDisplayDate(date)} đã được tạo trước đó`
+                    });
+                    // Don't set currentPredictions here, let user click "Soi Cầu" button hoặc tự động load
+                    return true;
+                } else {
+                    // Data object exists nhưng không có predictions
+                    console.log(`📋 Data object exists but no predictions for date ${date}`);
+                    setCurrentPredictions(null);
+                    setDataDescription(null);
+                    return false;
+                }
             } else {
-                // No data exists (result.data is null hoặc result.hasData === false)
+                // No data exists (result.data is null hoặc undefined)
                 console.log(`📋 No data found for date ${date}: ${result.message || 'No data available'}`);
                 setCurrentPredictions(null);
                 setDataDescription(null);
@@ -370,7 +413,7 @@ const SoiCauBayesian = () => {
             setDataDescription(null);
             return false;
         }
-    }, []);
+    }, [selectedType]);
 
 
     // Initial load
@@ -385,8 +428,12 @@ const SoiCauBayesian = () => {
                 setHasDataForSelectedDate(hasData);
 
                 // If data exists, load predictions immediately
+                // QUAN TRỌNG: Truyền date và type trực tiếp để tránh stale closure
                 if (hasData) {
-                    await loadPredictions();
+                    await loadPredictions(initialDate, selectedType);
+                } else {
+                    // Đảm bảo không có predictions nếu không có dữ liệu
+                    setCurrentPredictions(null);
                 }
             } catch (err) {
                 console.error('Error checking initial data:', err);
@@ -399,34 +446,46 @@ const SoiCauBayesian = () => {
 
     // Handle date change
     const handleDateChange = async (date) => {
+        console.log(`📅 Date changed from ${selectedDate} to ${date}`);
+        
+        // Clear previous data immediately when changing date
+        setDataDescription(null);
+        setCurrentPredictions(null);
+        setExtendedFeatures(null);
+        setLstmStats({});
+        
+        // Update state
         setSelectedDate(date);
         setCurrentProcessingDate(date);
         setActiveTab('predictions');
-        // Clear previous data when changing date
-        setDataDescription(null);
-        setCurrentPredictions(null);
-        // Check if data exists for new date
+        
+        // Check if data exists for new date (with refresh to bypass cache)
+        // QUAN TRỌNG: Truyền date trực tiếp vào checkDataExists
         const hasData = await checkDataExists(date);
         setHasDataForSelectedDate(hasData);
 
         // If data exists, load predictions immediately
+        // QUAN TRỌNG: Truyền date và type trực tiếp vào loadPredictions để tránh stale closure
         if (hasData) {
-            await loadPredictions();
+            await loadPredictions(date, selectedType);
+        } else {
+            // Đảm bảo không có predictions nếu không có dữ liệu
+            setCurrentPredictions(null);
         }
     };
 
     // Handle method change
     const handleMethodChange = (method) => {
         setSelectedMethod(method);
-        // Load predictions for new method
-        loadPredictions();
+        // Load predictions for new method - truyền date và type trực tiếp
+        loadPredictions(selectedDate, selectedType);
     };
 
     // Handle type change
     const handleTypeChange = (type) => {
         setSelectedType(type);
-        // Load predictions for new type
-        loadPredictions();
+        // Load predictions for new type - truyền date và type trực tiếp
+        loadPredictions(selectedDate, type);
     };
 
     // Format percentage
@@ -669,13 +728,29 @@ const SoiCauBayesian = () => {
                                     {dataCreationLoading ? 'Đang tạo bộ dữ liệu...' : 'Tạo Bộ Dữ Liệu'}
                                 </button>
                             )}
-                            <button
-                                className={styles.generateButton}
-                                onClick={generateSoiCau}
-                                disabled={loading || !hasDataForSelectedDate}
-                            >
-                                {loading ? 'Đang tạo soi cầu...' : 'Soi Cầu'}
-                            </button>
+                            {/* Chỉ hiển thị nút "Soi Cầu" khi:
+                                - Có dữ liệu (hasDataForSelectedDate)
+                                - Và CHƯA có predictions đang hiển thị (currentPredictions === null)
+                                - Hoặc đang loading (để có thể cancel/reload)
+                            */}
+                            {hasDataForSelectedDate && !currentPredictions && !loading && (
+                                <button
+                                    className={styles.generateButton}
+                                    onClick={generateSoiCau}
+                                    disabled={loading || !hasDataForSelectedDate}
+                                >
+                                    {loading ? 'Đang tạo soi cầu...' : 'Soi Cầu'}
+                                </button>
+                            )}
+                            {/* Hiển thị nút khi đang loading để user biết đang xử lý */}
+                            {hasDataForSelectedDate && loading && (
+                                <button
+                                    className={styles.generateButton}
+                                    disabled={true}
+                                >
+                                    Đang tải dữ liệu...
+                                </button>
+                            )}
                         </div>
                     </div>
 
