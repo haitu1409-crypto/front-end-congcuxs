@@ -24,7 +24,7 @@ function generateSiteMap(articles) {
     
     <!-- Main Tool Pages - Priority 0.95 -->
     <url>
-        <loc>${SITE_URL}/soi-cau-bayesian</loc>
+        <loc>${SITE_URL}/soicau-bayesian</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>
@@ -203,7 +203,7 @@ export async function getServerSideProps({ res }) {
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
-        <loc>${SITE_URL}/soi-cau-bayesian</loc>
+        <loc>${SITE_URL}/soicau-bayesian</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>

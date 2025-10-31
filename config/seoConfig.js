@@ -34,7 +34,7 @@ const SEO_CONFIG = {
      * ENHANCED: Keyword variations for multi-search engine optimization
      */
     home: {
-        title: 'Tạo Dàn Đề Wukong (Tao Dan De) | Ứng Dụng Tạo Mức Số - Nuôi Dàn Miễn Phí 2025',
+        title: 'TDDW - Tạo Dàn Đề, Tạo Dàn Số Online Miễn Phí | Công Cụ Xổ Số Chuyên Nghiệp 2025',
         description: generateMetaDescription('home', true),
         keywords: [
             // ✅ BRAND VARIATIONS - Tất cả cách gõ tìm kiếm
@@ -53,12 +53,35 @@ const SEO_CONFIG = {
             'dan de wukong',
             'taodandewukong.pro',
             'web tạo dàn đề wukong',
+            
+            // ✅ SHORT ABBREVIATIONS - Viết tắt ngắn (giống RBK = Rồng Bạch Kim)
+            'tddw', 'TDDW', 'tdd w', 'tdd-w', 'tdd_w',
+            'wk', 'WK', 'w k', 'w-k', 'w_k',
+            'tdd', 'TDD', 't d d', 't-d-d',
+            'wukong', 'Wukong', 'WUKONG', 'wu kong',
+            'ddw', 'DDW', 'd d w', 'd-d-w', // Dàn Đề Wukong
+            'ddwk', 'DDWK', // Dàn Đề Wukong
+            'tdde', 'TDDE', // Tạo Dàn Đề
+            'tdd pro', 'tddw.pro', 'tddw pro',
 
             // ✅ CORE KEYWORDS - Từ khóa chính (có dấu + không dấu)
             'tạo dàn đề', 'tao dan de', 'tạo dan đề', 'tao dàn de', 'tạo đàn đề',
             'taodande', 'tao-dan-de', 'tạo-dàn-đề', 'taodàndề',
             'tạo dàn số', 'tao dan so', 'tạo dan số', 'tao dàn so', 'taodanso',
             'tạo mức số', 'tao muc so', 'tạo muc số', 'taomucso',
+            
+            // ✅ ĐỒNG NGHĨA - Các từ có nghĩa tương tự
+            'lập dàn đề', 'lap dan de', 'lập dàn số', 'lap dan so',
+            'lập mức số', 'lap muc so', 'lập dàn', 'lap dan',
+            'tạo dàn', 'tao dan', 'tạo mức', 'tao muc',
+            'lập mức', 'lap muc', 'tạo bộ số', 'tao bo so',
+            'lập bộ số', 'lap bo so', 'tạo dãy số', 'tao day so',
+            'lập dãy số', 'lap day so', 'tạo danh sách số', 'tao danh sach so',
+            
+            // ✅ BIẾN THỂ CHÍNH TẢ - Sai chính tả phổ biến
+            'tạo dàn đê', 'tao dan ê', 'tạo đàn đề', 'tao dần đề',
+            'tạo dàn dề', 'tao dan đe', 'tạo đan đề', 'tao dản đề',
+            'lập dàn đê', 'lap dan ê', 'lập đàn đề', 'lap dần đề',
 
             // ✅ LÔ ĐỀ VARIATIONS - Tất cả cách viết lô đề
             'lô đề', 'lo de', 'lô de', 'lo đề', 'ló đề', 'lo đe', 'lô đe',
@@ -75,20 +98,73 @@ const SEO_CONFIG = {
             'cách tạo dàn đề hiệu quả', 'tạo dàn đề như thế nào',
             'app tạo dàn đề nào tốt', 'web tạo dàn đề uy tín',
             'công cụ tạo dàn đề chuyên nghiệp', 'phần mềm tạo dàn đề miễn phí',
+            
+            // Long-tail với đồng nghĩa
+            'cách lập dàn đề', 'lap dan de online', 'lập dàn đề miễn phí',
+            'web lập dàn đề', 'tool lập dàn số', 'app lập mức số',
+            'cách tạo dàn số hiệu quả', 'lập dàn đề như thế nào',
+            'phần mềm lập dàn đề', 'ứng dụng lập dàn số',
+            'cách tạo mức số', 'tạo mức số online', 'lập mức số miễn phí',
+            
+            // Câu hỏi phổ biến
+            'tạo dàn đề ở đâu', 'tao dan de o dau', 'lập dàn số ở đâu',
+            'web tạo dàn đề nào tốt', 'app tạo dàn số nào hay',
+            'phần mềm tạo dàn đề nào uy tín', 'tool tạo dàn đề nào miễn phí',
+            'công cụ tạo dàn số tốt nhất', 'ung dung tao dan de tot nhat',
 
             // ✅ BING OPTIMIZATION - Formal queries
             'ứng dụng tạo dàn đề', 'phần mềm tạo mức số',
             'công cụ lô đề online', 'hệ thống tạo dàn số',
-            'giải pháp tạo dàn đề',
+            'giải pháp tạo dàn đề', 'phần mềm lập dàn số',
+            'ứng dụng lập mức số', 'công cụ tạo bộ số',
+            'hệ thống lập dàn đề', 'giải pháp lập dàn số',
 
             // ✅ CỐC CỐC OPTIMIZATION - Vietnamese-specific
             'tạo dàn đề việt nam', 'app tạo dàn đề tiếng việt',
             'web tạo dàn đề vn', 'công cụ lô đề việt',
             'tạo dàn số miền bắc', 'tạo dàn số 3 miền',
+            'lập dàn đề việt nam', 'phan mem tao dan so viet nam',
+            'ung dung lap dan so vn', 'cong cu lo de viet',
+            'tạo dàn số hà nội', 'lập dàn số miền bắc',
 
-            // ✅ COMPETITIVE KEYWORDS
-            'kangdh', 'kang dh', 'taodanxoso', 'tao dan xo so',
-            'giai ma so hoc', 'giải mã số học', 'dan de pro', 'dande pro',
+            // ✅ COMPETITIVE KEYWORDS - Đối thủ cạnh tranh
+            // KangDH.com - Đối thủ lớn
+            'kangdh', 'kang dh', 'kangdh.com', 'taodanxoso', 'tao dan xo so',
+            'kangdh tạo dàn', 'kangdh tạo dàn số', 'kangdh tạo dàn đề',
+            'tốt hơn kangdh', 'tot hon kangdh', 'kangdh.com.vn',
+            
+            // GiaiMaSoHoc.net - Đối thủ lớn
+            'giai ma so hoc', 'giải mã số học', 'giaimasohoc', 'giaimasohoc.net',
+            'giai ma so hoc tạo dàn', 'giải mã số học tạo dàn số',
+            'tốt hơn giaimasohoc', 'tot hon giaimasohoc',
+            
+            // SieuKetQua.com - Đối thủ lớn
+            'sieu ket qua', 'sieuketqua', 'sieuketqua.com',
+            'sieuketqua tạo dàn', 'sieu ket qua tạo dàn xổ số',
+            'tốt hơn sieuketqua', 'tot hon sieuketqua',
+            
+            // DanhCongi.com - Đối thủ
+            'danhcongi', 'danhcongi.com', 'danh con gi',
+            'danhcongi tạo dàn', 'tốt hơn danhcongi',
+            
+            // Lottoat.com - Đối thủ
+            'lottoat', 'lottoat.com', 'xoso.lottoat.com',
+            'lottoat tạo dàn', 'tốt hơn lottoat',
+            
+            // Quynh.vn - Đối thủ
+            'quỳnh.vn', 'quynh.vn', 'quynh tạo dàn đề',
+            
+            // Các trang khác
+            'dan de pro', 'dande pro', 'dàn đề pro',
+            'tạo dàn đề chuyên nghiệp', 'tao dan de chuyen nghiep',
+            'phần mềm tạo dàn số', 'phan mem tao dan so',
+            'ứng dụng tạo dàn số', 'ung dung tao dan so',
+            
+            // ✅ TRÁNH NHẦM LẪN - Game Black Myth: Wukong
+            'wukong tạo dàn đề', 'wukong dàn đề', 'wukong loto',
+            'wukong xổ số', 'wukong soi cầu', 'wukong thống kê',
+            'dàn đề wukong khác game', 'wukong công cụ xổ số',
+            'wukong không phải game', 'wukong tool xổ số',
 
             // Advanced features
             'ghép lotto', 'tách dàn nhanh', 'lọc ghép dàn đề', 'lọc ghép dàn',
@@ -105,12 +181,33 @@ const SEO_CONFIG = {
             // Platform & software
             'ứng dụng tạo dàn', 'phần mềm tạo dàn đề',
             'AI tạo dàn đề', 'thuật toán Fisher-Yates',
+            'ứng dụng lập dàn', 'phan mem lap dan so',
+            'app tạo dàn số học', 'phần mềm mức số',
+            'tool tạo dàn đề online', 'cong cu tao dan de',
 
             // Regional
             'tạo dàn đề 3 miền', 'tạo dàn đề miền bắc',
+            'lập dàn số 3 miền', 'lập dàn số miền bắc',
+            'tạo dàn đề miền nam', 'tạo dàn đề miền trung',
+            'lập dàn số miền nam', 'lập dàn số miền trung',
 
             // Trending
-            'tạo dàn đề 2025', 'tạo dàn đề mới nhất', 'tạo dàn đề chuyên nghiệp'
+            'tạo dàn đề 2025', 'tạo dàn đề mới nhất', 'tạo dàn đề chuyên nghiệp',
+            'lập dàn số 2025', 'lap dan so moi nhat', 'lập dàn số chuyên nghiệp',
+            'tạo mức số 2025', 'tao muc so moi nhat',
+            
+            // ✅ SPACING VARIATIONS - Các cách viết khác nhau
+            'tạo-dàn-đề', 'tao-dan-de', 'lập-dàn-số', 'lap-dan-so',
+            'tạo_dàn_đề', 'tao_dan_de', 'lập_dàn_số', 'lap_dan_so',
+            'taodande', 'lapdanso', 'taomucso', 'lapmucso',
+            
+            // ✅ NO SPACE - Viết liền
+            'taodandewukong', 'taodandeso', 'lapdandeso',
+            'taomucso', 'lapmucso', 'taodanso',
+            
+            // ✅ MIXED CASE - Chữ hoa/thường
+            'TạoDànĐề', 'TaoDanDe', 'LapDanSo',
+            'TAODANDE', 'LAPDANSO', 'TạoMứcSố'
         ],
         url: '/',
         image: OG_IMAGES.default,
@@ -478,10 +575,11 @@ const SEO_CONFIG = {
      * PRIMARY: soi cầu miền bắc hôm nay (74,000), dự đoán XSMB (12,100), soi cầu MB (8,100)
      * SECONDARY: thống kê vị trí XSMB (2,900), phân tích xổ số miền Bắc (1,600)
      * ENHANCED: Multi-search engine optimization + User behavior keywords
+     * COMPETITIVE: Tối ưu để cạnh tranh với xskt, xosothantai, atrungroi, xsmn247
      */
     soiCauBayesian: {
-        title: 'Soi Cầu Miền Bắc Hôm Nay | Dự Đoán XSMB Chính Xác 100% - Thuật Toán Bayesian 2025',
-        description: generateMetaDescription('soiCauBayesian', true),
+        title: 'Soi Cầu Miền Bắc Hôm Nay | Dự Đoán XSMB Chính Xác 100% - Tốt Hơn XSKT, Xosothantai 2025',
+        description: 'Soi cầu miền bắc hôm nay (soi cau mien bac hom nay) chính xác 100%, tốt hơn xskt, xosothantai, atrungroi, xsmn247. Dự đoán XSMB bằng 5 phương pháp truyền thống: Pascal, Hình Quả Trám, Tần Suất Lô Cặp, Lô Gan Kết Hợp, Lô Rơi. Miễn phí 100%, cập nhật realtime!',
         keywords: [
             // ✅ PRIMARY KEYWORDS - Từ khóa chính có volume cao
             'soi cầu miền bắc hôm nay', 'soi cau mien bac hom nay',
@@ -522,12 +620,68 @@ const SEO_CONFIG = {
             'soi cầu AI miền bắc', 'soi cau AI mien bac',
             'dự đoán AI XSMB', 'du doan AI XSMB',
 
-            // ✅ COMPETITIVE KEYWORDS - Đối thủ cạnh tranh
+            // ✅ COMPETITIVE KEYWORDS - Đối thủ cạnh tranh (MỞ RỘNG)
+            // XSKT.COM.VN
             'soi cầu miền bắc xskt', 'soi cau mien bac xskt',
-            'soi cầu miền bắc xoso', 'soi cau mien bac xoso',
-            'soi cầu miền bắc atrungroi', 'soi cau mien bac atrungroi',
-            'soi cầu miền bắc xsmn247', 'soi cau mien bac xsmn247',
+            'soi cầu xskt', 'soi cau xskt', 'xskt soi cầu', 'xskt soi cau',
+            'soi cầu tốt hơn xskt', 'soi cau tot hon xskt',
+            'xskt.com.vn soi cầu', 'xskt.com.vn soi cau',
+            'soi cầu thay thế xskt', 'soi cau thay the xskt',
+            
+            // XOSOTHANTAI.MOBI
             'soi cầu miền bắc xosothantai', 'soi cau mien bac xosothantai',
+            'soi cầu xosothantai', 'soi cau xosothantai',
+            'xosothantai soi cầu', 'xosothantai soi cau',
+            'soi cầu tốt hơn xosothantai', 'soi cau tot hon xosothantai',
+            'xosothantai.mobi soi cầu', 'xosothantai.mobi soi cau',
+            
+            // XSMN247.ME / XSMN247 / XỔ SỐ MINH NGỌC
+            'soi cầu miền bắc xsmn247', 'soi cau mien bac xsmn247',
+            'soi cầu xsmn247', 'soi cau xsmn247',
+            'xsmn247 soi cầu', 'xsmn247 soi cau',
+            'soi cầu tốt hơn xsmn247', 'soi cau tot hon xsmn247',
+            'xsmn247.me soi cầu', 'xsmn247.me soi cau',
+            'xổ số minh ngọc 247 soi cầu', 'xo so minh ngoc 247 soi cau',
+            'soi cầu minh ngọc', 'soi cau minh ngoc',
+            
+            // ATRUNGROI.COM / A TRÚNG RỒI
+            'soi cầu miền bắc atrungroi', 'soi cau mien bac atrungroi',
+            'soi cầu atrungroi', 'soi cau atrungroi',
+            'atrungroi soi cầu', 'atrungroi soi cau',
+            'soi cầu tốt hơn atrungroi', 'soi cau tot hon atrungroi',
+            'atrungroi.com soi cầu', 'atrungroi.com soi cau',
+            'a trúng rồi soi cầu', 'a trung roi soi cau',
+            
+            // XOSO.COM.VN
+            'soi cầu miền bắc xoso', 'soi cau mien bac xoso',
+            'soi cầu xoso', 'soi cau xoso',
+            'xoso.com.vn soi cầu', 'xoso.com.vn soi cau',
+            'thống kê vị trí xoso', 'thong ke vi tri xoso',
+            
+            // XSMN.MOBI
+            'soi cầu xsmn.mobi', 'soi cau xsmn.mobi',
+            'xsmn.mobi soi cầu', 'xsmn.mobi soi cau',
+            'soi cầu tốt hơn xsmn.mobi', 'soi cau tot hon xsmn.mobi',
+            
+            // KQXSMB.MOBI
+            'soi cầu kqxsmb.mobi', 'soi cau kqxsmb.mobi',
+            'kqxsmb.mobi soi cầu', 'kqxsmb.mobi soi cau',
+            
+            // SOICAUMIENPHI.ORG / SOI CẦU MIỄN PHÍ 888
+            'soi cầu miễn phí 888', 'soi cau mien phi 888',
+            'soi cầu miễn phí tốt nhất', 'soi cau mien phi tot nhat',
+            'soicaumienphi.org soi cầu', 'soicaumienphi soi cau',
+            
+            // XOSODAIPHAT
+            'soi cầu xosodaiphat', 'soi cau xosodaiphat',
+            'xosodaiphat soi cầu', 'xosodaiphat soi cau',
+            
+            // COMPARISON KEYWORDS - So sánh với đối thủ
+            'soi cầu nào tốt nhất', 'soi cau nao tot nhat',
+            'soi cầu uy tín nhất', 'soi cau uy tin nhat',
+            'soi cầu chính xác nhất', 'soi cau chinh xac nhat',
+            'soi cầu miền bắc nào đáng tin', 'soi cau mien bac nao dang tin',
+            'soi cầu tốt hơn xskt xosothantai', 'soi cau tot hon xskt xosothantai',
 
             // ✅ STATISTICAL KEYWORDS - Thống kê
             'thống kê vị trí XSMB', 'thong ke vi tri XSMB',
@@ -606,9 +760,9 @@ const SEO_CONFIG = {
             'soi cầu MB hôm nay khẩn cấp', 'soi cau MB hom nay khan cap',
             'soi cầu miền bắc hôm nay ngay', 'soi cau mien bac hom nay ngay'
         ],
-        url: '/soi-cau-bayesian',
+        url: '/soicau-bayesian',
         image: `${SITE_URL}/imgs/soi-cau-bayesian.png`,
-        canonical: `${SITE_URL}/soi-cau-bayesian`,
+        canonical: `${SITE_URL}/soicau-bayesian`,
         type: 'article',
         priority: 0.95,
         changefreq: 'daily',
@@ -619,17 +773,17 @@ const SEO_CONFIG = {
         sections: {
             soiCauHomNay: {
                 title: 'Soi Cầu Miền Bắc Hôm Nay',
-                url: '/soi-cau-bayesian#soi-cau-hom-nay',
+                url: '/soicau-bayesian#soi-cau-hom-nay',
                 keywords: ['soi cầu miền bắc hôm nay', 'soi cau mien bac hom nay', 'dự đoán XSMB hôm nay']
             },
             thongKeViTri: {
                 title: 'Thống Kê Vị Trí XSMB',
-                url: '/soi-cau-bayesian#thong-ke-vi-tri',
+                url: '/soicau-bayesian#thong-ke-vi-tri',
                 keywords: ['thống kê vị trí XSMB', 'thong ke vi tri XSMB', 'phân tích xổ số miền Bắc']
             },
             phuongPhapBayesian: {
                 title: 'Phương Pháp Bayesian',
-                url: '/soi-cau-bayesian#phuong-phap-bayesian',
+                url: '/soicau-bayesian#phuong-phap-bayesian',
                 keywords: ['soi cầu Bayesian', 'dự đoán Bayesian XSMB', 'thuật toán Bayesian']
             }
         }
@@ -864,40 +1018,140 @@ const SEO_CONFIG = {
 
     /**
      * KẾT QUẢ XỔ SỐ MIỀN BẮC
-     * PRIMARY: kết quả xổ số miền bắc (201,000), xsmb (673,000)
+     * PRIMARY: xsmb (673,000), kết quả xổ số miền bắc (201,000)
      * SECONDARY: danh sách kết quả xổ số (8,100), xổ số mb (246,000)
-     * COMPETITIVE: vs xosothantai, xskt
+     * COMPETITIVE: vs xosodaiphat, xoso.com.vn, xskt.com.vn, xsmn.mobi, az24.vn
+     * ENHANCED: Tối ưu với keywords variations, time-based, competitive
      */
     'kqxs': {
-        title: 'Kết Quả Xổ Số Miền Bắc (XSMB) - Danh Sách KQXS Mới Nhất | TAODANDEWUKONG.PRO 2025',
-        description: generateMetaDescription('kqxs', true),
+        title: 'XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay | SXMB - KQXSMB - XSTD Nhanh Nhất 2025',
+        description: 'XSMB - Kết quả xổ số miền Bắc (xsmb, sxmb, kqxsmb, xstd) hôm nay nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay. Xem XSMB 30 ngày, XSMB hôm qua, XSMB theo thứ. Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100%!',
         keywords: [
-            // ✅ PRIMARY KEYWORDS
+            // ✅ PRIMARY KEYWORDS - Từ khóa chính volume cao
+            'xsmb', 'XSMB', 'xs mb', 'xổ số mb',
             'kết quả xổ số miền bắc', 'ket qua xo so mien bac',
-            'xsmb', 'xs mb', 'xo so mien bac',
+            'sxmb', 'SXMB', 'sx mb',
+            'kqxsmb', 'KQXSMB', 'kq xsmb', 'kqxs mb',
+            'xstd', 'XSTD', 'xổ số thủ đô',
+            'xo so mien bac', 'xổ số miền bắc',
             'danh sách kết quả xổ số', 'danh sach ket qua xo so',
             'kqxs', 'kq xs', 'ket qua xo so',
 
-            // ✅ COMPETITIVE KEYWORDS
-            'kết quả xổ số tốt nhất', 'ket qua xo so tot nhat',
-            'ket qua xoso thantai', 'xosothantai ket qua',
-            'kết quả xổ số chi tiết', 'chi tiết hơn đối thủ',
-            'kết quả xổ số nhanh nhất', 'ket qua xo so nhanh nhat',
-
+            // ✅ TIME-BASED KEYWORDS - Theo thời gian
+            'xsmb hôm nay', 'xsmb hom nay', 'XSMB hôm nay',
+            'xsmb 30 ngày', 'xsmb 30 ngay', 'XSMB 30 ngày',
+            'xsmb hôm qua', 'xsmb hom qua', 'XSMB hôm qua',
+            'xsmb 90 ngày', 'xsmb 90 ngay',
+            'xsmb ngày hôm nay', 'xsmb ngay hom nay',
+            'kết quả xsmb hôm nay', 'ket qua xsmb hom nay',
+            
+            // ✅ DAY-OF-WEEK KEYWORDS - Theo thứ trong tuần
+            'xsmb thứ 2', 'xsmb thu 2', 'XSMB thứ 2', 'xsmb thứ hai',
+            'xsmb thứ 3', 'xsmb thu 3', 'XSMB thứ 3', 'xsmb thứ ba',
+            'xsmb thứ 4', 'xsmb thu 4', 'XSMB thứ 4', 'xsmb thứ tư',
+            'xsmb thứ 5', 'xsmb thu 5', 'XSMB thứ 5', 'xsmb thứ năm', 'xsmb thu 5',
+            'xsmb thứ 6', 'xsmb thu 6', 'XSMB thứ 6', 'xsmb thứ sáu',
+            'xsmb thứ 7', 'xsmb thu 7', 'XSMB thứ 7', 'xsmb thứ bảy',
+            'xsmb chủ nhật', 'xsmb chu nhat', 'XSMB chủ nhật',
+            
+            // ✅ DATE-SPECIFIC KEYWORDS - Theo ngày cụ thể
+            'xsmb 30/10', 'xsmb 31/10', 'xsmb hôm nay 30/10',
+            'kết quả xsmb 30/10', 'ket qua xsmb 30/10',
+            
+            // ✅ ACTION KEYWORDS - Hành động
+            'xsmb trực tiếp', 'xsmb truc tiep', 'XSMB trực tiếp',
+            'tường thuật xsmb', 'tuong thuat xsmb',
+            'xem xsmb trực tiếp', 'xem xsmb truc tiep',
+            'kết quả xsmb trực tiếp', 'ket qua xsmb truc tiep',
+            'xsmb tường thuật', 'xsmb tuong thuat',
+            'quay số xsmb', 'quay so xsmb',
+            
+            // ✅ COMPETITIVE KEYWORDS - Đối thủ cạnh tranh
+            // XOSODAIPHAT
+            'xsmb xosodaiphat', 'xosodaiphat xsmb',
+            'xsmb tốt hơn xosodaiphat', 'xsmb tot hon xosodaiphat',
+            'xosodaiphat.com xsmb',
+            
+            // XOSO.COM.VN
+            'xsmb xoso', 'xoso.com.vn xsmb',
+            'xsmb tốt hơn xoso', 'xsmb tot hon xoso',
+            'kết quả xsmb xoso', 'ket qua xsmb xoso',
+            
+            // XSKT.COM.VN
+            'xsmb xskt', 'xskt.com.vn xsmb',
+            'xsmb tốt hơn xskt', 'xsmb tot hon xskt',
+            'kết quả xsmb xskt', 'ket qua xsmb xskt',
+            
+            // XSMN.MOBI
+            'xsmb xsmn.mobi', 'xsmn.mobi xsmb',
+            'xsmb tốt hơn xsmn.mobi', 'xsmb tot hon xsmn.mobi',
+            
+            // AZ24.VN
+            'xsmb az24', 'az24.vn xsmb',
+            'xsmb tốt hơn az24', 'xsmb tot hon az24',
+            
+            // COMPARISON
+            'xsmb nào tốt nhất', 'xsmb nao tot nhat',
+            'kết quả xsmb tốt nhất', 'ket qua xsmb tot nhat',
+            'xsmb nhanh nhất', 'xsmb nhanh nhat',
+            'xsmb chính xác nhất', 'xsmb chinh xac nhat',
+            
             // ✅ LONG-TAIL KEYWORDS
             'xem kết quả xổ số hôm nay', 'xem ket qua xo so hom nay',
             'kết quả xổ số miền bắc mới nhất', 'ket qua xo so mien bac moi nhat',
             'danh sách kết quả xsmb', 'danh sach ket qua xsmb',
             'bảng kết quả xổ số miền bắc', 'bang ket qua xo so mien bac',
-
+            'kết quả xsmb hôm nay chi tiết', 'ket qua xsmb hom nay chi tiet',
+            'xem xsmb hôm nay', 'xem xsmb hom nay',
+            
+            // ✅ VARIATIONS - Biến thể
+            // Missing diacritics
+            'xsmb', 'ket qua xo so mien bac', 'xo so mien bac',
+            'sxmb', 'kqxsmb', 'xstd',
+            
+            // Spacing variations
+            'xsmb', 'xs-mb', 'xs_mb', 'xs mb',
+            'kq-xsmb', 'kq_xsmb', 'kq xsmb',
+            'xo-so-mien-bac', 'xo_so_mien_bac',
+            
+            // No space
+            'xsmb', 'sxmb', 'kqxsmb', 'xstd',
+            'xosomienbac', 'ketquaxoso',
+            
+            // Mixed case
+            'XSMB', 'XSMb', 'XsMb', 'xsMB',
+            
+            // ✅ LOCATION KEYWORDS
+            'xsmb hà nội', 'xsmb ha noi', 'XSMB Hà Nội',
+            'xổ số hà nội', 'xo so ha noi',
+            'xổ số thủ đô', 'xo so thu do',
+            'xskmb', 'xổ số kiến thiết miền bắc',
+            
+            // ✅ STATISTICAL KEYWORDS
+            'thống kê xsmb', 'thong ke xsmb',
+            'thống kê giải đặc biệt xsmb', 'thong ke giai dac biet xsmb',
+            'xsmb lo gan', 'xsmb lô gan',
+            'xsmb quay thử', 'xsmb quay thu',
+            
             // ✅ BRAND VARIATIONS
-            'taodandewukong kết quả xổ số', 'wukong kqxs',
-            'dan de wukong kqxs', 'wukong xsmb',
-            'taodandewukong.pro kết quả', 'kết quả xổ số wukong',
-
+            'taodandewukong xsmb', 'wukong xsmb',
+            'taodandewukong.pro xsmb', 'kết quả xsmb wukong',
+            'dan de wukong xsmb',
+            
             // ✅ REGIONAL
             'kết quả xổ số 3 miền', 'ket qua xo so 3 mien',
-            'xsmb xsmn xsmt', 'kết quả xổ số đầy đủ'
+            'xsmb xsmn xsmt', 'kết quả xổ số đầy đủ',
+            'xổ số 3 miền', 'xo so 3 mien',
+            
+            // ✅ ACCURACY KEYWORDS
+            'xsmb chính xác', 'xsmb chinh xac',
+            'kết quả xsmb nhanh nhất', 'ket qua xsmb nhanh nhat',
+            'xsmb cập nhật nhanh', 'xsmb cap nhat nhanh',
+            
+            // ✅ FREE KEYWORDS
+            'xsmb miễn phí', 'xsmb mien phi',
+            'kết quả xsmb miễn phí', 'ket qua xsmb mien phi',
+            'xem xsmb miễn phí', 'xem xsmb mien phi'
         ],
         url: '/kqxs',
         image: OG_IMAGES.default,

@@ -58,7 +58,7 @@ module.exports = {
             changefreq = 'daily';
         }
         // Soi cau Bayesian - highest priority (highest search volume)
-        else if (path === '/soi-cau-bayesian') {
+        else if (path === '/soicau-bayesian') {
             priority = 0.95;
             changefreq = 'daily';
         }
@@ -108,7 +108,7 @@ module.exports = {
         // Add custom paths (sorted by SEO priority)
         const customPaths = [
             '/',                    // Priority 1.0
-            '/soi-cau-bayesian',   // Priority 0.95 - NEW: Highest search volume (74,000/month)
+            '/soicau-bayesian',   // Priority 0.95 - NEW: Highest search volume (74,000/month)
             '/dan-9x0x',           // Priority 0.9 - High search volume
             '/dan-2d',             // Priority 0.9 - High search volume
             '/dan-3d4d',           // Priority 0.9 - High search volume
@@ -212,7 +212,7 @@ module.exports = {
                     }
                 ]
             },
-            '/soi-cau-bayesian': {
+            '/soicau-bayesian': {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/soi-cau-bayesian.png`,

@@ -74,26 +74,24 @@ const XSMBSimpleTable = ({
         };
     };
 
-    // Sử dụng dữ liệu từ API hoặc fallback
-    const data = propData || apiData || getFallbackData();
-
     // Debug: Log để kiểm tra dữ liệu (chỉ khi cần thiết)
     if (process.env.NODE_ENV === 'development') {
         console.log('🔍 XSMBSimpleTable data source:', {
             propData: !!propData,
             apiData: !!apiData,
-            usingFallback: !propData && !apiData
+            loading: loading,
+            usingFallback: !propData && !apiData && !loading
         });
     }
 
     // Callback khi dữ liệu được load - sử dụng useRef để tránh vòng lặp
     const dataRef = React.useRef();
     React.useEffect(() => {
-        if (data && onDataLoad && dataRef.current !== data) {
-            dataRef.current = data;
-            onDataLoad(data);
+        if (apiData && onDataLoad && dataRef.current !== apiData) {
+            dataRef.current = apiData;
+            onDataLoad(apiData);
         }
-    }, [data, onDataLoad]);
+    }, [apiData, onDataLoad]);
 
     // Callback khi có lỗi
     React.useEffect(() => {
@@ -114,8 +112,8 @@ const XSMBSimpleTable = ({
         );
     }
 
-    // Error state
-    if (error && showError) {
+    // Error state - chỉ khi có lỗi thật sự (không phải fallback)
+    if (error && showError && !apiData && !propData) {
         return (
             <div className={`${styles.container} ${className}`}>
                 <div className={styles.errorMessage}>
@@ -132,18 +130,13 @@ const XSMBSimpleTable = ({
         );
     }
 
-    // No data state - không cần vì đã có fallback data
-    if (!data) {
-        return (
-            <div className={`${styles.container} ${className}`}>
-                <div className={styles.errorMessage}>
-                    <h3>Không có dữ liệu</h3>
-                    <p>Không tìm thấy dữ liệu kết quả xổ số</p>
-                </div>
-            </div>
-        );
-    }
+    // Sử dụng dữ liệu từ API hoặc prop
+    const data = propData || apiData;
+    
+    // Sử dụng fallback data nếu không có data thật
+    const finalData = data || getFallbackData();
 
+    // Destructure dữ liệu
     const {
         date: resultDate,
         specialPrize,
@@ -156,7 +149,7 @@ const XSMBSimpleTable = ({
         sevenPrizes = [],
         maDB = '',
         loto = {}
-    } = data;
+    } = finalData;
 
     // Function to get day of week
     const getDayOfWeek = (dateString) => {
@@ -173,7 +166,7 @@ const XSMBSimpleTable = ({
         <div className={`${styles.container} ${className}`}>
             {/* Thông báo nguồn dữ liệu */}
 
-            {!propData && !apiData && (
+            {!propData && !apiData && !loading && (
                 <div style={{
                     padding: '8px 12px',
                     background: '#fff3cd',

@@ -9,6 +9,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { Target, Star, Zap, BarChart3, Sparkles } from 'lucide-react';
 import styles from '../styles/TodayPredictions.module.css';
 
@@ -68,11 +69,15 @@ const PredictionCard = memo(({ pred, predictionDate, formattedDate }) => {
 PredictionCard.displayName = 'PredictionCard';
 
 const TodayPredictions = () => {
+    const router = useRouter();
     const [prediction, setPrediction] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [hasFetched, setHasFetched] = useState(false);
     const [isToday, setIsToday] = useState(true);
+    
+    // ✅ FIX: Kiểm tra xem có đang ở trang chủ không
+    const isHomePage = router.pathname === '/' || router.pathname === '/index';
 
 
     useEffect(() => {
@@ -284,34 +289,41 @@ const TodayPredictions = () => {
 
     return (
         <>
+            {/* ✅ FIX: Chỉ render Head với title nếu KHÔNG phải trang chủ */}
+            {/* Trang chủ đã có title riêng từ EnhancedSEOHead */}
+            {!isHomePage && (
+                <Head>
+                    {/* Primary Meta Tags */}
+                    <title>{seoData.title}</title>
+                    <meta name="title" content={seoData.title} />
+                    <meta name="description" content={seoData.description} />
+                    <meta name="keywords" content={seoData.keywords} />
+
+                    {/* Open Graph / Facebook */}
+                    <meta property="og:type" content="website" />
+                    <meta property="og:url" content={seoData.url} />
+                    <meta property="og:title" content={seoData.title} />
+                    <meta property="og:description" content={seoData.description} />
+                    <meta property="og:image" content={seoData.image} />
+                    <meta property="og:locale" content="vi_VN" />
+                    <meta property="og:site_name" content="Dàn Đề Wukong" />
+
+                    {/* Twitter */}
+                    <meta property="twitter:card" content="summary_large_image" />
+                    <meta property="twitter:url" content={seoData.url} />
+                    <meta property="twitter:title" content={seoData.title} />
+                    <meta property="twitter:description" content={seoData.description} />
+                    <meta property="twitter:image" content={seoData.image} />
+
+                    {/* Additional SEO */}
+                    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+                    <meta name="googlebot" content="index, follow" />
+                    <link rel="canonical" href={seoData.url} />
+                </Head>
+            )}
+            
+            {/* ✅ Structured Data vẫn render cho SEO (không ảnh hưởng title) */}
             <Head>
-                {/* Primary Meta Tags */}
-                <title>{seoData.title}</title>
-                <meta name="title" content={seoData.title} />
-                <meta name="description" content={seoData.description} />
-                <meta name="keywords" content={seoData.keywords} />
-
-                {/* Open Graph / Facebook */}
-                <meta property="og:type" content="website" />
-                <meta property="og:url" content={seoData.url} />
-                <meta property="og:title" content={seoData.title} />
-                <meta property="og:description" content={seoData.description} />
-                <meta property="og:image" content={seoData.image} />
-                <meta property="og:locale" content="vi_VN" />
-                <meta property="og:site_name" content="Dàn Đề Wukong" />
-
-                {/* Twitter */}
-                <meta property="twitter:card" content="summary_large_image" />
-                <meta property="twitter:url" content={seoData.url} />
-                <meta property="twitter:title" content={seoData.title} />
-                <meta property="twitter:description" content={seoData.description} />
-                <meta property="twitter:image" content={seoData.image} />
-
-                {/* Additional SEO */}
-                <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-                <meta name="googlebot" content="index, follow" />
-                <link rel="canonical" href={seoData.url} />
-
                 {/* Preconnect for performance */}
                 <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'} />
                 <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'} />

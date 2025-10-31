@@ -382,11 +382,24 @@ export default function Layout({ children, className = '' }) {
                         {/* Footer Bottom */}
                         <div className={styles.footerBottom}>
                             <p className={styles.copyright}>
-                                © {new Date().getFullYear()} Dàn Đề Wukong. Made with <Heart size={12} style={{ display: 'inline', margin: '0 2px' }} /> in Vietnam.
+                                © {new Date().getFullYear()} Dàn Đề Wukong (TDDW). Made with <Heart size={12} style={{ display: 'inline', margin: '0 2px' }} /> in Vietnam.
                             </p>
                             <p className={styles.disclaimer}>
                                 Công cụ miễn phí cho mục đích giải trí và nghiên cứu.
                             </p>
+                            {/* ✅ SEO Keywords Footer (giống RBK strategy) */}
+                            <div style={{ 
+                                marginTop: '15px', 
+                                fontSize: '11px', 
+                                color: '#999', 
+                                textAlign: 'center',
+                                lineHeight: '1.6',
+                                opacity: 0.7
+                            }}>
+                                TDDW | Tạo dàn đề Wukong | Tao dan de wukong | TDDW.Pro | WK | TDD | DDW | 
+                                Tạo dàn số TDDW | Soi cầu TDDW | Chốt số TDDW | TDDW hôm nay | 
+                                Cầu lô TDDW | Dự đoán TDDW | Thống kê TDDW | TDDW miễn phí
+                            </div>
                         </div>
                     </div>
                 </footer>

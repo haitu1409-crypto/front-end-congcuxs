@@ -68,6 +68,13 @@ const BRAND_KEYWORDS = {
         'taodandewukong.pro',
         'taodandewuKong',
         'taoDanDeWukong',
+        // ✅ SHORT ABBREVIATIONS - Viết tắt ngắn (giống RBK)
+        'tddw', 'TDDW', 'Tddw',
+        'wk', 'WK', 'Wk',
+        'tdd', 'TDD', 'Tdd',
+        'ddw', 'DDW', // Dàn Đề Wukong
+        'ddwk', 'DDWK', // Dàn Đề Wukong
+        'tdde', 'TDDE', // Tạo Dàn Đề
     ],
     hyphenated: [
         'tao-dan-de-wukong',
@@ -107,6 +114,27 @@ const BRAND_KEYWORDS = {
         'www.taodandewukong.pro',
         'web tạo dàn đề wukong',
         'website tao dan de wukong',
+        // ✅ SHORT ABBREVIATIONS với domain
+        'tddw.pro',
+        'tddw pro',
+        'tdd.pro',
+        'wk.pro',
+        'wukong.pro',
+    ],
+    
+    // ✅ SHORT ABBREVIATIONS - Section riêng cho viết tắt ngắn (giống RBK strategy)
+    shortAbbreviations: [
+        'tddw', 'TDDW', 'tdd w', 'TDD W', // Tạo Dàn Đề Wukong
+        'wk', 'WK', 'w k', 'W K', // Wukong
+        'tdd', 'TDD', 't d d', 'T D D', // Tạo Dàn Đề
+        'ddw', 'DDW', 'd d w', 'D D W', // Dàn Đề Wukong
+        'ddwk', 'DDWK', // Dàn Đề Wukong
+        'tdde', 'TDDE', // Tạo Dàn Đề
+        // With context
+        'tddw xổ số', 'tddw xo so',
+        'tddw loto', 'tddw lô đề',
+        'wk tool', 'wk công cụ',
+        'tddw.pro', 'tddw pro',
     ]
 };
 
@@ -144,10 +172,20 @@ const PRODUCT_KEYWORDS = {
         'tao dàn so',
         'tạo đàn số',
         'taodanso',
+        'tạo-dàn-số',
+        'tao-dan-so',
+        'tạo_dàn_số',
+        'tao_dan_so',
 
         'tạo dàn số online',
         'tao dan so online',
         'tạo dàn số miễn phí',
+        
+        // Đồng nghĩa
+        'lập dàn số',
+        'lap dan so',
+        'lập dàn',
+        'lap dan',
     ],
 
     // Tạo mức số
@@ -412,17 +450,83 @@ const LOCATION_KEYWORDS = {
 };
 
 /**
- * COMPETITOR KEYWORDS - Từ khóa đối thủ
+ * COMPETITOR KEYWORDS - Từ khóa đối thủ cạnh tranh
+ * Bao gồm: Tên đối thủ, so sánh, và keywords để cạnh tranh khi người dùng tìm đối thủ
  */
 const COMPETITOR_KEYWORDS = [
-    'kangdh',
-    'kang dh',
-    'taodanxoso',
-    'tao dan xo so',
-    'giai ma so hoc',
-    'giải mã số học',
-    'dan de pro',
-    'dande pro',
+    // ✅ KangDH.com - Đối thủ lớn nhất
+    'kangdh', 'kang dh', 'kangdh.com', 'kangdh.com.vn',
+    'kangdh tạo dàn', 'kangdh tạo dàn số', 'kangdh tạo dàn đề',
+    'kangdh taodanxoso', 'taodanxoso', 'tao dan xo so',
+    'tốt hơn kangdh', 'tot hon kangdh', 'kangdh vs wukong',
+    'kangdh alternative', 'thay thế kangdh',
+    
+    // ✅ GiaiMaSoHoc.net - Đối thủ lớn
+    'giai ma so hoc', 'giải mã số học', 'giaimasohoc', 'giaimasohoc.net',
+    'giai ma so hoc tạo dàn', 'giải mã số học tạo dàn số',
+    'giaimasohoc tạo dàn đề', 'giaimasohoc tool',
+    'tốt hơn giaimasohoc', 'tot hon giaimasohoc', 'giaimasohoc vs wukong',
+    'giaimasohoc alternative',
+    
+    // ✅ SieuKetQua.com - Đối thủ lớn
+    'sieu ket qua', 'sieuketqua', 'sieuketqua.com',
+    'sieuketqua tạo dàn', 'sieu ket qua tạo dàn xổ số',
+    'sieuketqua tool', 'sieuketqua công cụ',
+    'tốt hơn sieuketqua', 'tot hon sieuketqua', 'sieuketqua vs wukong',
+    
+    // ✅ DanhCongi.com - Đối thủ
+    'danhcongi', 'danhcongi.com', 'danh con gi',
+    'danhcongi tạo dàn', 'danhcongi tool',
+    'tốt hơn danhcongi', 'tot hon danhcongi',
+    
+    // ✅ Lottoat.com - Đối thủ
+    'lottoat', 'lottoat.com', 'xoso.lottoat.com',
+    'lottoat tạo dàn', 'lottoat tool',
+    'tốt hơn lottoat', 'tot hon lottoat',
+    
+    // ✅ Quynh.vn - Đối thủ
+    'quỳnh.vn', 'quynh.vn', 'quynh tạo dàn đề',
+    'quynh tool', 'tốt hơn quynh',
+    
+    // ✅ Olawin - Đối thủ
+    'olawin', 'tạo dàn olawin', 'olawin tool',
+    'tốt hơn olawin',
+    
+    // ✅ Các đối thủ khác
+    'dande pro', 'dan de pro', 'dàn đề pro',
+    'phần mềm tạo dàn số', 'phan mem tao dan so',
+    'ứng dụng tạo dàn số', 'ung dung tao dan so',
+    
+    // ✅ COMPARISON KEYWORDS - Từ khóa so sánh
+    'tạo dàn đề tốt nhất', 'tao dan de tot nhat',
+    'web tạo dàn đề uy tín', 'app tạo dàn số nào tốt',
+    'công cụ tạo dàn đề chuyên nghiệp', 'cong cu tao dan de chuyen nghiep',
+    'phần mềm tạo dàn đề miễn phí', 'phan mem tao dan de mien phi',
+    'tạo dàn đề free', 'tao dan de free',
+    'tạo dàn đề không quảng cáo', 'tao dan de khong quang cao',
+    
+    // ✅ ALTERNATIVE KEYWORDS - Thay thế đối thủ
+    'thay thế kangdh', 'thay the kangdh',
+    'kangdh alternative', 'giaimasohoc alternative',
+    'sieuketqua alternative', 'kangdh thay the',
+    
+    // ✅ NO GAME - Tránh nhầm với game Black Myth: Wukong
+    'wukong không phải game', 'wukong khong phai game',
+    'wukong công cụ xổ số', 'wukong cong cu xo so',
+    'wukong tool xổ số', 'wukong tool xo so',
+    'wukong tạo dàn đề', 'wukong tao dan de',
+    'wukong dàn đề', 'wukong dan de',
+    'wukong loto', 'wukong xổ số', 'wukong xo so',
+    'wukong soi cầu', 'wukong soi cau',
+    'wukong thống kê', 'wukong thong ke',
+    'dàn đề wukong khác game', 'dan de wukong khac game',
+    'wukong khác black myth', 'wukong khac black myth',
+    
+    // ✅ COMPETITIVE LONG-TAIL
+    'kangdh vs taodandewukong', 'kangdh vs wukong',
+    'giaimasohoc vs wukong', 'sieuketqua vs wukong',
+    'so sánh kangdh và wukong', 'so sanh kangdh va wukong',
+    'wukong tốt hơn kangdh', 'wukong tot hon kangdh'
 ];
 
 /**
@@ -623,12 +727,66 @@ const PAGE_SPECIFIC_KEYWORDS = {
         'soi cầu AI miền bắc', 'soi cau AI mien bac',
         'dự đoán AI XSMB', 'du doan AI XSMB',
 
-        // ✅ COMPETITIVE KEYWORDS - Đối thủ cạnh tranh
+        // ✅ COMPETITIVE KEYWORDS - Đối thủ cạnh tranh (MỞ RỘNG)
+        // XSKT.COM.VN
         'soi cầu miền bắc xskt', 'soi cau mien bac xskt',
-        'soi cầu miền bắc xoso', 'soi cau mien bac xoso',
-        'soi cầu miền bắc atrungroi', 'soi cau mien bac atrungroi',
-        'soi cầu miền bắc xsmn247', 'soi cau mien bac xsmn247',
+        'soi cầu xskt', 'soi cau xskt',
+        'xskt soi cầu', 'xskt soi cau',
+        'soi cầu tốt hơn xskt', 'soi cau tot hon xskt',
+        'xskt.com.vn soi cầu', 'xskt.com.vn soi cau',
+        
+        // XOSOTHANTAI.MOBI
         'soi cầu miền bắc xosothantai', 'soi cau mien bac xosothantai',
+        'soi cầu xosothantai', 'soi cau xosothantai',
+        'xosothantai soi cầu', 'xosothantai soi cau',
+        'soi cầu tốt hơn xosothantai', 'soi cau tot hon xosothantai',
+        'xosothantai.mobi soi cầu', 'xosothantai.mobi soi cau',
+        
+        // XSMN247.ME / XSMN247
+        'soi cầu miền bắc xsmn247', 'soi cau mien bac xsmn247',
+        'soi cầu xsmn247', 'soi cau xsmn247',
+        'xsmn247 soi cầu', 'xsmn247 soi cau',
+        'soi cầu tốt hơn xsmn247', 'soi cau tot hon xsmn247',
+        'xsmn247.me soi cầu', 'xsmn247.me soi cau',
+        'xổ số minh ngọc 247 soi cầu', 'xo so minh ngoc 247 soi cau',
+        
+        // ATRUNGROI.COM
+        'soi cầu miền bắc atrungroi', 'soi cau mien bac atrungroi',
+        'soi cầu atrungroi', 'soi cau atrungroi',
+        'atrungroi soi cầu', 'atrungroi soi cau',
+        'soi cầu tốt hơn atrungroi', 'soi cau tot hon atrungroi',
+        'atrungroi.com soi cầu', 'atrungroi.com soi cau',
+        'a trúng rồi soi cầu', 'a trung roi soi cau',
+        
+        // XOSO.COM.VN
+        'soi cầu miền bắc xoso', 'soi cau mien bac xoso',
+        'soi cầu xoso', 'soi cau xoso',
+        'xoso.com.vn soi cầu', 'xoso.com.vn soi cau',
+        'thống kê vị trí xoso', 'thong ke vi tri xoso',
+        
+        // XSMN.MOBI
+        'soi cầu xsmn.mobi', 'soi cau xsmn.mobi',
+        'xsmn.mobi soi cầu', 'xsmn.mobi soi cau',
+        'soi cầu tốt hơn xsmn.mobi', 'soi cau tot hon xsmn.mobi',
+        
+        // KQXSMB.MOBI
+        'soi cầu kqxsmb.mobi', 'soi cau kqxsmb.mobi',
+        'kqxsmb.mobi soi cầu', 'kqxsmb.mobi soi cau',
+        
+        // SOICAUMIENPHI.ORG
+        'soi cầu miễn phí 888', 'soi cau mien phi 888',
+        'soi cầu miễn phí tốt nhất', 'soi cau mien phi tot nhat',
+        'soicaumienphi.org soi cầu', 'soicaumienphi soi cau',
+        
+        // XOSODAIPHAT
+        'soi cầu xosodaiphat', 'soi cau xosodaiphat',
+        'xosodaiphat soi cầu', 'xosodaiphat soi cau',
+        
+        // COMPARISON KEYWORDS
+        'soi cầu nào tốt nhất', 'soi cau nao tot nhat',
+        'soi cầu uy tín nhất', 'soi cau uy tin nhat',
+        'soi cầu chính xác nhất', 'soi cau chinh xac nhat',
+        'soi cầu miền bắc nào đáng tin', 'soi cau mien bac nao dang tin',
 
         // ✅ STATISTICAL KEYWORDS - Thống kê
         'thống kê vị trí XSMB', 'thong ke vi tri XSMB',
@@ -706,6 +864,54 @@ const PAGE_SPECIFIC_KEYWORDS = {
         'dự đoán XSMB hôm nay nhanh', 'du doan XSMB hom nay nhanh',
         'soi cầu MB hôm nay khẩn cấp', 'soi cau MB hom nay khan cap',
         'soi cầu miền bắc hôm nay ngay', 'soi cau mien bac hom nay ngay'
+    ],
+    
+    /**
+     * KẾT QUẢ XỔ SỐ MIỀN BẮC (KQXS) PAGE
+     * PRIMARY: xsmb (673,000), kết quả xổ số miền bắc (201,000)
+     * SECONDARY: XSMB hôm nay, XSMB 30 ngày, XSMB trực tiếp
+     */
+    kqxs: [
+        // ✅ PRIMARY KEYWORDS
+        'xsmb', 'XSMB', 'xs mb', 'xổ số mb',
+        'kết quả xổ số miền bắc', 'ket qua xo so mien bac',
+        'sxmb', 'SXMB', 'sx mb',
+        'kqxsmb', 'KQXSMB', 'kq xsmb', 'kqxs mb',
+        'xstd', 'XSTD', 'xổ số thủ đô',
+        
+        // ✅ TIME-BASED
+        'xsmb hôm nay', 'xsmb hom nay', 'XSMB hôm nay',
+        'xsmb 30 ngày', 'xsmb 30 ngay', 'XSMB 30 ngày',
+        'xsmb hôm qua', 'xsmb hom qua', 'XSMB hôm qua',
+        'xsmb 90 ngày', 'xsmb 90 ngay',
+        
+        // ✅ DAY-OF-WEEK
+        'xsmb thứ 2', 'xsmb thu 2', 'XSMB thứ 2', 'xsmb thứ hai',
+        'xsmb thứ 3', 'xsmb thu 3', 'XSMB thứ 3', 'xsmb thứ ba',
+        'xsmb thứ 4', 'xsmb thu 4', 'XSMB thứ 4', 'xsmb thứ tư',
+        'xsmb thứ 5', 'xsmb thu 5', 'XSMB thứ 5', 'xsmb thứ năm',
+        'xsmb thứ 6', 'xsmb thu 6', 'XSMB thứ 6', 'xsmb thứ sáu',
+        'xsmb thứ 7', 'xsmb thu 7', 'XSMB thứ 7', 'xsmb thứ bảy',
+        'xsmb chủ nhật', 'xsmb chu nhat', 'XSMB chủ nhật',
+        
+        // ✅ ACTION
+        'xsmb trực tiếp', 'xsmb truc tiep', 'XSMB trực tiếp',
+        'tường thuật xsmb', 'tuong thuat xsmb',
+        'xem xsmb trực tiếp', 'xem xsmb truc tiep',
+        
+        // ✅ COMPETITIVE
+        'xsmb xosodaiphat', 'xosodaiphat xsmb',
+        'xsmb xoso.com.vn', 'xoso.com.vn xsmb',
+        'xsmb xskt.com.vn', 'xskt.com.vn xsmb',
+        'xsmb xsmn.mobi', 'xsmn.mobi xsmb',
+        'xsmb az24.vn', 'az24.vn xsmb',
+        'xsmb nào tốt nhất', 'xsmb nao tot nhat',
+        
+        // ✅ VARIATIONS
+        'xsmb', 'xs-mb', 'xs_mb', 'xs mb',
+        'kqxsmb', 'kq-xsmb', 'kq_xsmb',
+        'xosomienbac', 'ketquaxoso',
+        'XSMB', 'XSMb', 'XsMb'
     ]
 };
 
@@ -741,7 +947,9 @@ function getAllKeywordsForPage(pageType) {
                 ...SEARCH_ENGINE_KEYWORDS.google,
                 ...SEARCH_ENGINE_KEYWORDS.bing,
                 ...SEARCH_ENGINE_KEYWORDS.coccoc,
-                ...YEAR_KEYWORDS
+                ...YEAR_KEYWORDS,
+                // ✅ SHORT ABBREVIATIONS (giống RBK strategy) - Priority cao
+                ...BRAND_KEYWORDS.shortAbbreviations
             );
             break;
 
@@ -795,6 +1003,13 @@ function getAllKeywordsForPage(pageType) {
                 ...LOCATION_KEYWORDS.regions
             );
             break;
+
+        case 'kqxs':
+            keywords.push(
+                ...PAGE_SPECIFIC_KEYWORDS.kqxs,
+                ...LOCATION_KEYWORDS.regions
+            );
+            break;
     }
 
     // Remove duplicates
@@ -806,7 +1021,7 @@ function getAllKeywordsForPage(pageType) {
  */
 function generateMetaDescription(pageType, includeVariations = true) {
     const descriptions = {
-        home: `Tạo dàn đề (tao dan de) online miễn phí 2025. Công cụ tạo dàn số, mức số chuyên nghiệp. Dàn đề 9x-0x, 2D, 3D, 4D. Lọc ghép dàn, nuôi dàn khung 3-5 ngày. ${includeVariations ? 'Hỗ trợ: taodande, tạo dàn số, tao dan so, lô đề, lo de. ' : ''}Miễn phí 100%!`,
+        home: `TDDW (Tạo Dàn Đề Wukong) - Tạo dàn đề (tao dan de, lập dàn số) online miễn phí 2025. Công cụ tạo dàn số, mức số chuyên nghiệp tốt hơn kangdh, giaimasohoc, sieuketqua. Dàn đề 9x-0x, 2D, 3D, 4D. Lọc ghép dàn, nuôi dàn khung 3-5 ngày. Wukong (WK, TDDW) công cụ xổ số, không phải game. ${includeVariations ? 'Hỗ trợ: taodande, tạo dàn số, tao dan so, lập dàn số, lap dan so, tddw, wk, tdd, lô đề, lo de. ' : ''}Miễn phí 100%, không quảng cáo!`,
 
         dan9x0x: `Tạo dàn 9x-0x (tao dan 9x0x) ngẫu nhiên. Cắt dàn 9x, lọc dàn 9x, nuôi dàn khung 3 ngày. ${includeVariations ? 'Hỗ trợ: dan 9x0x, dan 9x, tao dan 9x. ' : ''}Thuật toán Fisher-Yates. Miễn phí!`,
 
@@ -830,7 +1045,7 @@ function generateMetaDescription(pageType, includeVariations = true) {
 
         'giai-dac-biet-tuan': `Thống kê Giải Đặc Biệt Theo Tuần với view lịch (Thứ 2-CN). Chọn tháng/năm, toggle thông tin chi tiết. ${includeVariations ? 'Hỗ trợ: giai dac biet theo tuan, xem theo ngay trong tuan. ' : ''}Phân tích xu hướng, miễn phí 100%!`,
 
-        'kqxs': `Kết quả xổ số miền Bắc (XSMB) nhanh nhất, chi tiết nhất. Danh sách kết quả XSMB mới nhất, phân trang rõ ràng. ${includeVariations ? 'Hỗ trợ: ket qua xo so mien bac, xsmb, kqxs. ' : ''}Cập nhật hàng ngày 18h15, miễn phí 100% tại TAODANDEWUKONG.PRO!`
+        'kqxs': `XSMB - Kết quả xổ số miền Bắc (xsmb, sxmb, kqxsmb, xstd) hôm nay nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay. Xem XSMB 30 ngày, XSMB hôm qua, XSMB theo thứ. ${includeVariations ? 'Hỗ trợ: ket qua xo so mien bac, xsmb, sxmb, kqxsmb, xstd. ' : ''}Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100% tại TAODANDEWUKONG.PRO!`
     };
 
     return descriptions[pageType] || descriptions.home;

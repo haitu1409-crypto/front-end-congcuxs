@@ -85,9 +85,9 @@ const PAGE_IMAGES = {
 // Cấu hình title và description cho từng page
 const PAGE_SEO_CONFIG = {
     homepage: {
-        title: 'Tạo Dàn Đề | Tạo Dàn Xổ Số 2D 3D 4D | Ghép Dàn Xiên, Lotto - Miễn Phí 2025',
-        description: 'Tạo dàn số, tạo dàn xổ số 2D 3D 4D chuyên nghiệp. Ghép dàn xiên, dàn theo tổng, dàn theo chạm, dàn kép bằng. Phần mềm AI, trí tuệ nhân tạo. Xem kết quả xổ số nhanh nhất. Miễn phí 100%.',
-        keywords: 'tạo dàn số, tạo dàn xổ số, công cụ dàn số, dàn số 2D, dàn số 3D, dàn số 4D, ghép dàn đặc biệt, lọc dàn đặc biệt, tạo dàn xiên, ghép dàn xiên, dàn theo tổng, dàn theo chạm, dàn kép bằng, cắt dàn, lọc dàn, công cụ mức số, tạo dàn số, tạo dàn 3 càng, xổ số 3 miền, lô đề, tạo dàn số miễn phí, công cụ xổ số chuyên nghiệp, taodande, dàn số 9x-0x ngẫu nhiên, lọc dàn số tổng hợp, thuật toán Fisher-Yates, phần mềm AI, AI Tools, trí tuệ nhân tạo, xem kết quả xổ số, kết quả xổ số nhanh nhất, ứng dụng tạo mức số, tạo mức số miễn phí, lotto'
+        title: 'TDDW - Tạo Dàn Đề, Tạo Dàn Số Online Miễn Phí | Công Cụ Xổ Số Chuyên Nghiệp 2025',
+        description: 'TDDW (Tạo Dàn Đề Wukong) - Tạo dàn đề (tao dan de, lập dàn số) online miễn phí 2025. Công cụ tạo dàn số, mức số chuyên nghiệp tốt hơn kangdh, giaimasohoc, sieuketqua. Dàn đề 9x-0x, 2D, 3D, 4D. Lọc ghép dàn, nuôi dàn khung 3-5 ngày. Wukong (WK, TDDW) công cụ xổ số, không phải game. Miễn phí 100%, không quảng cáo!',
+        keywords: 'TDDW, Tạo Dàn Đề Wukong, tao dan de wukong, TDDW.Pro, WK, TDD, DDW, tạo dàn đề, tao dan de, tạo dàn số, tao dan so, lập dàn số, lap dan so, tạo mức số, tao muc so, dàn đề 9x-0x, dàn 2D, dàn 3D, dàn 4D, ghép dàn đặc biệt, lọc dàn đề, nuôi dàn khung, thuật toán Fisher-Yates, taodandewukong, taodande, wukong tool, wukong công cụ xổ số, tạo dàn đề miễn phí, tạo dàn số online, công cụ lô đề, phần mềm tạo dàn số, ứng dụng tạo mức số, tốt hơn kangdh, tốt hơn giaimasohoc, tốt hơn sieuketqua'
     },
     'dan-9x0x': {
         title: 'Dàn Đề 9x-0x | Tạo Dàn Đề Ngẫu Nhiên | Công Cụ Lọc Dàn Đề Tổng Hợp - Miễn Phí 2025',
@@ -151,11 +151,14 @@ export default function SEOOptimized({
     const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Dàn Đề Wukong';
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
 
+    // ✅ FIX: Map 'home' to 'homepage' for PAGE_SEO_CONFIG
+    const configPageType = pageType === 'home' ? 'homepage' : pageType;
+    
     // Lấy cấu hình SEO cho page
-    const pageConfig = PAGE_SEO_CONFIG[pageType] || PAGE_SEO_CONFIG.homepage;
-    const pageImages = PAGE_IMAGES[pageType] || PAGE_IMAGES.homepage;
+    const pageConfig = PAGE_SEO_CONFIG[configPageType] || PAGE_SEO_CONFIG.homepage;
+    const pageImages = PAGE_IMAGES[configPageType] || PAGE_IMAGES.homepage;
 
-    // Sử dụng custom hoặc default
+    // Sử dụng custom hoặc default (ưu tiên customTitle từ seoConfig.js)
     const title = customTitle || pageConfig.title;
     const description = customDescription || pageConfig.description;
     const keywords = customKeywords || pageConfig.keywords;

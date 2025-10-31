@@ -10,14 +10,14 @@ import { memo } from 'react';
 
 const EnhancedSEOHead = memo(function EnhancedSEOHead({
     pageType = 'home',
-    customTitle,
-    customDescription,
-    customKeywords,
-    canonicalUrl,
+    title: customTitle,
+    description: customDescription,
+    keywords: customKeywords,
+    canonical: canonicalUrl,
     ogImage,
     breadcrumbs,
     faq,
-    structuredData,
+    structuredData = [],
     locale = 'vi_VN',
     author = 'Dàn Đề Wukong',
 }) {
@@ -48,6 +48,15 @@ const EnhancedSEOHead = memo(function EnhancedSEOHead({
                 author={author}
                 structuredData={structuredData}
             />
+            
+            {/* ✅ Additional Structured Data nếu có */}
+            {structuredData && Array.isArray(structuredData) && structuredData.map((schema, index) => (
+                <script
+                    key={index}
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+                />
+            ))}
         </>
     );
 });
