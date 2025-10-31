@@ -230,8 +230,9 @@ const SoiCauBayesian = () => {
                     date: currentProcessingDate,
                     method: FORCED_METHOD, // Always use ensemble
                     type: selectedType,
-                    // Tăng limit cho lo để có nhiều dữ liệu hơn (lo cần nhiều predictions hơn đề)
-                    limit: selectedType === 'lo' ? 50 : 20
+                    // Giảm limit cho lo xuống 20 (thay vì 30) để không quá nhiều predictions
+                    // Với lo, 20 predictions đã đủ để người chơi lựa chọn và dễ theo dõi
+                    limit: selectedType === 'lo' ? 20 : 20
                 })
             });
 
