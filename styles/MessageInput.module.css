@@ -2,12 +2,29 @@
 
 .messageInput {
     padding: 6px 20px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom)); /* Support iOS safe area */
     background: white;
     border-top: 1px solid #e5e7eb;
     position: sticky;
     bottom: 0;
     z-index: 100;
     flex-shrink: 0;
+    margin: 0; /* Remove all margins */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Mobile: Ensure input is truly at bottom */
+@media (max-width: 768px) {
+    .messageInput {
+        position: -webkit-sticky; /* Safari support */
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: 0;
+        padding-bottom: max(6px, env(safe-area-inset-bottom));
+    }
 }
 
 .inputContainer {
