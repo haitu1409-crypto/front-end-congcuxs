@@ -320,12 +320,15 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    position: relative;
+    z-index: 1; /* Dưới overlay khi UserList mở */
 }
 
-/* Mobile: Thêm padding bottom để không bị che bởi fixed input */
+/* Mobile: Thêm padding bottom để tránh bị che bởi MessageInput fixed */
 @media (max-width: 768px) {
     .messagesContainer {
-        padding-bottom: 80px; /* Đủ chỗ cho input box */
+        padding-bottom: calc(100px + env(safe-area-inset-bottom));
+        /* Đủ chỗ cho MessageInput + safe area */
     }
 }
 

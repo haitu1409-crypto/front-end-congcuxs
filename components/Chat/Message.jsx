@@ -250,8 +250,8 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
 
         if (!selectionMode && onMessageClick) {
             if (e) {
-                e.preventDefault();
-                e.stopPropagation();
+            e.preventDefault();
+            e.stopPropagation();
             }
             // Any message can be clicked to open action modal
             onMessageClick(message);
