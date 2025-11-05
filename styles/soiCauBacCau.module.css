@@ -1,0 +1,216 @@
+/* Override hover effect cho page soi cầu bắc cầu */
+/* Bỏ hover effect của dòng trong bảng, nhưng giữ hover cho ô */
+
+/* Disable hover cho tất cả dòng */
+.table tr:hover {
+    background-color: inherit !important;
+}
+
+.table tr:nth-child(odd):hover {
+    background-color: #e5e7eb63 !important;
+}
+
+/* Hover effect cho ô - chỉ khi không active */
+.table td:hover:not(.highlightedCell) {
+    background-color: rgba(255, 235, 235, 0.5) !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Active cell style - khi click vào ô */
+.table td.highlightedCell {
+    background-color: #ffab47 !important;
+    border: 2px solid #c80505 !important;
+    box-shadow: 0 0 8px rgba(200, 5, 5, 0.3) !important;
+    transition: all 0.2s ease;
+}
+
+/* Hover vào ô đang active - làm đậm hơn */
+.table td.highlightedCell:hover {
+    background-color: #ff9500 !important;
+    box-shadow: 0 0 12px rgba(200, 5, 5, 0.5) !important;
+}
+
+/* Desktop font-size mặc định cho số - giữ 20px như ban đầu */
+.number {
+    font-size: 20px;
+}
+
+.number span {
+    font-size: 20px;
+}
+
+/* Mobile styles - giống với giai-dac-biet.js */
+@media (max-width: 768px) {
+    .tableContainer {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    .table {
+        font-size: 0.75rem;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .table th,
+    .table td {
+        padding: 4px 2px !important;
+        width: calc(100% / 7);
+        min-width: 0;
+        min-height: auto !important;
+        word-wrap: break-word;
+    }
+
+    .table th:first-child,
+    .table td:first-child {
+        width: calc(100% / 7);
+        font-size: 0.75rem;
+    }
+
+    .number {
+        font-size: 1rem !important;
+        padding: 2px 4px;
+    }
+
+    .number .lastTwo {
+        font-size: 1rem !important;
+        color: var(--lastTwoColor, #c80505) !important;
+    }
+
+    /* Override font-size cho các span số bên trong number (vì có inline style fontSize: 20px) */
+    .number span {
+        font-size: 1rem !important;
+    }
+
+    .date {
+        font-size: 0.65rem;
+        margin-top: 2px;
+    }
+
+    .statItem {
+        padding: 2px;
+        gap: 2px;
+        margin-bottom: 4px;
+    }
+
+    .entry {
+        margin-bottom: 4px;
+        padding: 2px;
+        gap: 2px;
+    }
+
+    .table td > div {
+        min-height: auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .tableContainer {
+        overflow-x: hidden;
+    }
+
+    .table {
+        font-size: 0.65rem;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .table th,
+    .table td {
+        padding: 2px 1px !important;
+        min-width: 0;
+        min-height: auto !important;
+        width: calc(100% / 7);
+    }
+
+    .table th {
+        font-size: 0.65rem;
+        padding: 4px 2px;
+    }
+
+    .table th:first-child,
+    .table td:first-child {
+        width: calc(100% / 7);
+        font-size: 0.65rem;
+    }
+
+    .number {
+        font-size: 0.95rem !important;
+        padding: 2px;
+    }
+
+    .number .lastTwo {
+        font-size: 0.95rem !important;
+        color: var(--lastTwoColor, #c80505) !important;
+    }
+
+    /* Override font-size cho các span số bên trong number (vì có inline style fontSize: 20px) */
+    .number span {
+        font-size: 0.95rem !important;
+    }
+
+    .date {
+        font-size: 0.55rem;
+        margin-top: 1px;
+    }
+
+    .statItem {
+        padding: 2px;
+        gap: 1px;
+        margin-bottom: 3px;
+    }
+    
+    .statItem > div:not(.number):not(.date) {
+        font-size: 0.65rem;
+        font-weight: 600;
+    }
+
+    .entry {
+        margin-bottom: 3px;
+        padding: 2px;
+        gap: 1px;
+    }
+
+    .table td > div {
+        min-height: auto !important;
+    }
+}
+
+/* OLED Mode (Dark Mode) Styles */
+.oledMode {
+    background-color: #000000 !important;
+    border-color: #333333 !important;
+}
+
+.oledMode th {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #333333 !important;
+}
+
+.oledMode td {
+    background-color: #0a0a0a !important;
+    color: #ffffff !important;
+    border-color: #222222 !important;
+}
+
+.oledMode tr:nth-child(odd) {
+    background-color: #111111 !important;
+}
+
+.oledMode tr:nth-child(even) {
+    background-color: #0a0a0a !important;
+}
+
+.oledMode :global(.number) {
+    color: #ffffff !important;
+}
+
+.oledMode :global(.date) {
+    color: #cccccc !important;
+}
+
+.oledMode :global(.statItem) > div:not(:global(.number)):not(:global(.date)) {
+    color: #ff6b6b !important;
+}
+

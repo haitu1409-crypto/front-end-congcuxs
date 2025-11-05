@@ -8,6 +8,7 @@ Disallow: /static/
 # Googlebot
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 0
 
 # Googlebot-Image
 User-agent: Googlebot-Image
@@ -16,13 +17,15 @@ Allow: /
 # bingbot
 User-agent: bingbot
 Allow: /
+Crawl-delay: 0
 
 # coccoc
 User-agent: coccoc
 Allow: /
+Crawl-delay: 0
 
 # Host
-Host: http://localhost:3000
+Host: https://taodandewukong.pro
 
 # Sitemaps
-Sitemap: http://localhost:3000/sitemap.xml
+Sitemap: https://taodandewukong.pro/sitemap.xml

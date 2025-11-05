@@ -104,6 +104,25 @@ module.exports = {
             question: 'View tuần giúp ích gì?',
             answer: 'View tuần giúp bạn phát hiện xu hướng giải đặc biệt theo ngày trong tuần. Ví dụ: Thứ 6 thường về số chẵn, Chủ Nhật hay về số lẻ... Đây là insights giá trị mà chỉ có TAODANDEWUKONG.PRO cung cấp.'
         }
+    ],
+
+    'bac-cau': [
+        {
+            question: 'Phân tích Bắc Cầu là gì?',
+            answer: 'Phân tích Bắc Cầu là phương pháp tìm kiếm các quy luật và pattern ẩn trong dữ liệu xổ số bằng cách "nối" các số với nhau qua các đường cầu (cột, hàng, chéo, zig-zag, nhảy). Giúp phát hiện các xu hướng và dự đoán số tiếp theo dựa trên logic, không phải ngẫu nhiên.'
+        },
+        {
+            question: 'Phân tích Bắc Cầu tại TAODANDEWUKONG.PRO có gì khác biệt?',
+            answer: 'Chúng tôi cung cấp framework tự động phát hiện hàng chục quy luật bắc cầu khác nhau: cầu cột, cầu hàng, cầu chéo, cầu zig-zag, cầu nhảy. Hiển thị trực quan với mũi tên và highlight. Tự động tạo dự đoán: Chạm, 3 Càng, Dàn Đề, Tổng, Chẵn/Lẻ.'
+        },
+        {
+            question: 'Có bao nhiêu loại quy luật bắc cầu?',
+            answer: 'Có 5 loại chính: (1) Cầu Cột - phân tích theo cột (ngày trong tuần), (2) Cầu Hàng - phân tích theo hàng (tuần), (3) Cầu Đường Chéo - phân tích theo đường chéo, (4) Cầu Zig-zag - phân tích theo mẫu zig-zag, (5) Cầu Nhảy - phân tích các số có bước nhảy.'
+        },
+        {
+            question: 'Dự đoán từ phân tích bắc cầu có chính xác không?',
+            answer: 'Phân tích Bắc Cầu dựa trên logic và pattern từ dữ liệu lịch sử, không phải ngẫu nhiên. Tuy nhiên, xổ số có tính chất ngẫu nhiên và không thể đảm bảo 100% độ chính xác. Đây là công cụ hỗ trợ phân tích, bạn nên kết hợp nhiều phương pháp khác nhau.'
+        }
     ]
 };
 

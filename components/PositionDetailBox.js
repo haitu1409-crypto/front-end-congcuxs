@@ -502,7 +502,7 @@ const PositionDetailBox = ({
 
                     {/* Render 2 bảng kết quả cho 2 ngày phân tích */}
                     <div className={styles.tablesContainer}>
-                        {lotteryResults.map((data, index) => renderSingleTable(data, index))}
+                        {lotteryResults.slice().reverse().map((data, index) => renderSingleTable(data, index))}
                     </div>
                 </div>
             </div>

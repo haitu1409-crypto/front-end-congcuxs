@@ -58,6 +58,21 @@ function generateSiteMap(articles) {
         <lastmod>${lastmod}</lastmod>
     </url>
     
+    <!-- Additional Tool Pages - Priority 0.85 -->
+    <url>
+        <loc>${SITE_URL}/ghep-lo-xien</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/bang-tinh-chao</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
     <!-- Results Pages - Priority 0.95 -->
     <url>
         <loc>${SITE_URL}/kqxs</loc>
@@ -230,6 +245,18 @@ export async function getServerSideProps({ res }) {
         <loc>${SITE_URL}/dan-dac-biet</loc>
         <changefreq>daily</changefreq>
         <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/ghep-lo-xien</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/bang-tinh-chao</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>

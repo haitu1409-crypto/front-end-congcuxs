@@ -280,12 +280,135 @@
     overflow: hidden;
 }
 
+/* Month Mode - Căn trên cho dữ liệu theo tháng với lưới grid */
+.table.monthMode {
+    border-collapse: collapse !important; /* Quan trọng để border liền mạch */
+}
+
+.monthMode td,
+.table.monthMode td {
+    vertical-align: top !important;
+    border: 1px solid #d1d5db !important; /* Border rõ ràng cho lưới */
+    padding: 6px 4px !important;
+    min-height: 50px !important;
+    height: auto !important;
+    position: relative;
+    box-sizing: border-box !important;
+}
+
+/* Khi không có date, td cần căn giữa theo chiều dọc */
+.monthMode td:has(.entry:not(:has(.date))),
+.monthMode td:has(.statItem:not(:has(.date))) {
+    vertical-align: middle !important;
+}
+
+.monthMode th,
+.table.monthMode th {
+    border: 1px solid #d1d5db !important;
+    padding: 8px 4px !important;
+}
+
+.monthMode .entry {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+    width: 100% !important;
+}
+
+/* Đảm bảo số vẫn căn giữa trong month mode (kể cả khi tắt toggle ngày) */
+.monthMode .statItem {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important; /* Căn giữa số và các thông tin theo chiều ngang */
+    justify-content: center !important; /* Căn giữa theo chiều dọc khi chỉ có số */
+    width: 100% !important;
+    min-height: 100% !important;
+}
+
+/* Khi không có date, statItem cần căn giữa theo chiều dọc */
+.monthMode .statItem:has(.number:only-child),
+.monthMode .statItem:not(:has(.date)) {
+    justify-content: center !important;
+}
+
+.monthMode .statItem .number {
+    text-align: center !important;
+    width: 100% !important;
+    display: block !important; /* Đảm bảo số được hiển thị block để căn giữa */
+    margin: 0 auto !important; /* Căn giữa số */
+}
+
+.monthMode .statItem > div:not(.number):not(.date) {
+    text-align: center !important;
+    width: 100% !important;
+}
+
+/* Đảm bảo entry căn giữa khi chỉ có số */
+.monthMode .entry:has(.statItem:not(:has(.date))) {
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.monthMode .entry:has(.statItem .number:only-child) {
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+}
+
+/* OLED Mode (Dark Mode) Styles */
+.table.oledMode,
+.oledMode {
+    background-color: #1a1a1a !important;
+    border-color: #3a3a3a !important;
+}
+
+.table.oledMode th,
+.oledMode th {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border-color: #3a3a3a !important;
+}
+
+.table.oledMode td,
+.oledMode td {
+    background-color: #1f1f1f !important;
+    color: #ffffff !important;
+    border-color: #2a2a2a !important;
+}
+
+.table.oledMode tr:nth-child(odd),
+.oledMode tr:nth-child(odd) {
+    background-color: #242424 !important;
+}
+
+.table.oledMode tr:nth-child(even),
+.oledMode tr:nth-child(even) {
+    background-color: #1f1f1f !important;
+}
+
+.table.oledMode .number,
+.oledMode .number {
+    color: #ffffff !important;
+}
+
+.table.oledMode .date,
+.oledMode .date {
+    color: #cccccc !important;
+}
+
+.table.oledMode .statItem > div:not(.number):not(.date),
+.oledMode .statItem > div:not(.number):not(.date) {
+    color: #ff6b6b !important;
+}
+
 .table th,
 .table td {
-    padding: 12px 16px;
+    /* padding: 12px 16px; */
     border: 1px solid #e5e7eb;
     text-align: center;
     transition: background-color 0.3s ease;
+    vertical-align: middle; /* Mặc định căn giữa cho week mode */
 }
 
 .table th {
@@ -313,9 +436,9 @@
 /* Điều chỉnh độ rộng cột cho 7 cột */
 .table th,
 .table td {
-    width: 14.28%;
+    /* width: 14.28%; */
     /* 100% / 7 cột */
-    min-width: 80px;
+    /* min-width: 80px; */
     /* Đảm bảo cột không quá hẹp */
 }
 
@@ -323,7 +446,7 @@
 .number {
     color: #1f2937;
     font-weight: 600;
-    font-size: 1.15rem;
+    font-size: 1.5rem;
     padding: 4px 8px;
     border-radius: 4px;
     width: 100%;
@@ -332,7 +455,7 @@
 
 /* Last two digits */
 .number .lastTwo {
-    color: #c80505;
+    color: var(--lastTwoColor, #c80505);
     font-weight: 700;
     font-size: inherit;
 }
@@ -356,7 +479,7 @@
     flex-direction: column;
     align-items: center;
     margin-bottom: 12px;
-    padding: 8px;
+    /* padding: 8px; */
     border-bottom: 1px solid #e5e7eb;
 }
 
@@ -370,7 +493,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6px;
+    /* padding: 6px; */
     border-radius: 5px;
     margin-bottom: 6px;
 }
@@ -380,7 +503,7 @@
 }
 
 /* Toggle info styles (Tổng, Đầu, Đuôi, Chẵn lẻ, Bộ) */
-.statItem > div:not(.number):not(.date) {
+.statItem>div:not(.number):not(.date) {
     font-size: 0.85rem;
     font-weight: 600;
     color: #c80505;
@@ -434,7 +557,7 @@
 }
 
 .heading {
-    
+
     font-weight: 700;
     font-size: 1.3rem;
     line-height: 1.4;
@@ -598,7 +721,7 @@
 
     .table th,
     .table td {
-        padding: 10px 12px;
+        /* padding: 10px 12px; */
     }
 
     .number {
@@ -698,8 +821,8 @@
         gap: 2px;
         margin-bottom: 4px;
     }
-    
-    .statItem > div:not(.number):not(.date) {
+
+    .statItem>div:not(.number):not(.date) {
         font-size: 0.7rem;
         font-weight: 600;
     }
@@ -709,41 +832,41 @@
         padding: 2px;
         gap: 2px;
     }
-    
+
     .toggleButtons {
         gap: 6px;
     }
-    
+
     .toggleItem {
         gap: 3px;
     }
-    
+
     .toggleItem label {
         font-size: 0.75rem;
     }
-    
+
     .toggleItem input[type="checkbox"] {
         width: 34px;
         height: 18px;
     }
-    
+
     .toggleItem input[type="checkbox"]::before {
         width: 14px;
         height: 14px;
         left: 2px;
         top: 2px;
     }
-    
+
     .toggleItem input[type="checkbox"]:checked::before {
         left: 18px;
     }
-    
+
     .updateButtonWrapper :global(.updateButton) {
         padding: 6px 12px !important;
         font-size: 0.85rem !important;
         gap: 5px !important;
     }
-    
+
     .updateButtonWrapper :global(.updateButton) svg {
         width: 13px !important;
         height: 13px !important;
@@ -839,8 +962,8 @@
         gap: 1px;
         margin-bottom: 3px;
     }
-    
-    .statItem > div:not(.number):not(.date) {
+
+    .statItem>div:not(.number):not(.date) {
         font-size: 0.65rem;
         font-weight: 600;
     }
@@ -850,45 +973,45 @@
         padding: 2px;
         gap: 1px;
     }
-    
+
     .toggleButtons {
         gap: 4px;
     }
-    
+
     .toggleItem {
         gap: 2px;
     }
-    
+
     .toggleItem label {
         font-size: 0.7rem;
     }
-    
+
     .toggleItem input[type="checkbox"] {
         width: 32px;
         height: 16px;
     }
-    
+
     .toggleItem input[type="checkbox"]::before {
         width: 12px;
         height: 12px;
         left: 2px;
         top: 2px;
     }
-    
+
     .toggleItem input[type="checkbox"]:checked::before {
         left: 18px;
     }
-    
+
     .toggleItem label {
         margin-left: 4px;
     }
-    
+
     .updateButtonWrapper :global(.updateButton) {
         padding: 6px 12px !important;
         font-size: 0.85rem !important;
         gap: 5px !important;
     }
-    
+
     .updateButtonWrapper :global(.updateButton) svg {
         width: 13px !important;
         height: 13px !important;

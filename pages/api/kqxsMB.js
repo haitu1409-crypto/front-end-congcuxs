@@ -94,6 +94,64 @@ export const apiMB = {
         }
     },
 
+    getSoiCauBacCauStats: async (days = 90) => {
+        if (!days || !['90', '120', '150', '180'].includes(days.toString())) {
+            throw new Error('Invalid days parameter. Valid options are: 90, 120, 150, 180.');
+        }
+
+        const url = `${API_BASE_URL}/api/soicau-bac-cau?days=${days}`;
+
+        try {
+            const response = await fetch(url, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'x-user-id': getUserId(),
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                // Pass through error message từ backend (đặc biệt là 404 yêu cầu cập nhật)
+                const errorMessage = errorData.error || errorData.message || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`;
+                throw new Error(errorMessage);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi lấy thống kê soi cầu bắc cầu:', error);
+            // Nếu đã có message từ backend, giữ nguyên; nếu không thì dùng message mặc định
+            if (error.message && !error.message.includes('Không thể tải')) {
+                throw error; // Re-throw với message gốc
+            }
+            throw new Error('Không thể tải thống kê soi cầu bắc cầu, vui lòng thử lại sau');
+        }
+    },
+
+    updateSoiCauBacCauStats: async (days = 90) => {
+        const url = `${API_BASE_URL}/api/soicau-bac-cau?days=${days}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-id': getUserId(),
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Lỗi khi cập nhật: ${response.status} - ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi cập nhật thống kê soi cầu bắc cầu:', error);
+            throw error;
+        }
+    },
+
     updateSpecialStats: async (days) => {
         const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/special?days=${days}`;
 
@@ -343,6 +401,59 @@ export const apiMB = {
             return await response.json();
         } catch (error) {
             console.error('Lỗi khi cập nhật thống kê tần suất lô cặp:', error);
+            throw error;
+        }
+    },
+
+    // BacCau Stats API
+    getBacCauStats: async (days) => {
+        if (!days || !['90', '100', '120', '150'].includes(days.toString())) {
+            throw new Error('Invalid days parameter. Valid options are: 90, 100, 120, 150.');
+        }
+
+        const url = `${API_BASE_URL}/api/bac-cau/stats?days=${days}`;
+
+        try {
+            const response = await fetch(url, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'x-user-id': getUserId(),
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi lấy thống kê bắc cầu:', error);
+            throw new Error('Không thể tải thống kê bắc cầu, vui lòng thử lại sau');
+        }
+    },
+
+    updateBacCauStats: async (days) => {
+        const url = `${API_BASE_URL}/api/bac-cau/stats?days=${days}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-id': getUserId(),
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Lỗi khi cập nhật: ${response.status} - ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi cập nhật thống kê bắc cầu:', error);
             throw error;
         }
     },

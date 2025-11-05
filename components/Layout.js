@@ -84,6 +84,8 @@ export default function Layout({ children, className = '' }) {
             { href: '/thongke/giai-dac-biet', label: 'Giải Đặc Biệt', icon: Award },
             { href: '/thongke/giai-dac-biet-tuan', label: 'Giải Đặc Biệt Tuần', icon: Calendar },
             { href: '/thongke/dau-duoi', label: 'Đầu Đuôi', icon: Percent },
+            { href: '/thongke/bac-cau', label: 'Bắc Cầu', icon: TrendingUp, isNew: true },
+            { href: '/soi-cau-bac-cau', label: 'Vẽ Đường Cầu', icon: Target, isNew: true },
             { href: '/thongke/Tan-Suat-Lo-to', label: 'Tần Suất Lô Tô', icon: BarChart3 },
             { href: '/thongke/Tan-Suat-Lo-Cap', label: 'Tần Suất Lô Cặp', icon: Target }
         ]
@@ -368,6 +370,11 @@ export default function Layout({ children, className = '' }) {
                                     <li>
                                         <Link href="/soicau-bayesian" className={styles.footerLink}>
                                             Soi Cầu Bayesian
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link href="/soi-cau-bac-cau" className={styles.footerLink}>
+                                            Vẽ Đường Cầu
                                         </Link>
                                     </li>
                                     <li>
