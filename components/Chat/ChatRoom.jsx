@@ -688,6 +688,8 @@ export default function ChatRoom({ roomId, onClose }) {
                             )}
                         </>
                     )}
+                    {/* 🔥 Ẩn QR code button trong private chat */}
+                    {!isPrivateChat && (
                     <button
                         className={styles.qrCodeButton}
                         onClick={() => setShowQRCode(true)}
@@ -695,6 +697,7 @@ export default function ChatRoom({ roomId, onClose }) {
                     >
                         <QrCode size={18} />
                     </button>
+                    )}
                     <button
                         className={styles.userListButton}
                         onClick={() => setShowUserList(!showUserList)}

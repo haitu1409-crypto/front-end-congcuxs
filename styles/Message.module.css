@@ -95,6 +95,7 @@
     flex-direction: column;
     gap: 2px;
     margin-bottom: 4px;
+    align-items: flex-start; /* Căn trái để sender name không chiếm full width */
 }
 
 .messageSender {
@@ -103,6 +104,8 @@
     padding: 0;
     margin: 0;
     line-height: 1.2;
+    display: inline-block; /* Vùng click chính xác hơn */
+    width: fit-content; /* Chỉ chiếm đúng kích thước text */
 }
 
 .adminLabel {
@@ -117,7 +120,12 @@
     cursor: pointer;
     transition: all 0.2s;
     border-radius: 4px;
-    margin: -2px 0;
+    margin: 0;
+    padding: 2px 4px; /* Padding vừa đủ để dễ click nhưng không quá rộng */
+    display: inline-block; /* Vùng click chính xác, chỉ theo text */
+    width: fit-content; /* Chỉ chiếm đúng kích thước text + padding */
+    position: relative; /* Để z-index hoạt động */
+    z-index: 10; /* Đảm bảo click vào tên được ưu tiên */
 }
 
 .messageSender.userSender.clickableSender:hover {
@@ -154,11 +162,33 @@
 .messageBubble.clickableBubble {
     cursor: pointer;
     transition: all 0.15s ease;
+    /* Prevent text selection on long press */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Prevent context menu on long press */
+    -webkit-touch-callout: none;
 }
 
 .messageBubble.clickableBubble:hover {
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Long press active state */
+.messageBubble.longPressActive {
+    transform: scale(0.98);
+    opacity: 0.9;
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Mobile: Show visual feedback on long press */
+@media (max-width: 768px) {
+    .messageBubble.clickableBubble:active {
+        transform: scale(0.98);
+        opacity: 0.95;
+    }
 }
 
 /* Tin nhắn liên tiếp - điều chỉnh border radius */
@@ -352,6 +382,37 @@
     color: rgba(0, 0, 0, 0.7);
 }
 
+/* Emoji icon styles */
+.emojiIcon {
+    font-size: 16px;
+    line-height: 1;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.7;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.emojiIcon:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.emojiIcon.iconActive {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.reactionIcon:hover .emojiIcon {
+    transform: scale(1.15);
+}
+
+.reactionIcon.reactionActive .emojiIcon {
+    opacity: 1;
+}
+
+/* Legacy icon styles - kept for compatibility */
 .iconLike {
     color: #667eea;
     opacity: 0.7;

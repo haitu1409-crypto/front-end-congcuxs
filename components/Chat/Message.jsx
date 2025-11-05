@@ -3,17 +3,27 @@
  * Optimized with React.memo to prevent unnecessary re-renders
  */
 
-import { memo, useState, useEffect } from 'react';
-import { ThumbsUp, Heart } from 'lucide-react';
+import { memo, useState, useEffect, useRef } from 'react';
 import styles from '../../styles/Message.module.css';
 
 const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, onMention, currentUserId, onReaction, selectionMode, isSelected, onSelect, onMessageClick, isAdmin, isConsecutive, isLastInGroup }) {
     const [avatarFailed, setAvatarFailed] = useState(false);
+    const longPressTimerRef = useRef(null);
+    const isLongPressRef = useRef(false);
     
     // Reset avatarFailed when senderAvatar changes
     useEffect(() => {
         setAvatarFailed(false);
     }, [message.senderAvatar]);
+
+    // Cleanup long press timer on unmount
+    useEffect(() => {
+        return () => {
+            if (longPressTimerRef.current) {
+                clearTimeout(longPressTimerRef.current);
+            }
+        };
+    }, []);
     
     // Tạo màu từ chữ cái đầu tiên
     const getColorFromLetter = (letter) => {
@@ -126,6 +136,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
     const handleSenderClick = (e) => {
         e.preventDefault();
         e.stopPropagation(); // Ngăn không cho trigger modal
+        e.nativeEvent.stopImmediatePropagation(); // Ngăn tất cả các event handlers khác
         if (onMention && message.senderId) {
             onMention({
                 userId: message.senderId,
@@ -138,6 +149,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
     const handleAvatarClick = (e) => {
         e.preventDefault();
         e.stopPropagation(); // Ngăn không cho trigger modal
+        e.nativeEvent.stopImmediatePropagation(); // Ngăn tất cả các event handlers khác
         if (onMention && message.senderId) {
             onMention({
                 userId: message.senderId,
@@ -209,24 +221,100 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
         await onReaction(messageId, emoji);
     };
 
-    // Handle message bubble click for modal (any message can be clicked)
-    const handleBubbleClick = (e) => {
+    // Check if device is mobile/touch device
+    const isMobileDevice = () => {
+        if (typeof window === 'undefined') return false;
+        return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    };
+
+    // Handle opening modal (called from both click and long press)
+    const openModal = (e) => {
         // Don't trigger if clicking on reactions
-        if (e.target.closest(`.${styles.messageIcons}`)) {
+        if (e && e.target && e.target.closest(`.${styles.messageIcons}`)) {
             return;
         }
 
         // Don't trigger if clicking on reply preview
-        if (e.target.closest(`.${styles.replyPreview}`)) {
+        if (e && e.target && e.target.closest(`.${styles.replyPreview}`)) {
+            return;
+        }
+
+        // 🔥 KHÔNG trigger modal nếu click vào sender name hoặc avatar
+        if (e && e.target && (
+            e.target.closest(`.${styles.messageSender}`) || 
+            e.target.closest(`.${styles.messageAvatar}`) ||
+            e.target.closest(`.${styles.mention}`)
+        )) {
             return;
         }
 
         if (!selectionMode && onMessageClick) {
-            e.preventDefault();
-            e.stopPropagation();
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
             // Any message can be clicked to open action modal
             onMessageClick(message);
         }
+    };
+
+    // Handle message bubble click for modal (desktop)
+    const handleBubbleClick = (e) => {
+        // Trên mobile, chỉ click không mở modal (cần long press)
+        if (isMobileDevice()) {
+            return;
+        }
+
+        openModal(e);
+    };
+
+    // Handle long press on mobile (touchstart)
+    const handleTouchStart = (e) => {
+        // Don't trigger if clicking on reactions, sender name, avatar, or mention
+        if (e.target.closest(`.${styles.messageIcons}`) ||
+            e.target.closest(`.${styles.messageSender}`) ||
+            e.target.closest(`.${styles.messageAvatar}`) ||
+            e.target.closest(`.${styles.mention}`) ||
+            e.target.closest(`.${styles.replyPreview}`)) {
+            return;
+        }
+
+        if (selectionMode) return;
+
+        isLongPressRef.current = false;
+        
+        // Set timer for long press (500ms)
+        longPressTimerRef.current = setTimeout(() => {
+            isLongPressRef.current = true;
+            // Haptic feedback on mobile (if supported)
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            openModal(e);
+        }, 500);
+    };
+
+    // Handle touch end/cancel (stop long press timer)
+    const handleTouchEnd = (e) => {
+        if (longPressTimerRef.current) {
+            clearTimeout(longPressTimerRef.current);
+            longPressTimerRef.current = null;
+        }
+
+        // If it was a long press, prevent default click behavior
+        if (isLongPressRef.current) {
+            e.preventDefault();
+            e.stopPropagation();
+            isLongPressRef.current = false;
+        }
+    };
+
+    const handleTouchCancel = () => {
+        if (longPressTimerRef.current) {
+            clearTimeout(longPressTimerRef.current);
+            longPressTimerRef.current = null;
+        }
+        isLongPressRef.current = false;
     };
 
     // Handle container click for selection mode only
@@ -298,6 +386,9 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                 <div 
                     className={`${styles.messageBubble} ${!selectionMode ? styles.clickableBubble : ''}`}
                     onClick={handleBubbleClick}
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    onTouchCancel={handleTouchCancel}
                 >
                     {/* Reply Preview */}
                     {message.replyTo && (
@@ -357,7 +448,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                                 onClick={() => handleReactionClick('👍')}
                                 title="Like"
                             >
-                                <ThumbsUp size={14} className={`${styles.iconLike} ${hasLiked ? styles.iconActive : ''}`} />
+                                <span className={`${styles.emojiIcon} ${hasLiked ? styles.iconActive : ''}`}>😂</span>
                                 {likeCount > 0 && <span className={styles.reactionCount}>{likeCount}</span>}
                             </div>
                             <div 
@@ -365,7 +456,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                                 onClick={() => handleReactionClick('❤️')}
                                 title="Heart"
                             >
-                                <Heart size={14} className={`${styles.iconHeart} ${hasHearted ? styles.iconActive : ''}`} />
+                                <span className={`${styles.emojiIcon} ${hasHearted ? styles.iconActive : ''}`}>❤️</span>
                                 {heartCount > 0 && <span className={styles.reactionCount}>{heartCount}</span>}
                             </div>
                         </div>

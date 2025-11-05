@@ -446,7 +446,7 @@ export const useChat = (roomId) => {
                                 if (scrollIsRAFRef.current) {
                                     cancelAnimationFrame(scrollTimeoutRef.current);
                                 } else {
-                                    clearTimeout(scrollTimeoutRef.current);
+                                clearTimeout(scrollTimeoutRef.current);
                                 }
                             }
                             // Use requestAnimationFrame for smoother, frame-synced scrolling
@@ -681,7 +681,7 @@ export const useChat = (roomId) => {
                 if (scrollIsRAFRef.current) {
                     cancelAnimationFrame(scrollTimeoutRef.current);
                 } else {
-                    clearTimeout(scrollTimeoutRef.current);
+                clearTimeout(scrollTimeoutRef.current);
                 }
                 scrollTimeoutRef.current = null;
                 scrollIsRAFRef.current = false;

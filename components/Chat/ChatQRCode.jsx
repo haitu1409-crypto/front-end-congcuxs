@@ -85,11 +85,11 @@ export default function ChatQRCode({ isOpen, onClose }) {
                     <div className={styles.qrCodeInfo}>
                         <p className={styles.qrCodeUrl}>{chatUrl}</p>
                         <div className={styles.shareButtons}>
-                            <button
-                                onClick={handleCopy}
+                        <button
+                            onClick={handleCopy}
                                 className={styles.shareButton}
                                 title={copied ? "Đã sao chép!" : "Sao chép liên kết"}
-                            >
+                        >
                                 {copied ? <Check size={18} /> : <Copy size={18} />}
                             </button>
                             <button
@@ -109,7 +109,7 @@ export default function ChatQRCode({ isOpen, onClose }) {
                                     <path d="M22 2L11 13" />
                                     <path d="M22 2l-7 20-4-9-9-4z" />
                                 </svg>
-                            </button>
+                        </button>
                         </div>
                     </div>
                 </div>
