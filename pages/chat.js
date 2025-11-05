@@ -99,8 +99,14 @@ export default function ChatPage() {
                     return;
                 }
                 if (isMounted) {
-                    console.error('Check access error:', error);
-                    setError('Lỗi khi kiểm tra quyền truy cập');
+                    console.error('Check access error:', error.message || error);
+                    
+                    // Handle 429 error
+                    if (error.response?.status === 429) {
+                        setError('Quá nhiều yêu cầu. Vui lòng đợi 1-2 phút rồi thử lại.');
+                    } else {
+                        setError('Lỗi khi kiểm tra quyền truy cập');
+                    }
                     setLoading(false);
                 }
             }
@@ -152,7 +158,7 @@ export default function ChatPage() {
 
             if (!isMounted) return;
 
-            console.error('❌ Get groupchat room error:', error);
+            console.error('❌ Get groupchat room error:', error.message || error);
             let errorMsg = 'Lỗi khi kết nối đến server';
             
             if (error.response) {
@@ -164,6 +170,15 @@ export default function ChatPage() {
                         return;
                     }
                     errorMsg = error.response.data?.message || 'Bạn không có quyền truy cập chat';
+                } else if (error.response.status === 429) {
+                    // Rate limit exceeded
+                    errorMsg = 'Quá nhiều yêu cầu. Vui lòng đợi 1-2 phút rồi thử lại.';
+                    // Auto retry after 2 minutes
+                    setTimeout(() => {
+                        if (isMounted && !roomId) {
+                            getGroupchatRoom();
+                        }
+                    }, 120000); // 2 minutes
                 } else if (error.response.data?.message) {
                     errorMsg = error.response.data.message;
                 }
