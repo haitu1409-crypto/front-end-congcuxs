@@ -10,23 +10,6 @@
     flex-shrink: 0;
 }
 
-/* Mobile: Use sticky position, but ensure it stays above keyboard */
-@media (max-width: 768px) {
-    .messageInput {
-        position: sticky;
-        bottom: 0;
-        /* Ensure it stays at bottom */
-        margin-top: auto;
-    }
-    
-    /* Ensure input stays above keyboard with safe area support */
-    @supports (bottom: env(safe-area-inset-bottom)) {
-        .messageInput {
-            padding-bottom: calc(6px + env(safe-area-inset-bottom));
-        }
-    }
-}
-
 .inputContainer {
     display: flex;
     gap: 8px;

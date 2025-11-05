@@ -77,45 +77,6 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
         }
     }, [mentions]);
 
-    // Handle input focus on mobile - ensure input stays above keyboard
-    useEffect(() => {
-        const input = inputRef.current;
-        const container = input?.closest(`.${styles.messageInput}`);
-        if (!input || !container) return;
-
-        const handleFocus = () => {
-            // On mobile, use visual viewport to position input correctly
-            if (typeof window !== 'undefined' && window.visualViewport) {
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        const visualViewport = window.visualViewport;
-                        if (visualViewport) {
-                            // Get the input container position
-                            const containerRect = container.getBoundingClientRect();
-                            const viewportHeight = visualViewport.height;
-                            const viewportBottom = visualViewport.offsetTop + viewportHeight;
-                            
-                            // If input container is below visible viewport, scroll it up
-                            if (containerRect.bottom > viewportBottom - 10) {
-                                // Scroll the input container into view
-                                container.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'end',
-                                    inline: 'nearest'
-                                });
-                            }
-                        }
-                    }, 250); // Wait for keyboard animation
-                });
-            }
-        };
-
-        input.addEventListener('focus', handleFocus);
-        return () => {
-            input.removeEventListener('focus', handleFocus);
-        };
-    }, []);
-
     // Auto-add @username to content when mentions are added
     useEffect(() => {
         if (mentions.length > 0 && inputRef.current) {

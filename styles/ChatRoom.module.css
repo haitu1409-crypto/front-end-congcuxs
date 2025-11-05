@@ -266,16 +266,6 @@
     min-height: 0; /* Important for flex child scrolling */
 }
 
-/* Mobile: Ensure chatContent adjusts when keyboard opens */
-@media (max-width: 768px) {
-    .chatContent {
-        /* Use min-height instead of flex to prevent large gaps */
-        flex: 1 1 auto;
-        min-height: 0;
-        max-height: 100%;
-    }
-}
-
 .userListSidebar {
     width: 250px;
     border-right: 1px solid #e5e7eb;
@@ -331,21 +321,10 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    min-height: 0; /* Important for flex child scrolling */
 }
 
 .messagesContainer.privateChatBackground {
     background-image: url('/imgs/backgroundChatPrive.png');
-}
-
-/* Mobile: Adjust for sticky input */
-@media (max-width: 768px) {
-    .messagesContainer {
-        /* Normal padding, input is sticky so it overlays naturally */
-        padding-bottom: 10px;
-        /* Ensure it can scroll properly */
-        -webkit-overflow-scrolling: touch;
-    }
 }
 
 .loading {
