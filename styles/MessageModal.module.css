@@ -1,0 +1,253 @@
+/* MessageModal Styles */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.closeButton:hover:not(:disabled) {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.closeButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.modalBody {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.errorMessage {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.messagePreview {
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.messageContent {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2937;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.editedLabel {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.editContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.editTextarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 1.5;
+    resize: none;
+    min-height: 100px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.editTextarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.editTextarea:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.editActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.cancelButton,
+.saveButton {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cancelButton {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.saveButton {
+    background: #667eea;
+    color: white;
+}
+
+.saveButton:hover:not(:disabled) {
+    background: #5568d3;
+}
+
+.saveButton:disabled,
+.cancelButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.modalFooter {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.editButton,
+.deleteButton {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.editButton {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.editButton:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.deleteButton {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.deleteButton:hover:not(:disabled) {
+    background: #fecaca;
+}
+
+.editButton:disabled,
+.deleteButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.disabledHint {
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.spinner {
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .modalContent {
+        max-width: 100%;
+        margin: 0;
+        border-radius: 12px 12px 0 0;
+        max-height: 80vh;
+    }
+
+    .modalOverlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+}
+

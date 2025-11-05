@@ -1,0 +1,167 @@
+/* Auth Button Styles */
+
+.authButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+
+/* Desktop variant */
+.authButton.desktop {
+    background: var(--color-gray-100);
+    border: 1px solid var(--color-gray-200);
+    color: var(--color-gray-700);
+}
+
+.authButton.desktop:hover {
+    background: var(--color-gray-200);
+    color: var(--color-gray-900);
+    transform: translateY(-1px);
+}
+
+/* Mobile variant */
+.authButton.mobile {
+    background: #4a90e2;
+    color: white;
+    width: 100%;
+    justify-content: center;
+    margin: 8px 12px;
+    padding: 12px;
+}
+
+.authButton.mobile:hover {
+    background: #357abd;
+}
+
+/* Login button */
+.loginButton {
+    color: inherit;
+}
+
+.loginButton svg {
+    flex-shrink: 0;
+}
+
+/* User info (when logged in) */
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+}
+
+.authButton.hasDropdown {
+    position: relative;
+}
+
+.userName {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.adminBadge {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.chevron {
+    transition: transform 0.2s;
+    color: #6b7280;
+    margin-left: 4px;
+    flex-shrink: 0;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+/* User Menu Dropdown - Giống DropdownMenu của Thống Kê */
+.userMenu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 220px;
+    z-index: 1000;
+    overflow: hidden;
+    animation: slideDown 0.3s ease;
+    margin-top: 4px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menuItem {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text-color, #374151);
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.menuItem:last-child {
+    border-bottom: none;
+}
+
+.menuItem:hover {
+    background: rgba(237, 28, 37, 0.05);
+    color: var(--primary-color, #ed1c25);
+}
+
+.menuItem svg {
+    color: #6b7280;
+    flex-shrink: 0;
+}
+
+.menuItem span {
+    flex: 1;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .authButton.desktop {
+        display: none;
+    }
+}
+
+@media (min-width: 769px) {
+    .authButton.mobile {
+        display: none;
+    }
+}
+

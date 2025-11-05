@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { TrendingUp, Star, Zap, Target, BarChart3, Calendar, Award, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import AuthButton from './Auth/AuthButton';
 import styles from '../styles/DesktopHeader.module.css';
 
 export default function DesktopHeader() {
@@ -98,7 +99,7 @@ export default function DesktopHeader() {
                     </Link>
                 </div>
 
-                {/* Right Section - Stats */}
+                {/* Right Section - Stats & Auth */}
                 <div className={styles.statsSection}>
                     <div className={styles.statsGrid}>
                         {stats.map((stat, index) => {

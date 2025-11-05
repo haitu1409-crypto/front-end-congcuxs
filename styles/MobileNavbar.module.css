@@ -95,3 +95,15 @@
         font-size: 12px;
     }
 }
+
+/* Mobile Auth Container */
+.mobileAuthContainer {
+    display: none;
+    margin-top: var(--spacing-2);
+}
+
+@media (max-width: 768px) {
+    .mobileAuthContainer {
+        display: block;
+    }
+}

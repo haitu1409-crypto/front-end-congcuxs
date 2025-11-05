@@ -1,0 +1,673 @@
+/**
+ * useChat Hook - Quản lý chat state và messages
+ */
+
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useAuth } from './useAuth';
+import { useSocket } from './useSocket';
+import axios from 'axios';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+export const useChat = (roomId) => {
+    const { token, user } = useAuth();
+    const { socket, isConnected, emit, on, off } = useSocket();
+    const [messages, setMessages] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [sending, setSending] = useState(false);
+    const [typingUsers, setTypingUsers] = useState([]);
+    const [onlineUsers, setOnlineUsers] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const messagesEndRef = useRef(null);
+    const typingTimeoutRef = useRef(null);
+    const messagesLoadedRef = useRef(false);
+    const lastRoomIdRef = useRef(null);
+    
+    // Message queue for batching updates (reduce re-renders)
+    const messageQueueRef = useRef([]);
+    const messageQueueTimerRef = useRef(null);
+    
+    // Typing indicator throttling (prevent spam)
+    const lastTypingEmitRef = useRef(0);
+    const typingThrottleDelay = 2000; // 2 seconds
+    
+    // Audio notification for private chat
+    const audioRef = useRef(null);
+    
+    // Initialize audio
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            audioRef.current = new Audio('/soundChat.mp3');
+            audioRef.current.volume = 0.5; // 50% volume
+        }
+    }, []);
+
+    // Scroll to bottom
+    const scrollToBottom = useCallback(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, []);
+
+    // Load messages
+    const loadMessages = useCallback(async () => {
+        if (!roomId || !token) return;
+        
+        // Prevent multiple loads for same room
+        if (messagesLoadedRef.current && lastRoomIdRef.current === roomId) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${API_URL}/api/chat/room/${roomId}/messages`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.data.success) {
+                setMessages(response.data.data.messages || []);
+                messagesLoadedRef.current = true;
+                lastRoomIdRef.current = roomId;
+                setTimeout(scrollToBottom, 100);
+            }
+        } catch (error) {
+            console.error('Load messages error:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [roomId, token, scrollToBottom]);
+
+    // Send message
+    const sendMessage = useCallback(async (content, replyToId = null, mentions = []) => {
+        if (!content.trim() || !roomId || sending) return;
+
+        try {
+            setSending(true);
+            emit('message:send', {
+                roomId,
+                content: content.trim(),
+                type: 'text',
+                mentions: mentions
+            });
+            
+            // Scroll to bottom after sending message
+            setTimeout(() => {
+                if (messagesEndRef.current) {
+                    messagesEndRef.current.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'end',
+                        inline: 'nearest'
+                    });
+                }
+            }, 100);
+        } catch (error) {
+            console.error('Send message error:', error);
+        } finally {
+            setSending(false);
+        }
+    }, [roomId, emit, sending, messagesEndRef]);
+
+    // Start typing with throttling (prevent spam)
+    const startTyping = useCallback(() => {
+        if (!roomId) return;
+
+        // Throttle: Only emit if 2 seconds have passed since last emit
+        const now = Date.now();
+        if (now - lastTypingEmitRef.current < typingThrottleDelay) {
+            return;
+        }
+        lastTypingEmitRef.current = now;
+
+        emit('typing:start', { roomId });
+
+        // Stop typing after 3 seconds
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+        typingTimeoutRef.current = setTimeout(() => {
+            emit('typing:stop', { roomId });
+            lastTypingEmitRef.current = 0; // Reset throttle
+        }, 3000);
+    }, [roomId, emit]);
+
+    // Stop typing
+    const stopTyping = useCallback(() => {
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+        if (roomId) {
+            emit('typing:stop', { roomId });
+            lastTypingEmitRef.current = 0; // Reset throttle
+        }
+    }, [roomId, emit]);
+
+    // Toggle reaction
+    const toggleReaction = useCallback(async (messageId, emoji) => {
+        if (!messageId || !emoji || !isConnected) return;
+
+        try {
+            // Use socket for real-time updates
+            emit('message:reaction', {
+                messageId,
+                emoji
+            });
+        } catch (error) {
+            console.error('Toggle reaction error:', error);
+        }
+    }, [emit, isConnected]);
+
+    // Delete messages - Admin only
+    const deleteMessages = useCallback(async (roomId, messageIds) => {
+        if (!roomId || !messageIds || messageIds.length === 0 || !isConnected) return;
+
+        try {
+            // Use socket for real-time updates
+            emit('messages:delete', {
+                roomId,
+                messageIds
+            });
+        } catch (error) {
+            console.error('Delete messages error:', error);
+            // Fallback to API if socket fails
+            try {
+                const response = await axios.delete(`${API_URL}/api/chat/messages`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    data: { messageIds }
+                });
+                if (!response.data.success) {
+                    throw new Error(response.data.message || 'Lỗi khi xóa tin nhắn');
+                }
+            } catch (apiError) {
+                console.error('Delete messages API error:', apiError);
+                throw apiError;
+            }
+        }
+    }, [emit, isConnected, token]);
+
+    // Delete single message
+    const deleteMessage = useCallback(async (roomId, messageId) => {
+        if (!roomId || !messageId || !isConnected) return;
+
+        try {
+            // Use socket for real-time updates
+            emit('message:delete', {
+                roomId,
+                messageId
+            });
+        } catch (error) {
+            console.error('Delete message error:', error);
+            // Fallback to API if socket fails
+            try {
+                const response = await axios.delete(`${API_URL}/api/chat/message/${messageId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.data.success) {
+                    throw new Error(response.data.message || 'Lỗi khi xóa tin nhắn');
+                }
+            } catch (apiError) {
+                console.error('Delete message API error:', apiError);
+                throw apiError;
+            }
+        }
+    }, [emit, isConnected, token]);
+
+    // Edit message
+    const editMessage = useCallback(async (roomId, messageId, content) => {
+        if (!roomId || !messageId || !content || !isConnected) return;
+
+        try {
+            // Use socket for real-time updates
+            emit('message:edit', {
+                roomId,
+                messageId,
+                content: content.trim()
+            });
+        } catch (error) {
+            console.error('Edit message error:', error);
+            // Fallback to API if socket fails
+            try {
+                const response = await axios.put(`${API_URL}/api/chat/message/${messageId}`, {
+                    content: content.trim()
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.data.success) {
+                    throw new Error(response.data.message || 'Lỗi khi sửa tin nhắn');
+                }
+                return response.data.data.message;
+            } catch (apiError) {
+                console.error('Edit message API error:', apiError);
+                throw apiError;
+            }
+        }
+    }, [emit, isConnected, token]);
+
+    // Join room
+    const joinRoom = useCallback(() => {
+        if (!roomId || !isConnected) return;
+        emit('room:join', { roomId });
+    }, [roomId, isConnected, emit]);
+
+    // Leave room
+    const leaveRoom = useCallback(() => {
+        if (!roomId) return;
+        emit('room:leave', { roomId });
+    }, [roomId, emit]);
+
+    // Reset flags when roomId changes
+    useEffect(() => {
+        if (lastRoomIdRef.current !== roomId) {
+            messagesLoadedRef.current = false;
+            setMessages([]);
+            setTypingUsers([]);
+        }
+    }, [roomId]);
+
+    // Setup socket listeners
+    useEffect(() => {
+        if (!isConnected || !roomId) {
+            messagesLoadedRef.current = false;
+            return;
+        }
+
+        // Join room
+        if (socket) {
+            socket.emit('room:join', { roomId });
+        } else if (emit) {
+            emit('room:join', { roomId });
+        }
+
+        // Message batch handler with client-side queue batching
+        const handleMessagesBatch = (data) => {
+            if (data.roomId === roomId) {
+                // Add messages to queue instead of updating state immediately
+                messageQueueRef.current.push(...data.messages);
+                
+                // Clear existing timer
+                if (messageQueueTimerRef.current) {
+                    clearTimeout(messageQueueTimerRef.current);
+                }
+                
+                // Batch update after 50ms (or immediately if queue is large)
+                const delay = messageQueueRef.current.length > 10 ? 0 : 50;
+                
+                messageQueueTimerRef.current = setTimeout(() => {
+                    if (messageQueueRef.current.length === 0) return;
+                    
+                    let hasNewMessage = false;
+                    const queuedMessages = [...messageQueueRef.current];
+                    messageQueueRef.current = []; // Clear queue
+                    
+                    setMessages(prev => {
+                        const newMessages = [...prev];
+                        let shouldPlaySound = false;
+                        
+                        queuedMessages.forEach(msg => {
+                            const exists = newMessages.find(m => {
+                                const existingId = m.id || m._id;
+                                const newId = msg.id || msg._id;
+                                return existingId === newId;
+                            });
+                            if (!exists) {
+                                newMessages.push(msg);
+                                hasNewMessage = true;
+                                
+                                // Check if should play sound for private chat
+                                const isPrivateChat = roomId && roomId.startsWith('private_');
+                                const isFromOther = msg.senderId !== user?._id;
+                                if (isPrivateChat && isFromOther) {
+                                    shouldPlaySound = true;
+                                }
+                            }
+                        });
+                        
+                        // Play sound if needed
+                        if (shouldPlaySound && audioRef.current) {
+                            audioRef.current.play().catch(err => {
+                                console.log('Audio play failed:', err.message);
+                            });
+                        }
+                        
+                        return newMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                    });
+                    
+                    // Scroll to bottom when new message arrives
+                    if (hasNewMessage) {
+                        setTimeout(() => {
+                            if (messagesEndRef.current) {
+                                messagesEndRef.current.scrollIntoView({ 
+                                    behavior: 'smooth',
+                                    block: 'end',
+                                    inline: 'nearest'
+                                });
+                            }
+                        }, 100);
+                    }
+                }, delay);
+            }
+        };
+
+        // Message history handler
+        const handleMessagesHistory = (data) => {
+            if (data.roomId === roomId) {
+                setMessages(data.messages || []);
+                messagesLoadedRef.current = true;
+                setTimeout(() => {
+                    if (messagesEndRef.current) {
+                        messagesEndRef.current.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'end',
+                            inline: 'nearest'
+                        });
+                    }
+                }, 100);
+            }
+        };
+
+        // Typing handlers
+        const handleTypingUser = (data) => {
+            if (data.roomId === roomId && data.userId !== user?._id) {
+                setTypingUsers(prev => {
+                    const exists = prev.find(u => u.userId === data.userId);
+                    if (!exists) {
+                        return [...prev, { userId: data.userId, username: data.username, displayName: data.displayName }];
+                    }
+                    return prev;
+                });
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    setTypingUsers(prev => prev.filter(u => u.userId !== data.userId));
+                }, 3000);
+            }
+        };
+
+        const handleTypingStop = (data) => {
+            if (data.roomId === roomId) {
+                setTypingUsers(prev => prev.filter(u => u.userId !== data.userId));
+            }
+        };
+
+        // User online/offline - Update status only
+        const handleUserOnline = (data) => {
+            // Only update if for current room
+            if (data.roomId === roomId || !data.roomId) {
+                setOnlineUsers(prev => {
+                    const exists = prev.find(u => u.userId === data.userId);
+                    if (exists) {
+                        // Update existing user status
+                        return prev.map(u => 
+                            u.userId === data.userId 
+                                ? { ...u, status: 'online', avatar: data.avatar || u.avatar }
+                                : u
+                        );
+                    } else {
+                        // Add new user
+                        return [...prev, { 
+                            userId: data.userId, 
+                            username: data.username, 
+                            displayName: data.displayName,
+                            avatar: data.avatar || null,
+                            role: data.role || 'user',
+                            status: 'online'
+                        }].sort((a, b) => {
+                            // Online first
+                            if (a.status === 'online' && b.status === 'offline') return -1;
+                            if (a.status === 'offline' && b.status === 'online') return 1;
+                            return (a.displayName || '').localeCompare(b.displayName || '');
+                        });
+                    }
+                });
+            }
+        };
+
+        const handleUserOffline = (data) => {
+            // Only update if for current room
+            if (data.roomId === roomId || !data.roomId) {
+                setOnlineUsers(prev => 
+                    prev.map(u => 
+                        u.userId === data.userId 
+                            ? { ...u, status: 'offline', lastSeen: data.lastSeen }
+                            : u
+                    ).sort((a, b) => {
+                        // Online first
+                        if (a.status === 'online' && b.status === 'offline') return -1;
+                        if (a.status === 'offline' && b.status === 'online') return 1;
+                        return (a.displayName || '').localeCompare(b.displayName || '');
+                    })
+                );
+            }
+        };
+
+        // Handle users list (all participants with status)
+        const handleUsersList = (data) => {
+            if (data.roomId === roomId && data.users) {
+                setOnlineUsers(data.users); // Already sorted from backend
+            }
+        };
+        
+        // Keep backward compatibility with old event
+        const handleOnlineUsersList = (data) => {
+            if (data.roomId === roomId && data.users) {
+                setOnlineUsers(data.users.map(u => ({
+                    userId: u.userId,
+                    username: u.username,
+                    displayName: u.displayName,
+                    avatar: u.avatar || null,
+                    role: u.role || 'user',
+                    status: u.status || 'online'
+                })));
+            }
+        };
+
+        // Handle reaction update
+        const handleReactionUpdate = (data) => {
+            if (data.messageId) {
+                setMessages(prev => prev.map(msg => {
+                    const msgId = msg.id || msg._id;
+                    if (msgId === data.messageId) {
+                        return {
+                            ...msg,
+                            reactions: data.reactions || []
+                        };
+                    }
+                    return msg;
+                }));
+            }
+        };
+
+        // Handle messages deleted (bulk)
+        const handleMessagesDeleted = (data) => {
+            if (data.roomId === roomId && data.messageIds) {
+                setMessages(prev => prev.filter(msg => {
+                    const msgId = msg.id || msg._id;
+                    return !data.messageIds.includes(msgId.toString());
+                }));
+            }
+        };
+
+        // Handle single message deleted
+        const handleMessageDeleted = (data) => {
+            if (data.roomId === roomId && data.messageId) {
+                setMessages(prev => prev.filter(msg => {
+                    const msgId = msg.id || msg._id;
+                    return msgId.toString() !== data.messageId;
+                }));
+            }
+        };
+
+        // Handle message edited
+        const handleMessageEdited = (data) => {
+            if (data.roomId === roomId && data.messageId) {
+                setMessages(prev => prev.map(msg => {
+                    const msgId = msg.id || msg._id;
+                    if (msgId.toString() === data.messageId) {
+                        return {
+                            ...msg,
+                            content: data.content,
+                            isEdited: data.isEdited,
+                            updatedAt: data.updatedAt
+                        };
+                    }
+                    return msg;
+                }));
+            }
+        };
+
+        // Error handler
+        const handleError = (error) => {
+            console.error('Chat error:', error);
+        };
+
+        // Register listeners (only if socket is connected)
+        if (isConnected) {
+            on('messages:batch', handleMessagesBatch);
+            on('messages:history', handleMessagesHistory);
+            on('typing:user', handleTypingUser);
+            on('typing:stop', handleTypingStop);
+            on('user:online', handleUserOnline);
+            on('user:offline', handleUserOffline);
+            on('users:list', handleUsersList); // New event for all users
+            on('users:online:list', handleOnlineUsersList); // Backward compatibility
+            on('message:reaction:updated', handleReactionUpdate);
+            on('messages:deleted', handleMessagesDeleted);
+            on('message:deleted', handleMessageDeleted);
+            on('message:edited', handleMessageEdited);
+            on('error', handleError);
+        }
+
+        // Load initial messages only once per room (using ref to prevent re-load)
+        const shouldLoad = !messagesLoadedRef.current || lastRoomIdRef.current !== roomId;
+        let messagesMounted = true;
+        const messagesAbortController = new AbortController();
+        
+        if (shouldLoad && roomId && token) {
+            setLoading(true);
+            // Load messages directly here to avoid dependency issues
+            axios.get(`${API_URL}/api/chat/room/${roomId}/messages`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                signal: messagesAbortController.signal
+            }).then(response => {
+                if (!messagesMounted) return;
+                
+                if (response.data.success) {
+                    setMessages(response.data.data.messages || []);
+                    messagesLoadedRef.current = true;
+                    lastRoomIdRef.current = roomId;
+                    setTimeout(() => {
+                        if (messagesMounted && messagesEndRef.current) {
+                            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 100);
+                }
+            }).catch(error => {
+                if (axios.isCancel(error) || error.name === 'AbortError') {
+                    return; // Ignore cancel errors
+                }
+                if (messagesMounted) {
+                    console.error('Load messages error:', error);
+                }
+            }).finally(() => {
+                if (messagesMounted) {
+                    setLoading(false);
+                }
+            });
+        }
+
+        // Cleanup
+        return () => {
+            messagesMounted = false;
+            messagesAbortController.abort();
+            
+            // Clear message queue timer
+            if (messageQueueTimerRef.current) {
+                clearTimeout(messageQueueTimerRef.current);
+            }
+            messageQueueRef.current = [];
+            
+            off('messages:batch', handleMessagesBatch);
+            off('messages:history', handleMessagesHistory);
+            off('typing:user', handleTypingUser);
+            off('typing:stop', handleTypingStop);
+            off('user:online', handleUserOnline);
+            off('user:offline', handleUserOffline);
+            off('users:list', handleUsersList);
+            off('users:online:list', handleOnlineUsersList);
+            off('message:reaction:updated', handleReactionUpdate);
+            off('messages:deleted', handleMessagesDeleted);
+            off('message:deleted', handleMessageDeleted);
+            off('message:edited', handleMessageEdited);
+            off('error', handleError);
+            
+            if (socket && roomId) {
+                socket.emit('room:leave', { roomId });
+            } else if (emit && roomId) {
+                emit('room:leave', { roomId });
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isConnected, roomId, user?._id, token]); // Remove on, off, socket from dependencies to prevent infinite loop
+
+    // Mark as read when messages loaded (debounced to prevent infinite loop)
+    useEffect(() => {
+        if (messages.length === 0 || !roomId || !token) return;
+        
+        let isMounted = true;
+        const abortController = new AbortController();
+        
+        // Debounce mark as read
+        const timeoutId = setTimeout(() => {
+            if (!isMounted) return;
+            
+            axios.post(`${API_URL}/api/chat/room/${roomId}/read`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                signal: abortController.signal
+            }).then(() => {
+                // Emit socket event to update unread counts for other tabs/devices
+                if (emit) {
+                    emit('messages:read', { roomId });
+                }
+            }).catch(err => {
+                if (!axios.isCancel(err) && err.name !== 'AbortError') {
+                    console.error('Mark as read error:', err);
+                }
+            });
+        }, 1000); // Wait 1 second after messages load
+
+        return () => {
+            isMounted = false;
+            clearTimeout(timeoutId);
+            abortController.abort();
+        };
+    }, [messages.length, roomId, token, emit]); // Only depend on messages.length, not messages array
+
+    return {
+        messages,
+        loading,
+        sending,
+        typingUsers,
+        onlineUsers,
+        unreadCount,
+        isConnected,
+        sendMessage,
+        startTyping,
+        stopTyping,
+        scrollToBottom,
+        messagesEndRef,
+        toggleReaction,
+        deleteMessages,
+        deleteMessage,
+        editMessage
+    };
+};
+

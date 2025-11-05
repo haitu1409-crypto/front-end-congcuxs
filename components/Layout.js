@@ -7,11 +7,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings, Calendar, Activity, Award, Percent, ChevronDown } from 'lucide-react';
+import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings, Calendar, Activity, Award, Percent, ChevronDown, MessageCircle } from 'lucide-react';
 import Image from 'next/image';
 import RouterErrorBoundary, { useRouterErrorHandler } from './RouterErrorBoundary';
 import DesktopHeader from './DesktopHeader';
 import DropdownMenu from './DropdownMenu';
+import AuthButton from './Auth/AuthButton';
 import styles from '../styles/Layout.module.css';
 
 export default function Layout({ children, className = '' }) {
@@ -91,6 +92,18 @@ export default function Layout({ children, className = '' }) {
         ]
     };
 
+    // Soi Cầu submenu items
+    const soiCauMenu = {
+        label: 'Soi Cầu',
+        icon: Target,
+        description: 'Soi cầu bạch thủ miền Bắc',
+        submenu: [
+            { href: '/soi-cau', label: 'Soi Cầu', icon: Target },
+            { href: '/soicau-bayesian', label: 'Soi Cầu AI', icon: BarChart3, isNew: true },
+            { href: '/soi-cau-vi-tri', label: 'Soi Cầu Vị Trí', icon: Target, isNew: true }
+        ]
+    };
+
     const navLinks = [
         { href: '/', label: 'Trang chủ', icon: Home, description: 'Trang chủ chính' },
         { href: '/kqxs', label: 'Kết Quả Xổ Số', icon: Calendar, description: 'Xem kết quả xổ số 3 miền mới nhất', isNew: true },
@@ -99,10 +112,9 @@ export default function Layout({ children, className = '' }) {
         { href: '/dan-3d4d', label: 'Dàn 3D/4D', icon: BarChart3, description: 'Dàn đề 3-4 chữ số' },
         { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star, description: 'Bộ lọc dàn số thông minh' },
         { isDropdown: true, ...thongKeMenu },
-        { href: '/soi-cau', label: 'Soi Cầu', icon: Target, description: 'Soi cầu bạch thủ miền Bắc' },
-        { href: '/soicau-bayesian', label: 'Soi Cầu AI', icon: BarChart3, description: 'Dự đoán XSMB bằng thuật toán AI tiên tiến', isNew: true },
-        { href: '/soi-cau-vi-tri', label: 'Soi Cầu Vị Trí', icon: Target, description: 'Soi cầu dựa trên vị trí số', isNew: true },
+        { isDropdown: true, ...soiCauMenu },
         { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper, description: 'Tin tức xổ số mới nhất' },
+        { href: '/chat', label: 'Chat', icon: MessageCircle, description: 'Group chat - Trò chuyện với mọi người', isNew: true },
         { href: '/admin', label: 'Admin', icon: Settings, description: 'Quản trị hệ thống' }
     ];
 
@@ -173,6 +185,11 @@ export default function Layout({ children, className = '' }) {
                                         </Link>
                                     );
                                 })}
+                                
+                                {/* Auth Button - Desktop */}
+                                <div className={styles.desktopAuthButton}>
+                                    <AuthButton variant="desktop" />
+                                </div>
                             </div>
 
                             {/* Mobile Menu Button */}
@@ -271,6 +288,11 @@ export default function Layout({ children, className = '' }) {
                                                 </Link>
                                             );
                                         })}
+                                        
+                                        {/* Auth Button - Mobile */}
+                                        <div className={styles.mobileAuthButton}>
+                                            <AuthButton variant="mobile" />
+                                        </div>
                                     </div>
                                 </div>
                             </>

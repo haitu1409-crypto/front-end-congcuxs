@@ -16,6 +16,7 @@ import { useState } from 'react';
 
 import dynamic from 'next/dynamic';
 import reportWebVitals from '../lib/reportWebVitals';
+import { AuthProvider } from '../hooks/useAuth';
 
 // ✅ Multi-Search Engine Optimizer - For Bing, Cốc Cốc, Google
 const MultiSearchEngineOptimizer = dynamic(() => import('../components/MultiSearchEngineOptimizer'), {
@@ -148,7 +149,9 @@ function MyApp({ Component, pageProps }) {
             )}
 
             {/* Main Component */}
-            <Component {...pageProps} />
+            <AuthProvider>
+                <Component {...pageProps} />
+            </AuthProvider>
 
             <style jsx>{`
                 @keyframes loading {

@@ -1,0 +1,19 @@
+/* MessageList Styles */
+
+.messageList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 100%;
+    padding-bottom: 10px;
+}
+
+.emptyState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 14px;
+}
+

@@ -1,0 +1,195 @@
+/* Chat Verification Modal Styles */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    max-width: 450px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modalTitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modalTitle h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.modalTitle svg {
+    color: #667eea;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #6b7280;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.closeButton:hover {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.modalBody {
+    padding: 24px;
+}
+
+.description {
+    margin: 0 0 24px 0;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.inputGroup label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.codeInput {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 8px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-family: 'Courier New', monospace;
+}
+
+.codeInput:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.codeInput:disabled {
+    background: #f9fafb;
+    cursor: not-allowed;
+}
+
+.errorMessage {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #dc2626;
+    font-size: 14px;
+}
+
+.errorMessage svg {
+    flex-shrink: 0;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.cancelButton,
+.submitButton {
+    flex: 1;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelButton {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.submitButton {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.submitButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.submitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .modalContent {
+        margin: 20px;
+        max-width: 100%;
+    }
+
+    .modalHeader,
+    .modalBody {
+        padding: 16px;
+    }
+
+    .codeInput {
+        font-size: 20px;
+        letter-spacing: 6px;
+    }
+}
+

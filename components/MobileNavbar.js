@@ -17,6 +17,7 @@ import {
     Layers,
     TrendingUp
 } from 'lucide-react';
+import AuthButton from './Auth/AuthButton';
 import styles from '../styles/MobileNavbar.module.css';
 
 export default function MobileNavbar({
@@ -220,25 +221,27 @@ export default function MobileNavbar({
     const navbarItems = getNavbarItems();
 
     return (
-        <div className={styles.mobileNavbar}>
-            <div className={styles.mobileNavbarContainer}>
-                {navbarItems.map((item) => {
-                    const IconComponent = item.icon;
-                    const isActive = activeNavItem === item.id ||
-                        (item.href && router.pathname === item.href);
+        <>
+            <div className={styles.mobileNavbar}>
+                <div className={styles.mobileNavbarContainer}>
+                    {navbarItems.map((item) => {
+                        const IconComponent = item.icon;
+                        const isActive = activeNavItem === item.id ||
+                            (item.href && router.pathname === item.href);
 
-                    return (
-                        <button
-                            key={item.id}
-                            className={`${styles.mobileNavbarItem} ${isActive ? styles.active : ''}`}
-                            onClick={() => handleNavItemClick(item.id)}
-                        >
-                            <IconComponent className={styles.mobileNavbarIcon} />
-                            {item.label}
-                        </button>
-                    );
-                })}
+                        return (
+                            <button
+                                key={item.id}
+                                className={`${styles.mobileNavbarItem} ${isActive ? styles.active : ''}`}
+                                onClick={() => handleNavItemClick(item.id)}
+                            >
+                                <IconComponent className={styles.mobileNavbarIcon} />
+                                {item.label}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
-        </div>
+        </>
     );
 }

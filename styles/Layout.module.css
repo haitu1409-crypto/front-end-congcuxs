@@ -199,6 +199,13 @@
     font-weight: var(--font-semibold);
 }
 
+/* Auth Button - Desktop */
+.desktopAuthButton {
+    margin-left: var(--spacing-2);
+    display: flex;
+    align-items: center;
+}
+
 .navIcon {
     color: var(--color-gray-500);
 }
@@ -364,6 +371,13 @@
 .mobileNavIcon {
     font-size: var(--text-xl);
     line-height: 1;
+}
+
+/* Auth Button - Mobile */
+.mobileAuthButton {
+    padding: var(--spacing-3) var(--spacing-4);
+    border-top: 1px solid var(--color-gray-200);
+    margin-top: var(--spacing-2);
 }
 
 /* Mobile Overlay */
