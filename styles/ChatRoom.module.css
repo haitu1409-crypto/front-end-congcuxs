@@ -322,6 +322,13 @@
     background-attachment: fixed;
 }
 
+/* Mobile: Thêm padding bottom để không bị che bởi fixed input */
+@media (max-width: 768px) {
+    .messagesContainer {
+        padding-bottom: 80px; /* Đủ chỗ cho input box */
+    }
+}
+
 .messagesContainer.privateChatBackground {
     background-image: url('/imgs/backgroundChatPrive.png');
 }
