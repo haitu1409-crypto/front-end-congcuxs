@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../../hooks/useAuth';
 import { useChat } from '../../hooks/useChat';
 import { useSocket } from '../../hooks/useSocket';
+import { useViewportHeight } from '../../hooks/useViewportHeight';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import UserList from './UserList';
@@ -45,6 +46,7 @@ export default function ChatRoom({ roomId, onClose }) {
     const router = useRouter();
     const { user, isAdmin, token, updateUser } = useAuth();
     const { socket, isConnected: socketConnected } = useSocket();
+    const viewportHeight = useViewportHeight(); // Track actual viewport height for mobile
     const {
         messages,
         loading,
