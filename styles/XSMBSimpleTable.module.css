@@ -94,9 +94,6 @@
     color: #333333 !important;
     font-weight: bold;
     text-align: center;
-    width: 100px !important;
-    min-width: 100px !important;
-    max-width: 100px !important;
     padding: 12px 8px;
     font-size: 20px;
 }

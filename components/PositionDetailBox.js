@@ -3,10 +3,19 @@
  * Hiển thị chi tiết đường cầu khi click vào số trong bảng soi cầu vị trí
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import styles from '../styles/positionDetailBox.module.css';
 import xsmbStyles from '../styles/XSMBSimpleTable.module.css';
 import apiService from '../services/apiService';
+import CellConnectionArrow from './CellConnectionArrow';
+
+// Màu sắc cho 4 mũi tên
+const ARROW_COLORS = [
+    '#c80505', // Đỏ - Group 1
+    '#2563eb', // Xanh dương - Group 2
+    '#059669', // Xanh lá - Group 3
+    '#7c3aed', // Tím - Group 4
+];
 
 const PositionDetailBox = ({
     selectedNumber,
@@ -18,6 +27,9 @@ const PositionDetailBox = ({
 }) => {
     const [lotteryResults, setLotteryResults] = useState([]);
     const [loading, setLoading] = useState(false);
+    const tableContainerRef = useRef(null);
+    // State để track các số đang được highlight với màu nào
+    const [highlightedDigits, setHighlightedDigits] = useState(new Map());
 
     if (!isVisible || !selectedNumber || !positionData) {
         return null;
@@ -26,7 +38,7 @@ const PositionDetailBox = ({
     // Lấy dữ liệu kết quả xổ số dựa trên analysisDays
     useEffect(() => {
         const fetchLotteryResults = async () => {
-            if (!positionData.analysisDays) return;
+            if (!positionData?.analysisDays) return;
 
             setLoading(true);
             try {
@@ -112,41 +124,241 @@ const PositionDetailBox = ({
         };
 
         fetchLotteryResults();
-    }, [positionData.analysisDays, positionData.analysisDate]);
-
-    // Sử dụng prediction cụ thể được click
-    if (!selectedPrediction) {
-        return null;
-    }
+    }, [positionData?.analysisDays, positionData?.analysisDate]);
 
     // Debug để hiểu cấu trúc prediction
     console.log('🔍 Selected Prediction:', selectedPrediction);
+    console.log('🔍 isVisible:', isVisible, 'selectedNumber:', selectedNumber, 'positionData:', positionData);
+    
+    // Kiểm tra selectedPrediction - chỉ return null nếu không có selectedPrediction
+    if (!selectedPrediction) {
+        console.log('⚠️ No selectedPrediction, returning null');
+        return null;
+    }
+    
     console.log('🔍 Prediction Structure:', {
         selectedPrediction,
-        hasDayIndex: selectedPrediction.dayIndex !== undefined,
-        hasDate: selectedPrediction.date !== undefined,
-        hasNextDate: selectedPrediction.nextDate !== undefined
+        position1: selectedPrediction?.position1,
+        position2: selectedPrediction?.position2,
+        hasDayIndex: selectedPrediction?.dayIndex !== undefined,
+        hasDate: selectedPrediction?.date !== undefined,
+        hasNextDate: selectedPrediction?.nextDate !== undefined
     });
 
-    // Parse position data để hiển thị chi tiết
-    const parsePosition = (positionStr) => {
+    // Parse position data để hiển thị chi tiết - Memoized để tránh parse lại
+    const parsePosition = useCallback((positionStr) => {
         if (!positionStr) return null;
 
-        // Format: (6-1-1) -> {row: 6, col: 1, digit: 1}
+        // Format: (6-1-1) -> {prize: 6, elementIndex: 1, digitIndex: 1}
+        // Trong context này: row = prize (giải), col = elementIndex (số thứ mấy trong giải), digit = digitIndex (vị trí chữ số)
         const match = positionStr.match(/\((\d+)-(\d+)-(\d+)\)/);
         if (match) {
             return {
-                row: parseInt(match[1]),
-                col: parseInt(match[2]),
-                digit: parseInt(match[3])
+                prize: parseInt(match[1]),           // Giải (0-7)
+                elementIndex: parseInt(match[2]),    // Số thứ mấy trong giải (0-based)
+                digitIndex: parseInt(match[3])        // Vị trí chữ số trong số (0-based)
             };
         }
         return null;
-    };
+    }, []);
 
-    // Sử dụng prediction cụ thể được click
-    const position1 = parsePosition(selectedPrediction.position1);
-    const position2 = parsePosition(selectedPrediction.position2);
+    // Tạo element object cho CellConnectionArrow từ position - Memoized
+    const createElementFromPosition = useCallback((position, tableIndex) => {
+        if (!position) return null;
+        
+        // Tạo unique ID cho element này để CellConnectionArrow có thể tìm được
+        // Format: table-{tableIndex}-prize-{prize}-element-{elementIndex}-digit-{digitIndex}
+        const elementId = `table-${tableIndex}-prize-${position.prize}-element-${position.elementIndex}-digit-${position.digitIndex}`;
+        
+        return {
+            elementId,
+            prize: position.prize,
+            elementIndex: position.elementIndex,
+            digitIndex: position.digitIndex,
+            tableIndex,
+            isVirtual: false,
+            position: `(${position.prize}-${position.elementIndex}-${position.digitIndex})`
+        };
+    }, []);
+
+    // Tạo element cho 2 số cuối giải đặc biệt ở bảng cụ thể - Memoized
+    const createSpecialPrizeLastTwoDigitsElement = useCallback((tableIndex, digitIndex) => {
+        // digitIndex: 0 = số thứ 4, 1 = số thứ 5 (2 số cuối)
+        const elementId = `table-${tableIndex}-prize-0-element-0-digit-${3 + digitIndex}`;
+        return {
+            elementId,
+            prize: 0,
+            elementIndex: 0,
+            digitIndex: 3 + digitIndex, // 2 số cuối = index 3 và 4
+            tableIndex,
+            isVirtual: false,
+            position: `(0-0-${3 + digitIndex})`
+        };
+    }, []);
+
+    // Tạo element cho số dự đoán (conclusionNumber) - Memoized
+    const createPredictionElement = useCallback((digitIndex) => {
+        // Số dự đoán có 2 chữ số, digitIndex: 0 hoặc 1
+        return {
+            elementId: `prediction-digit-${digitIndex}`,
+            isVirtual: false,
+            isPrediction: true,
+            digitIndex,
+            position: `(prediction-${digitIndex})`
+        };
+    }, []);
+
+    // Sử dụng prediction cụ thể được click - Memoized để tránh parse lại
+    // Hỗ trợ cả position1/position2 và position/secondPosition
+    const position1 = useMemo(() => {
+        const posStr = selectedPrediction?.position1 || selectedPrediction?.position;
+        return posStr ? parsePosition(posStr) : null;
+    }, [selectedPrediction?.position1, selectedPrediction?.position, parsePosition]);
+    
+    const position2 = useMemo(() => {
+        const posStr = selectedPrediction?.position2 || selectedPrediction?.secondPosition;
+        return posStr ? parsePosition(posStr) : null;
+    }, [selectedPrediction?.position2, selectedPrediction?.secondPosition, parsePosition]);
+
+    // Cập nhật highlightedDigits khi selectedPrediction thay đổi - Memoized để tránh tính toán lại
+    const highlightedDigitsMap = useMemo(() => {
+        // Lấy position strings từ selectedPrediction (hỗ trợ cả 2 format)
+        const pos1Str = selectedPrediction?.position1 || selectedPrediction?.position;
+        const pos2Str = selectedPrediction?.position2 || selectedPrediction?.secondPosition;
+        
+        if (!selectedPrediction || !position1 || !position2 || !pos1Str || !pos2Str || lotteryResults.length < 2) {
+            return new Map();
+        }
+
+        const newHighlighted = new Map();
+        
+        // Group 1: position1 ở bảng 0
+        const source1Key = `table-0-prize-${position1.prize}-element-${position1.elementIndex}-digit-${position1.digitIndex}`;
+        newHighlighted.set(source1Key, { color: ARROW_COLORS[0], type: 'source' });
+        const target1Key = `table-1-prize-0-element-0-digit-3`; // Số thứ 4
+        newHighlighted.set(target1Key, { color: ARROW_COLORS[0], type: 'target' });
+        
+        // Group 2: position2 ở bảng 0
+        const source2Key = `table-0-prize-${position2.prize}-element-${position2.elementIndex}-digit-${position2.digitIndex}`;
+        newHighlighted.set(source2Key, { color: ARROW_COLORS[1], type: 'source' });
+        const target2Key = `table-1-prize-0-element-0-digit-4`; // Số thứ 5
+        newHighlighted.set(target2Key, { color: ARROW_COLORS[1], type: 'target' });
+        
+        // Group 3: position1 ở bảng 1
+        const source3Key = `table-1-prize-${position1.prize}-element-${position1.elementIndex}-digit-${position1.digitIndex}`;
+        newHighlighted.set(source3Key, { color: ARROW_COLORS[2], type: 'source' });
+        newHighlighted.set('prediction-digit-0', { color: ARROW_COLORS[2], type: 'target' });
+        
+        // Group 4: position2 ở bảng 1
+        const source4Key = `table-1-prize-${position2.prize}-element-${position2.elementIndex}-digit-${position2.digitIndex}`;
+        newHighlighted.set(source4Key, { color: ARROW_COLORS[3], type: 'source' });
+        newHighlighted.set('prediction-digit-1', { color: ARROW_COLORS[3], type: 'target' });
+        
+        return newHighlighted;
+    }, [selectedPrediction?.position1, selectedPrediction?.position2, selectedPrediction?.position, selectedPrediction?.secondPosition, position1, position2, lotteryResults.length]);
+
+    // Sync với state để trigger re-render khi cần
+    useEffect(() => {
+        setHighlightedDigits(highlightedDigitsMap);
+    }, [highlightedDigitsMap]);
+
+    // Helper function để tạo highlight style - Memoized để tránh tạo object mới mỗi lần
+    const getHighlightStyle = useCallback((highlightInfo) => {
+        if (!highlightInfo) return {};
+        return {
+            backgroundColor: highlightInfo.color,
+            color: '#ffffff',
+            border: `2px solid ${highlightInfo.color}`,
+            borderRadius: '4px',
+            padding: '2px 4px',
+            fontWeight: 'bold',
+            boxShadow: `0 0 8px ${highlightInfo.color}`
+        };
+    }, []);
+
+    // Tính toán arrows ở top level - không được đặt trong renderHighlightedTable()
+    const arrows = useMemo(() => {
+        // Hỗ trợ cả 2 format position
+        const pos1Str = selectedPrediction?.position1 || selectedPrediction?.position;
+        const pos2Str = selectedPrediction?.position2 || selectedPrediction?.secondPosition;
+        
+        if (!pos1Str || !pos2Str || !position1 || !position2) {
+            return null;
+        }
+        
+        // Cần có ít nhất 2 bảng để vẽ đầy đủ
+        if (lotteryResults.length < 2) {
+            return null;
+        }
+        
+        const arrowElements = [];
+        
+        // Group 1: Từ position1 ở bảng 0 -> đến số thứ 4 (số đầu trong 2 số cuối) giải đặc biệt ở bảng 1
+        const source1 = createElementFromPosition(position1, 0);
+        const target1 = createSpecialPrizeLastTwoDigitsElement(1, 0); // Số thứ 4
+        
+        if (source1 && target1) {
+            arrowElements.push(
+                <CellConnectionArrow
+                    key={`arrow-group1-${pos1Str}-${pos2Str}-${selectedNumber}`}
+                    sourceElement={source1}
+                    targetElement={target1}
+                    tableContainerRef={tableContainerRef}
+                    color={ARROW_COLORS[0]}
+                />
+            );
+        }
+        
+        // Group 2: Từ position2 ở bảng 0 -> đến số thứ 5 (số thứ 2 trong 2 số cuối) giải đặc biệt ở bảng 1
+        const source2 = createElementFromPosition(position2, 0);
+        const target2 = createSpecialPrizeLastTwoDigitsElement(1, 1); // Số thứ 5
+        
+        if (source2 && target2) {
+            arrowElements.push(
+                <CellConnectionArrow
+                    key={`arrow-group2-${pos1Str}-${pos2Str}-${selectedNumber}`}
+                    sourceElement={source2}
+                    targetElement={target2}
+                    tableContainerRef={tableContainerRef}
+                    color={ARROW_COLORS[1]}
+                />
+            );
+        }
+        
+        // Group 3: Từ position1 ở bảng 1 -> đến chữ số đầu tiên của số dự đoán
+        const source3 = createElementFromPosition(position1, 1);
+        const target3 = createPredictionElement(0);
+        
+        if (source3 && target3) {
+            arrowElements.push(
+                <CellConnectionArrow
+                    key={`arrow-group3-${pos1Str}-${pos2Str}-${selectedNumber}`}
+                    sourceElement={source3}
+                    targetElement={target3}
+                    tableContainerRef={tableContainerRef}
+                    color={ARROW_COLORS[2]}
+                />
+            );
+        }
+        
+        // Group 4: Từ position2 ở bảng 1 -> đến chữ số thứ 2 của số dự đoán
+        const source4 = createElementFromPosition(position2, 1);
+        const target4 = createPredictionElement(1);
+        
+        if (source4 && target4) {
+            arrowElements.push(
+                <CellConnectionArrow
+                    key={`arrow-group4-${pos1Str}-${pos2Str}-${selectedNumber}`}
+                    sourceElement={source4}
+                    targetElement={target4}
+                    tableContainerRef={tableContainerRef}
+                    color={ARROW_COLORS[3]}
+                />
+            );
+        }
+        
+        return arrowElements.length > 0 ? arrowElements : null;
+    }, [selectedPrediction?.position1, selectedPrediction?.position2, selectedPrediction?.position, selectedPrediction?.secondPosition, selectedNumber, position1, position2, lotteryResults.length, createElementFromPosition, createSpecialPrizeLastTwoDigitsElement, createPredictionElement, tableContainerRef]);
 
     // Debug log để kiểm tra dữ liệu
     console.log('🔍 Position Data:', {
@@ -271,7 +483,6 @@ const PositionDetailBox = ({
 
             return (
                 <div key={tableIndex} className={styles.singleTable}>
-                    <h5>Bảng kết quả ngày {resultDate}</h5>
                     <table className={xsmbStyles.ketqua} cellSpacing="1" cellPadding="9">
                         <thead>
                             <tr>
@@ -291,12 +502,23 @@ const PositionDetailBox = ({
                                             const isLastTwoDigits = index >= specialPrize.length - 2;
                                             const shouldHighlightGreen = shouldHighlightThisTable && tableIndex === 0 && isLastTwoDigits;
 
+                                            // Tạo data attributes để CellConnectionArrow có thể tìm được
+                                            const elementId = `table-${tableIndex}-prize-0-element-0-digit-${index}`;
+                                            const highlightInfo = highlightedDigitsMap.get(elementId);
+                                            const highlightStyle = getHighlightStyle(highlightInfo);
+                                            
                                             return (
                                                 <span
                                                     key={index}
+                                                    data-element-id={elementId}
+                                                    data-prize="0"
+                                                    data-element-index="0"
+                                                    data-digit-index={index}
+                                                    data-table-index={tableIndex}
                                                     className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(0, 0, index, tableIndex) ? styles.highlighted : ''
                                                         } ${shouldHighlightGreen ? styles.highlightedGreen : ''
                                                         }`}
+                                                    style={highlightStyle}
                                                 >
                                                     {digit}
                                                 </span>
@@ -311,14 +533,25 @@ const PositionDetailBox = ({
                                 <tr>
                                     <td className={xsmbStyles.leftcol}>1</td>
                                     <td colSpan="12" className={xsmbStyles.kqcell + ' ' + xsmbStyles.kq_1}>
-                                        {firstPrize.split('').map((digit, index) => (
-                                            <span
-                                                key={index}
-                                                className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(1, 0, index, tableIndex) ? styles.highlighted : ''}`}
-                                            >
-                                                {digit}
-                                            </span>
-                                        ))}
+                                        {firstPrize.split('').map((digit, index) => {
+                                            const elementId = `table-${tableIndex}-prize-1-element-0-digit-${index}`;
+                                            const highlightInfo = highlightedDigitsMap.get(elementId);
+                                            const highlightStyle = getHighlightStyle(highlightInfo);
+                                            return (
+                                                <span
+                                                    key={index}
+                                                    data-element-id={elementId}
+                                                    data-prize="1"
+                                                    data-element-index="0"
+                                                    data-digit-index={index}
+                                                    data-table-index={tableIndex}
+                                                    className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(1, 0, index, tableIndex) ? styles.highlighted : ''}`}
+                                                    style={highlightStyle}
+                                                >
+                                                    {digit}
+                                                </span>
+                                            );
+                                        })}
                                     </td>
                                 </tr>
                             )}
@@ -329,14 +562,25 @@ const PositionDetailBox = ({
                                     <td className={xsmbStyles.leftcol}>2</td>
                                     {secondPrize.map((number, elementIndex) => (
                                         <td key={elementIndex} colSpan={12 / secondPrize.length} className={xsmbStyles.kqcell + ' ' + xsmbStyles[`kq_${elementIndex + 2}`]}>
-                                            {number.split('').map((digit, digitIndex) => (
-                                                <span
-                                                    key={digitIndex}
-                                                    className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(2, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
-                                                >
-                                                    {digit}
-                                                </span>
-                                            ))}
+                                            {number.split('').map((digit, digitIndex) => {
+                                                const elementId = `table-${tableIndex}-prize-2-element-${elementIndex}-digit-${digitIndex}`;
+                                                const highlightInfo = highlightedDigitsMap.get(elementId);
+                                                const highlightStyle = getHighlightStyle(highlightInfo);
+                                                return (
+                                                    <span
+                                                        key={digitIndex}
+                                                        data-element-id={elementId}
+                                                        data-prize="2"
+                                                        data-element-index={elementIndex}
+                                                        data-digit-index={digitIndex}
+                                                        data-table-index={tableIndex}
+                                                        className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(2, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
+                                                        style={highlightStyle}
+                                                    >
+                                                        {digit}
+                                                    </span>
+                                                );
+                                            })}
                                         </td>
                                     ))}
                                 </tr>
@@ -349,28 +593,51 @@ const PositionDetailBox = ({
                                         <td rowSpan="2" className={xsmbStyles.leftcol}>3</td>
                                         {threePrizes.slice(0, 3).map((number, elementIndex) => (
                                             <td key={elementIndex} colSpan="4" className={xsmbStyles.kqcell + ' ' + xsmbStyles[`kq_${elementIndex + 4}`]}>
-                                                {number.split('').map((digit, digitIndex) => (
-                                                    <span
-                                                        key={digitIndex}
-                                                        className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(3, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
-                                                    >
-                                                        {digit}
-                                                    </span>
-                                                ))}
+                                                {number.split('').map((digit, digitIndex) => {
+                                                    const elementId = `table-${tableIndex}-prize-3-element-${elementIndex}-digit-${digitIndex}`;
+                                                    const highlightInfo = highlightedDigitsMap.get(elementId);
+                                                    const highlightStyle = getHighlightStyle(highlightInfo);
+                                                    return (
+                                                        <span
+                                                            key={digitIndex}
+                                                            data-element-id={elementId}
+                                                            data-prize="3"
+                                                            data-element-index={elementIndex}
+                                                            data-digit-index={digitIndex}
+                                                            data-table-index={tableIndex}
+                                                            className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(3, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
+                                                            style={highlightStyle}
+                                                        >
+                                                            {digit}
+                                                        </span>
+                                                    );
+                                                })}
                                             </td>
                                         ))}
                                     </tr>
                                     <tr>
                                         {threePrizes.slice(3, 6).map((number, elementIndex) => (
                                             <td key={elementIndex} colSpan="4" className={xsmbStyles.kqcell + ' ' + xsmbStyles[`kq_${elementIndex + 7}`]}>
-                                                {number.split('').map((digit, digitIndex) => (
-                                                    <span
-                                                        key={digitIndex}
-                                                        className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(3, elementIndex + 3, digitIndex, tableIndex) ? styles.highlighted : ''}`}
-                                                    >
-                                                        {digit}
-                                                    </span>
-                                                ))}
+                                                {number.split('').map((digit, digitIndex) => {
+                                                    const actualElementIndex = elementIndex + 3;
+                                                    const elementId = `table-${tableIndex}-prize-3-element-${actualElementIndex}-digit-${digitIndex}`;
+                                                    const highlightInfo = highlightedDigitsMap.get(elementId);
+                                                    const highlightStyle = getHighlightStyle(highlightInfo);
+                                                    return (
+                                                        <span
+                                                            key={digitIndex}
+                                                            data-element-id={elementId}
+                                                            data-prize="3"
+                                                            data-element-index={actualElementIndex}
+                                                            data-digit-index={digitIndex}
+                                                            data-table-index={tableIndex}
+                                                            className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(3, actualElementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
+                                                            style={highlightStyle}
+                                                        >
+                                                            {digit}
+                                                        </span>
+                                                    );
+                                                })}
                                             </td>
                                         ))}
                                     </tr>
@@ -383,14 +650,25 @@ const PositionDetailBox = ({
                                     <td className={xsmbStyles.leftcol}>4</td>
                                     {fourPrizes.map((number, elementIndex) => (
                                         <td key={elementIndex} colSpan="3" className={xsmbStyles.kqcell + ' ' + xsmbStyles[`kq_${elementIndex + 10}`]}>
-                                            {number.split('').map((digit, digitIndex) => (
-                                                <span
-                                                    key={digitIndex}
-                                                    className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(4, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
-                                                >
-                                                    {digit}
-                                                </span>
-                                            ))}
+                                            {number.split('').map((digit, digitIndex) => {
+                                                const elementId = `table-${tableIndex}-prize-4-element-${elementIndex}-digit-${digitIndex}`;
+                                                const highlightInfo = highlightedDigitsMap.get(elementId);
+                                                const highlightStyle = getHighlightStyle(highlightInfo);
+                                                return (
+                                                    <span
+                                                        key={digitIndex}
+                                                        data-element-id={elementId}
+                                                        data-prize="4"
+                                                        data-element-index={elementIndex}
+                                                        data-digit-index={digitIndex}
+                                                        data-table-index={tableIndex}
+                                                        className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(4, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
+                                                        style={highlightStyle}
+                                                    >
+                                                        {digit}
+                                                    </span>
+                                                );
+                                            })}
                                         </td>
                                     ))}
                                 </tr>
@@ -403,28 +681,51 @@ const PositionDetailBox = ({
                                         <td rowSpan="2" className={xsmbStyles.leftcol}>5</td>
                                         {fivePrizes.slice(0, 3).map((number, elementIndex) => (
                                             <td key={elementIndex} colSpan="4" className={xsmbStyles.kqcell + ' ' + xsmbStyles[`kq_${elementIndex + 14}`]}>
-                                                {number.split('').map((digit, digitIndex) => (
-                                                    <span
-                                                        key={digitIndex}
-                                                        className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(5, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
-                                                    >
-                                                        {digit}
-                                                    </span>
-                                                ))}
+                                                {number.split('').map((digit, digitIndex) => {
+                                                    const elementId = `table-${tableIndex}-prize-5-element-${elementIndex}-digit-${digitIndex}`;
+                                                    const highlightInfo = highlightedDigitsMap.get(elementId);
+                                                    const highlightStyle = getHighlightStyle(highlightInfo);
+                                                    return (
+                                                        <span
+                                                            key={digitIndex}
+                                                            data-element-id={elementId}
+                                                            data-prize="5"
+                                                            data-element-index={elementIndex}
+                                                            data-digit-index={digitIndex}
+                                                            data-table-index={tableIndex}
+                                                            className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(5, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
+                                                            style={highlightStyle}
+                                                        >
+                                                            {digit}
+                                                        </span>
+                                                    );
+                                                })}
                                             </td>
                                         ))}
                                     </tr>
                                     <tr>
                                         {fivePrizes.slice(3, 6).map((number, elementIndex) => (
                                             <td key={elementIndex} colSpan="4" className={xsmbStyles.kqcell + ' ' + xsmbStyles[`kq_${elementIndex + 17}`]}>
-                                                {number.split('').map((digit, digitIndex) => (
-                                                    <span
-                                                        key={digitIndex}
-                                                        className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(5, elementIndex + 3, digitIndex, tableIndex) ? styles.highlighted : ''}`}
-                                                    >
-                                                        {digit}
-                                                    </span>
-                                                ))}
+                                                {number.split('').map((digit, digitIndex) => {
+                                                    const actualElementIndex = elementIndex + 3;
+                                                    const elementId = `table-${tableIndex}-prize-5-element-${actualElementIndex}-digit-${digitIndex}`;
+                                                    const highlightInfo = highlightedDigitsMap.get(elementId);
+                                                    const highlightStyle = getHighlightStyle(highlightInfo);
+                                                    return (
+                                                        <span
+                                                            key={digitIndex}
+                                                            data-element-id={elementId}
+                                                            data-prize="5"
+                                                            data-element-index={actualElementIndex}
+                                                            data-digit-index={digitIndex}
+                                                            data-table-index={tableIndex}
+                                                            className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(5, actualElementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
+                                                            style={highlightStyle}
+                                                        >
+                                                            {digit}
+                                                        </span>
+                                                    );
+                                                })}
                                             </td>
                                         ))}
                                     </tr>
@@ -437,14 +738,25 @@ const PositionDetailBox = ({
                                     <td className={xsmbStyles.leftcol}>6</td>
                                     {sixPrizes.map((number, elementIndex) => (
                                         <td key={elementIndex} colSpan="4" className={xsmbStyles.kqcell + ' ' + xsmbStyles[`kq_${elementIndex + 20}`]}>
-                                            {number.split('').map((digit, digitIndex) => (
-                                                <span
-                                                    key={digitIndex}
-                                                    className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(6, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
-                                                >
-                                                    {digit}
-                                                </span>
-                                            ))}
+                                            {number.split('').map((digit, digitIndex) => {
+                                                const elementId = `table-${tableIndex}-prize-6-element-${elementIndex}-digit-${digitIndex}`;
+                                                const highlightInfo = highlightedDigitsMap.get(elementId);
+                                                const highlightStyle = getHighlightStyle(highlightInfo);
+                                                return (
+                                                    <span
+                                                        key={digitIndex}
+                                                        data-element-id={elementId}
+                                                        data-prize="6"
+                                                        data-element-index={elementIndex}
+                                                        data-digit-index={digitIndex}
+                                                        data-table-index={tableIndex}
+                                                        className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(6, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
+                                                        style={highlightStyle}
+                                                    >
+                                                        {digit}
+                                                    </span>
+                                                );
+                                            })}
                                         </td>
                                     ))}
                                 </tr>
@@ -456,14 +768,25 @@ const PositionDetailBox = ({
                                     <td className={xsmbStyles.leftcol}>7</td>
                                     {sevenPrizes.map((number, elementIndex) => (
                                         <td key={elementIndex} colSpan="3" className={xsmbStyles.kqcell + ' ' + xsmbStyles[`kq_${elementIndex + 23}`]}>
-                                            {number.split('').map((digit, digitIndex) => (
-                                                <span
-                                                    key={digitIndex}
-                                                    className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(7, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
-                                                >
-                                                    {digit}
-                                                </span>
-                                            ))}
+                                            {number.split('').map((digit, digitIndex) => {
+                                                const elementId = `table-${tableIndex}-prize-7-element-${elementIndex}-digit-${digitIndex}`;
+                                                const highlightInfo = highlightedDigitsMap.get(elementId);
+                                                const highlightStyle = getHighlightStyle(highlightInfo);
+                                                return (
+                                                    <span
+                                                        key={digitIndex}
+                                                        data-element-id={elementId}
+                                                        data-prize="7"
+                                                        data-element-index={elementIndex}
+                                                        data-digit-index={digitIndex}
+                                                        data-table-index={tableIndex}
+                                                        className={`${styles.highlightDigit} ${shouldHighlightThisTable && shouldHighlight(7, elementIndex, digitIndex, tableIndex) ? styles.highlighted : ''}`}
+                                                        style={highlightStyle}
+                                                    >
+                                                        {digit}
+                                                    </span>
+                                                );
+                                            })}
                                         </td>
                                     ))}
                                 </tr>
@@ -489,26 +812,59 @@ const PositionDetailBox = ({
                 </div>
 
                 {/* Phần kết luận và bảng kết quả */}
-                <div className={styles.conclusionAndTables}>
+                <div className={styles.conclusionAndTables} ref={tableContainerRef} style={{ position: 'relative' }}>
                     {/* Phần kết luận */}
                     <div className={styles.conclusion}>
                         <div className={styles.conclusionDate}>{positionData.analysisDate || '23/10'}</div>
                         <div className={styles.conclusionText}>
                             <div className={styles.conclusionLabel}>Cầu dự đoán</div>
                             <div className={styles.conclusionPrize}>Đặc biệt</div>
-                            <div className={styles.conclusionNumber}>{selectedNumber}</div>
+                            <div className={styles.conclusionNumber} data-prediction-element="true">
+                                {selectedNumber && selectedNumber.split('').map((digit, index) => {
+                                    const elementId = `prediction-digit-${index}`;
+                                    const highlightInfo = highlightedDigitsMap.get(elementId);
+                                    const baseStyle = {
+                                        display: 'inline-block',
+                                        position: 'relative',
+                                        zIndex: 1001
+                                    };
+                                    const highlightStyle = highlightInfo ? {
+                                        ...baseStyle,
+                                        ...getHighlightStyle(highlightInfo),
+                                        padding: '4px 8px' // Padding lớn hơn cho số dự đoán
+                                    } : baseStyle;
+                                    return (
+                                        <span
+                                            key={index}
+                                            data-element-id={elementId}
+                                            data-prediction-digit-index={index}
+                                            style={highlightStyle}
+                                        >
+                                            {digit}
+                                        </span>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 
                     {/* Render 2 bảng kết quả cho 2 ngày phân tích */}
-                    <div className={styles.tablesContainer}>
+                    <div className={styles.tablesContainer} style={{ position: 'relative' }}>
                         {lotteryResults.slice().reverse().map((data, index) => renderSingleTable(data, index))}
                     </div>
+                    
+                    {/* Vẽ 4 mũi tên theo logic đúng:
+                        Group 1,2: Từ position1 và position2 ở bảng 0 -> đến 2 số cuối giải đặc biệt ở bảng 1
+                        Group 3,4: Từ position1 và position2 ở bảng 1 -> đến số dự đoán */}
+                    {arrows}
                 </div>
             </div>
         );
     };
 
+    // Đảm bảo component luôn render, ngay cả khi không có position1/position2
+    console.log('🎨 Rendering PositionDetailBox');
+    
     return (
         <div className={styles.detailBox}>
             <div className={styles.content}>

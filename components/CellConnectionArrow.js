@@ -34,12 +34,36 @@ const CellConnectionArrow = ({
                 return;
             }
 
-        // Tìm các element trong DOM dựa trên globalIndex hoặc cellKey + digitIndex
+        // Tìm các element trong DOM dựa trên globalIndex, elementId hoặc cellKey + digitIndex
         const findElement = (element) => {
-            // Thử tìm bằng globalIndex trước (chính xác nhất - hoạt động cho cả week và month mode)
+            // Thử tìm bằng elementId trước (dùng cho PositionDetailBox)
+            if (element.elementId) {
+                const digitEl = tableContainerRef.current.querySelector(
+                    `span[data-element-id="${element.elementId}"]`
+                );
+                if (digitEl) return digitEl;
+            }
+            
+            // Thử tìm bằng globalIndex (chính xác nhất - hoạt động cho cả week và month mode)
             if (element.globalIndex !== undefined && element.globalIndex >= 0) {
                 const digitEl = tableContainerRef.current.querySelector(
                     `span[data-global-index="${element.globalIndex}"]`
+                );
+                if (digitEl) return digitEl;
+            }
+            
+            // Thử tìm số dự đoán (prediction element)
+            if (element.isPrediction && element.digitIndex !== undefined) {
+                const predictionEl = tableContainerRef.current.querySelector(
+                    `span[data-element-id="prediction-digit-${element.digitIndex}"]`
+                );
+                if (predictionEl) return predictionEl;
+            }
+            
+            // Thử tìm bằng data attributes (prize, elementIndex, digitIndex, tableIndex)
+            if (element.prize !== undefined && element.elementIndex !== undefined && element.digitIndex !== undefined && element.tableIndex !== undefined) {
+                const digitEl = tableContainerRef.current.querySelector(
+                    `span[data-prize="${element.prize}"][data-element-index="${element.elementIndex}"][data-digit-index="${element.digitIndex}"][data-table-index="${element.tableIndex}"]`
                 );
                 if (digitEl) return digitEl;
             }
@@ -230,7 +254,7 @@ const CellConnectionArrow = ({
                 width: '100%',
                 height: '100%',
                 pointerEvents: 'none',
-                zIndex: 1000
+                zIndex: 10 // Giảm z-index để các số nằm trên mũi tên
             }}
         >
             {/* Đường nối */}
@@ -273,13 +297,31 @@ const CellConnectionArrow = ({
 // Memoize component để tránh re-render không cần thiết
 export default React.memo(CellConnectionArrow, (prevProps, nextProps) => {
     // Chỉ re-render nếu các props quan trọng thay đổi
-    return (
-        prevProps.sourceElement?.globalIndex === nextProps.sourceElement?.globalIndex &&
-        prevProps.targetElement?.globalIndex === nextProps.targetElement?.globalIndex &&
-        prevProps.sourceElement?.isVirtual === nextProps.sourceElement?.isVirtual &&
-        prevProps.targetElement?.isVirtual === nextProps.targetElement?.isVirtual &&
-        prevProps.color === nextProps.color &&
-        prevProps.tableContainerRef === nextProps.tableContainerRef
-    );
+    // Kiểm tra elementId, position, hoặc globalIndex
+    const sourceChanged = 
+        prevProps.sourceElement?.elementId !== nextProps.sourceElement?.elementId ||
+        prevProps.sourceElement?.globalIndex !== nextProps.sourceElement?.globalIndex ||
+        prevProps.sourceElement?.position !== nextProps.sourceElement?.position ||
+        prevProps.sourceElement?.isVirtual !== nextProps.sourceElement?.isVirtual ||
+        prevProps.sourceElement?.prize !== nextProps.sourceElement?.prize ||
+        prevProps.sourceElement?.elementIndex !== nextProps.sourceElement?.elementIndex ||
+        prevProps.sourceElement?.digitIndex !== nextProps.sourceElement?.digitIndex ||
+        prevProps.sourceElement?.tableIndex !== nextProps.sourceElement?.tableIndex;
+    
+    const targetChanged = 
+        prevProps.targetElement?.elementId !== nextProps.targetElement?.elementId ||
+        prevProps.targetElement?.globalIndex !== nextProps.targetElement?.globalIndex ||
+        prevProps.targetElement?.position !== nextProps.targetElement?.position ||
+        prevProps.targetElement?.isVirtual !== nextProps.targetElement?.isVirtual ||
+        prevProps.targetElement?.isPrediction !== nextProps.targetElement?.isPrediction ||
+        prevProps.targetElement?.prize !== nextProps.targetElement?.prize ||
+        prevProps.targetElement?.elementIndex !== nextProps.targetElement?.elementIndex ||
+        prevProps.targetElement?.digitIndex !== nextProps.targetElement?.digitIndex ||
+        prevProps.targetElement?.tableIndex !== nextProps.targetElement?.tableIndex;
+    
+    // Return true nếu KHÔNG thay đổi (không re-render), false nếu thay đổi (cần re-render)
+    return !sourceChanged && !targetChanged && 
+           prevProps.color === nextProps.color &&
+           prevProps.tableContainerRef === nextProps.tableContainerRef;
 });
 

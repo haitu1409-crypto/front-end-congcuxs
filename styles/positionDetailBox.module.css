@@ -222,8 +222,7 @@
     display: flex;
     flex-direction: row;
     /* Hiển thị 2 bảng cùng hàng */
-    gap: 20px;
-    flex: 1;
+    gap: 40px;
     align-items: flex-start;
     /* Căn chỉnh các bảng ở đầu */
     overflow-x: auto;
@@ -279,6 +278,8 @@
     border-radius: 3px;
     font-weight: bold;
     transition: all 0.3s ease;
+    position: relative; /* Để z-index có hiệu lực */
+    z-index: 1001; /* Cao hơn mũi tên để số nằm trên */
 }
 
 .highlightDigit.highlighted {

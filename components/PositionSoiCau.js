@@ -211,7 +211,6 @@ const PositionSoiCau = ({ initialData, initialDate, initialDays }) => {
     const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
     const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
     const years = Array.from({ length: new Date().getFullYear() - 1999 }, (_, i) => (2000 + i).toString());
-    const dayOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 25, 30];
 
     const fetchPositionSoiCau = useCallback(async (date, days) => {
         setLoading(true);
@@ -249,12 +248,6 @@ const PositionSoiCau = ({ initialData, initialDate, initialDays }) => {
         setSelectedDate((prev) => ({ ...prev, [field]: e.target.value }));
     }, []);
 
-    const handleDaysChange = useCallback((e) => {
-        const newDays = parseInt(e.target.value);
-        if (dayOptions.includes(newDays)) {
-            setSelectedDays(newDays);
-        }
-    }, [dayOptions]);
 
     const handleSuggestedDate = () => {
         if (suggestedDate) {
@@ -379,14 +372,6 @@ const PositionSoiCau = ({ initialData, initialDate, initialDays }) => {
                         <select className={styles.select} value={selectedDate.year} onChange={handleDateChange('year')}>
                             {years.map((year) => (
                                 <option key={year} value={year}>{year}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className={styles.selectItem}>
-                        <span className={styles.options}>Số ngày phân tích:</span>
-                        <select className={styles.select} value={selectedDays} onChange={handleDaysChange}>
-                            {dayOptions.map((day) => (
-                                <option key={day} value={day}>{day} ngày</option>
                             ))}
                         </select>
                     </div>
