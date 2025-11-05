@@ -77,35 +77,35 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
         }
     }, [mentions]);
 
-    // Handle input focus on mobile - scroll input into view properly
+    // Handle input focus on mobile - ensure input stays above keyboard
     useEffect(() => {
         const input = inputRef.current;
-        if (!input) return;
+        const container = input?.closest(`.${styles.messageInput}`);
+        if (!input || !container) return;
 
         const handleFocus = () => {
-            // On mobile, scroll input into view when keyboard appears
+            // On mobile, use visual viewport to position input correctly
             if (typeof window !== 'undefined' && window.visualViewport) {
-                // Use requestAnimationFrame to ensure DOM is updated
                 requestAnimationFrame(() => {
                     setTimeout(() => {
-                        // Scroll input to bottom of visual viewport
-                        const inputRect = input.getBoundingClientRect();
                         const visualViewport = window.visualViewport;
-                        
                         if (visualViewport) {
-                            const viewportBottom = visualViewport.height;
-                            const inputBottom = inputRect.bottom;
+                            // Get the input container position
+                            const containerRect = container.getBoundingClientRect();
+                            const viewportHeight = visualViewport.height;
+                            const viewportBottom = visualViewport.offsetTop + viewportHeight;
                             
-                            // If input is below viewport, scroll it up
-                            if (inputBottom > viewportBottom - 20) {
-                                const scrollAmount = inputBottom - viewportBottom + 20;
-                                window.scrollBy({
-                                    top: scrollAmount,
-                                    behavior: 'smooth'
+                            // If input container is below visible viewport, scroll it up
+                            if (containerRect.bottom > viewportBottom - 10) {
+                                // Scroll the input container into view
+                                container.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'end',
+                                    inline: 'nearest'
                                 });
                             }
                         }
-                    }, 300); // Wait for keyboard animation
+                    }, 250); // Wait for keyboard animation
                 });
             }
         };
