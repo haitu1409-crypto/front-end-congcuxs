@@ -77,6 +77,45 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
         }
     }, [mentions]);
 
+    // Handle input focus on mobile - scroll input into view properly
+    useEffect(() => {
+        const input = inputRef.current;
+        if (!input) return;
+
+        const handleFocus = () => {
+            // On mobile, scroll input into view when keyboard appears
+            if (typeof window !== 'undefined' && window.visualViewport) {
+                // Use requestAnimationFrame to ensure DOM is updated
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        // Scroll input to bottom of visual viewport
+                        const inputRect = input.getBoundingClientRect();
+                        const visualViewport = window.visualViewport;
+                        
+                        if (visualViewport) {
+                            const viewportBottom = visualViewport.height;
+                            const inputBottom = inputRect.bottom;
+                            
+                            // If input is below viewport, scroll it up
+                            if (inputBottom > viewportBottom - 20) {
+                                const scrollAmount = inputBottom - viewportBottom + 20;
+                                window.scrollBy({
+                                    top: scrollAmount,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    }, 300); // Wait for keyboard animation
+                });
+            }
+        };
+
+        input.addEventListener('focus', handleFocus);
+        return () => {
+            input.removeEventListener('focus', handleFocus);
+        };
+    }, []);
+
     // Auto-add @username to content when mentions are added
     useEffect(() => {
         if (mentions.length > 0 && inputRef.current) {

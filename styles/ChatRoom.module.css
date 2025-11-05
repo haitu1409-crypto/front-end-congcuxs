@@ -327,6 +327,14 @@
     background-image: url('/imgs/backgroundChatPrive.png');
 }
 
+/* Mobile: Adjust padding bottom when keyboard is visible */
+@media (max-width: 768px) {
+    .messagesContainer {
+        /* Add padding bottom to account for fixed input */
+        padding-bottom: calc(10px + 70px); /* 70px for input height + padding */
+    }
+}
+
 .loading {
     display: flex;
     flex-direction: column;

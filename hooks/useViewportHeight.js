@@ -53,17 +53,35 @@ export function useViewportHeight() {
         window.addEventListener('scroll', handleScroll, { passive: true });
         
         // Visual Viewport API (better for mobile browsers)
+        // This handles keyboard show/hide on mobile
         if (window.visualViewport) {
             const handleVisualViewportResize = () => {
-                updateViewportHeight();
+                // Use visual viewport height when keyboard is visible
+                const visualHeight = window.visualViewport.height;
+                const windowHeight = window.innerHeight;
+                
+                // When keyboard is open, visual viewport is smaller
+                // Use visual viewport height for more accurate positioning
+                if (visualHeight < windowHeight * 0.75) {
+                    // Keyboard is likely open - use visual viewport
+                    document.documentElement.style.setProperty('--vh', `${visualHeight * 0.01}px`);
+                    document.documentElement.style.setProperty('--visual-vh', `${visualHeight * 0.01}px`);
+                } else {
+                    // Keyboard is closed - use window height
+                    updateViewportHeight();
+                    document.documentElement.style.setProperty('--visual-vh', `${windowHeight * 0.01}px`);
+                }
             };
+            
             window.visualViewport.addEventListener('resize', handleVisualViewportResize);
+            window.visualViewport.addEventListener('scroll', handleVisualViewportResize);
             
             return () => {
                 window.removeEventListener('resize', handleResize);
                 window.removeEventListener('orientationchange', handleOrientationChange);
                 window.removeEventListener('scroll', handleScroll);
                 window.visualViewport.removeEventListener('resize', handleVisualViewportResize);
+                window.visualViewport.removeEventListener('scroll', handleVisualViewportResize);
             };
         }
 

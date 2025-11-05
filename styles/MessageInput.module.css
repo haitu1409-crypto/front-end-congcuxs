@@ -10,6 +10,25 @@
     flex-shrink: 0;
 }
 
+/* Mobile: Use fixed position when keyboard is visible to avoid gaps */
+@media (max-width: 768px) {
+    .messageInput {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* Use visual viewport height if available, otherwise use dynamic viewport */
+        bottom: env(safe-area-inset-bottom, 0);
+    }
+    
+    /* Ensure input stays above keyboard */
+    @supports (bottom: env(safe-area-inset-bottom)) {
+        .messageInput {
+            padding-bottom: calc(6px + env(safe-area-inset-bottom));
+        }
+    }
+}
+
 .inputContainer {
     display: flex;
     gap: 8px;
