@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useAuth } from '../hooks/useAuth';
-import { useViewportHeight } from '../hooks/useViewportHeight';
 import ChatRoom from '../components/Chat/ChatRoom';
 import ChatVerificationModal from '../components/Chat/ChatVerificationModal';
 import AuthModal from '../components/Auth/AuthModal';
@@ -18,7 +17,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 export default function ChatPage() {
     const { token, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
-    useViewportHeight(); // Initialize viewport height tracking
     const [roomId, setRoomId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
