@@ -8,6 +8,24 @@
     z-index: 10;
 }
 
+/* Mobile: Fixed at bottom */
+@media (max-width: 768px) {
+    .messageInput {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 5px 16px;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+        z-index: 1000;
+        /* Support for safe area (iPhone X+ notch) */
+        /* padding-bottom: max(12px, env(safe-area-inset-bottom)); */
+    }
+}
+
 .inputContainer {
     display: flex;
     gap: 8px;
@@ -75,6 +93,27 @@
     font-family: inherit;
     line-height: 1.5;
     overflow-y: auto;
+    resize: none;
+    min-height: 40px;
+    max-height: 120px;
+}
+
+/* Scrollbar styling for better UX */
+.input::-webkit-scrollbar {
+    width: 6px;
+}
+
+.input::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.input::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.input::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 .input:focus {

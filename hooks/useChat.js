@@ -639,7 +639,10 @@ export const useChat = (roomId) => {
                 }
             }).catch(err => {
                 if (!axios.isCancel(err) && err.name !== 'AbortError') {
-                    console.error('Mark as read error:', err);
+                    // Only log if not 429 (rate limit is handled at higher level)
+                    if (err.response?.status !== 429) {
+                        console.error('Mark as read error:', err.message || err);
+                    }
                 }
             });
         }, 1000); // Wait 1 second after messages load

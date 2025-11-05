@@ -15,7 +15,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 8px 20px;
     background: #0097b2;
     color: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -70,6 +70,7 @@
 
 .chatTitle {
     margin: 0;
+    color: white;
     font-size: 18px;
     font-weight: 600;
 }
@@ -81,11 +82,11 @@
     font-size: 12px;
     opacity: 0.9;
     margin-top: 2px;
-    color: #10b981;
+    color: greenyellow;
 }
 
 .chatStatus svg {
-    color: #10b981;
+    color: greenyellow;
 }
 
 .chatHeaderRight {
@@ -260,6 +261,13 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+}
+
+/* Mobile: Add padding bottom for fixed input */
+@media (max-width: 768px) {
+    .messagesContainer {
+        padding-bottom: 90px; /* Space for fixed input box */
+    }
 }
 
 .messagesContainer.privateChatBackground {

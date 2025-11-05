@@ -44,9 +44,10 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
         onSend(message, null, mentions);
         setMessage('');
         
-        // Reset textarea height to initial height
+        // Reset textarea height and overflow to initial state
         if (inputRef.current) {
             inputRef.current.style.height = '40px';
+            inputRef.current.style.overflowY = 'hidden';
         }
         
         if (onCancelMentions) {
@@ -60,10 +61,11 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
         }
     };
 
-    // Reset textarea height when message is cleared
+    // Reset textarea height and overflow when message is cleared
     useEffect(() => {
         if (!message && inputRef.current) {
             inputRef.current.style.height = '40px';
+            inputRef.current.style.overflowY = 'hidden';
         }
     }, [message]);
 
@@ -229,14 +231,21 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
                     rows={1}
                     style={{
                         resize: 'none',
-                        overflow: 'hidden',
                         minHeight: '40px',
                         maxHeight: '120px'
                     }}
                     onInput={(e) => {
                         // Auto-resize textarea
                         e.target.style.height = 'auto';
-                        e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+                        const newHeight = Math.min(e.target.scrollHeight, 120);
+                        e.target.style.height = `${newHeight}px`;
+                        
+                        // Show scroll when reaching max height
+                        if (newHeight >= 120) {
+                            e.target.style.overflowY = 'auto';
+                        } else {
+                            e.target.style.overflowY = 'hidden';
+                        }
                     }}
                 />
                 <button

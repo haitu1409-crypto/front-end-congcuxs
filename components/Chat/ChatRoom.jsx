@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../hooks/useAuth';
 import { useChat } from '../../hooks/useChat';
+import { useSocket } from '../../hooks/useSocket';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import UserList from './UserList';
@@ -42,6 +43,7 @@ const getFirstLetter = (name) => {
 export default function ChatRoom({ roomId, onClose }) {
     const router = useRouter();
     const { user, isAdmin, token, updateUser } = useAuth();
+    const { socket, isConnected: socketConnected } = useSocket();
     const {
         messages,
         loading,
@@ -210,11 +212,68 @@ export default function ChatRoom({ roomId, onClose }) {
         }
     };
 
-    // Fetch unread counts for all users
+    // 🔥 REAL-TIME: Listen for new private messages via Socket.io
+    useEffect(() => {
+        if (!isConnected || !socket) return;
+
+        const handlePrivateMessageNew = (data) => {
+            console.log('🔔 Received private message notification:', data);
+            
+            // Don't show notification if already in this private chat
+            const isInThisChat = isPrivateChat && 
+                                otherParticipant && 
+                                otherParticipant.userId === data.fromUserId;
+            
+            if (!isInThisChat) {
+                // Update unread count instantly (no polling!)
+                setUnreadCounts(prev => ({
+                    ...prev,
+                    [data.fromUserId]: data.unreadCount
+                }));
+                
+                // Update ref to prevent duplicate notifications
+                previousUnreadCountsRef.current = {
+                    ...previousUnreadCountsRef.current,
+                    [data.fromUserId]: data.unreadCount
+                };
+                
+                // Show notification popup
+                const sender = onlineUsers.find(u => u.userId === data.fromUserId);
+                if (sender || data.fromDisplayName) {
+                    showNewMessageNotification({
+                        userId: data.fromUserId,
+                        username: data.fromUsername,
+                        displayName: data.fromDisplayName || sender?.displayName,
+                        avatar: data.fromAvatar || sender?.avatar
+                    });
+                }
+                
+                console.log(`✅ Updated unread count for ${data.fromDisplayName}: ${data.unreadCount}`);
+            }
+        };
+
+        // Register socket listener
+        socket.on('private:message:new', handlePrivateMessageNew);
+
+        return () => {
+            socket.off('private:message:new', handlePrivateMessageNew);
+        };
+    }, [isConnected, socket, isPrivateChat, otherParticipant, onlineUsers]);
+
+    // Fetch unread counts for all users (BACKUP - reduced to 5 minutes)
     useEffect(() => {
         if (!token || !user) return;
 
+        let retryDelay = 300000; // Start with 5 minutes (backup only)
+        let intervalId = null;
+        let isActive = true;
+
         const fetchUnreadCounts = async () => {
+            // Don't fetch if tab is not visible (save bandwidth + reduce rate limit)
+            if (typeof document !== 'undefined' && document.hidden) {
+                return;
+            }
+
             try {
                 const response = await axios.get(
                     `${API_URL}/api/chat/private/unread-counts`,
@@ -250,20 +309,52 @@ export default function ChatRoom({ roomId, onClose }) {
                     // Update both state and ref - use backend as single source of truth
                     previousUnreadCountsRef.current = newCounts;
                     setUnreadCounts(newCounts);
+                    
+                    // Reset retry delay on success
+                    retryDelay = 30000; // Back to 30 seconds
                 }
             } catch (error) {
-                console.error('Error fetching unread counts:', error);
+                console.error('Error fetching unread counts:', error.message || error);
+                
+                // Handle 429 - Exponential backoff
+                if (error.response?.status === 429) {
+                    retryDelay = Math.min(retryDelay * 2, 300000); // Max 5 minutes
+                    console.warn(`⚠️ Rate limit hit. Increasing interval to ${retryDelay / 1000}s`);
+                    
+                    // Clear existing interval and create new one with longer delay
+                    if (intervalId) {
+                        clearInterval(intervalId);
+                    }
+                    if (isActive) {
+                        intervalId = setInterval(fetchUnreadCounts, retryDelay);
+                    }
+                }
             }
         };
 
-        // Fetch initially
+        // Fetch initially (backup in case socket event was missed)
         fetchUnreadCounts();
 
-        // Refetch every 5 seconds for real-time updates
-        const interval = setInterval(fetchUnreadCounts, 5000);
+        // Refetch every 5 minutes (BACKUP ONLY - Socket.io provides real-time updates)
+        intervalId = setInterval(fetchUnreadCounts, retryDelay);
+
+        // Resume fetching when tab becomes visible again
+        const handleVisibilityChange = () => {
+            if (!document.hidden && isActive) {
+                fetchUnreadCounts();
+            }
+        };
+        
+        if (typeof document !== 'undefined') {
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+        }
 
         return () => {
-            clearInterval(interval);
+            isActive = false;
+            clearInterval(intervalId);
+            if (typeof document !== 'undefined') {
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
+            }
             if (notificationTimeoutRef.current) {
                 clearTimeout(notificationTimeoutRef.current);
             }
@@ -425,7 +516,7 @@ export default function ChatRoom({ roomId, onClose }) {
                         <h3 className={styles.chatTitle}>
                             {isPrivateChat 
                                 ? (otherParticipant 
-                                    ? `Chat với ${otherParticipant.displayName || otherParticipant.username}`
+                                    ? `${otherParticipant.displayName || otherParticipant.username}`
                                     : 'Private Chat')
                                 : 'Group Chat'}
                         </h3>
