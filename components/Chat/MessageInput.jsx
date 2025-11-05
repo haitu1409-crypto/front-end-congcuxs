@@ -7,7 +7,7 @@ import { Send, Loader2, X, Smile } from 'lucide-react';
 import EmojiPicker from './EmojiPicker';
 import styles from '../../styles/MessageInput.module.css';
 
-export default function MessageInput({ onSend, onTyping, onStopTyping, sending, disabled, mentions = [], onCancelMentions }) {
+export default function MessageInput({ onSend, onTyping, onStopTyping, sending, disabled, mentions = [], onCancelMentions, replyTo = null, onCancelReply }) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const inputRef = useRef(null);
@@ -41,17 +41,19 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
         e.preventDefault();
         if (!message.trim() || sending || disabled) return;
 
-        onSend(message, null, mentions);
+        onSend(message, null, mentions, replyTo);
         setMessage('');
         
-        // Reset textarea height and overflow to initial state
+        // Reset textarea height to initial height
         if (inputRef.current) {
             inputRef.current.style.height = '40px';
-            inputRef.current.style.overflowY = 'hidden';
         }
         
         if (onCancelMentions) {
             onCancelMentions();
+        }
+        if (onCancelReply) {
+            onCancelReply();
         }
         if (onStopTyping) {
             onStopTyping();
@@ -61,11 +63,10 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
         }
     };
 
-    // Reset textarea height and overflow when message is cleared
+    // Reset textarea height when message is cleared
     useEffect(() => {
         if (!message && inputRef.current) {
             inputRef.current.style.height = '40px';
-            inputRef.current.style.overflowY = 'hidden';
         }
     }, [message]);
 
@@ -151,11 +152,27 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
 
     // Handle Enter key
     const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSend(e);
+        if (e.key === 'Enter') {
+            // Detect if mobile (touch device or small screen)
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+                || window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // On mobile: Enter creates new line, use Send button to submit
+                // Plain Enter will create new line (default textarea behavior)
+                return;
+            } else {
+                // On desktop: Enter to send, Shift+Enter for new line
+                if (e.shiftKey) {
+                    // Shift+Enter creates new line (default textarea behavior)
+                    return;
+                } else {
+                    // Plain Enter sends message
+                    e.preventDefault();
+                    handleSend(e);
+                }
+            }
         }
-        // Shift+Enter will create new line (default behavior)
     };
 
     // Focus input on mount
@@ -174,6 +191,30 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
 
     return (
         <form className={styles.messageInput} onSubmit={handleSend}>
+            {/* Reply Preview */}
+            {replyTo && (
+                <div className={styles.replyPreview}>
+                    <div className={styles.replyPreviewContent}>
+                        <div className={styles.replyPreviewLabel}>Đang trả lời</div>
+                        <div className={styles.replyPreviewSender}>
+                            {replyTo.senderDisplayName || replyTo.senderUsername}
+                        </div>
+                        <div className={styles.replyPreviewText}>
+                            {replyTo.content && replyTo.content.length > 50 
+                                ? replyTo.content.substring(0, 50) + '...'
+                                : replyTo.content}
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        className={styles.cancelReplyButton}
+                        onClick={onCancelReply}
+                        title="Hủy trả lời"
+                    >
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
             {/* Mentions preview */}
             {mentions.length > 0 && (
                 <div className={styles.mentionsPreview}>
@@ -231,28 +272,21 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
                     rows={1}
                     style={{
                         resize: 'none',
+                        overflow: 'hidden',
                         minHeight: '40px',
                         maxHeight: '120px'
                     }}
                     onInput={(e) => {
                         // Auto-resize textarea
                         e.target.style.height = 'auto';
-                        const newHeight = Math.min(e.target.scrollHeight, 120);
-                        e.target.style.height = `${newHeight}px`;
-                        
-                        // Show scroll when reaching max height
-                        if (newHeight >= 120) {
-                            e.target.style.overflowY = 'auto';
-                        } else {
-                            e.target.style.overflowY = 'hidden';
-                        }
+                        e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
                     }}
                 />
                 <button
                     type="submit"
                     className={styles.sendButton}
                     disabled={!message.trim() || sending || disabled}
-                    title="Gửi (Enter)"
+                    title="Gửi (Enter trên desktop, hoặc nhấn nút này)"
                 >
                     {sending ? (
                         <Loader2 size={18} className={styles.spinner} />

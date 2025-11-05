@@ -11,8 +11,9 @@ import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import UserList from './UserList';
 import ChatQRCode from './ChatQRCode';
-import { MessageCircle, Users, X, Wifi, WifiOff, QrCode, CheckSquare, Trash2 } from 'lucide-react';
+import { MessageCircle, Users, X, Wifi, WifiOff, QrCode, CheckSquare, Trash2, ArrowLeft } from 'lucide-react';
 import styles from '../../styles/ChatRoom.module.css';
+import MessageActionModal from './MessageActionModal';
 import MessageModal from './MessageModal';
 import axios from 'axios';
 
@@ -68,21 +69,62 @@ export default function ChatRoom({ roomId, onClose }) {
     const [selectionMode, setSelectionMode] = useState(false);
     const [selectedMessages, setSelectedMessages] = useState(new Set());
     const [selectedMessage, setSelectedMessage] = useState(null);
-    const [showMessageModal, setShowMessageModal] = useState(false);
+    const [showMessageActionModal, setShowMessageActionModal] = useState(false);
+    const [replyingTo, setReplyingTo] = useState(null);
+    const [editingMessage, setEditingMessage] = useState(null);
+    const [editing, setEditing] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [avatarFailed, setAvatarFailed] = useState(false);
+    
+    // Reset avatarFailed when user avatar URL changes
+    useEffect(() => {
+        setAvatarFailed(false);
+    }, [user?.avatar]);
     const [unreadCounts, setUnreadCounts] = useState({});
     const [otherParticipant, setOtherParticipant] = useState(null);
     const [newMessageNotification, setNewMessageNotification] = useState(null);
     const fileInputRef = useRef(null);
     const notificationTimeoutRef = useRef(null);
-    const previousUnreadCountsRef = useRef({});
+    const unreadCountsFetchedRef = useRef(false); // Track if initial fetch done
+    const audioRef = useRef(null); // Audio notification for new messages
+    const markAsReadCallRef = useRef({}); // Track mark as read calls to avoid duplicates
+    // Use localStorage to persist cleared user IDs across component remounts
+    const getClearedUserIds = () => {
+        try {
+            const stored = localStorage.getItem('chat_cleared_user_ids');
+            return stored ? new Set(JSON.parse(stored)) : new Set();
+        } catch {
+            return new Set();
+        }
+    };
+    const clearedUserIdsRef = useRef(getClearedUserIds()); // Track user IDs that have been cleared (should not be re-added from backend)
+    
+    // Save cleared user IDs to localStorage whenever it changes
+    const saveClearedUserIds = (userIdSet) => {
+        try {
+            localStorage.setItem('chat_cleared_user_ids', JSON.stringify(Array.from(userIdSet)));
+        } catch (error) {
+            console.error('Error saving cleared user IDs:', error);
+        }
+    };
 
     // Check if this is a private chat
     const isPrivateChat = roomId && roomId.startsWith('private_');
+    
+    // Auto-hide UserList when entering private chat (only once, not on every toggle)
+    const prevIsPrivateChatRef = useRef(false);
+    useEffect(() => {
+        // Only hide if we just switched from groupchat to private chat
+        if (isPrivateChat && !prevIsPrivateChatRef.current && showUserList) {
+            setShowUserList(false);
+        }
+        prevIsPrivateChatRef.current = isPrivateChat;
+    }, [isPrivateChat]);
 
     // Get other participant from online users list (for private chat)
     useEffect(() => {
-        if (!isPrivateChat || !user) {
+        if (!isPrivateChat || !user || !token) {
             setOtherParticipant(null);
             return;
         }
@@ -92,14 +134,17 @@ export default function ChatRoom({ roomId, onClose }) {
         if (parts.length === 3) {
             const userId1 = parts[1];
             const userId2 = parts[2];
-            const otherUserId = userId1 === user._id ? userId2 : userId1;
+            const otherUserId = userId1 === user.id ? userId2 : userId1;
             
-            // Clear unread count for this user immediately (entering private chat)
-            // This ensures badge disappears instantly
+            // 🔥 SIMPLIFIED: Just clear unread badge locally when entering private chat
+            // No need to mark as read immediately - user might just be checking
+            // Only mark as read when they actually click the chat icon
+            clearedUserIdsRef.current.add(otherUserId);
+            saveClearedUserIds(clearedUserIdsRef.current);
             setUnreadCounts(prev => {
+                if (!prev[otherUserId]) return prev;
                 const newCounts = { ...prev };
                 delete newCounts[otherUserId];
-                previousUnreadCountsRef.current = newCounts;
                 return newCounts;
             });
             
@@ -116,33 +161,11 @@ export default function ChatRoom({ roomId, onClose }) {
                 });
             }
         }
-    }, [isPrivateChat, roomId, user, onlineUsers]);
+    }, [isPrivateChat, roomId, user, onlineUsers, token]);
 
     // Handle back to groupchat
     const handleBackToGroupchat = () => {
-        // Refetch after 2 seconds to ensure backend has processed mark-as-read
-        // mark-as-read happens after 1s in useChat hook, so 2s is safe
-        setTimeout(() => {
-            if (token) {
-                axios.get(
-                    `${API_URL}/api/chat/private/unread-counts`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }
-                ).then(response => {
-                    if (response.data.success) {
-                        const newCounts = response.data.data.counts || {};
-                        previousUnreadCountsRef.current = newCounts;
-                        setUnreadCounts(newCounts);
-                    }
-                }).catch(err => {
-                    console.error('Error refetching unread counts:', err);
-                });
-            }
-        }, 2000);
-        
+        // No need to refetch - socket events will keep counts updated
         // Use replace to clear query param and not add to history
         router.replace('/chat', undefined, { shallow: false });
     };
@@ -177,44 +200,70 @@ export default function ChatRoom({ roomId, onClose }) {
         setSelectionMode(false);
     };
 
-    // Handle private chat click
+    // Handle private chat click - ULTRA SIMPLIFIED: Clear badge locally and mark as read ONCE
+    // No backend queries, no duplicate calls - just simple frontend state + one socket event
     const handlePrivateChatClick = async (targetUser) => {
-        try {
-            // Create or get private chat room
-            const response = await axios.post(
-                `${API_URL}/api/chat/private/create`,
-                { targetUserId: targetUser.userId },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
+        // Retry logic for 429 errors
+        const createPrivateChatWithRetry = async (attempt = 0) => {
+            try {
+                // Create or get private chat room
+                const response = await axios.post(
+                    `${API_URL}/api/chat/private/create`,
+                    { targetUserId: targetUser.userId },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
                     }
-                }
-            );
+                );
 
-            if (response.data.success) {
-                const privateRoomId = response.data.data.room.roomId;
+                if (response.data.success) {
+                    const privateRoomId = response.data.data.room.roomId;
+                    
+                    // 🔥 ULTRA SIMPLIFIED: Clear badge locally (instant UI update)
+                    clearedUserIdsRef.current.add(targetUser.userId);
+                    saveClearedUserIds(clearedUserIdsRef.current);
+                    setUnreadCounts(prev => {
+                        if (!prev[targetUser.userId]) return prev;
+                        const newCounts = { ...prev };
+                        delete newCounts[targetUser.userId];
+                        return newCounts;
+                    });
+                    
+                    // 🔥 Mark as read ONLY when user clicks chat icon (one socket event, no duplicate)
+                    // Use cooldown to prevent duplicate calls
+                    const now = Date.now();
+                    const lastCall = markAsReadCallRef.current[privateRoomId];
+                    if (!lastCall || (now - lastCall) > 5000) {
+                        markAsReadCallRef.current[privateRoomId] = now;
+                        if (socket && socketConnected) {
+                            socket.emit('room:mark-read', { roomId: privateRoomId });
+                        }
+                    }
+                    
+                    // Navigate to private chat
+                    router.push(`/chat?room=${privateRoomId}`);
+                }
+            } catch (error) {
+                // Retry on 429 with exponential backoff (max 2 retries)
+                if (error.response?.status === 429 && attempt < 2) {
+                    const retryDelay = Math.min(1000 * Math.pow(2, attempt), 5000);
+                    console.warn(`⚠️ Create private chat rate limited, retrying in ${retryDelay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, retryDelay));
+                    return createPrivateChatWithRetry(attempt + 1);
+                }
                 
-                // Clear unread count for this user immediately (optimistic update)
-                setUnreadCounts(prev => {
-                    const newCounts = { ...prev };
-                    delete newCounts[targetUser.userId];
-                    // Also update ref to prevent stale data
-                    previousUnreadCountsRef.current = newCounts;
-                    return newCounts;
-                });
-                
-                // Navigate to private chat
-                router.push(`/chat?room=${privateRoomId}`);
+                console.error('Error creating private chat:', error);
+                alert('Không thể tạo chat riêng. Vui lòng thử lại.');
             }
-        } catch (error) {
-            console.error('Error creating private chat:', error);
-            alert('Không thể tạo chat riêng. Vui lòng thử lại.');
-        }
+        };
+        
+        createPrivateChatWithRetry();
     };
 
     // 🔥 REAL-TIME: Listen for new private messages via Socket.io
     useEffect(() => {
-        if (!isConnected || !socket) return;
+        if (!socketConnected || !socket) return;
 
         const handlePrivateMessageNew = (data) => {
             console.log('🔔 Received private message notification:', data);
@@ -225,17 +274,38 @@ export default function ChatRoom({ roomId, onClose }) {
                                 otherParticipant.userId === data.fromUserId;
             
             if (!isInThisChat) {
-                // Update unread count instantly (no polling!)
+                // Update unread count instantly - socket events are the source of truth
+                // Remove from cleared set if new messages arrive
+                if (data.unreadCount > 0) {
+                    clearedUserIdsRef.current.delete(data.fromUserId);
+                    saveClearedUserIds(clearedUserIdsRef.current);
+                }
+                
                 setUnreadCounts(prev => ({
                     ...prev,
                     [data.fromUserId]: data.unreadCount
                 }));
                 
-                // Update ref to prevent duplicate notifications
-                previousUnreadCountsRef.current = {
-                    ...previousUnreadCountsRef.current,
-                    [data.fromUserId]: data.unreadCount
-                };
+                // 🔔 Play notification sound
+                try {
+                    if (audioRef.current) {
+                        // Clone audio to allow playing multiple times
+                        const audio = audioRef.current.cloneNode();
+                        audio.volume = 0.5;
+                        audio.play().catch(err => {
+                            console.warn('🔊 Audio play failed (may need user interaction):', err.message);
+                            // Fallback: try to play original audio
+                            audioRef.current.play().catch(() => {
+                                console.warn('🔊 Audio fallback also failed');
+                            });
+                        });
+                        console.log('🔊 Playing notification sound');
+                    } else {
+                        console.warn('🔊 Audio ref not initialized');
+                    }
+                } catch (error) {
+                    console.error('🔊 Error playing sound:', error);
+                }
                 
                 // Show notification popup
                 const sender = onlineUsers.find(u => u.userId === data.fromUserId);
@@ -252,114 +322,94 @@ export default function ChatRoom({ roomId, onClose }) {
             }
         };
 
-        // Register socket listener
+        // 🔥 SIMPLE: Listen for unread count updates - just update state
+        const handleUnreadUpdated = (data) => {
+            setUnreadCounts(prev => {
+                // If count is 0, remove from state
+                if (data.unreadCount === 0) {
+                    if (!prev[data.fromUserId]) return prev; // Already cleared
+                    clearedUserIdsRef.current.add(data.fromUserId); // Mark as cleared
+                    saveClearedUserIds(clearedUserIdsRef.current);
+                    const newCounts = { ...prev };
+                    delete newCounts[data.fromUserId];
+                    return newCounts;
+                }
+                
+                // If count changed, update it (and remove from cleared set if new messages arrive)
+                if (prev[data.fromUserId] !== data.unreadCount) {
+                    clearedUserIdsRef.current.delete(data.fromUserId); // Remove from cleared set if new messages
+                    saveClearedUserIds(clearedUserIdsRef.current);
+                    return {
+                        ...prev,
+                        [data.fromUserId]: data.unreadCount
+                    };
+                }
+                
+                return prev; // No change
+            });
+        };
+
+        // 🔥 SOCKET-BASED: Listen for mark as read confirmation
+        const handleRoomMarkedRead = (data) => {
+            // Socket confirmation that room was marked as read
+            // This is just for logging/debugging - unread count updates come via private:unread:updated
+            console.log(`✅ Room marked as read: ${data.roomId}, count: ${data.count}`);
+        };
+
+        // Register socket listeners
         socket.on('private:message:new', handlePrivateMessageNew);
+        socket.on('private:unread:updated', handleUnreadUpdated);
+        socket.on('room:marked-read', handleRoomMarkedRead);
 
         return () => {
             socket.off('private:message:new', handlePrivateMessageNew);
+            socket.off('private:unread:updated', handleUnreadUpdated);
+            socket.off('room:marked-read', handleRoomMarkedRead);
         };
-    }, [isConnected, socket, isPrivateChat, otherParticipant, onlineUsers]);
+    }, [socketConnected, socket, isPrivateChat, otherParticipant, onlineUsers]);
 
-    // Fetch unread counts for all users (BACKUP - reduced to 5 minutes)
+    // Initialize audio notification
     useEffect(() => {
-        if (!token || !user) return;
-
-        let retryDelay = 300000; // Start with 5 minutes (backup only)
-        let intervalId = null;
-        let isActive = true;
-
-        const fetchUnreadCounts = async () => {
-            // Don't fetch if tab is not visible (save bandwidth + reduce rate limit)
-            if (typeof document !== 'undefined' && document.hidden) {
-                return;
-            }
-
+        if (typeof window !== 'undefined') {
             try {
-                const response = await axios.get(
-                    `${API_URL}/api/chat/private/unread-counts`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }
-                );
-
-                if (response.data.success) {
-                    const newCounts = response.data.data.counts || {};
-                    
-                    // Check for new messages and show notification
-                    Object.keys(newCounts).forEach(userId => {
-                        const oldCount = previousUnreadCountsRef.current[userId] || 0;
-                        const newCount = newCounts[userId] || 0;
-                        
-                        // Show notification only if:
-                        // 1. Count increased (new message)
-                        // 2. NOT in private chat with this user
-                        if (newCount > oldCount) {
-                            const isChattingWithThisUser = isPrivateChat && otherParticipant && otherParticipant.userId === userId;
-                            if (!isChattingWithThisUser) {
-                                const sender = onlineUsers.find(u => u.userId === userId);
-                                if (sender) {
-                                    showNewMessageNotification(sender);
-                                }
-                            }
-                        }
-                    });
-                    
-                    // Update both state and ref - use backend as single source of truth
-                    previousUnreadCountsRef.current = newCounts;
-                    setUnreadCounts(newCounts);
-                    
-                    // Reset retry delay on success
-                    retryDelay = 30000; // Back to 30 seconds
-                }
-            } catch (error) {
-                console.error('Error fetching unread counts:', error.message || error);
+                const audio = new Audio('/soundChat.mp3');
+                audio.volume = 0.5; // 50% volume
+                audio.preload = 'auto';
+                // Try to load audio to avoid autoplay issues
+                audio.load();
+                audioRef.current = audio;
+                console.log('🔊 Audio notification initialized');
                 
-                // Handle 429 - Exponential backoff
-                if (error.response?.status === 429) {
-                    retryDelay = Math.min(retryDelay * 2, 300000); // Max 5 minutes
-                    console.warn(`⚠️ Rate limit hit. Increasing interval to ${retryDelay / 1000}s`);
-                    
-                    // Clear existing interval and create new one with longer delay
-                    if (intervalId) {
-                        clearInterval(intervalId);
+                // Unlock audio on user interaction (required by browser autoplay policy)
+                const unlockAudio = async () => {
+                    if (audioRef.current) {
+                        try {
+                            await audioRef.current.play();
+                            audioRef.current.pause();
+                            audioRef.current.currentTime = 0;
+                            console.log('🔊 Audio unlocked via user interaction');
+                        } catch (err) {
+                            // Silent fail - will try again on actual play
+                        }
                     }
-                    if (isActive) {
-                        intervalId = setInterval(fetchUnreadCounts, retryDelay);
-                    }
-                }
+                };
+                
+                // Unlock on any user interaction
+                const events = ['click', 'touchstart', 'keydown'];
+                events.forEach(event => {
+                    document.addEventListener(event, unlockAudio, { once: true, passive: true });
+                });
+            } catch (error) {
+                console.error('Failed to initialize audio:', error);
             }
-        };
-
-        // Fetch initially (backup in case socket event was missed)
-        fetchUnreadCounts();
-
-        // Refetch every 5 minutes (BACKUP ONLY - Socket.io provides real-time updates)
-        intervalId = setInterval(fetchUnreadCounts, retryDelay);
-
-        // Resume fetching when tab becomes visible again
-        const handleVisibilityChange = () => {
-            if (!document.hidden && isActive) {
-                fetchUnreadCounts();
-            }
-        };
-        
-        if (typeof document !== 'undefined') {
-            document.addEventListener('visibilitychange', handleVisibilityChange);
         }
+    }, []);
 
-        return () => {
-            isActive = false;
-            clearInterval(intervalId);
-            if (typeof document !== 'undefined') {
-                document.removeEventListener('visibilitychange', handleVisibilityChange);
-            }
-            if (notificationTimeoutRef.current) {
-                clearTimeout(notificationTimeoutRef.current);
-            }
-        };
-    }, [token, user, onlineUsers, isPrivateChat, otherParticipant]);
+    // 🔥 SIMPLIFIED: No initial fetch - unread counts are managed by socket events only
+    // When a new private message arrives, socket event will increment the count
+    // When user clicks chat icon, we clear the count locally (no backend query needed)
+    // This eliminates the 429 error from /api/chat/private/unread-counts
+
 
     // Show new message notification
     const showNewMessageNotification = (sender) => {
@@ -383,20 +433,65 @@ export default function ChatRoom({ roomId, onClose }) {
     const handleMessageClick = (message) => {
         if (!selectionMode) {
             setSelectedMessage(message);
-            setShowMessageModal(true);
+            setShowMessageActionModal(true);
         }
     };
 
-    const handleMessageEdited = () => {
-        // Message will be updated via socket event
-        setShowMessageModal(false);
-        setSelectedMessage(null);
+    const handleReply = (message) => {
+        setReplyingTo(message);
+        setShowMessageActionModal(false);
+        // Focus input
+        setTimeout(() => {
+            const input = document.querySelector(`textarea[class*="input"]`);
+            if (input) {
+                input.focus();
+            }
+        }, 100);
     };
 
-    const handleMessageDeleted = () => {
-        // Message will be removed via socket event
-        setShowMessageModal(false);
-        setSelectedMessage(null);
+    const handleCancelReply = () => {
+        setReplyingTo(null);
+    };
+
+    const handleEdit = async (message) => {
+        setEditingMessage(message);
+        setEditing(true);
+        setShowMessageActionModal(false);
+    };
+
+    const handleSaveEdit = async (content) => {
+        if (!editingMessage || !content.trim()) return;
+        
+        setEditing(true);
+        try {
+            await editMessage(roomId, editingMessage.id || editingMessage._id, content.trim());
+            setEditingMessage(null);
+        } catch (error) {
+            console.error('Edit error:', error);
+            alert(error.message || 'Lỗi khi sửa tin nhắn');
+        } finally {
+            setEditing(false);
+        }
+    };
+
+    const handleDelete = async (message) => {
+        if (!message) return;
+        
+        if (!confirm('Bạn có chắc chắn muốn xóa tin nhắn này?')) {
+            return;
+        }
+        
+        setDeleting(true);
+        try {
+            await deleteMessage(roomId, message.id || message._id);
+            setShowMessageActionModal(false);
+            setSelectedMessage(null);
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert(error.message || 'Lỗi khi xóa tin nhắn');
+        } finally {
+            setDeleting(false);
+        }
     };
 
     const handleAvatarClick = () => {
@@ -436,6 +531,10 @@ export default function ChatRoom({ roomId, onClose }) {
             if (response.data.success) {
                 // Update user in auth context immediately for real-time display
                 const avatarUrl = response.data.data.url || response.data.data.user?.avatar;
+                
+                // Reset avatarFailed when new avatar is uploaded
+                setAvatarFailed(false);
+                
                 const updatedUser = {
                     ...user,
                     avatar: avatarUrl
@@ -488,22 +587,41 @@ export default function ChatRoom({ roomId, onClose }) {
                         onChange={handleAvatarUpload}
                         disabled={uploadingAvatar}
                     />
+                    {isPrivateChat && (
+                        <button
+                            className={styles.backButton}
+                            onClick={handleBackToGroupchat}
+                            title="Quay lại groupchat"
+                        >
+                            <ArrowLeft size={18} />
+                            <span className={styles.backButtonText}>Groupchat</span>
+                        </button>
+                    )}
                     {user ? (
                         <div 
                             className={styles.userAvatar}
                             onClick={handleAvatarClick}
                             style={{ 
-                                backgroundColor: user.avatar ? 'transparent' : getColorFromLetter(getFirstLetter(user.displayName || user.username))
+                                backgroundColor: (user.avatar && !avatarFailed) ? 'transparent' : getColorFromLetter(getFirstLetter(user.displayName || user.username))
                             }}
                             title={uploadingAvatar ? 'Đang upload...' : 'Nhấn để đổi avatar'}
                         >
-                            {user.avatar ? (
+                            {user.avatar && !avatarFailed ? (
                                 <img 
                                     key={user.avatar} // Force re-render when avatar URL changes
                                     src={`${API_URL}${user.avatar}`}
                                     alt={user.displayName || user.username}
                                     className={styles.avatarImage}
                                     crossOrigin="anonymous"
+                                    onError={() => {
+                                        setAvatarFailed(true);
+                                        console.warn(`Avatar failed to load: ${user.avatar}`);
+                                    }}
+                                    onLoad={() => {
+                                        // Successfully loaded - ensure failed state is cleared
+                                        setAvatarFailed(false);
+                                    }}
+                                    loading="lazy"
                                 />
                             ) : (
                                 <span className={styles.avatarInitial}>{getFirstLetter(user.displayName || user.username)}</span>
@@ -536,15 +654,6 @@ export default function ChatRoom({ roomId, onClose }) {
                     </div>
                 </div>
                 <div className={styles.chatHeaderRight}>
-                    {isPrivateChat && (
-                        <button
-                            className={styles.backButton}
-                            onClick={handleBackToGroupchat}
-                            title="Quay lại groupchat"
-                        >
-                            ← Groupchat
-                        </button>
-                    )}
                     {isAdmin && (
                         <>
                             {selectionMode ? (
@@ -618,12 +727,21 @@ export default function ChatRoom({ roomId, onClose }) {
 
             {/* Content */}
             <div className={styles.chatContent}>
-                {/* User List Sidebar */}
+                {/* Overlay mờ nhẹ khi UserList mở - chỉ hiện trên mobile */}
+                {showUserList && (
+                    <div 
+                        className={styles.userListOverlay}
+                        onClick={() => setShowUserList(false)}
+                        aria-label="Đóng danh sách thành viên"
+                    />
+                )}
+                
+                {/* User List Sidebar - Can be shown in both groupchat and private chat */}
                 {showUserList && (
                     <div className={styles.userListSidebar}>
                         <UserList 
                             users={onlineUsers}
-                            currentUserId={user?._id}
+                            currentUserId={user?.id}
                             currentUserRole={user?.role}
                             onPrivateChatClick={handlePrivateChatClick}
                             unreadCounts={unreadCounts}
@@ -643,7 +761,7 @@ export default function ChatRoom({ roomId, onClose }) {
                             <MessageList
                                 messages={messages}
                                 typingUsers={typingUsers}
-                                currentUserId={user?._id}
+                                currentUserId={user?.id}
                                 messagesEndRef={messagesEndRef}
                                 selectionMode={selectionMode}
                                 selectedMessages={selectedMessages}
@@ -684,6 +802,8 @@ export default function ChatRoom({ roomId, onClose }) {
                 disabled={!isConnected}
                 mentions={mentions}
                 onCancelMentions={() => setMentions([])}
+                replyTo={replyingTo}
+                onCancelReply={handleCancelReply}
             />
 
             {/* QR Code Modal */}
@@ -692,22 +812,49 @@ export default function ChatRoom({ roomId, onClose }) {
                 onClose={() => setShowQRCode(false)}
             />
 
-            {/* Message Modal */}
-            <MessageModal
-                isOpen={showMessageModal}
+            {/* Message Action Modal */}
+            <MessageActionModal
+                isOpen={showMessageActionModal}
                 onClose={() => {
-                    setShowMessageModal(false);
+                    setShowMessageActionModal(false);
                     setSelectedMessage(null);
                 }}
                 message={selectedMessage}
-                currentUserId={user?._id}
+                currentUserId={user?.id}
                 isAdmin={isAdmin}
-                onMessageEdited={handleMessageEdited}
-                onMessageDeleted={handleMessageDeleted}
-                roomId={roomId}
-                deleteMessage={deleteMessage}
-                editMessage={editMessage}
+                onReply={handleReply}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                editing={editing}
+                deleting={deleting}
             />
+            
+            {/* Edit Modal - Reuse existing MessageModal for editing */}
+            {editingMessage && (
+                <MessageModal
+                    isOpen={!!editingMessage}
+                    onClose={() => {
+                        setEditingMessage(null);
+                        setEditing(false);
+                    }}
+                    message={editingMessage}
+                    currentUserId={user?.id}
+                    isAdmin={isAdmin}
+                    onMessageEdited={() => {
+                        setEditingMessage(null);
+                        setEditing(false);
+                    }}
+                    onMessageDeleted={() => {
+                        setEditingMessage(null);
+                        setEditing(false);
+                    }}
+                    roomId={roomId}
+                    deleteMessage={deleteMessage}
+                    editMessage={async (roomId, messageId, content) => {
+                        await handleSaveEdit(content);
+                    }}
+                />
+            )}
         </div>
     );
 }

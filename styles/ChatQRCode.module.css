@@ -134,30 +134,90 @@
     border: 1px solid #e5e7eb;
 }
 
-.copyButton {
+/* Share buttons container */
+.shareButtons {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Share button - chỉ hiển thị icon */
+.shareButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
     border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
+    border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s;
-    width: 100%;
-    justify-content: center;
+    background: #f3f4f6;
+    color: #6b7280;
+    flex-shrink: 0;
 }
 
-.copyButton:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+.shareButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.copyButton:active {
+.shareButton:active {
     transform: translateY(0);
+}
+
+/* Copy button - màu xanh */
+.shareButton:first-child {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.shareButton:first-child:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #653a90 100%);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Facebook button - màu Facebook */
+.shareButton:nth-child(2) {
+    background: #1877f2;
+    color: white;
+}
+
+.shareButton:nth-child(2):hover {
+    background: #166fe5;
+    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
+}
+
+/* Telegram button - màu Telegram */
+.shareButton:nth-child(3) {
+    background: #0088cc;
+    color: white;
+}
+
+.shareButton:nth-child(3):hover {
+    background: #0077b5;
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.4);
+}
+
+/* Copy success state */
+.shareButton:first-child[title*="Đã sao chép"] {
+    background: #10b981;
+    animation: successPulse 0.3s ease-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* Mobile responsive */

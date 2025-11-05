@@ -105,7 +105,7 @@ export default function ChatPage() {
                     if (error.response?.status === 429) {
                         setError('Quá nhiều yêu cầu. Vui lòng đợi 1-2 phút rồi thử lại.');
                     } else {
-                        setError('Lỗi khi kiểm tra quyền truy cập');
+                    setError('Lỗi khi kiểm tra quyền truy cập');
                     }
                     setLoading(false);
                 }
@@ -288,11 +288,44 @@ export default function ChatPage() {
         );
     }
 
+    // Get chat URL for sharing
+    const chatUrl = typeof window !== 'undefined' 
+        ? (process.env.NODE_ENV === 'production' 
+            ? 'https://www.taodandewukong.pro/chat' 
+            : `${window.location.origin}/chat`)
+        : '/chat';
+    
+    // Open Graph image URL - use QR code image for sharing
+    // QR code image URL using qr-server.com API (generates QR code with chat URL)
+    const ogImage = typeof window !== 'undefined'
+        ? `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent(chatUrl)}&bgcolor=ffffff&color=000000&format=png`
+        : `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent('https://www.taodandewukong.pro/chat')}&bgcolor=ffffff&color=000000&format=png`;
+    
+    const ogTitle = 'Group Chat Chốt Dàn 3 Miền Wukong';
+    const ogDescription = 'Tham gia Group Chat để chia sẻ và thảo luận về dàn đề chốt số 3 miền cùng cộng đồng Wukong';
+
     return (
         <>
             <Head>
                 <title>Chat - Group Chat | Dàn Đề Wukong</title>
                 <meta name="description" content="Group chat - Trò chuyện với mọi người trong cộng đồng Dàn Đề Wukong" />
+                
+                {/* Open Graph / Facebook */}
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={chatUrl} />
+                <meta property="og:title" content={ogTitle} />
+                <meta property="og:description" content={ogDescription} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta property="og:image:alt" content="Group Chat Chốt Dàn 3 Miền Wukong" />
+                
+                {/* Twitter Card */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:url" content={chatUrl} />
+                <meta name="twitter:title" content={ogTitle} />
+                <meta name="twitter:description" content={ogDescription} />
+                <meta name="twitter:image" content={ogImage} />
             </Head>
             <div className={styles.chatPage}>
                 <div className={styles.chatLayout}>
@@ -313,7 +346,7 @@ export default function ChatPage() {
                             />
                         )}
                         {!showVerification && roomId && (
-                            <ChatRoom key={roomId} roomId={roomId} />
+                            <ChatRoom roomId={roomId} />
                         )}
                     </div>
                     

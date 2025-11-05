@@ -57,6 +57,8 @@ const getFirstLetter = (name) => {
 export default function UserList({ users, currentUserId, currentUserRole, onPrivateChatClick, unreadCounts = {} }) {
     // State to force re-render every minute for time updates
     const [, setUpdateTick] = useState(0);
+    // Track failed avatar images (404) to show fallback
+    const [failedAvatars, setFailedAvatars] = useState(new Set());
     
     // Update time display every minute
     useEffect(() => {
@@ -66,6 +68,15 @@ export default function UserList({ users, currentUserId, currentUserRole, onPriv
         
         return () => clearInterval(interval);
     }, []);
+    
+    // Handle avatar image error (404 or other errors)
+    const handleAvatarError = (userId, avatarUrl) => {
+        setFailedAvatars(prev => {
+            const newSet = new Set(prev);
+            newSet.add(`${userId}_${avatarUrl}`);
+            return newSet;
+        });
+    };
     
     // Check if current user can chat with target user
     const canChatWith = (targetUser) => {
@@ -120,20 +131,26 @@ export default function UserList({ users, currentUserId, currentUserRole, onPriv
                     const showChatIcon = canChatWith(user);
                     const unreadCount = unreadCounts[user.userId] || 0;
 
+                    const avatarKey = `${user.userId}_${user.avatar}`;
+                    const avatarFailed = user.avatar && failedAvatars.has(avatarKey);
+                    const showAvatar = user.avatar && !avatarFailed;
+
                     return (
                         <div key={user.userId} className={`${styles.userItem} ${!isOnline ? styles.userOffline : ''}`}>
                             <div 
                                 className={styles.userAvatar}
                                 style={{ 
-                                    backgroundColor: user.avatar ? 'transparent' : avatarColor
+                                    backgroundColor: showAvatar ? 'transparent' : avatarColor
                                 }}
                             >
-                                {user.avatar ? (
+                                {showAvatar ? (
                                     <img 
                                         src={`${API_URL}${user.avatar}`}
                                         alt={displayName}
                                         className={styles.avatarImage}
                                         crossOrigin="anonymous"
+                                        onError={() => handleAvatarError(user.userId, user.avatar)}
+                                        loading="lazy"
                                     />
                                 ) : (
                                     <span className={styles.avatarInitial}>{initial}</span>

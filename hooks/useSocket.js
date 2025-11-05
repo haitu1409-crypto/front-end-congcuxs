@@ -71,12 +71,12 @@ export const useSocket = () => {
         socketClient.on('disconnected', handleDisconnect);
         socketClient.on('connection_error', handleError);
 
-        // Heartbeat: Send ping every 30 seconds to maintain online status
+        // 🔥 OPTIMIZED: Heartbeat reduced from 30s to 15s for better online status accuracy
         const heartbeatInterval = setInterval(() => {
             if (socketClient.isConnected && socketRef.current) {
                 socketRef.current.emit('ping');
             }
-        }, 30000); // 30 seconds
+        }, 15000); // 15 seconds (reduced from 30s)
 
         // Cleanup
         return () => {

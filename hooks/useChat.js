@@ -26,19 +26,57 @@ export const useChat = (roomId) => {
     // Message queue for batching updates (reduce re-renders)
     const messageQueueRef = useRef([]);
     const messageQueueTimerRef = useRef(null);
+    // Message Map for O(1) lookup instead of O(n) find
+    const messageMapRef = useRef(new Map());
+    // Scroll throttling (supports both requestAnimationFrame and setTimeout)
+    const scrollTimeoutRef = useRef(null);
+    const scrollIsRAFRef = useRef(false); // Track if using requestAnimationFrame
+    const lastScrollTimeRef = useRef(0);
     
     // Typing indicator throttling (prevent spam)
     const lastTypingEmitRef = useRef(0);
     const typingThrottleDelay = 2000; // 2 seconds
     
-    // Audio notification for private chat
+    // Mark as read call tracking (prevent duplicate calls)
+    const markAsReadCallRef = useRef({});
+    
+    // Audio notification for new messages
     const audioRef = useRef(null);
     
     // Initialize audio
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            audioRef.current = new Audio('/soundChat.mp3');
-            audioRef.current.volume = 0.5; // 50% volume
+            try {
+                const audio = new Audio('/soundChat.mp3');
+                audio.volume = 0.5; // 50% volume
+                audio.preload = 'auto';
+                // Try to load audio to avoid autoplay issues
+                audio.load();
+                audioRef.current = audio;
+                console.log('🔊 Audio notification initialized in useChat');
+                
+                // Unlock audio on user interaction (required by browser autoplay policy)
+                const unlockAudio = async () => {
+                    if (audioRef.current) {
+                        try {
+                            await audioRef.current.play();
+                            audioRef.current.pause();
+                            audioRef.current.currentTime = 0;
+                            console.log('🔊 Audio unlocked via user interaction in useChat');
+                        } catch (err) {
+                            // Silent fail - will try again on actual play
+                        }
+                    }
+                };
+                
+                // Unlock on any user interaction
+                const events = ['click', 'touchstart', 'keydown'];
+                events.forEach(event => {
+                    document.addEventListener(event, unlockAudio, { once: true, passive: true });
+                });
+            } catch (error) {
+                console.error('Failed to initialize audio:', error);
+            }
         }
     }, []);
 
@@ -56,39 +94,66 @@ export const useChat = (roomId) => {
             return;
         }
 
-        try {
-            setLoading(true);
-            const response = await axios.get(`${API_URL}/api/chat/room/${roomId}/messages`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+        // Retry logic for 429 errors
+        const loadMessagesWithRetry = async (attempt = 0) => {
+            try {
+                setLoading(true);
+                const response = await axios.get(`${API_URL}/api/chat/room/${roomId}/messages`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-            if (response.data.success) {
-                setMessages(response.data.data.messages || []);
-                messagesLoadedRef.current = true;
-                lastRoomIdRef.current = roomId;
-                setTimeout(scrollToBottom, 100);
+                if (response.data.success) {
+                    setMessages(response.data.data.messages || []);
+                    messagesLoadedRef.current = true;
+                    lastRoomIdRef.current = roomId;
+                    setTimeout(scrollToBottom, 100);
+                }
+            } catch (error) {
+                // Retry on 429 with exponential backoff (max 2 retries)
+                if (error.response?.status === 429 && attempt < 2) {
+                    const retryDelay = Math.min(1000 * Math.pow(2, attempt), 5000);
+                    console.warn(`⚠️ Load messages rate limited, retrying in ${retryDelay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, retryDelay));
+                    return loadMessagesWithRetry(attempt + 1);
+                }
+                
+                // Log error only if not 429 or after max retries
+                if (error.response?.status !== 429) {
+                    console.error('Load messages error:', error);
+                }
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            console.error('Load messages error:', error);
-        } finally {
-            setLoading(false);
-        }
+        };
+        
+        loadMessagesWithRetry();
     }, [roomId, token, scrollToBottom]);
 
     // Send message
-    const sendMessage = useCallback(async (content, replyToId = null, mentions = []) => {
+    const sendMessage = useCallback(async (content, replyToId = null, mentions = [], replyTo = null) => {
         if (!content.trim() || !roomId || sending) return;
 
         try {
             setSending(true);
-            emit('message:send', {
+            const messageData = {
                 roomId,
                 content: content.trim(),
                 type: 'text',
                 mentions: mentions
-            });
+            };
+            
+            // Add replyTo if provided (can be a message object or message ID)
+            if (replyTo) {
+                if (typeof replyTo === 'object' && (replyTo.id || replyTo._id)) {
+                    messageData.replyTo = replyTo.id || replyTo._id;
+                } else if (typeof replyTo === 'string') {
+                    messageData.replyTo = replyTo;
+                }
+            }
+            
+            emit('message:send', messageData);
             
             // Scroll to bottom after sending message
             setTimeout(() => {
@@ -294,60 +359,109 @@ export const useChat = (roomId) => {
                     clearTimeout(messageQueueTimerRef.current);
                 }
                 
-                // Batch update after 50ms (or immediately if queue is large)
-                const delay = messageQueueRef.current.length > 10 ? 0 : 50;
+                // 🔥 OPTIMIZED: Reduced delay from 16ms to 8ms for ultra-low latency (120fps feel)
+                // Or immediately if queue is large (burst messages) - threshold reduced from 10 to 5
+                const delay = messageQueueRef.current.length > 5 ? 0 : 8;
                 
                 messageQueueTimerRef.current = setTimeout(() => {
                     if (messageQueueRef.current.length === 0) return;
                     
                     let hasNewMessage = false;
+                    let shouldPlaySound = false;
                     const queuedMessages = [...messageQueueRef.current];
                     messageQueueRef.current = []; // Clear queue
                     
                     setMessages(prev => {
-                        const newMessages = [...prev];
-                        let shouldPlaySound = false;
+                        // Use Map for O(1) lookup instead of O(n) find
+                        const messagesMap = new Map();
+                        let isPrivateChat = roomId && roomId.startsWith('private_');
                         
+                        // Add existing messages to Map (maintain sorted order from prev)
+                        prev.forEach(msg => {
+                            const msgId = (msg.id || msg._id).toString();
+                            messagesMap.set(msgId, msg);
+                        });
+                        
+                        // Add new messages (deduplication with O(1) lookup)
                         queuedMessages.forEach(msg => {
-                            const exists = newMessages.find(m => {
-                                const existingId = m.id || m._id;
-                                const newId = msg.id || msg._id;
-                                return existingId === newId;
-                            });
-                            if (!exists) {
-                                newMessages.push(msg);
+                            const msgId = (msg.id || msg._id).toString();
+                            if (!messagesMap.has(msgId)) {
+                                messagesMap.set(msgId, msg);
                                 hasNewMessage = true;
                                 
-                                // Check if should play sound for private chat
-                                const isPrivateChat = roomId && roomId.startsWith('private_');
-                                const isFromOther = msg.senderId !== user?._id;
-                                if (isPrivateChat && isFromOther) {
+                                // Check if should play sound (both private chat and groupchat)
+                                const isFromOther = msg.senderId !== user?.id;
+                                if (isFromOther) {
                                     shouldPlaySound = true;
                                 }
                             }
                         });
                         
-                        // Play sound if needed
-                        if (shouldPlaySound && audioRef.current) {
-                            audioRef.current.play().catch(err => {
-                                console.log('Audio play failed:', err.message);
-                            });
-                        }
+                        // Convert Map back to sorted array (only sort if needed)
+                        const result = Array.from(messagesMap.values()).sort((a, b) => {
+                            const timeA = new Date(a.createdAt).getTime();
+                            const timeB = new Date(b.createdAt).getTime();
+                            return timeA - timeB;
+                        });
                         
-                        return newMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                        // Update message map ref for next batch
+                        messageMapRef.current = new Map(result.map(msg => {
+                            const msgId = (msg.id || msg._id).toString();
+                            return [msgId, msg];
+                        }));
+                        
+                        return result;
                     });
                     
-                    // Scroll to bottom when new message arrives
-                    if (hasNewMessage) {
-                        setTimeout(() => {
-                            if (messagesEndRef.current) {
-                                messagesEndRef.current.scrollIntoView({ 
-                                    behavior: 'smooth',
-                                    block: 'end',
-                                    inline: 'nearest'
+                    // Play sound if needed
+                    if (shouldPlaySound) {
+                        try {
+                            if (audioRef.current) {
+                                // Clone audio to allow playing multiple times
+                                const audio = audioRef.current.cloneNode();
+                                audio.volume = 0.5;
+                                audio.play().catch(err => {
+                                    console.warn('🔊 Audio play failed (may need user interaction):', err.message);
+                                    // Fallback: try to play original audio
+                                    audioRef.current.play().catch(() => {
+                                        console.warn('🔊 Audio fallback also failed');
+                                    });
                                 });
+                                console.log('🔊 Playing notification sound for new message');
+                            } else {
+                                console.warn('🔊 Audio ref not initialized in useChat');
                             }
-                        }, 100);
+                        } catch (error) {
+                            console.error('🔊 Error playing sound:', error);
+                        }
+                    }
+                    
+                    // 🔥 OPTIMIZED: Use requestAnimationFrame for smoother scroll (reduced throttle from 100ms to 16ms)
+                    if (hasNewMessage) {
+                        const now = Date.now();
+                        if (now - lastScrollTimeRef.current > 16) { // 1 frame at 60fps instead of 100ms
+                            lastScrollTimeRef.current = now;
+                            if (scrollTimeoutRef.current) {
+                                // Clean up previous animation frame or timeout
+                                if (scrollIsRAFRef.current) {
+                                    cancelAnimationFrame(scrollTimeoutRef.current);
+                                } else {
+                                    clearTimeout(scrollTimeoutRef.current);
+                                }
+                            }
+                            // Use requestAnimationFrame for smoother, frame-synced scrolling
+                            scrollIsRAFRef.current = true;
+                            scrollTimeoutRef.current = requestAnimationFrame(() => {
+                                if (messagesEndRef.current) {
+                                    messagesEndRef.current.scrollIntoView({ 
+                                        behavior: 'smooth',
+                                        block: 'end',
+                                        inline: 'nearest'
+                                    });
+                                }
+                                scrollTimeoutRef.current = null;
+                            });
+                        }
                     }
                 }, delay);
             }
@@ -356,9 +470,16 @@ export const useChat = (roomId) => {
         // Message history handler
         const handleMessagesHistory = (data) => {
             if (data.roomId === roomId) {
-                setMessages(data.messages || []);
+                const messages = data.messages || [];
+                setMessages(messages);
+                // Update message map ref for O(1) lookups
+                messageMapRef.current = new Map(messages.map(msg => {
+                    const msgId = (msg.id || msg._id).toString();
+                    return [msgId, msg];
+                }));
                 messagesLoadedRef.current = true;
-                setTimeout(() => {
+                // 🔥 OPTIMIZED: Use requestAnimationFrame for smoother initial scroll
+                requestAnimationFrame(() => {
                     if (messagesEndRef.current) {
                         messagesEndRef.current.scrollIntoView({ 
                             behavior: 'smooth',
@@ -366,13 +487,13 @@ export const useChat = (roomId) => {
                             inline: 'nearest'
                         });
                     }
-                }, 100);
+                });
             }
         };
 
         // Typing handlers
         const handleTypingUser = (data) => {
-            if (data.roomId === roomId && data.userId !== user?._id) {
+            if (data.roomId === roomId && data.userId !== user?.id) {
                 setTypingUsers(prev => {
                     const exists = prev.find(u => u.userId === data.userId);
                     if (!exists) {
@@ -542,56 +663,31 @@ export const useChat = (roomId) => {
             on('error', handleError);
         }
 
-        // Load initial messages only once per room (using ref to prevent re-load)
+        // 🔥 FIX: Use loadMessages function instead of duplicate axios.get
+        // This ensures retry logic and prevents duplicate calls
         const shouldLoad = !messagesLoadedRef.current || lastRoomIdRef.current !== roomId;
-        let messagesMounted = true;
-        const messagesAbortController = new AbortController();
-        
         if (shouldLoad && roomId && token) {
-            setLoading(true);
-            // Load messages directly here to avoid dependency issues
-            axios.get(`${API_URL}/api/chat/room/${roomId}/messages`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                signal: messagesAbortController.signal
-            }).then(response => {
-                if (!messagesMounted) return;
-                
-                if (response.data.success) {
-                    setMessages(response.data.data.messages || []);
-                    messagesLoadedRef.current = true;
-                    lastRoomIdRef.current = roomId;
-                    setTimeout(() => {
-                        if (messagesMounted && messagesEndRef.current) {
-                            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    }, 100);
-                }
-            }).catch(error => {
-                if (axios.isCancel(error) || error.name === 'AbortError') {
-                    return; // Ignore cancel errors
-                }
-                if (messagesMounted) {
-                    console.error('Load messages error:', error);
-                }
-            }).finally(() => {
-                if (messagesMounted) {
-                    setLoading(false);
-                }
-            });
+            loadMessages();
         }
 
         // Cleanup
         return () => {
-            messagesMounted = false;
-            messagesAbortController.abort();
-            
             // Clear message queue timer
             if (messageQueueTimerRef.current) {
                 clearTimeout(messageQueueTimerRef.current);
             }
+            if (scrollTimeoutRef.current) {
+                // Clean up properly based on type
+                if (scrollIsRAFRef.current) {
+                    cancelAnimationFrame(scrollTimeoutRef.current);
+                } else {
+                    clearTimeout(scrollTimeoutRef.current);
+                }
+                scrollTimeoutRef.current = null;
+                scrollIsRAFRef.current = false;
+            }
             messageQueueRef.current = [];
+            messageMapRef.current.clear();
             
             off('messages:batch', handleMessagesBatch);
             off('messages:history', handleMessagesHistory);
@@ -614,45 +710,12 @@ export const useChat = (roomId) => {
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isConnected, roomId, user?._id, token]); // Remove on, off, socket from dependencies to prevent infinite loop
+    }, [isConnected, roomId, user?.id, token]); // Remove on, off, socket from dependencies to prevent infinite loop
 
-    // Mark as read when messages loaded (debounced to prevent infinite loop)
-    useEffect(() => {
-        if (messages.length === 0 || !roomId || !token) return;
-        
-        let isMounted = true;
-        const abortController = new AbortController();
-        
-        // Debounce mark as read
-        const timeoutId = setTimeout(() => {
-            if (!isMounted) return;
-            
-            axios.post(`${API_URL}/api/chat/room/${roomId}/read`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                signal: abortController.signal
-            }).then(() => {
-                // Emit socket event to update unread counts for other tabs/devices
-                if (emit) {
-                    emit('messages:read', { roomId });
-                }
-            }).catch(err => {
-                if (!axios.isCancel(err) && err.name !== 'AbortError') {
-                    // Only log if not 429 (rate limit is handled at higher level)
-                    if (err.response?.status !== 429) {
-                        console.error('Mark as read error:', err.message || err);
-                    }
-                }
-            });
-        }, 1000); // Wait 1 second after messages load
-
-        return () => {
-            isMounted = false;
-            clearTimeout(timeoutId);
-            abortController.abort();
-        };
-    }, [messages.length, roomId, token, emit]); // Only depend on messages.length, not messages array
+    // 🔥 REMOVED: Auto mark as read when loading messages
+    // This was causing too many socket events and potential 429 errors
+    // Mark as read is now ONLY done when user clicks chat icon (manual action)
+    // This simplifies the logic and reduces unnecessary backend queries
 
     return {
         messages,

@@ -20,9 +20,18 @@ class SocketClient {
             return this.socket;
         }
 
-        const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 
+        // Get socket URL - normalize to http/https (Socket.io will handle ws:// conversion)
+        let SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 
                           process.env.NEXT_PUBLIC_API_URL || 
                           'http://localhost:5000';
+
+        // Normalize URL: remove ws:// or wss:// prefix, use http:// or https://
+        // Socket.io client will automatically convert to ws:// or wss://
+        if (SOCKET_URL.startsWith('ws://')) {
+            SOCKET_URL = SOCKET_URL.replace('ws://', 'http://');
+        } else if (SOCKET_URL.startsWith('wss://')) {
+            SOCKET_URL = SOCKET_URL.replace('wss://', 'https://');
+        }
 
         if (!token) {
             console.error('❌ No token provided for socket connection');
@@ -31,6 +40,8 @@ class SocketClient {
 
         console.log('🔌 Connecting to socket server:', SOCKET_URL);
         
+        // 🔥 FIX: Try polling first if WebSocket fails, then upgrade
+        // This ensures connection works even if WebSocket is blocked
         this.socket = io(SOCKET_URL, {
             auth: {
                 token: token
@@ -38,15 +49,16 @@ class SocketClient {
             query: {
                 token: token // Also send in query as fallback
             },
-            // Performance optimizations
-            transports: ['websocket', 'polling'],
+            // 🔥 FIX: Try polling first, then upgrade to WebSocket (better compatibility)
+            // This handles cases where WebSocket is blocked by firewall/proxy
+            transports: ['polling', 'websocket'], // Polling first for better compatibility
             upgrade: true,
             rememberUpgrade: true,
             // Reconnection strategy with exponential backoff
             reconnection: true,
             reconnectionDelay: 1000,
-            reconnectionDelayMax: 10000, // Increased from 5000
-            reconnectionAttempts: 10, // Increased from 5
+            reconnectionDelayMax: 10000,
+            reconnectionAttempts: 10,
             timeout: 20000,
             forceNew: false, // Reuse connection if possible
             // Additional performance options
@@ -54,7 +66,9 @@ class SocketClient {
             multiplex: true, // Enable connection multiplexing
             // Reduce overhead
             perMessageDeflate: false, // Disable client-side compression (server handles it)
-            path: '/socket.io/'
+            path: '/socket.io/',
+            // 🔥 FIX: Better error handling
+            withCredentials: true
         });
 
         // Connection events
@@ -65,10 +79,27 @@ class SocketClient {
             
             // Log connection info
             console.log('📊 Socket ID:', this.socket.id);
-            console.log('📊 Transport:', this.socket.io.engine.transport.name);
+            const transport = this.socket.io?.engine?.transport?.name || 'unknown';
+            console.log('📊 Transport:', transport);
+            
+            // If using polling, log that it will upgrade to WebSocket
+            if (transport === 'polling') {
+                console.log('📊 Will upgrade to WebSocket when available');
+            }
             
             // Emit custom event instead of 'connect' (reserved)
             this.notifyListeners('connected');
+        });
+        
+        // 🔥 FIX: Listen for transport upgrade events
+        this.socket.io.on('upgrade', () => {
+            const transport = this.socket.io?.engine?.transport?.name || 'unknown';
+            console.log('📊 Transport upgraded to:', transport);
+        });
+        
+        this.socket.io.on('upgradeError', (error) => {
+            console.warn('⚠️ Transport upgrade error (will continue with polling):', error.message);
+            // Don't fail - polling is still working
         });
 
         this.socket.on('disconnect', (reason) => {
@@ -98,26 +129,41 @@ class SocketClient {
             console.error('❌ Socket connection error:', {
                 message: error.message,
                 type: error.type,
-                description: error.description
+                description: error.description,
+                transport: this.socket?.io?.engine?.transport?.name || 'unknown'
             });
             this.reconnectAttempts++;
+            
+            // 🔥 FIX: Better error handling for different error types
+            // If WebSocket fails, Socket.io will automatically fallback to polling
+            if (error.type === 'TransportError' || error.message?.includes('websocket')) {
+                console.warn('⚠️ WebSocket connection failed, will fallback to polling...');
+                // Don't stop reconnection - Socket.io will try polling automatically
+            }
             
             // If auth error, don't reconnect
             if (error.message && (
                 error.message.includes('xác thực') || 
                 error.message.includes('token') ||
                 error.message.includes('Token') ||
-                error.message.includes('authentication')
+                error.message.includes('authentication') ||
+                error.message.includes('Unauthorized')
             )) {
                 console.error('🔐 Authentication failed, stopping reconnection');
                 this.socket.disconnect();
                 this.isConnected = false;
-            } else if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-                console.error('🔴 Max reconnection attempts reached');
-            } else {
-                console.log(`🔄 Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
+                this.notifyListeners('connection_error', error);
+                return;
             }
             
+            // If max attempts reached
+            if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+                console.error('🔴 Max reconnection attempts reached');
+                this.notifyListeners('connection_error', error);
+                return;
+            }
+            
+            console.log(`🔄 Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
             // Emit custom event instead of 'connect_error' (reserved)
             this.notifyListeners('connection_error', error);
         });
@@ -221,11 +267,12 @@ class SocketClient {
             clearInterval(this.heartbeatInterval);
         }
 
+        // 🔥 OPTIMIZED: Reduced heartbeat from 30s to 15s for better online status accuracy
         this.heartbeatInterval = setInterval(() => {
             if (this.socket && this.isConnected) {
                 this.socket.emit('ping');
             }
-        }, 30000); // 30 seconds
+        }, 15000); // 15 seconds (reduced from 30s for better accuracy)
     }
 
     // Stop heartbeat

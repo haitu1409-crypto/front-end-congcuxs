@@ -3,11 +3,18 @@
  * Optimized with React.memo to prevent unnecessary re-renders
  */
 
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { ThumbsUp, Heart } from 'lucide-react';
 import styles from '../../styles/Message.module.css';
 
 const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, onMention, currentUserId, onReaction, selectionMode, isSelected, onSelect, onMessageClick, isAdmin, isConsecutive, isLastInGroup }) {
+    const [avatarFailed, setAvatarFailed] = useState(false);
+    
+    // Reset avatarFailed when senderAvatar changes
+    useEffect(() => {
+        setAvatarFailed(false);
+    }, [message.senderAvatar]);
+    
     // Tạo màu từ chữ cái đầu tiên
     const getColorFromLetter = (letter) => {
         if (!letter) return '#667eea';
@@ -202,22 +209,23 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
         await onReaction(messageId, emoji);
     };
 
-    // Handle message bubble click for modal (only when clicking on bubble)
+    // Handle message bubble click for modal (any message can be clicked)
     const handleBubbleClick = (e) => {
         // Don't trigger if clicking on reactions
         if (e.target.closest(`.${styles.messageIcons}`)) {
             return;
         }
 
+        // Don't trigger if clicking on reply preview
+        if (e.target.closest(`.${styles.replyPreview}`)) {
+            return;
+        }
+
         if (!selectionMode && onMessageClick) {
             e.preventDefault();
             e.stopPropagation();
-            // Only open modal for own messages (unless admin)
-            // Admin can open modal for any message
-            const isOwner = message.senderId === currentUserId;
-            if (isOwner || isAdmin) {
-                onMessageClick(message);
-            }
+            // Any message can be clicked to open action modal
+            onMessageClick(message);
         }
     };
 
@@ -258,16 +266,25 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
             {!isOwn && showAvatar && (
                 <div 
                     className={`${styles.messageAvatar} ${onMention ? styles.clickableAvatar : ''}`}
-                    style={{ backgroundColor: message.senderAvatar ? 'transparent' : avatarColor }}
+                    style={{ backgroundColor: (message.senderAvatar && !avatarFailed) ? 'transparent' : avatarColor }}
                     onClick={handleAvatarClick}
                     title={onMention ? "Nhấn để tag người này" : ""}
                 >
-                    {message.senderAvatar ? (
+                    {message.senderAvatar && !avatarFailed ? (
                         <img 
                             src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${message.senderAvatar}`}
                             alt={message.senderDisplayName || message.senderUsername}
                             className={styles.avatarImage}
                             crossOrigin="anonymous"
+                            onError={() => {
+                                setAvatarFailed(true);
+                                console.warn(`Avatar failed to load: ${message.senderAvatar}`);
+                            }}
+                            onLoad={() => {
+                                // Successfully loaded - ensure failed state is cleared
+                                setAvatarFailed(false);
+                            }}
+                            loading="lazy"
                         />
                     ) : (
                         <span className={styles.avatarInitial}>{initial}</span>
@@ -279,9 +296,40 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
             )}
             <div className={styles.messageContent}>
                 <div 
-                    className={`${styles.messageBubble} ${!selectionMode && (isOwn || isAdmin) ? styles.clickableBubble : ''}`}
+                    className={`${styles.messageBubble} ${!selectionMode ? styles.clickableBubble : ''}`}
                     onClick={handleBubbleClick}
                 >
+                    {/* Reply Preview */}
+                    {message.replyTo && (
+                        <div 
+                            className={styles.replyPreview}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                // Scroll to replied message if possible
+                                const repliedMessageId = message.replyTo.id || message.replyTo._id;
+                                const repliedElement = document.getElementById(`message-${repliedMessageId}`);
+                                if (repliedElement) {
+                                    repliedElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    // Highlight briefly
+                                    repliedElement.style.backgroundColor = 'rgba(102, 126, 234, 0.1)';
+                                    setTimeout(() => {
+                                        repliedElement.style.backgroundColor = '';
+                                    }, 2000);
+                                }
+                            }}
+                        >
+                            <div className={styles.replyPreviewContent}>
+                                <div className={styles.replyPreviewSender}>
+                                    {message.replyTo.senderDisplayName || message.replyTo.senderUsername}
+                                </div>
+                                <div className={styles.replyPreviewText}>
+                                    {message.replyTo.content && message.replyTo.content.length > 50 
+                                        ? message.replyTo.content.substring(0, 50) + '...'
+                                        : message.replyTo.content}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {!isOwn && showAvatar && (
                         <div className={styles.messageSenderContainer}>
                             <div 
