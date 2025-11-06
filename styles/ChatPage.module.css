@@ -19,6 +19,7 @@
     background-attachment: fixed;
     z-index: 1000;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 /* Grid layout 3 cột */
@@ -29,6 +30,7 @@
     height: var(--app-height, 100vh);
     min-height: var(--app-height, 100vh);
     max-width: 100%;
+    box-sizing: border-box;
 }
 
 .leftColumn,
@@ -45,6 +47,7 @@
     height: var(--app-height, 100vh);
     min-height: var(--app-height, 100vh);
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .errorContainer {

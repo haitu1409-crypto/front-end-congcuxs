@@ -263,7 +263,7 @@ export default function MessageInput({
 
         setShowGifPicker(false);
 
-        if (inputRef.current) {
+        if (window.innerWidth > 768 && inputRef.current) {
             inputRef.current.focus();
         }
     }, [finalizeSend, mentions, replyTo]);
@@ -412,7 +412,9 @@ export default function MessageInput({
             setTimeout(() => {
                 const newCursorPos = cursorPos + emoji.length;
                 inputRef.current.setSelectionRange(newCursorPos, newCursorPos);
-                inputRef.current.focus();
+                if (window.innerWidth > 768) {
+                    inputRef.current.focus();
+                }
             }, 0);
             
             // Trigger typing indicator
