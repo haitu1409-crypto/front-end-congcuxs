@@ -13,6 +13,8 @@
     z-index: 10000;
     padding: 20px;
     animation: fadeIn 0.2s ease-out;
+    overscroll-behavior: contain;
+    touch-action: none;
 }
 
 @keyframes fadeIn {
@@ -34,6 +36,7 @@
     position: relative;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease-out;
+    touch-action: auto;
 }
 
 @keyframes slideUp {
@@ -97,6 +100,103 @@
     color: #c33;
     font-size: 14px;
     text-align: center;
+}
+
+.socialLogin {
+    padding: 0 32px 0;
+}
+
+.facebookButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #1877f2;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+    margin-top: 20px;
+}
+
+.facebookButton:hover:not(:disabled) {
+    background: #1666d9;
+    box-shadow: 0 6px 16px rgba(24, 119, 242, 0.35);
+}
+
+.facebookButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.facebookButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.facebookOfficialButton {
+    margin-top: 12px;
+}
+
+.facebookStatus {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #3b5998;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.facebookStatusRefresh {
+    border: none;
+    background: transparent;
+    color: #1877f2;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: underline;
+    padding: 0;
+}
+
+.facebookStatusRefresh:hover:not(:disabled) {
+    color: #0f5cca;
+}
+
+.facebookStatusRefresh:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.sectionDivider {
+    position: relative;
+    margin: 24px 32px 0;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+}
+
+.sectionDivider::before,
+.sectionDivider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #e5e5e5;
+}
+
+.sectionDivider::before {
+    left: 0;
+}
+
+.sectionDivider::after {
+    right: 0;
 }
 
 .authForm {

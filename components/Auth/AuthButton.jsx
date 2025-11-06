@@ -15,8 +15,23 @@ export default function AuthButton({ variant = 'desktop' }) {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showUserManagement, setShowUserManagement] = useState(false);
     const menuRef = useRef(null);
+    const isMobileVariant = variant === 'mobile';
 
     const handleOpenModal = () => {
+        if (isMobileVariant) {
+            if (typeof window !== 'undefined') {
+                try {
+                    const openEvent = new CustomEvent('auth-modal-opened', {
+                        detail: { mode: 'login' }
+                    });
+                    window.dispatchEvent(openEvent);
+                } catch (error) {
+                    console.error('Failed to dispatch auth-modal-opened event:', error);
+                }
+            }
+            return;
+        }
+
         setIsModalOpen(true);
     };
 
@@ -111,7 +126,9 @@ export default function AuthButton({ variant = 'desktop' }) {
                 <User size={16} />
                 <span>Đăng Nhập</span>
             </button>
-            <AuthModal isOpen={isModalOpen} onClose={handleCloseModal} />
+            {!isMobileVariant && (
+                <AuthModal isOpen={isModalOpen} onClose={handleCloseModal} />
+            )}
         </>
     );
 }

@@ -376,8 +376,8 @@
 /* Auth Button - Mobile */
 .mobileAuthButton {
     padding: var(--spacing-3) var(--spacing-4);
-    border-top: 1px solid var(--color-gray-200);
-    margin-top: var(--spacing-2);
+    border-bottom: 1px solid var(--color-gray-200);
+    margin-bottom: var(--spacing-4);
 }
 
 /* Mobile Overlay */

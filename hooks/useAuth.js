@@ -2,7 +2,7 @@
  * useAuth Hook - Quản lý authentication state
  */
 
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { register as registerApi, login as loginApi, logout as logoutApi, getMe } from '../services/authApi';
 
 const AuthContext = createContext(null);
@@ -11,6 +11,8 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [facebookStatus, setFacebookStatus] = useState('unknown');
+    const [facebookAuthResponse, setFacebookAuthResponse] = useState(null);
 
     // Load user from localStorage on mount
     useEffect(() => {
@@ -65,6 +67,41 @@ export const AuthProvider = ({ children }) => {
             abortController.abort();
         };
     }, []);
+
+    const handleFacebookStatusEvent = useCallback((event) => {
+        const detail = event?.detail || {};
+        const status = detail.status || 'unknown';
+        setFacebookStatus(status);
+        setFacebookAuthResponse(detail.authResponse || null);
+    }, []);
+
+    const checkFacebookLoginStatus = useCallback((callback) => {
+        if (typeof window === 'undefined' || typeof window.FB === 'undefined' || typeof window.FB.getLoginStatus !== 'function') {
+            return;
+        }
+
+        window.FB.getLoginStatus((response) => {
+            handleFacebookStatusEvent({ detail: response });
+            if (typeof callback === 'function') {
+                callback(response);
+            }
+        });
+    }, [handleFacebookStatusEvent]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        window.addEventListener('facebook-login-status', handleFacebookStatusEvent);
+        const readyListener = () => {
+            checkFacebookLoginStatus();
+        };
+        document.addEventListener('facebook-sdk-ready', readyListener);
+
+        return () => {
+            window.removeEventListener('facebook-login-status', handleFacebookStatusEvent);
+            document.removeEventListener('facebook-sdk-ready', readyListener);
+        };
+    }, [handleFacebookStatusEvent, checkFacebookLoginStatus]);
 
     // Register
     const register = async (userData) => {
@@ -147,6 +184,16 @@ export const AuthProvider = ({ children }) => {
         return null;
     };
 
+    const loginWithProvider = (tokenValue, userData) => {
+        if (!tokenValue || !userData) {
+            return;
+        }
+        setToken(tokenValue);
+        setUser(userData);
+        localStorage.setItem('auth_token', tokenValue);
+        localStorage.setItem('auth_user', JSON.stringify(userData));
+    };
+
     const value = {
         user,
         token,
@@ -155,9 +202,13 @@ export const AuthProvider = ({ children }) => {
         isAdmin: user?.role === 'admin',
         register,
         login,
+        loginWithProvider,
         logout,
         updateUser,
-        refreshUser
+        refreshUser,
+        facebookStatus,
+        facebookAuthResponse,
+        checkFacebookLoginStatus
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -13,13 +13,16 @@ import RouterErrorBoundary, { useRouterErrorHandler } from './RouterErrorBoundar
 import DesktopHeader from './DesktopHeader';
 import DropdownMenu from './DropdownMenu';
 import AuthButton from './Auth/AuthButton';
+import AuthModal from './Auth/AuthModal';
 import styles from '../styles/Layout.module.css';
 
 export default function Layout({ children, className = '' }) {
     const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [authModalMode, setAuthModalMode] = useState('login');
 
     // ✅ Add router error handling
     useRouterErrorHandler();
@@ -36,8 +39,27 @@ export default function Layout({ children, className = '' }) {
     // Close mobile menu on route change
     useEffect(() => {
         setIsMenuOpen(false);
-        setIsSubmenuOpen(false);
+        setOpenDropdown(null);
     }, [router.pathname]);
+
+    useEffect(() => {
+        const handleAuthModalOpened = (event) => {
+            setIsMenuOpen(false);
+            setOpenDropdown(null);
+            setAuthModalMode(event?.detail?.mode || 'login');
+            setIsAuthModalOpen(true);
+        };
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('auth-modal-opened', handleAuthModalOpened);
+        }
+
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.removeEventListener('auth-modal-opened', handleAuthModalOpened);
+            }
+        };
+    }, []);
 
     // Optimize navigation - prevent default behavior for smooth transitions
     const handleLinkClick = useCallback((e) => {
@@ -106,15 +128,15 @@ export default function Layout({ children, className = '' }) {
 
     const navLinks = [
         { href: '/', label: 'Trang chủ', icon: Home, description: 'Trang chủ chính' },
+        { isDropdown: true, ...soiCauMenu },
+        { href: '/chat', label: 'Chat', icon: MessageCircle, description: 'Group chat - Trò chuyện với mọi người', isNew: true },
         { href: '/kqxs', label: 'Kết Quả Xổ Số', icon: Calendar, description: 'Xem kết quả xổ số 3 miền mới nhất', isNew: true },
         { href: '/dan-9x0x', label: 'Dàn 9x-0x', icon: Target, description: 'Tạo dàn số 9x-0x chuyên nghiệp', isNew: true },
         { href: '/dan-2d', label: 'Dàn 2D', icon: Target, description: 'Dàn đề 2 chữ số (00-99)' },
         { href: '/dan-3d4d', label: 'Dàn 3D/4D', icon: BarChart3, description: 'Dàn đề 3-4 chữ số' },
         { href: '/dan-dac-biet', label: 'Dàn Đặc Biệt', icon: Star, description: 'Bộ lọc dàn số thông minh' },
         { isDropdown: true, ...thongKeMenu },
-        { isDropdown: true, ...soiCauMenu },
         { href: '/tin-tuc', label: 'Tin Tức', icon: Newspaper, description: 'Tin tức xổ số mới nhất' },
-        { href: '/chat', label: 'Chat', icon: MessageCircle, description: 'Group chat - Trò chuyện với mọi người', isNew: true },
         { href: '/admin', label: 'Admin', icon: Settings, description: 'Quản trị hệ thống' }
     ];
 
@@ -219,28 +241,33 @@ export default function Layout({ children, className = '' }) {
 
                                 {/* Mobile Navigation */}
                                 <div className={`${styles.mobileNav} ${isMenuOpen ? styles.mobileNavOpen : ''}`}>
-                                    <div className={styles.mobileNavContent} onClick={handleLinkClick}>
+                                <div className={styles.mobileNavContent} onClick={handleLinkClick}>
+                                        {/* Auth Button - Mobile (top) */}
+                                        <div className={styles.mobileAuthButton}>
+                                            <AuthButton variant="mobile" />
+                                        </div>
+
                                         {navLinks.map((link, index) => {
                                             // Handle dropdown menu in mobile
                                             if (link.isDropdown) {
                                                 const IconComponent = link.icon;
+                                                const isOpen = openDropdown === link.label;
                                                 return (
                                                     <div key={`mobile-dropdown-${index}`}>
                                                         <div className={styles.mobileDropdownWrapper}>
                                                             <div 
                                                                 className={styles.mobileDropdownHeader}
-                                                                onClick={() => setIsSubmenuOpen(!isSubmenuOpen)}
+                                                                onClick={() => setOpenDropdown(isOpen ? null : link.label)}
                                                             >
-                                                                <div className={styles.mobileNavLinkContent}>
-                                                                    <div className={styles.mobileNavLinkHeader}>
-                                                                        <IconComponent size={20} className={styles.mobileNavIcon} />
-                                                                        <span className={styles.mobileNavLinkLabel}>{link.label}</span>
-                                                                        <ChevronDown size={16} className={`${styles.mobileDropdownIcon} ${isSubmenuOpen ? styles.rotate : ''}`} />
-                                                                    </div>
-                                                                    <span className={styles.mobileNavLinkDescription}>{link.description}</span>
+                                                            <div className={styles.mobileNavLinkContent}>
+                                                                <div className={styles.mobileNavLinkHeader}>
+                                                                    <IconComponent size={20} className={styles.mobileNavIcon} />
+                                                                    <span className={styles.mobileNavLinkLabel}>{link.label}</span>
+                                                                        <ChevronDown size={16} className={`${styles.mobileDropdownIcon} ${isOpen ? styles.rotate : ''}`} />
                                                                 </div>
                                                             </div>
-                                                            {isSubmenuOpen && (
+                                                            </div>
+                                                            {isOpen && (
                                                             <div className={styles.mobileDropdownSubmenu}>
                                                                 {link.submenu.map((subItem, subIndex) => {
                                                                     const SubIconComponent = subItem.icon;
@@ -251,7 +278,7 @@ export default function Layout({ children, className = '' }) {
                                                                             className={`${styles.mobileNavSubLink} ${router.pathname === subItem.href ? styles.active : ''}`}
                                                                             onClick={() => {
                                                                                 setIsMenuOpen(false);
-                                                                                setIsSubmenuOpen(false);
+                                                                                setOpenDropdown(null);
                                                                             }}
                                                                         >
                                                                             <SubIconComponent size={18} className={styles.mobileNavSubIcon} />
@@ -283,16 +310,10 @@ export default function Layout({ children, className = '' }) {
                                                             <span className={styles.mobileNavLinkLabel}>{link.label}</span>
                                                             {link.isNew && <span className={styles.mobileNewBadge}>NEW</span>}
                                                         </div>
-                                                        <span className={styles.mobileNavLinkDescription}>{link.description}</span>
                                                     </div>
                                                 </Link>
                                             );
                                         })}
-                                        
-                                        {/* Auth Button - Mobile */}
-                                        <div className={styles.mobileAuthButton}>
-                                            <AuthButton variant="mobile" />
-                                        </div>
                                     </div>
                                 </div>
                             </>
@@ -433,6 +454,11 @@ export default function Layout({ children, className = '' }) {
                     </div>
                 </footer>
             </div>
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                initialMode={authModalMode}
+            />
         </RouterErrorBoundary>
     );
 }
