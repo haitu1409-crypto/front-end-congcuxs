@@ -4,6 +4,7 @@
  */
 
 import { memo, useState, useEffect, useRef } from 'react';
+import { Loader2 } from 'lucide-react';
 import styles from '../../styles/Message.module.css';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -84,6 +85,8 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
     const attachments = Array.isArray(message.attachments) ? message.attachments : [];
     const hasAttachments = attachments.length > 0;
     const hasTextContent = !!(message.content && message.content.trim().length > 0);
+    const isPending = message.isOptimistic || message.status === 'pending';
+    const isError = message.status === 'error';
     // Parse content to highlight mentions and 2-digit numbers (00-99)
     // Preserve whitespace and line breaks
     const renderContent = () => {

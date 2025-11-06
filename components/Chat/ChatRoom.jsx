@@ -106,6 +106,7 @@ export default function ChatRoom({ roomId, onClose }) {
     const [otherParticipant, setOtherParticipant] = useState(null);
     const [newMessageNotification, setNewMessageNotification] = useState(null);
     const fileInputRef = useRef(null);
+    const activeUploadsRef = useRef(0);
     const notificationTimeoutRef = useRef(null);
     const unreadCountsFetchedRef = useRef(false); // Track if initial fetch done
     const audioRef = useRef(null); // Audio notification for new messages
@@ -515,7 +516,7 @@ export default function ChatRoom({ roomId, onClose }) {
         }
     };
 
-    const handleUploadChatImage = async (file) => {
+    const handleUploadChatImage = async (file, options = {}) => {
         if (!file) {
             throw new Error('Không có file được chọn.');
         }
@@ -524,16 +525,17 @@ export default function ChatRoom({ roomId, onClose }) {
             throw new Error('Bạn cần đăng nhập để upload ảnh.');
         }
 
+        activeUploadsRef.current += 1;
         setMediaUploading(true);
 
         let processedFile = file;
         try {
-            const maxSizeMB = Math.max(Math.min(MAX_CHAT_IMAGE_BYTES / (1024 * 1024), 4), 0.3);
+            const maxSizeMB = Math.max(Math.min(MAX_CHAT_IMAGE_BYTES / (1024 * 1024), 3.5), 0.3);
             processedFile = await imageCompression(file, {
                 maxSizeMB,
-                maxWidthOrHeight: 1600,
+                maxWidthOrHeight: 1400,
                 useWebWorker: true,
-                initialQuality: 0.8
+                initialQuality: 0.75
             });
         } catch (compressionError) {
             console.warn('Không thể nén ảnh, dùng file gốc:', compressionError);
@@ -569,9 +571,6 @@ export default function ChatRoom({ roomId, onClose }) {
                 if (signatureData.folder) {
                     formData.append('folder', signatureData.folder);
                 }
-                if (signatureData.publicId) {
-                    formData.append('public_id', signatureData.publicId);
-                }
             } else {
                 if (!signatureData.signature || !signatureData.timestamp || !signatureData.apiKey) {
                     throw new Error('Thiếu thông tin ký upload');
@@ -585,7 +584,6 @@ export default function ChatRoom({ roomId, onClose }) {
                 }
                 formData.append('public_id', signatureData.publicId || publicId);
                 formData.append('resource_type', 'image');
-                formData.append('transformation', signatureData.transformation || CHAT_IMAGE_TRANSFORMATION);
             }
 
             const uploadUrl = signatureData.uploadUrl || `https://api.cloudinary.com/v1_1/${signatureData.cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -593,6 +591,13 @@ export default function ChatRoom({ roomId, onClose }) {
             const uploadResponse = await axios.post(uploadUrl, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: (event) => {
+                    if (!event.total) return;
+                    const percent = Math.round((event.loaded / event.total) * 100);
+                    if (options?.onProgress) {
+                        options.onProgress(percent);
+                    }
                 }
             });
 
@@ -608,6 +613,10 @@ export default function ChatRoom({ roomId, onClose }) {
 
             const optimizedUrl = applyTransformation(secureUrl, mainTransformation);
             const thumbnailUrl = applyTransformation(secureUrl, thumbTransformation);
+
+            if (options?.onProgress) {
+                options.onProgress(100);
+            }
 
             return {
                 url: optimizedUrl,
@@ -633,10 +642,20 @@ export default function ChatRoom({ roomId, onClose }) {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data'
+                    },
+                    onUploadProgress: (event) => {
+                        if (!event.total) return;
+                        const percent = Math.round((event.loaded / event.total) * 100);
+                        if (options?.onProgress) {
+                            options.onProgress(percent);
+                        }
                     }
                 });
 
                 if (fallbackResponse.data?.success && fallbackResponse.data?.data?.attachment) {
+                    if (options?.onProgress) {
+                        options.onProgress(100);
+                    }
                     return fallbackResponse.data.data.attachment;
                 }
 
@@ -647,8 +666,16 @@ export default function ChatRoom({ roomId, onClose }) {
                 throw new Error(message);
             }
         } finally {
-            setMediaUploading(false);
+            activeUploadsRef.current = Math.max(0, activeUploadsRef.current - 1);
+            if (activeUploadsRef.current === 0) {
+                setMediaUploading(false);
+            }
         }
+    };
+
+    const handleSendMessage = (payload) => {
+        if (!payload) return;
+        sendMessage(payload);
     };
 
     const handleAvatarClick = () => {
@@ -982,7 +1009,7 @@ export default function ChatRoom({ roomId, onClose }) {
 
             {/* Input */}
             <MessageInput
-                onSend={sendMessage}
+                onSend={handleSendMessage}
                 onTyping={startTyping}
                 onStopTyping={stopTyping}
                 sending={sending}

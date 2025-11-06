@@ -2,7 +2,7 @@
  * useChat Hook - Quản lý chat state và messages
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useAuth } from './useAuth';
 import { useSocket } from './useSocket';
 import axios from 'axios';
@@ -18,6 +18,7 @@ export const useChat = (roomId) => {
     const [typingUsers, setTypingUsers] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [pendingMessages, setPendingMessages] = useState([]);
     const messagesEndRef = useRef(null);
     const typingTimeoutRef = useRef(null);
     const messagesLoadedRef = useRef(false);
@@ -85,6 +86,18 @@ export const useChat = (roomId) => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, []);
 
+    const addPendingMessage = useCallback((message) => {
+        if (!message) return;
+        setPendingMessages(prev => [...prev, message]);
+    }, []);
+
+    const clearPendingMessagesByClientIds = useCallback((clientIds) => {
+        if (!clientIds || clientIds.length === 0) {
+            return;
+        }
+        setPendingMessages(prev => prev.filter(msg => !clientIds.includes(msg.clientMessageId)));
+    }, []);
+
     // Load messages
     const loadMessages = useCallback(async () => {
         if (!roomId || !token) return;
@@ -133,9 +146,11 @@ export const useChat = (roomId) => {
 
     // Send message
     const sendMessage = useCallback(async (payload, legacyReplyToId = null, legacyMentions = [], legacyReplyTo = null) => {
-        if (!roomId || sending) return;
+        if (!roomId) return;
 
         let messagePayload = null;
+        let optimisticAttachments = [];
+        let clientMessageId = (payload && typeof payload === 'object' && payload.clientMessageId) ? payload.clientMessageId : null;
 
         if (typeof payload === 'string') {
             const trimmed = payload.trim();
@@ -161,7 +176,8 @@ export const useChat = (roomId) => {
                 type: payloadType = 'text',
                 mentions: payloadMentions = [],
                 replyTo: payloadReplyTo = null,
-                attachments: payloadAttachments = []
+                attachments: payloadAttachments = [],
+                optimisticAttachments: payloadOptimisticAttachments = []
             } = payload;
 
             const trimmed = typeof payloadContent === 'string' ? payloadContent.trim() : '';
@@ -173,10 +189,7 @@ export const useChat = (roomId) => {
 
             const resolvedMentions = (payloadMentions && payloadMentions.length > 0) ? payloadMentions : legacyMentions;
             const resolvedType = payloadType || (hasAttachments ? 'image' : 'text');
-            let resolvedReplyTo = payloadReplyTo;
-            if (!resolvedReplyTo) {
-                resolvedReplyTo = legacyReplyTo || legacyReplyToId || null;
-            }
+            let resolvedReplyTo = payloadReplyTo || legacyReplyTo || legacyReplyToId || null;
 
             messagePayload = {
                 roomId,
@@ -196,29 +209,79 @@ export const useChat = (roomId) => {
                     messagePayload.replyTo = resolvedReplyTo;
                 }
             }
+
+            if (hasAttachments) {
+                const sourceOptimistic = Array.isArray(payloadOptimisticAttachments) && payloadOptimisticAttachments.length > 0
+                    ? payloadOptimisticAttachments
+                    : payloadAttachments;
+
+                optimisticAttachments = sourceOptimistic.map(att => {
+                    const preview = att.previewUrl || att.thumbnailUrl || att.secureUrl || att.url;
+                    return {
+                        ...att,
+                        previewUrl: preview,
+                        url: preview || att.url || att.secureUrl,
+                        secureUrl: preview || att.secureUrl || att.url,
+                        thumbnailUrl: preview || att.thumbnailUrl || att.secureUrl || att.url,
+                        isLocal: true,
+                        status: att.status || 'pending'
+                    };
+                });
+
+                messagePayload.attachments = messagePayload.attachments.map(att => {
+                    const { previewUrl, progress, status, isLocal, tempId, ...rest } = att;
+                    return rest;
+                });
+            }
         } else {
             return;
         }
+
+        if (!clientMessageId) {
+            if (typeof window !== 'undefined' && window.crypto?.randomUUID) {
+                clientMessageId = window.crypto.randomUUID();
+            } else {
+                clientMessageId = `local_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+            }
+        }
+
+        messagePayload.clientMessageId = clientMessageId;
+
+        const nowIso = new Date().toISOString();
+        const pendingMessage = {
+            id: clientMessageId,
+            clientMessageId,
+            content: messagePayload.content,
+            type: messagePayload.type,
+            attachments: optimisticAttachments,
+            mentions: messagePayload.mentions,
+            replyTo: messagePayload.replyTo || null,
+            senderId: user?.id,
+            senderUsername: user?.username,
+            senderDisplayName: user?.displayName || user?.username,
+            senderRole: user?.role,
+            senderAvatar: user?.avatar,
+            createdAt: nowIso,
+            isOptimistic: true,
+            status: 'pending'
+        };
+
+        addPendingMessage(pendingMessage);
 
         try {
             setSending(true);
             emit('message:send', messagePayload);
 
             setTimeout(() => {
-                if (messagesEndRef.current) {
-                    messagesEndRef.current.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'end',
-                        inline: 'nearest'
-                    });
-                }
-            }, 100);
+                scrollToBottom();
+            }, 60);
         } catch (error) {
             console.error('Send message error:', error);
+            setPendingMessages(prev => prev.map(msg => msg.clientMessageId === clientMessageId ? { ...msg, status: 'error' } : msg));
         } finally {
             setSending(false);
         }
-    }, [roomId, emit, sending, messagesEndRef]);
+    }, [roomId, emit, addPendingMessage, scrollToBottom, user]);
 
     // Start typing with throttling (prevent spam)
     const startTyping = useCallback(() => {
@@ -379,6 +442,7 @@ export const useChat = (roomId) => {
             messagesLoadedRef.current = false;
             setMessages([]);
             setTypingUsers([]);
+            setPendingMessages([]);
         }
     }, [roomId]);
 
@@ -460,6 +524,14 @@ export const useChat = (roomId) => {
                         
                         return result;
                     });
+
+                    const resolvedClientIds = queuedMessages
+                        .map(msg => msg.clientMessageId)
+                        .filter(Boolean);
+
+                    if (resolvedClientIds.length > 0) {
+                        clearPendingMessagesByClientIds(resolvedClientIds);
+                    }
                     
                     // Play sound if needed
                     if (shouldPlaySound) {
@@ -758,15 +830,23 @@ export const useChat = (roomId) => {
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isConnected, roomId, user?.id, token]); // Remove on, off, socket from dependencies to prevent infinite loop
+    }, [isConnected, roomId, user?.id, token, clearPendingMessagesByClientIds]); // Remove on, off, socket from dependencies to prevent infinite loop
 
     // 🔥 REMOVED: Auto mark as read when loading messages
     // This was causing too many socket events and potential 429 errors
     // Mark as read is now ONLY done when user clicks chat icon (manual action)
     // This simplifies the logic and reduces unnecessary backend queries
 
+    const combinedMessages = useMemo(() => {
+        return [...messages, ...pendingMessages].sort((a, b) => {
+            const timeA = new Date(a.createdAt || Date.now()).getTime();
+            const timeB = new Date(b.createdAt || Date.now()).getTime();
+            return timeA - timeB;
+        });
+    }, [messages, pendingMessages]);
+
     return {
-        messages,
+        messages: combinedMessages,
         loading,
         sending,
         typingUsers,

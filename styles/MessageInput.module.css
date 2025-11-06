@@ -192,6 +192,9 @@
     border: 1px solid #e5e7eb;
     background: #f9fafb;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .attachmentPreviewImage {
@@ -251,6 +254,94 @@
     font-weight: 500;
 }
 
+.attachmentInfo {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 6px 8px;
+    background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.82) 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    pointer-events: none;
+}
+
+.attachmentName {
+    font-size: 11px;
+    font-weight: 600;
+    color: #f8fafc;
+    line-height: 1.2;
+}
+
+.attachmentSize {
+    font-size: 10px;
+    color: rgba(241, 245, 249, 0.85);
+}
+
+.attachmentProgress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: rgba(15, 23, 42, 0.7);
+    color: #f8fafc;
+    font-size: 11px;
+}
+
+.attachmentProgressBar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.attachmentProgressBar div {
+    height: 100%;
+    background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
+    transition: width 0.2s ease;
+}
+
+.attachmentError {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.78);
+    color: #fee2e2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.retryButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(255, 255, 255, 0.18);
+    color: #f8fafc;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s ease;
+}
+
+.retryButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #38bdf8;
+}
+
 .attachmentUploading {
     display: flex;
     align-items: center;
@@ -258,6 +349,11 @@
     color: #6b7280;
     font-size: 13px;
     margin-bottom: 8px;
+}
+
+.attachmentErrorText {
+    color: #dc2626;
+    font-weight: 500;
 }
 
 .mentionsPreview {
