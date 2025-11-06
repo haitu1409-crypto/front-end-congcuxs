@@ -65,6 +65,12 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Skip streaming/audio requests that use Range headers (Chrome bug: ERR_CACHE_OPERATION_NOT_SUPPORTED)
+    if (request.headers.has('range') || request.destination === 'audio') {
+        event.respondWith(fetch(request));
+        return;
+    }
+
     // Determine cache strategy based on URL
     if (url.pathname.startsWith('/api/')) {
         event.respondWith(handleApiRequest(request));

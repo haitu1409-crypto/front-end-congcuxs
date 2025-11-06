@@ -102,7 +102,6 @@ export default function MessageInput({
             attachments: uploadedAttachments,
             optimisticAttachments: attachmentsToSend.map(att => ({
                 ...att.attachment,
-                previewUrl: att.previewUrl,
                 status: 'uploaded',
                 isLocal: true
             })),
