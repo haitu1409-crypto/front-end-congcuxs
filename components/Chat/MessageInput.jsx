@@ -63,7 +63,6 @@ export default function MessageInput({
 
     const isUploading = uploadingAttachment || attachments.some(att => att.status === 'uploading');
     const hasError = attachments.some(att => att.status === 'error');
-    const showInlineEmojiButton = isMobileLayout && isInputFocused && !showCompactActions;
 
     const cleanupAfterSend = useCallback((attachmentIdsToClear = []) => {
         setAttachments(prev => prev.filter(att => {
@@ -789,8 +788,6 @@ export default function MessageInput({
                                 ref={compactToggleRef}
                                 className={styles.compactToggleButton}
                                 onClick={() => {
-                                    setShowEmojiPicker(false);
-                                    setShowGifPicker(false);
                                     setShowCompactActions(prev => !prev);
                                     inputRef.current?.focus({ preventScroll: true });
                                 }}
@@ -826,70 +823,41 @@ export default function MessageInput({
                         </div>
                     )}
                 </div>
-                <div className={styles.textareaWrapper}>
-                    <textarea
-                        ref={inputRef}
-                        value={message}
-                        onChange={handleChange}
-                        onFocus={() => {
-                            if (isMobileLayout) {
-                                setIsInputFocused(true);
+                <textarea
+                    ref={inputRef}
+                    value={message}
+                    onChange={handleChange}
+                    onFocus={() => {
+                        if (isMobileLayout) {
+                            setIsInputFocused(true);
+                        }
+                    }}
+                    onBlur={() => {
+                        setTimeout(() => {
+                            if (typeof document !== 'undefined' && inputRef.current && inputRef.current === document.activeElement) {
+                                return;
                             }
-                        }}
-                        onBlur={() => {
-                            setTimeout(() => {
-                                if (typeof document !== 'undefined' && inputRef.current && inputRef.current === document.activeElement) {
-                                    return;
-                                }
-                                setIsInputFocused(false);
-                            }, 80);
-                        }}
-                        onKeyDown={handleKeyPress}
-                        placeholder={disabled ? "Đang kết nối..." : "Nhập tin nhắn..."}
-                        className={`${styles.input} ${(isMobileLayout && isInputFocused) ? styles.inputCompact : ''} ${showInlineEmojiButton ? styles.inputWithInlineButton : ''}`.trim()}
-                        disabled={disabled || sending}
-                        maxLength={5000}
-                        rows={1}
-                        style={{
-                            resize: 'none',
-                            overflow: 'hidden',
-                            minHeight: '40px',
-                            maxHeight: '120px'
-                        }}
-                        onInput={(e) => {
-                            // Auto-resize textarea
-                            e.target.style.height = 'auto';
-                            e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
-                        }}
-                    />
-                    {showInlineEmojiButton && (
-                        <>
-                            <button
-                                type="button"
-                                className={styles.inlineEmojiButton}
-                                onClick={() => {
-                                    setShowCompactActions(false);
-                                    setShowGifPicker(false);
-                                    setShowEmojiPicker(prev => !prev);
-                                    inputRef.current?.focus({ preventScroll: true });
-                                }}
-                                title="Emoji"
-                                disabled={disabled || sending}
-                            >
-                                <Smile size={18} />
-                            </button>
-                            {showEmojiPicker && (
-                                <div className={`${styles.emojiPickerWrapper} ${styles.inlinePickerWrapper}`}>
-                                    <EmojiPicker
-                                        onEmojiSelect={handleEmojiSelect}
-                                        isOpen={showEmojiPicker}
-                                        onClose={() => setShowEmojiPicker(false)}
-                                    />
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
+                            setIsInputFocused(false);
+                        }, 80);
+                    }}
+                    onKeyDown={handleKeyPress}
+                    placeholder={disabled ? "Đang kết nối..." : "Nhập tin nhắn..."}
+                    className={`${styles.input} ${(isMobileLayout && isInputFocused) ? styles.inputCompact : ''}`.trim()}
+                    disabled={disabled || sending}
+                    maxLength={5000}
+                    rows={1}
+                    style={{
+                        resize: 'none',
+                        overflow: 'hidden',
+                        minHeight: '40px',
+                        maxHeight: '120px'
+                    }}
+                    onInput={(e) => {
+                        // Auto-resize textarea
+                        e.target.style.height = 'auto';
+                        e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+                    }}
+                />
                 <button
                     type="submit"
                     className={styles.sendButton}
