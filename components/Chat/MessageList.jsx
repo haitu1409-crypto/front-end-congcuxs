@@ -2,26 +2,47 @@
  * MessageList Component - Hiển thị danh sách tin nhắn
  */
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Message from './Message';
 import TypingIndicator from './TypingIndicator';
 import styles from '../../styles/MessageList.module.css';
 
 export default function MessageList({ messages, typingUsers, currentUserId, messagesEndRef, onMention, onReaction, selectionMode, selectedMessages, onMessageSelect, onMessageClick, isAdmin }) {
     const listRef = useRef(null);
+    const [relativeNow, setRelativeNow] = useState(() => Date.now());
 
-    // Format time
-    const formatTime = (date) => {
-        const d = new Date(date);
-        const now = new Date();
-        const diff = now - d;
-        const minutes = Math.floor(diff / 60000);
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setRelativeNow(Date.now());
+        }, 15000);
 
-        if (minutes < 1) return 'Vừa xong';
+        return () => clearInterval(interval);
+    }, []);
+
+    // Format time with current reference timestamp
+    const formatTime = useCallback((date, currentTime = relativeNow) => {
+        const createdAt = new Date(date);
+        const createdAtMs = createdAt.getTime();
+
+        if (Number.isNaN(createdAtMs)) {
+            return '';
+        }
+
+        const diffMs = Math.max(currentTime - createdAtMs, 0);
+        const diffSeconds = Math.floor(diffMs / 1000);
+
+        if (diffSeconds < 5) return 'Vừa xong';
+        if (diffSeconds < 60) return `${diffSeconds} giây trước`;
+
+        const minutes = Math.floor(diffSeconds / 60);
         if (minutes < 60) return `${minutes} phút trước`;
-        if (diff < 86400000) return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-        return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
-    };
+
+        if (diffMs < 86400000) {
+            return createdAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        return createdAt.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+    }, [relativeNow]);
 
     // Auto scroll when new messages arrive
     useEffect(() => {
@@ -89,6 +110,7 @@ export default function MessageList({ messages, typingUsers, currentUserId, mess
                             isLastInGroup={isLastInGroup}
                             showTime={true}
                             formatTime={formatTime}
+                            timeTick={relativeNow}
                             onMention={onMention}
                             currentUserId={currentUserId}
                             onReaction={onReaction}

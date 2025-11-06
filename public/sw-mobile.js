@@ -78,13 +78,24 @@ self.addEventListener('fetch', (event) => {
     }
 });
 
+const isCachableResponse = (response) => {
+    if (!response) return false;
+    if (!response.ok) return false;
+
+    // Skip partial content (status 206) or any response with Content-Range header
+    if (response.status === 206) return false;
+    const contentRange = response.headers.get('Content-Range');
+    if (contentRange) return false;
+
+    return true;
+};
+
 // Network first strategy (for API calls)
 async function networkFirstStrategy(request) {
     try {
         const networkResponse = await fetch(request);
 
-        // Cache successful responses
-        if (networkResponse.ok) {
+        if (isCachableResponse(networkResponse)) {
             const cache = await caches.open(DYNAMIC_CACHE);
             cache.put(request, networkResponse.clone());
         }
@@ -129,7 +140,7 @@ async function cacheFirstStrategy(request) {
     try {
         const networkResponse = await fetch(request);
 
-        if (networkResponse.ok) {
+        if (isCachableResponse(networkResponse)) {
             const cache = await caches.open(STATIC_CACHE);
             cache.put(request, networkResponse.clone());
         }
@@ -164,7 +175,7 @@ async function staleWhileRevalidateStrategy(request) {
 
     // Fetch from network in background
     const fetchPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse.ok) {
+        if (isCachableResponse(networkResponse)) {
             cache.put(request, networkResponse.clone());
         }
         return networkResponse;

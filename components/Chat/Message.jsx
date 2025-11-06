@@ -18,7 +18,7 @@ const resolveAvatarUrl = (avatar) => {
     return `${API_URL}${avatar}`;
 };
 
-const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, onMention, currentUserId, onReaction, selectionMode, isSelected, onSelect, onMessageClick, isAdmin, isConsecutive, isLastInGroup }) {
+const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, onMention, currentUserId, onReaction, selectionMode, isSelected, onSelect, onMessageClick, isAdmin, isConsecutive, isLastInGroup, timeTick }) {
     const [avatarFailed, setAvatarFailed] = useState(false);
     const longPressTimerRef = useRef(null);
     const isLongPressRef = useRef(false);
@@ -533,7 +533,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                             </div>
                         </div>
                         <div className={styles.messageTime}>
-                            {formatTime(message.createdAt)}
+                            {formatTime(message.createdAt, timeTick)}
                             {message.isEdited && (
                                 <span className={styles.editedLabel}> (Đã sửa)</span>
                             )}
@@ -574,6 +574,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
     if (prevProps.showAvatar !== nextProps.showAvatar) return false;
     if (prevProps.isConsecutive !== nextProps.isConsecutive) return false;
     if (prevProps.isLastInGroup !== nextProps.isLastInGroup) return false;
+    if (prevProps.timeTick !== nextProps.timeTick) return false;
     
     // All props are equal, skip re-render
     return true;
