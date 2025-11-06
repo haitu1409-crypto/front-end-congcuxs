@@ -20,12 +20,79 @@ import imageCompression from 'browser-image-compression';
 import {
     warmupChatUploadConfig,
     uploadChatAttachment,
-    generateChatPublicId
+    generateChatPublicId,
+    getChatUploadConfig
 } from '../../lib/chatUploadService';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const MAX_CHAT_ATTACHMENTS = Number(process.env.NEXT_PUBLIC_CHAT_MAX_IMAGE_COUNT || 4);
 const MAX_CHAT_IMAGE_BYTES = Number(process.env.NEXT_PUBLIC_CHAT_MAX_IMAGE_BYTES || 6 * 1024 * 1024);
+const TARGET_CHAT_IMAGE_BYTES = 950 * 1024; // ~0.95MB mục tiêu để upload nhanh hơn
+const SKIP_COMPRESSION_THRESHOLD_BYTES = 420 * 1024;
+const CONVERTIBLE_TYPES = new Set(['image/jpeg', 'image/png', 'image/heic', 'image/heif']);
+
+const compressChatImage = async (file, { maxBytes = MAX_CHAT_IMAGE_BYTES, aggressiveFallback = true } = {}) => {
+    const normalizedMaxBytes = Math.max(Math.min(maxBytes, MAX_CHAT_IMAGE_BYTES), 360 * 1024);
+    const targetBytes = Math.min(normalizedMaxBytes, TARGET_CHAT_IMAGE_BYTES);
+
+    if (file.size <= Math.min(targetBytes * 0.9, SKIP_COMPRESSION_THRESHOLD_BYTES)) {
+        return file;
+    }
+
+    const shouldConvertToWebp = CONVERTIBLE_TYPES.has(file.type) && file.type !== 'image/webp';
+    const baseMaxWidth = file.size > 2 * 1024 * 1024 ? 1280 : 1400;
+    const baseQuality = file.size > 2 * 1024 * 1024 ? 0.74 : 0.8;
+
+    const compressionPasses = [
+        {
+            maxSizeMB: Math.max(targetBytes / (1024 * 1024), 0.38),
+            maxWidthOrHeight: baseMaxWidth,
+            initialQuality: baseQuality,
+            convertToWebp: shouldConvertToWebp,
+            maxIteration: 8
+        }
+    ];
+
+    if (aggressiveFallback) {
+        compressionPasses.push({
+            maxSizeMB: Math.max(targetBytes / (1024 * 1024), 0.32),
+            maxWidthOrHeight: 1080,
+            initialQuality: 0.68,
+            convertToWebp: shouldConvertToWebp,
+            maxIteration: 12
+        });
+    }
+
+    let bestFile = file;
+
+    for (const pass of compressionPasses) {
+        try {
+            const compressed = await imageCompression(file, {
+                maxSizeMB: pass.maxSizeMB,
+                maxWidthOrHeight: pass.maxWidthOrHeight,
+                useWebWorker: true,
+                initialQuality: pass.initialQuality,
+                maxIteration: pass.maxIteration,
+                exifOrientation: true,
+                preserveExif: false,
+                alwaysKeepResolution: false,
+                fileType: pass.convertToWebp ? 'image/webp' : undefined
+            });
+
+            if (compressed.size < bestFile.size) {
+                bestFile = compressed;
+            }
+
+            if (compressed.size <= targetBytes) {
+                return compressed;
+            }
+        } catch (error) {
+            console.warn('Không thể nén ảnh chat:', error);
+        }
+    }
+
+    return bestFile;
+};
 
 const resolveAvatarUrl = (avatar) => {
     if (!avatar) return null;
@@ -530,33 +597,26 @@ export default function ChatRoom({ roomId, onClose }) {
 
         const uploadStartedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
 
-        let processedFile = file;
-        const shouldForceWebp = ['image/png', 'image/heic', 'image/heif'].includes(file.type);
-        const shouldCompress = shouldForceWebp || file.size > MAX_CHAT_IMAGE_BYTES * 0.85;
+        const configPromise = getChatUploadConfig(token);
+        const compressionPromise = compressChatImage(file, {
+            maxBytes: Math.min(MAX_CHAT_IMAGE_BYTES, TARGET_CHAT_IMAGE_BYTES)
+        });
 
         try {
-            if (shouldCompress) {
-                const maxSizeMB = Math.min(Math.max(MAX_CHAT_IMAGE_BYTES / (1024 * 1024), 0.45), 4);
-                const compressionOptions = {
-                    maxSizeMB,
-                    maxWidthOrHeight: 1600,
-                    useWebWorker: true,
-                    initialQuality: shouldForceWebp ? 0.78 : 0.82,
-                    alwaysKeepResolution: false,
-                    fileType: shouldForceWebp ? 'image/webp' : undefined
-                };
+            const [config, initialProcessedFile] = await Promise.all([configPromise, compressionPromise]);
+            const normalizedMaxBytes = config?.maxBytes || MAX_CHAT_IMAGE_BYTES;
+            let processedFile = initialProcessedFile;
 
-                try {
-                    processedFile = await imageCompression(file, compressionOptions);
-                } catch (compressionError) {
-                    console.warn('Không thể nén ảnh, dùng file gốc:', compressionError);
-                    processedFile = file;
-                }
+            if (processedFile.size > normalizedMaxBytes) {
+                processedFile = await compressChatImage(file, {
+                    maxBytes: normalizedMaxBytes,
+                    aggressiveFallback: true
+                });
             }
 
-            if (processedFile.size > MAX_CHAT_IMAGE_BYTES) {
-                const maxMB = Math.round(MAX_CHAT_IMAGE_BYTES / (1024 * 1024));
-                throw new Error(`Ảnh vượt quá giới hạn ${maxMB}MB.`);
+            if (processedFile.size > normalizedMaxBytes) {
+                const limitMB = Math.round(normalizedMaxBytes / (1024 * 1024));
+                throw new Error(`Ảnh vẫn vượt quá giới hạn ${limitMB}MB sau khi tối ưu. Vui lòng chọn ảnh nhỏ hơn.`);
             }
 
             const attachment = await uploadChatAttachment({
@@ -564,7 +624,8 @@ export default function ChatRoom({ roomId, onClose }) {
                 token,
                 publicId: generateChatPublicId(user?.id),
                 onProgress: options?.onProgress,
-                originalFileName: file.name
+                originalFileName: file.name,
+                configOverride: config
             });
 
             if (options?.onProgress) {

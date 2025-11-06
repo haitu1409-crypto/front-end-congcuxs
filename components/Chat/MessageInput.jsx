@@ -14,6 +14,13 @@ const createTempId = () => {
     return `att_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 };
 
+const createClientMessageId = () => {
+    if (typeof window !== 'undefined' && window.crypto?.randomUUID) {
+        return window.crypto.randomUUID();
+    }
+    return `msg_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+};
+
 const formatMB = (bytes) => {
     if (!bytes) return null;
     return (bytes / (1024 * 1024)).toFixed(1);
@@ -43,9 +50,75 @@ export default function MessageInput({
     const uploadButtonRef = useRef(null);
     const previewUrlsRef = useRef(new Map());
     const [attachments, setAttachments] = useState([]);
+    const [pendingDraft, setPendingDraft] = useState(null);
 
     const isUploading = uploadingAttachment || attachments.some(att => att.status === 'uploading');
     const hasError = attachments.some(att => att.status === 'error');
+
+    const cleanupAfterSend = (attachmentIdsToClear = []) => {
+        setAttachments(prev => prev.filter(att => {
+            const shouldKeep = attachmentIdsToClear.length > 0 && !attachmentIdsToClear.includes(att.id);
+            if (!shouldKeep) {
+                const preview = previewUrlsRef.current.get(att.id);
+                if (preview) {
+                    URL.revokeObjectURL(preview);
+                    previewUrlsRef.current.delete(att.id);
+                }
+            }
+            return shouldKeep;
+        }));
+
+        if (attachmentIdsToClear.length === 0) {
+            previewUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+            previewUrlsRef.current.clear();
+        }
+
+        setMessage('');
+        if (inputRef.current) {
+            inputRef.current.style.height = '40px';
+        }
+        if (onCancelMentions) {
+            onCancelMentions();
+        }
+        if (onCancelReply) {
+            onCancelReply();
+        }
+        if (onStopTyping) {
+            onStopTyping();
+        }
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+    };
+
+    const finalizeSend = (draft, attachmentsToSend) => {
+        if (!draft) return;
+
+        const clientMessageId = draft.clientMessageId || createClientMessageId();
+        const uploadedAttachments = attachmentsToSend.map(att => ({ ...att.attachment }));
+
+        onSend({
+            content: draft.content,
+            attachments: uploadedAttachments,
+            optimisticAttachments: attachmentsToSend.map(att => ({
+                ...att.attachment,
+                previewUrl: att.previewUrl,
+                status: 'uploaded',
+                isLocal: true
+            })),
+            type: attachmentsToSend.length > 0 ? 'image' : 'text',
+            mentions: draft.mentions,
+            replyTo: draft.replyTo,
+            clientMessageId
+        });
+
+        const idsToClear = draft.attachmentIds && draft.attachmentIds.length > 0
+            ? draft.attachmentIds
+            : attachmentsToSend.map(att => att.id);
+
+        cleanupAfterSend(idsToClear);
+        setPendingDraft(null);
+    };
 
     const updateAttachment = (id, updater) => {
         setAttachments(prev => prev.map(att => {
@@ -121,60 +194,50 @@ export default function MessageInput({
     // Handle send
     const handleSend = (e) => {
         e.preventDefault();
+
         const trimmedMessage = message.trim();
         const uploadedAttachments = attachments.filter(att => att.status === 'uploaded' && att.attachment);
-        const hasAttachments = uploadedAttachments.length > 0;
+        const uploadingAttachments = attachments.filter(att => att.status === 'uploading');
+        const hasAnyAttachments = attachments.length > 0;
 
-        if ((trimmedMessage.length === 0 && !hasAttachments) || sending || disabled || isUploading || hasError) {
+        if ((trimmedMessage.length === 0 && !hasAnyAttachments) || sending || disabled || hasError) {
             return;
         }
 
-        const clientMessageId = (typeof window !== 'undefined' && window.crypto?.randomUUID)
-            ? window.crypto.randomUUID()
-            : `msg_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        const attachmentIds = attachments.map(att => att.id);
 
-        onSend({
+        if (uploadingAttachments.length > 0) {
+            setPendingDraft({
+                content: trimmedMessage,
+                mentions,
+                replyTo,
+                attachmentIds,
+                clientMessageId: createClientMessageId()
+            });
+
+            setMessage('');
+            if (onCancelMentions) {
+                onCancelMentions();
+            }
+            if (onCancelReply) {
+                onCancelReply();
+            }
+            if (onStopTyping) {
+                onStopTyping();
+            }
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+            }
+            return;
+        }
+
+        finalizeSend({
             content: trimmedMessage,
-            attachments: uploadedAttachments.map(att => ({ ...att.attachment })),
-            optimisticAttachments: uploadedAttachments.map(att => ({
-                ...att.attachment,
-                previewUrl: att.previewUrl,
-                status: att.status,
-                isLocal: true
-            })),
-            type: hasAttachments ? 'image' : 'text',
             mentions,
             replyTo,
-            clientMessageId
-        });
-        setMessage('');
-
-        attachments.forEach(att => {
-            const preview = previewUrlsRef.current.get(att.id);
-            if (preview) {
-                URL.revokeObjectURL(preview);
-                previewUrlsRef.current.delete(att.id);
-            }
-        });
-        setAttachments([]);
-        
-        // Reset textarea height to initial height
-        if (inputRef.current) {
-            inputRef.current.style.height = '40px';
-        }
-        
-        if (onCancelMentions) {
-            onCancelMentions();
-        }
-        if (onCancelReply) {
-            onCancelReply();
-        }
-        if (onStopTyping) {
-            onStopTyping();
-        }
-        if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current);
-        }
+            attachmentIds,
+            clientMessageId: createClientMessageId()
+        }, uploadedAttachments);
     };
 
     const handleUploadButtonClick = () => {
@@ -252,6 +315,30 @@ export default function MessageInput({
         if (!target || !target.file) return;
         startUploadForAttachment(target);
     };
+
+    useEffect(() => {
+        if (!pendingDraft) {
+            return;
+        }
+
+        const relevantAttachments = attachments.filter(att => pendingDraft.attachmentIds?.includes(att.id));
+
+        if (relevantAttachments.length === 0) {
+            setPendingDraft(null);
+            return;
+        }
+
+        if (relevantAttachments.some(att => att.status === 'error')) {
+            setPendingDraft(null);
+            return;
+        }
+
+        const stillUploading = relevantAttachments.some(att => att.status === 'uploading');
+
+        if (!stillUploading && relevantAttachments.every(att => att.status === 'uploaded' && att.attachment)) {
+            finalizeSend(pendingDraft, relevantAttachments);
+        }
+    }, [attachments, pendingDraft, finalizeSend]);
 
     // Reset textarea height when message is cleared
     useEffect(() => {
@@ -566,7 +653,7 @@ export default function MessageInput({
                 <button
                     type="submit"
                     className={styles.sendButton}
-                    disabled={(message.trim().length === 0 && attachments.filter(att => att.status === 'uploaded').length === 0) || sending || disabled || isUploading || hasError}
+                    disabled={(message.trim().length === 0 && attachments.length === 0) || sending || disabled || hasError}
                     title="Gửi (Enter trên desktop, hoặc nhấn nút này)"
                 >
                     {sending ? (
