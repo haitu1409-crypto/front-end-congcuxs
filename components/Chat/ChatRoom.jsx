@@ -550,11 +550,11 @@ export default function ChatRoom({ roomId, onClose }) {
                 }
             });
 
-            const signatureData = signatureResponse.data?.data;
-
-            if (!signatureResponse.data?.success || !signatureData?.signature) {
-                throw new Error(signatureResponse.data?.message || 'Không thể tạo chữ ký upload');
+            if (!signatureResponse.data?.success) {
+                throw new Error(signatureResponse.data?.message || 'Không thể tạo cấu hình upload');
             }
+
+            const signatureData = signatureResponse.data.data || {};
 
             if (signatureData.maxBytes && processedFile.size > signatureData.maxBytes) {
                 const maxMB = Math.round(signatureData.maxBytes / (1024 * 1024));
@@ -563,15 +563,34 @@ export default function ChatRoom({ roomId, onClose }) {
 
             const formData = new FormData();
             formData.append('file', processedFile);
-            formData.append('timestamp', signatureData.timestamp);
-            formData.append('signature', signatureData.signature);
-            formData.append('api_key', signatureData.apiKey);
-            formData.append('folder', signatureData.folder);
-            formData.append('public_id', signatureData.publicId);
-            formData.append('resource_type', 'image');
-            formData.append('transformation', CHAT_IMAGE_TRANSFORMATION);
 
-            const uploadResponse = await axios.post(signatureData.uploadUrl, formData, {
+            if (signatureData.mode === 'preset') {
+                formData.append('upload_preset', signatureData.uploadPreset);
+                if (signatureData.folder) {
+                    formData.append('folder', signatureData.folder);
+                }
+                if (signatureData.publicId) {
+                    formData.append('public_id', signatureData.publicId);
+                }
+            } else {
+                if (!signatureData.signature || !signatureData.timestamp || !signatureData.apiKey) {
+                    throw new Error('Thiếu thông tin ký upload');
+                }
+
+                formData.append('timestamp', signatureData.timestamp);
+                formData.append('signature', signatureData.signature);
+                formData.append('api_key', signatureData.apiKey);
+                if (signatureData.folder) {
+                    formData.append('folder', signatureData.folder);
+                }
+                formData.append('public_id', signatureData.publicId || publicId);
+                formData.append('resource_type', 'image');
+                formData.append('transformation', signatureData.transformation || CHAT_IMAGE_TRANSFORMATION);
+            }
+
+            const uploadUrl = signatureData.uploadUrl || `https://api.cloudinary.com/v1_1/${signatureData.cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+            const uploadResponse = await axios.post(uploadUrl, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -584,8 +603,11 @@ export default function ChatRoom({ roomId, onClose }) {
                 throw new Error('Upload ảnh không thành công');
             }
 
-            const optimizedUrl = applyTransformation(secureUrl, CHAT_IMAGE_TRANSFORMATION);
-            const thumbnailUrl = applyTransformation(secureUrl, CHAT_THUMB_TRANSFORMATION);
+            const mainTransformation = signatureData.transformation || CHAT_IMAGE_TRANSFORMATION;
+            const thumbTransformation = signatureData.thumbTransformation || CHAT_THUMB_TRANSFORMATION;
+
+            const optimizedUrl = applyTransformation(secureUrl, mainTransformation);
+            const thumbnailUrl = applyTransformation(secureUrl, thumbTransformation);
 
             return {
                 url: optimizedUrl,
