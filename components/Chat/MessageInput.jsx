@@ -3,16 +3,36 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, X, Smile } from 'lucide-react';
+import { Send, Loader2, X, Smile, Image as ImageIcon } from 'lucide-react';
 import EmojiPicker from './EmojiPicker';
 import styles from '../../styles/MessageInput.module.css';
 
-export default function MessageInput({ onSend, onTyping, onStopTyping, sending, disabled, mentions = [], onCancelMentions, replyTo = null, onCancelReply }) {
+export default function MessageInput({
+    onSend,
+    onTyping,
+    onStopTyping,
+    sending,
+    disabled,
+    mentions = [],
+    onCancelMentions,
+    replyTo = null,
+    onCancelReply,
+    onUploadImage,
+    uploadingAttachment = false,
+    maxAttachments = 4,
+    maxImageBytes = 6 * 1024 * 1024
+}) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const inputRef = useRef(null);
     const typingTimeoutRef = useRef(null);
     const emojiButtonRef = useRef(null);
+    const fileInputRef = useRef(null);
+    const uploadButtonRef = useRef(null);
+    const [attachments, setAttachments] = useState([]);
+    const [localUploading, setLocalUploading] = useState(false);
+
+    const isUploading = uploadingAttachment || localUploading;
 
     // Handle input change
     const handleChange = (e) => {
@@ -39,10 +59,22 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
     // Handle send
     const handleSend = (e) => {
         e.preventDefault();
-        if (!message.trim() || sending || disabled) return;
+        const trimmedMessage = message.trim();
+        const hasAttachments = attachments.length > 0;
 
-        onSend(message, null, mentions, replyTo);
+        if ((trimmedMessage.length === 0 && !hasAttachments) || sending || disabled || isUploading) {
+            return;
+        }
+
+        onSend({
+            content: trimmedMessage,
+            attachments,
+            type: hasAttachments ? 'image' : 'text',
+            mentions,
+            replyTo
+        });
         setMessage('');
+        setAttachments([]);
         
         // Reset textarea height to initial height
         if (inputRef.current) {
@@ -61,6 +93,72 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
         if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current);
         }
+    };
+
+    const handleUploadButtonClick = () => {
+        if (disabled || sending || isUploading) return;
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = async (event) => {
+        if (!onUploadImage) {
+            return;
+        }
+
+        const files = Array.from(event.target.files || []);
+        if (!files.length) {
+            return;
+        }
+
+        let remainingSlots = maxAttachments - attachments.length;
+        if (remainingSlots <= 0) {
+            alert(`Bạn chỉ có thể gửi tối đa ${maxAttachments} ảnh mỗi tin nhắn.`);
+            event.target.value = '';
+            return;
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif'];
+        const uploadLimitMB = Math.round((maxImageBytes * 2) / (1024 * 1024));
+
+        setLocalUploading(true);
+        try {
+            for (const file of files) {
+                if (remainingSlots <= 0) {
+                    break;
+                }
+
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Chỉ hỗ trợ các định dạng ảnh: JPG, PNG, GIF, WebP, HEIC/HEIF.');
+                    continue;
+                }
+
+                if (file.size > maxImageBytes * 2) {
+                    alert(`Ảnh vượt quá giới hạn xử lý (${uploadLimitMB}MB). Vui lòng chọn ảnh nhỏ hơn.`);
+                    continue;
+                }
+
+                try {
+                    const uploaded = await onUploadImage(file);
+                    if (uploaded) {
+                        setAttachments(prev => [...prev, uploaded]);
+                        remainingSlots -= 1;
+                    }
+                } catch (error) {
+                    console.error('Upload image error:', error);
+                    alert(error?.message || 'Không thể upload ảnh. Vui lòng thử lại.');
+                }
+            }
+        } finally {
+            setLocalUploading(false);
+        }
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const handleRemoveAttachment = (index) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
     // Reset textarea height when message is cleared
@@ -191,6 +289,14 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
 
     return (
         <form className={styles.messageInput} onSubmit={handleSend}>
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif"
+                multiple
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+            />
             {/* Reply Preview */}
             {replyTo && (
                 <div className={styles.replyPreview}>
@@ -238,6 +344,47 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
                     </button>
                 </div>
             )}
+            {attachments.length > 0 && (
+                <div className={styles.attachmentsPreview}>
+                    {attachments.map((attachment, index) => {
+                        const imageUrl = attachment.thumbnailUrl || attachment.secureUrl || attachment.url;
+                        return (
+                            <div className={styles.attachmentPreviewItem} key={`${attachment.publicId || index}-${index}`}>
+                                {imageUrl ? (
+                                    <img
+                                        src={imageUrl}
+                                        alt={attachment.originalFilename || 'Ảnh đính kèm'}
+                                        className={styles.attachmentPreviewImage}
+                                        loading="lazy"
+                                    />
+                                ) : (
+                                    <div className={styles.attachmentPreviewPlaceholder}>Ảnh</div>
+                                )}
+                                <button
+                                    type="button"
+                                    className={styles.removeAttachmentButton}
+                                    onClick={() => handleRemoveAttachment(index)}
+                                    title="Xóa ảnh"
+                                    disabled={sending || isUploading}
+                                >
+                                    <X size={14} />
+                                </button>
+                                {attachment.bytes && (
+                                    <span className={styles.attachmentPreviewMeta}>
+                                        {(attachment.bytes / (1024 * 1024)).toFixed(1)} MB
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+            {isUploading && (
+                <div className={styles.attachmentUploading}>
+                    <Loader2 size={16} className={styles.spinner} />
+                    <span>Đang upload ảnh...</span>
+                </div>
+            )}
             <div className={styles.inputContainer}>
                 <div className={styles.inputWrapper}>
                     <button
@@ -259,6 +406,16 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
                             />
                         </div>
                     )}
+                    <button
+                        type="button"
+                        ref={uploadButtonRef}
+                        className={styles.uploadButton}
+                        onClick={handleUploadButtonClick}
+                        title={`Đính kèm ảnh (${attachments.length}/${maxAttachments})`}
+                        disabled={disabled || sending || isUploading || attachments.length >= maxAttachments || !onUploadImage}
+                    >
+                        {isUploading ? <Loader2 size={18} className={styles.spinner} /> : <ImageIcon size={20} />}
+                    </button>
                 </div>
                 <textarea
                     ref={inputRef}
@@ -285,7 +442,7 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, sending, 
                 <button
                     type="submit"
                     className={styles.sendButton}
-                    disabled={!message.trim() || sending || disabled}
+                    disabled={(message.trim().length === 0 && attachments.length === 0) || sending || disabled || isUploading}
                     title="Gửi (Enter trên desktop, hoặc nhấn nút này)"
                 >
                     {sending ? (

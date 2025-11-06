@@ -132,33 +132,81 @@ export const useChat = (roomId) => {
     }, [roomId, token, scrollToBottom]);
 
     // Send message
-    const sendMessage = useCallback(async (content, replyToId = null, mentions = [], replyTo = null) => {
-        if (!content.trim() || !roomId || sending) return;
+    const sendMessage = useCallback(async (payload, legacyReplyToId = null, legacyMentions = [], legacyReplyTo = null) => {
+        if (!roomId || sending) return;
+
+        let messagePayload = null;
+
+        if (typeof payload === 'string') {
+            const trimmed = payload.trim();
+            if (!trimmed) {
+                return;
+            }
+
+            messagePayload = {
+                roomId,
+                content: trimmed,
+                type: 'text',
+                mentions: legacyMentions
+            };
+
+            if (legacyReplyTo) {
+                messagePayload.replyTo = typeof legacyReplyTo === 'object' ? (legacyReplyTo.id || legacyReplyTo._id) : legacyReplyTo;
+            } else if (legacyReplyToId) {
+                messagePayload.replyTo = legacyReplyToId;
+            }
+        } else if (payload && typeof payload === 'object') {
+            const {
+                content: payloadContent = '',
+                type: payloadType = 'text',
+                mentions: payloadMentions = [],
+                replyTo: payloadReplyTo = null,
+                attachments: payloadAttachments = []
+            } = payload;
+
+            const trimmed = typeof payloadContent === 'string' ? payloadContent.trim() : '';
+            const hasAttachments = Array.isArray(payloadAttachments) && payloadAttachments.length > 0;
+
+            if (!trimmed && !hasAttachments) {
+                return;
+            }
+
+            const resolvedMentions = (payloadMentions && payloadMentions.length > 0) ? payloadMentions : legacyMentions;
+            const resolvedType = payloadType || (hasAttachments ? 'image' : 'text');
+            let resolvedReplyTo = payloadReplyTo;
+            if (!resolvedReplyTo) {
+                resolvedReplyTo = legacyReplyTo || legacyReplyToId || null;
+            }
+
+            messagePayload = {
+                roomId,
+                content: trimmed,
+                type: resolvedType,
+                mentions: resolvedMentions,
+                attachments: hasAttachments ? payloadAttachments.map(att => ({ ...att })) : []
+            };
+
+            if (resolvedReplyTo) {
+                if (typeof resolvedReplyTo === 'object') {
+                    const replyId = resolvedReplyTo.id || resolvedReplyTo._id;
+                    if (replyId) {
+                        messagePayload.replyTo = replyId;
+                    }
+                } else {
+                    messagePayload.replyTo = resolvedReplyTo;
+                }
+            }
+        } else {
+            return;
+        }
 
         try {
             setSending(true);
-            const messageData = {
-                roomId,
-                content: content.trim(),
-                type: 'text',
-                mentions: mentions
-            };
-            
-            // Add replyTo if provided (can be a message object or message ID)
-            if (replyTo) {
-                if (typeof replyTo === 'object' && (replyTo.id || replyTo._id)) {
-                    messageData.replyTo = replyTo.id || replyTo._id;
-                } else if (typeof replyTo === 'string') {
-                    messageData.replyTo = replyTo;
-                }
-            }
-            
-            emit('message:send', messageData);
-            
-            // Scroll to bottom after sending message
+            emit('message:send', messagePayload);
+
             setTimeout(() => {
                 if (messagesEndRef.current) {
-                    messagesEndRef.current.scrollIntoView({ 
+                    messagesEndRef.current.scrollIntoView({
                         behavior: 'smooth',
                         block: 'end',
                         inline: 'nearest'

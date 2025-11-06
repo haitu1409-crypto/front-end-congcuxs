@@ -43,10 +43,6 @@ const WebVitalsMonitor = dynamic(() => import('../components/WebVitalsMonitor'),
     ssr: false,
     loading: () => null
 });
-const FacebookSdkLoader = dynamic(() => import('../components/FacebookSdkLoader'), {
-    ssr: false,
-    loading: () => null
-});
 // ✅ Temporarily disabled due to web-vitals dependency issue
 // const SEOAnalyticsEnhanced = dynamic(() => import('../components/SEOAnalyticsEnhanced'), {
 //     ssr: false,
@@ -127,9 +123,6 @@ function MyApp({ Component, pageProps }) {
             {/* Google Analytics */}
             <Analytics />
             <GoogleAnalytics />
-
-            {/* Facebook SDK for JavaScript */}
-            <FacebookSdkLoader />
 
             {/* Web Vitals Tracking */}
             <WebVitals />

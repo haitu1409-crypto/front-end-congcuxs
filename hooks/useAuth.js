@@ -11,8 +11,6 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [facebookStatus, setFacebookStatus] = useState('unknown');
-    const [facebookAuthResponse, setFacebookAuthResponse] = useState(null);
 
     // Load user from localStorage on mount
     useEffect(() => {
@@ -67,41 +65,6 @@ export const AuthProvider = ({ children }) => {
             abortController.abort();
         };
     }, []);
-
-    const handleFacebookStatusEvent = useCallback((event) => {
-        const detail = event?.detail || {};
-        const status = detail.status || 'unknown';
-        setFacebookStatus(status);
-        setFacebookAuthResponse(detail.authResponse || null);
-    }, []);
-
-    const checkFacebookLoginStatus = useCallback((callback) => {
-        if (typeof window === 'undefined' || typeof window.FB === 'undefined' || typeof window.FB.getLoginStatus !== 'function') {
-            return;
-        }
-
-        window.FB.getLoginStatus((response) => {
-            handleFacebookStatusEvent({ detail: response });
-            if (typeof callback === 'function') {
-                callback(response);
-            }
-        });
-    }, [handleFacebookStatusEvent]);
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        window.addEventListener('facebook-login-status', handleFacebookStatusEvent);
-        const readyListener = () => {
-            checkFacebookLoginStatus();
-        };
-        document.addEventListener('facebook-sdk-ready', readyListener);
-
-        return () => {
-            window.removeEventListener('facebook-login-status', handleFacebookStatusEvent);
-            document.removeEventListener('facebook-sdk-ready', readyListener);
-        };
-    }, [handleFacebookStatusEvent, checkFacebookLoginStatus]);
 
     // Register
     const register = async (userData) => {
@@ -206,9 +169,6 @@ export const AuthProvider = ({ children }) => {
         logout,
         updateUser,
         refreshUser,
-        facebookStatus,
-        facebookAuthResponse,
-        checkFacebookLoginStatus
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

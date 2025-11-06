@@ -81,6 +81,9 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
     const displayName = message.senderDisplayName || message.senderUsername || '';
     const initial = getInitial(displayName);
     const avatarColor = getColorFromLetter(initial);
+    const attachments = Array.isArray(message.attachments) ? message.attachments : [];
+    const hasAttachments = attachments.length > 0;
+    const hasTextContent = !!(message.content && message.content.trim().length > 0);
     // Parse content to highlight mentions and 2-digit numbers (00-99)
     // Preserve whitespace and line breaks
     const renderContent = () => {
@@ -446,11 +449,50 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                             )}
                         </div>
                     )}
-                    <div 
-                        className={styles.messageText}
-                        dangerouslySetInnerHTML={renderContent()}
-                        onClick={handleMentionClick}
-                    />
+                    {hasAttachments && (
+                        <div className={styles.attachments}>
+                            {attachments.map((attachment, index) => {
+                                const previewUrl = attachment.thumbnailUrl || attachment.secureUrl || attachment.url;
+                                const fullUrl = attachment.secureUrl || attachment.url;
+
+                                if (!previewUrl || !fullUrl) {
+                                    return null;
+                                }
+
+                                return (
+                                    <a
+                                        key={`${attachment.publicId || index}-${index}`}
+                                        href={fullUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.attachmentLink}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <img
+                                            src={previewUrl}
+                                            alt={attachment.originalFilename || 'Ảnh đính kèm'}
+                                            className={styles.attachmentImage}
+                                            loading="lazy"
+                                        />
+                                        {attachment.originalFilename && (
+                                            <span className={styles.attachmentCaption}>
+                                                {attachment.originalFilename}
+                                            </span>
+                                        )}
+                                    </a>
+                                );
+                            })}
+                        </div>
+                    )}
+                    {hasTextContent && (
+                        <div 
+                            className={styles.messageText}
+                            dangerouslySetInnerHTML={renderContent()}
+                            onClick={handleMentionClick}
+                        />
+                    )}
                     <div className={styles.messageFooter}>
                         <div className={styles.messageIcons}>
                             <div 
@@ -498,6 +540,10 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
     const prevReactionsLength = prevProps.message?.reactions?.length || 0;
     const nextReactionsLength = nextProps.message?.reactions?.length || 0;
     if (prevReactionsLength !== nextReactionsLength) return false;
+
+    const prevAttachmentsLength = prevProps.message?.attachments?.length || 0;
+    const nextAttachmentsLength = nextProps.message?.attachments?.length || 0;
+    if (prevAttachmentsLength !== nextAttachmentsLength) return false;
     
     // Selection state changed
     if (prevProps.isSelected !== nextProps.isSelected) return false;

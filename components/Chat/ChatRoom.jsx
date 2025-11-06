@@ -16,8 +16,20 @@ import styles from '../../styles/ChatRoom.module.css';
 import MessageActionModal from './MessageActionModal';
 import MessageModal from './MessageModal';
 import axios from 'axios';
+import imageCompression from 'browser-image-compression';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const MAX_CHAT_ATTACHMENTS = Number(process.env.NEXT_PUBLIC_CHAT_MAX_IMAGE_COUNT || 4);
+const MAX_CHAT_IMAGE_BYTES = Number(process.env.NEXT_PUBLIC_CHAT_MAX_IMAGE_BYTES || 6 * 1024 * 1024);
+const CHAT_IMAGE_TRANSFORMATION = process.env.NEXT_PUBLIC_CHAT_IMAGE_TRANSFORMATION || 'c_limit,w_1600,h_1600,q_auto,f_auto';
+const CHAT_THUMB_TRANSFORMATION = process.env.NEXT_PUBLIC_CHAT_IMAGE_THUMB_TRANSFORMATION || 'c_limit,w_600,h_600,q_auto,f_auto';
+
+const applyTransformation = (url, transformation) => {
+    if (!url || !url.includes('/upload/')) {
+        return url;
+    }
+    return url.replace('/upload/', `/upload/${transformation}/`);
+};
 
 const resolveAvatarUrl = (avatar) => {
     if (!avatar) return null;
@@ -83,6 +95,7 @@ export default function ChatRoom({ roomId, onClose }) {
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [mediaUploading, setMediaUploading] = useState(false);
     const [avatarFailed, setAvatarFailed] = useState(false);
     
     // Reset avatarFailed when user avatar URL changes
@@ -502,6 +515,120 @@ export default function ChatRoom({ roomId, onClose }) {
         }
     };
 
+    const handleUploadChatImage = async (file) => {
+        if (!file) {
+            throw new Error('Không có file được chọn.');
+        }
+
+        if (!token) {
+            throw new Error('Bạn cần đăng nhập để upload ảnh.');
+        }
+
+        setMediaUploading(true);
+
+        let processedFile = file;
+        try {
+            const maxSizeMB = Math.max(Math.min(MAX_CHAT_IMAGE_BYTES / (1024 * 1024), 4), 0.3);
+            processedFile = await imageCompression(file, {
+                maxSizeMB,
+                maxWidthOrHeight: 1600,
+                useWebWorker: true,
+                initialQuality: 0.8
+            });
+        } catch (compressionError) {
+            console.warn('Không thể nén ảnh, dùng file gốc:', compressionError);
+            processedFile = file;
+        }
+
+        const publicId = `chat_${user?.id || 'user'}_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
+
+        try {
+            const signatureResponse = await axios.get(`${API_URL}/api/chat/media/signature`, {
+                params: { publicId },
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const signatureData = signatureResponse.data?.data;
+
+            if (!signatureResponse.data?.success || !signatureData?.signature) {
+                throw new Error(signatureResponse.data?.message || 'Không thể tạo chữ ký upload');
+            }
+
+            if (signatureData.maxBytes && processedFile.size > signatureData.maxBytes) {
+                const maxMB = Math.round(signatureData.maxBytes / (1024 * 1024));
+                throw new Error(`Ảnh vượt quá giới hạn ${maxMB}MB.`);
+            }
+
+            const formData = new FormData();
+            formData.append('file', processedFile);
+            formData.append('timestamp', signatureData.timestamp);
+            formData.append('signature', signatureData.signature);
+            formData.append('api_key', signatureData.apiKey);
+            formData.append('folder', signatureData.folder);
+            formData.append('public_id', signatureData.publicId);
+            formData.append('resource_type', 'image');
+            formData.append('transformation', CHAT_IMAGE_TRANSFORMATION);
+
+            const uploadResponse = await axios.post(signatureData.uploadUrl, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            const uploadData = uploadResponse.data;
+            const secureUrl = uploadData.secure_url || uploadData.url;
+
+            if (!secureUrl || !uploadData.public_id) {
+                throw new Error('Upload ảnh không thành công');
+            }
+
+            const optimizedUrl = applyTransformation(secureUrl, CHAT_IMAGE_TRANSFORMATION);
+            const thumbnailUrl = applyTransformation(secureUrl, CHAT_THUMB_TRANSFORMATION);
+
+            return {
+                url: optimizedUrl,
+                secureUrl: optimizedUrl,
+                thumbnailUrl,
+                publicId: uploadData.public_id,
+                resourceType: uploadData.resource_type || 'image',
+                format: uploadData.format,
+                bytes: uploadData.bytes,
+                width: uploadData.width,
+                height: uploadData.height,
+                originalFilename: uploadData.original_filename,
+                type: 'image'
+            };
+        } catch (directError) {
+            console.warn('Cloudinary direct upload thất bại, thử dùng fallback:', directError);
+
+            try {
+                const fallbackForm = new FormData();
+                fallbackForm.append('image', processedFile);
+
+                const fallbackResponse = await axios.post(`${API_URL}/api/chat/media/image`, fallbackForm, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                if (fallbackResponse.data?.success && fallbackResponse.data?.data?.attachment) {
+                    return fallbackResponse.data.data.attachment;
+                }
+
+                throw new Error(fallbackResponse.data?.message || 'Upload ảnh thất bại');
+            } catch (fallbackError) {
+                console.error('Upload chat image error:', fallbackError);
+                const message = fallbackError.response?.data?.message || fallbackError.message || directError.message || 'Upload ảnh thất bại';
+                throw new Error(message);
+            }
+        } finally {
+            setMediaUploading(false);
+        }
+    };
+
     const handleAvatarClick = () => {
         fileInputRef.current?.click();
     };
@@ -842,6 +969,10 @@ export default function ChatRoom({ roomId, onClose }) {
                 onCancelMentions={() => setMentions([])}
                 replyTo={replyingTo}
                 onCancelReply={handleCancelReply}
+                onUploadImage={handleUploadChatImage}
+                uploadingAttachment={mediaUploading}
+                maxAttachments={MAX_CHAT_ATTACHMENTS}
+                maxImageBytes={MAX_CHAT_IMAGE_BYTES}
             />
 
             {/* QR Code Modal */}

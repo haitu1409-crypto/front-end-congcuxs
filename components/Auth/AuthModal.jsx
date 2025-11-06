@@ -2,15 +2,14 @@
  * Auth Modal Component - Đăng ký/Đăng nhập
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, User, Lock, Eye, EyeOff, Facebook } from 'lucide-react';
+import { X, User, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import FacebookLoginButton from './FacebookLoginButton';
 import styles from '../../styles/AuthModal.module.css';
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
-    const { login, register, facebookStatus, checkFacebookLoginStatus } = useAuth();
+    const { login, register } = useAuth();
     const [mode, setMode] = useState(initialMode); // 'login' or 'register'
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -39,12 +38,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                 password: '',
                 confirmPassword: ''
             });
-
-            if (typeof checkFacebookLoginStatus === 'function') {
-                checkFacebookLoginStatus();
-            }
         }
-    }, [isOpen, initialMode, checkFacebookLoginStatus]);
+    }, [isOpen, initialMode]);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -171,30 +166,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         }
     };
 
-    const handleFacebookLogin = useCallback(() => {
-        if (typeof window === 'undefined') return;
-
-        setLoading(true);
-
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const successRedirect = process.env.NEXT_PUBLIC_FACEBOOK_REDIRECT_URI || `${window.location.origin}/auth/facebook/callback`;
-        const stateValue = `${window.location.pathname}${window.location.search}`;
-
-        const params = new URLSearchParams();
-        params.set('success_redirect', successRedirect);
-        if (stateValue) {
-            params.set('state', stateValue);
-        }
-
-        window.location.href = `${apiBase}/api/auth/facebook?${params.toString()}`;
-    }, []);
-
-    const handleFacebookStatusChange = useCallback((response) => {
-        if (response?.status === 'connected') {
-            handleFacebookLogin();
-        }
-    }, [handleFacebookLogin]);
-
     // Handle register
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -281,36 +252,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                     </div>
                 )}
 
-                <div className={styles.socialLogin}>
-                    <button
-                        type="button"
-                        className={styles.facebookButton}
-                        onClick={handleFacebookLogin}
-                        disabled={loading}
-                    >
-                        <Facebook size={18} />
-                        <span>Đăng nhập bằng Facebook</span>
-                    </button>
-                    <div className={styles.facebookOfficialButton}>
-                        <FacebookLoginButton onStatusChange={handleFacebookStatusChange} />
-                    </div>
-                    <div className={styles.facebookStatus}>
-                        {facebookStatus === 'connected' && 'Facebook đã sẵn sàng kết nối với ứng dụng.'}
-                        {facebookStatus === 'not_authorized' && 'Bạn đã đăng nhập Facebook nhưng chưa cấp quyền cho ứng dụng.'}
-                        {facebookStatus === 'unknown' && 'Bạn chưa đăng nhập Facebook hoặc phiên đã hết hạn.'}
-                        <button
-                            type="button"
-                            className={styles.facebookStatusRefresh}
-                            onClick={() => checkFacebookLoginStatus?.()}
-                            disabled={loading}
-                        >
-                            Kiểm tra lại
-                        </button>
-                    </div>
-                </div>
-
                 <div className={styles.sectionDivider}>
-                    <span>Hoặc</span>
+                    <span>Thông tin đăng nhập</span>
                 </div>
 
                 {/* Form */}
