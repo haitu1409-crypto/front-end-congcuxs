@@ -455,47 +455,17 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                     {hasAttachments && (
                         <div className={styles.attachments}>
                             {attachments.map((attachment, index) => {
-                                const isLocal = attachment.isLocal || attachment.status === 'pending';
+                                const isLocal = attachment.isLocal || attachment.status === 'pending' || attachment.status === 'uploading';
                                 const previewUrl = attachment.previewUrl || attachment.thumbnailUrl || attachment.secureUrl || attachment.url;
                                 const fullUrl = attachment.secureUrl || attachment.url;
+                                const attachmentKey = `${attachment.publicId || attachment.id || index}`;
 
                                 if (!previewUrl) {
                                     return null;
                                 }
 
-                                const containerClass = `${styles.attachmentContainer} ${isLocal ? styles.attachmentContainerPending : ''}`;
-
-                                if (isLocal || !fullUrl) {
-                                    return (
-                                        <div
-                                            key={`${attachment.publicId || index}-${index}`}
-                                            className={containerClass}
-                                        >
-                                            <img
-                                                src={previewUrl}
-                                                alt={attachment.originalFilename || 'Ảnh đính kèm'}
-                                                className={styles.attachmentImage}
-                                                loading="lazy"
-                                            />
-                                            <div className={styles.attachmentPendingOverlay}>
-                                                <Loader2 size={18} className={styles.pendingSpinner} />
-                                                <span>{attachment.progress ? `${Math.min(attachment.progress, 100)}%` : 'Đang gửi...'}</span>
-                                            </div>
-                                        </div>
-                                    );
-                                }
-
-                                return (
-                                    <a
-                                        key={`${attachment.publicId || index}-${index}`}
-                                        href={fullUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer`
-                                        className={styles.attachmentLink}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                        }}
-                                    >
+                                const attachmentContent = (
+                                    <>
                                         <img
                                             src={previewUrl}
                                             alt={attachment.originalFilename || 'Ảnh đính kèm'}
@@ -507,6 +477,36 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                                                 {attachment.originalFilename}
                                             </span>
                                         )}
+                                        {isLocal && (
+                                            <div className={styles.attachmentPendingOverlay}>
+                                                <Loader2 size={18} className={styles.pendingSpinner} />
+                                                <span>{attachment.progress ? `${Math.min(attachment.progress, 100)}%` : 'Đang gửi...'}</span>
+                                            </div>
+                                        )}
+                                    </>
+                                );
+
+                                if (isLocal || !fullUrl) {
+                                    const containerClass = `${styles.attachmentContainer} ${isLocal ? styles.attachmentContainerPending : ''}`;
+                                    return (
+                                        <div key={attachmentKey} className={containerClass}>
+                                            {attachmentContent}
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <a
+                                        key={attachmentKey}
+                                        href={fullUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.attachmentLink}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        {attachmentContent}
                                     </a>
                                 );
                             })}
