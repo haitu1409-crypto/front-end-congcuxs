@@ -12,6 +12,7 @@ class SocketClient {
         this.isConnected = false;
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 5;
+        this.usedFallbackTransports = false;
     }
 
     // Connect to server
@@ -39,9 +40,12 @@ class SocketClient {
         }
 
         console.log('🔌 Connecting to socket server:', SOCKET_URL);
+
+        const websocketOnlyTransports = ['websocket'];
+        const fallbackTransports = ['websocket', 'polling'];
+        const transports = this.usedFallbackTransports ? fallbackTransports : websocketOnlyTransports;
+        const allowUpgrade = transports.length > 1;
         
-        // 🔥 FIX: Try polling first if WebSocket fails, then upgrade
-        // This ensures connection works even if WebSocket is blocked
         this.socket = io(SOCKET_URL, {
             auth: {
                 token: token
@@ -49,11 +53,9 @@ class SocketClient {
             query: {
                 token: token // Also send in query as fallback
             },
-            // 🔥 FIX: Try polling first, then upgrade to WebSocket (better compatibility)
-            // This handles cases where WebSocket is blocked by firewall/proxy
-            transports: ['polling', 'websocket'], // Polling first for better compatibility
-            upgrade: true,
-            rememberUpgrade: true,
+            transports,
+            upgrade: allowUpgrade,
+            rememberUpgrade: allowUpgrade,
             // Reconnection strategy with exponential backoff
             reconnection: true,
             reconnectionDelay: 1000,
@@ -134,11 +136,27 @@ class SocketClient {
             });
             this.reconnectAttempts++;
             
-            // 🔥 FIX: Better error handling for different error types
-            // If WebSocket fails, Socket.io will automatically fallback to polling
-            if (error.type === 'TransportError' || error.message?.includes('websocket')) {
-                console.warn('⚠️ WebSocket connection failed, will fallback to polling...');
-                // Don't stop reconnection - Socket.io will try polling automatically
+            // Nếu WebSocket bị chặn hoặc không hỗ trợ, fallback sang polling một lần
+            if (!this.usedFallbackTransports && (error.type === 'TransportError' || error.message?.includes('websocket'))) {
+                console.warn('⚠️ WebSocket handshake thất bại, fallback sang polling...');
+                this.usedFallbackTransports = true;
+                if (this.socket) {
+                    this.stopHeartbeat();
+                    this.socket.off('connect');
+                    this.socket.off('disconnect');
+                    this.socket.off('connect_error');
+                    this.socket.disconnect();
+                    this.socket = null;
+                }
+                // Thử kết nối lại ngay với cấu hình fallback
+                setTimeout(() => {
+                    try {
+                        this.connect(token);
+                    } catch (fallbackError) {
+                        console.error('❌ Fallback polling connection error:', fallbackError);
+                    }
+                }, 0);
+                return;
             }
             
             // If auth error, don't reconnect
@@ -201,6 +219,7 @@ class SocketClient {
             this.socket = null;
             this.isConnected = false;
         }
+        this.usedFallbackTransports = false;
     }
 
     // Emit event to server

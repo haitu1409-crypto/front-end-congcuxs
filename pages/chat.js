@@ -2,7 +2,7 @@
  * Chat Page - Groupchat
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useAuth } from '../hooks/useAuth';
@@ -24,6 +24,15 @@ export default function ChatPage() {
     const [accessChecked, setAccessChecked] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [authModalMode, setAuthModalMode] = useState('login');
+
+    const isDev = process.env.NODE_ENV !== 'production';
+    const roomIdRef = useRef(null);
+    const groupchatAbortRef = useRef(null);
+    const groupchatRetryTimeoutRef = useRef(null);
+
+    useEffect(() => {
+        roomIdRef.current = roomId;
+    }, [roomId]);
 
     // Ensure viewport height units behave correctly on mobile browsers
     useEffect(() => {
@@ -64,18 +73,22 @@ export default function ChatPage() {
     useEffect(() => {
         if (router.isReady) {
             if (router.query.room) {
-                console.log('🔄 Room query param detected:', router.query.room);
+                if (isDev) {
+                    console.log('🔄 Room query param detected:', router.query.room);
+                }
                 setRoomId(router.query.room);
                 setLoading(false);
                 setError(null);
             } else {
                 // No query param - need to fetch groupchat
-                console.log('🔄 No room param, resetting to fetch groupchat');
+                if (isDev) {
+                    console.log('🔄 No room param, resetting to fetch groupchat');
+                }
                 setRoomId(null);
                 setAccessChecked(false); // Reset to trigger fetch
             }
         }
-    }, [router.isReady, router.query.room]);
+    }, [router.isReady, router.query.room, isDev]);
 
     // Don't redirect, just show login message
 
@@ -85,6 +98,94 @@ export default function ChatPage() {
             setLoading(false);
         }
     }, [authLoading, isAuthenticated]);
+
+    // Get groupchat room
+    const getGroupchatRoom = useCallback(async () => {
+        if (!token) return;
+
+        if (groupchatRetryTimeoutRef.current) {
+            clearTimeout(groupchatRetryTimeoutRef.current);
+            groupchatRetryTimeoutRef.current = null;
+        }
+
+        if (groupchatAbortRef.current) {
+            groupchatAbortRef.current.abort();
+            groupchatAbortRef.current = null;
+        }
+
+        const abortController = new AbortController();
+        groupchatAbortRef.current = abortController;
+
+        try {
+            if (isDev) {
+                console.log('🔍 Fetching groupchat room...');
+            }
+            const response = await axios.get(`${API_URL}/api/chat/groupchat`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                signal: abortController.signal
+            });
+
+            if (isDev) {
+                console.log('📦 Response:', response.data);
+            }
+
+            if (response.data.success && response.data.data?.room?.roomId) {
+                if (isDev) {
+                    console.log('✅ Room ID:', response.data.data.room.roomId);
+                }
+                setRoomId(response.data.data.room.roomId);
+                setError(null);
+            } else {
+                const errorMsg = 'Không thể lấy thông tin phòng chat';
+                console.error('❌ Invalid response structure:', response.data);
+                setError(errorMsg);
+            }
+        } catch (error) {
+            if (axios.isCancel(error) || error.name === 'AbortError') {
+                return;
+            }
+
+            console.error('❌ Get groupchat room error:', error.message || error);
+            let errorMsg = 'Lỗi khi kết nối đến server';
+
+            if (error.response) {
+                if (error.response.status === 401) {
+                    errorMsg = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+                } else if (error.response.status === 403) {
+                    if (error.response.data?.requiresVerification) {
+                        setShowVerification(true);
+                        return;
+                    }
+                    errorMsg = error.response.data?.message || 'Bạn không có quyền truy cập chat';
+                } else if (error.response.status === 429) {
+                    errorMsg = 'Quá nhiều yêu cầu. Vui lòng đợi 1-2 phút rồi thử lại.';
+                    groupchatRetryTimeoutRef.current = setTimeout(() => {
+                        if (!roomIdRef.current) {
+                            getGroupchatRoom();
+                        } else {
+                            groupchatRetryTimeoutRef.current = null;
+                        }
+                    }, 120000);
+                } else if (error.response.data?.message) {
+                    errorMsg = error.response.data.message;
+                }
+            } else if (error.request) {
+                errorMsg = 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.';
+            }
+
+            setError(errorMsg);
+        } finally {
+            if (!abortController.signal.aborted) {
+                setLoading(false);
+            }
+
+            if (groupchatAbortRef.current === abortController) {
+                groupchatAbortRef.current = null;
+            }
+        }
+    }, [token, isDev]);
 
     // Check chat access first
     useEffect(() => {
@@ -140,7 +241,7 @@ export default function ChatPage() {
                     if (error.response?.status === 429) {
                         setError('Quá nhiều yêu cầu. Vui lòng đợi 1-2 phút rồi thử lại.');
                     } else {
-                    setError('Lỗi khi kiểm tra quyền truy cập');
+                        setError('Lỗi khi kiểm tra quyền truy cập');
                     }
                     setLoading(false);
                 }
@@ -153,87 +254,26 @@ export default function ChatPage() {
             isMounted = false;
             abortController.abort();
         };
-    }, [token, isAuthenticated, accessChecked, router.isReady, router.query.room]);
-
-    // Get groupchat room
-    const getGroupchatRoom = async () => {
-        if (!token) return;
-
-        let isMounted = true;
-        const abortController = new AbortController();
-
-        try {
-            console.log('🔍 Fetching groupchat room...');
-            const response = await axios.get(`${API_URL}/api/chat/groupchat`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                signal: abortController.signal
-            });
-
-            if (!isMounted) return;
-
-            console.log('📦 Response:', response.data);
-
-            if (response.data.success && response.data.data?.room?.roomId) {
-                console.log('✅ Room ID:', response.data.data.room.roomId);
-                setRoomId(response.data.data.room.roomId);
-                setError(null);
-            } else {
-                const errorMsg = 'Không thể lấy thông tin phòng chat';
-                console.error('❌ Invalid response structure:', response.data);
-                if (isMounted) {
-                    setError(errorMsg);
-                }
-            }
-        } catch (error) {
-            if (axios.isCancel(error) || error.name === 'AbortError') {
-                return;
-            }
-
-            if (!isMounted) return;
-
-            console.error('❌ Get groupchat room error:', error.message || error);
-            let errorMsg = 'Lỗi khi kết nối đến server';
-            
-            if (error.response) {
-                if (error.response.status === 401) {
-                    errorMsg = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
-                } else if (error.response.status === 403) {
-                    if (error.response.data?.requiresVerification) {
-                        setShowVerification(true);
-                        return;
-                    }
-                    errorMsg = error.response.data?.message || 'Bạn không có quyền truy cập chat';
-                } else if (error.response.status === 429) {
-                    // Rate limit exceeded
-                    errorMsg = 'Quá nhiều yêu cầu. Vui lòng đợi 1-2 phút rồi thử lại.';
-                    // Auto retry after 2 minutes
-                    setTimeout(() => {
-                        if (isMounted && !roomId) {
-                            getGroupchatRoom();
-                        }
-                    }, 120000); // 2 minutes
-                } else if (error.response.data?.message) {
-                    errorMsg = error.response.data.message;
-                }
-            } else if (error.request) {
-                errorMsg = 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.';
-            }
-            
-            setError(errorMsg);
-        } finally {
-            if (isMounted) {
-                setLoading(false);
-            }
-        }
-    };
+    }, [token, isAuthenticated, accessChecked, router.isReady, router.query.room, getGroupchatRoom]);
 
     const handleVerified = () => {
         setShowVerification(false);
         setAccessChecked(false); // Reset to check again
         getGroupchatRoom();
     };
+
+    useEffect(() => {
+        return () => {
+            if (groupchatRetryTimeoutRef.current) {
+                clearTimeout(groupchatRetryTimeoutRef.current);
+                groupchatRetryTimeoutRef.current = null;
+            }
+            if (groupchatAbortRef.current) {
+                groupchatAbortRef.current.abort();
+                groupchatAbortRef.current = null;
+            }
+        };
+    }, []);
 
     // Show loading while checking auth
     if (authLoading) {

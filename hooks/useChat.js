@@ -484,44 +484,56 @@ export const useChat = (roomId) => {
                     messageQueueRef.current = []; // Clear queue
                     
                     setMessages(prev => {
-                        // Use Map for O(1) lookup instead of O(n) find
                         const messagesMap = new Map();
-                        let isPrivateChat = roomId && roomId.startsWith('private_');
-                        
-                        // Add existing messages to Map (maintain sorted order from prev)
+                        const prevLastTimestamp = prev.length > 0
+                            ? new Date(prev[prev.length - 1].createdAt).getTime()
+                            : Number.NEGATIVE_INFINITY;
+                        let requiresSort = false;
+
                         prev.forEach(msg => {
                             const msgId = (msg.id || msg._id).toString();
                             messagesMap.set(msgId, msg);
                         });
-                        
-                        // Add new messages (deduplication with O(1) lookup)
+
                         queuedMessages.forEach(msg => {
                             const msgId = (msg.id || msg._id).toString();
+                            const createdAtMs = new Date(msg.createdAt).getTime();
+                            if (createdAtMs < prevLastTimestamp) {
+                                requiresSort = true;
+                            }
+
                             if (!messagesMap.has(msgId)) {
                                 messagesMap.set(msgId, msg);
                                 hasNewMessage = true;
-                                
-                                // Check if should play sound (both private chat and groupchat)
+
                                 const isFromOther = msg.senderId !== user?.id;
                                 if (isFromOther) {
                                     shouldPlaySound = true;
                                 }
+                            } else {
+                                // Cập nhật nội dung mới nhất nhưng giữ nguyên vị trí hiện tại
+                                messagesMap.set(msgId, {
+                                    ...messagesMap.get(msgId),
+                                    ...msg
+                                });
                             }
                         });
-                        
-                        // Convert Map back to sorted array (only sort if needed)
-                        const result = Array.from(messagesMap.values()).sort((a, b) => {
-                            const timeA = new Date(a.createdAt).getTime();
-                            const timeB = new Date(b.createdAt).getTime();
-                            return timeA - timeB;
-                        });
-                        
-                        // Update message map ref for next batch
+
+                        let result = Array.from(messagesMap.values());
+
+                        if (requiresSort) {
+                            result = result.sort((a, b) => {
+                                const timeA = new Date(a.createdAt).getTime();
+                                const timeB = new Date(b.createdAt).getTime();
+                                return timeA - timeB;
+                            });
+                        }
+
                         messageMapRef.current = new Map(result.map(msg => {
                             const msgId = (msg.id || msg._id).toString();
                             return [msgId, msg];
                         }));
-                        
+
                         return result;
                     });
 
