@@ -76,7 +76,7 @@ export default function MessageList({ messages, typingUsers, currentUserId, mess
                     // 2. Last message in group (no next or different sender or time gap > 30s to next)
                     const showAvatar = isFirstInGroup || isLastInGroup;
                     
-                    const messageId = message.id || message._id;
+                    const messageId = message.id || message._id || message.clientMessageId;
                     const isSelected = selectedMessages?.has(messageId);
 
                     return (

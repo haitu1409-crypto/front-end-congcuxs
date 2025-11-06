@@ -353,7 +353,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
     return (
         <div 
             id={`message-${messageId}`}
-            className={`${styles.message} ${isOwn ? styles.ownMessage : ''} ${selectionMode ? styles.selectableMessage : ''} ${isSelected ? styles.selectedMessage : ''} ${isConsecutive ? styles.consecutiveMessage : ''} ${isLastInGroup ? styles.lastInGroup : ''}`}
+            className={`${styles.message} ${isOwn ? styles.ownMessage : ''} ${selectionMode ? styles.selectableMessage : ''} ${isSelected ? styles.selectedMessage : ''} ${isConsecutive ? styles.consecutiveMessage : ''} ${isLastInGroup ? styles.lastInGroup : ''} ${isPending ? styles.messageOptimistic : ''} ${isError ? styles.messageError : ''}`}
             onClick={handleContainerClick}
         >
             {selectionMode && (
@@ -455,11 +455,34 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                     {hasAttachments && (
                         <div className={styles.attachments}>
                             {attachments.map((attachment, index) => {
-                                const previewUrl = attachment.thumbnailUrl || attachment.secureUrl || attachment.url;
+                                const isLocal = attachment.isLocal || attachment.status === 'pending';
+                                const previewUrl = attachment.previewUrl || attachment.thumbnailUrl || attachment.secureUrl || attachment.url;
                                 const fullUrl = attachment.secureUrl || attachment.url;
 
-                                if (!previewUrl || !fullUrl) {
+                                if (!previewUrl) {
                                     return null;
+                                }
+
+                                const containerClass = `${styles.attachmentContainer} ${isLocal ? styles.attachmentContainerPending : ''}`;
+
+                                if (isLocal || !fullUrl) {
+                                    return (
+                                        <div
+                                            key={`${attachment.publicId || index}-${index}`}
+                                            className={containerClass}
+                                        >
+                                            <img
+                                                src={previewUrl}
+                                                alt={attachment.originalFilename || 'Ảnh đính kèm'}
+                                                className={styles.attachmentImage}
+                                                loading="lazy"
+                                            />
+                                            <div className={styles.attachmentPendingOverlay}>
+                                                <Loader2 size={18} className={styles.pendingSpinner} />
+                                                <span>{attachment.progress ? `${Math.min(attachment.progress, 100)}%` : 'Đang gửi...'}</span>
+                                            </div>
+                                        </div>
+                                    );
                                 }
 
                                 return (
@@ -467,7 +490,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                                         key={`${attachment.publicId || index}-${index}`}
                                         href={fullUrl}
                                         target="_blank"
-                                        rel="noopener noreferrer"
+                                        rel="noopener noreferrer`
                                         className={styles.attachmentLink}
                                         onClick={(e) => {
                                             e.stopPropagation();

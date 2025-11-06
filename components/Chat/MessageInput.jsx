@@ -149,13 +149,6 @@ export default function MessageInput({
         });
         setMessage('');
 
-        attachments.forEach(att => {
-            const preview = previewUrlsRef.current.get(att.id);
-            if (preview) {
-                URL.revokeObjectURL(preview);
-                previewUrlsRef.current.delete(att.id);
-            }
-        });
         setAttachments([]);
         
         // Reset textarea height to initial height
@@ -376,8 +369,6 @@ export default function MessageInput({
             if (typingTimeoutRef.current) {
                 clearTimeout(typingTimeoutRef.current);
             }
-            previewUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
-            previewUrlsRef.current.clear();
         };
     }, []);
 

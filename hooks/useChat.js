@@ -95,7 +95,22 @@ export const useChat = (roomId) => {
         if (!clientIds || clientIds.length === 0) {
             return;
         }
-        setPendingMessages(prev => prev.filter(msg => !clientIds.includes(msg.clientMessageId)));
+        setPendingMessages(prev => {
+            prev.forEach(msg => {
+                if (clientIds.includes(msg.clientMessageId) && msg.optimisticAttachments) {
+                    msg.optimisticAttachments.forEach(opt => {
+                        if (opt.previewUrl) {
+                            try {
+                                URL.revokeObjectURL(opt.previewUrl);
+                            } catch (err) {
+                                console.warn('Failed to revoke preview URL:', err);
+                            }
+                        }
+                    });
+                }
+            });
+            return prev.filter(msg => !clientIds.includes(msg.clientMessageId));
+        });
     }, []);
 
     // Load messages
@@ -254,6 +269,7 @@ export const useChat = (roomId) => {
             content: messagePayload.content,
             type: messagePayload.type,
             attachments: optimisticAttachments,
+            optimisticAttachments,
             mentions: messagePayload.mentions,
             replyTo: messagePayload.replyTo || null,
             senderId: user?.id,
@@ -842,6 +858,11 @@ export const useChat = (roomId) => {
             const timeA = new Date(a.createdAt || Date.now()).getTime();
             const timeB = new Date(b.createdAt || Date.now()).getTime();
             return timeA - timeB;
+        }).map(msg => {
+            if (!msg.id && msg.clientMessageId) {
+                return { ...msg, id: msg.clientMessageId };
+            }
+            return msg;
         });
     }, [messages, pendingMessages]);
 
