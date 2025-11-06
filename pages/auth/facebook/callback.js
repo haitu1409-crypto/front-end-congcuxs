@@ -7,11 +7,31 @@ const decodeBase64UrlJson = (value) => {
     if (!value) return null;
 
     try {
-        const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
-        const padding = (4 - (base64.length % 4)) % 4;
-        const padded = base64 + '='.repeat(padding);
-        const decoded = typeof window !== 'undefined' ? atob(padded) : Buffer.from(padded, 'base64').toString('utf8');
-        return JSON.parse(decoded);
+        const normalized = value
+            .replace(/\s+/g, '')
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+        const padding = (4 - (normalized.length % 4)) % 4;
+        const padded = normalized + '='.repeat(padding);
+
+        if (typeof window === 'undefined') {
+            const decoded = Buffer.from(padded, 'base64').toString('utf8');
+            return JSON.parse(decoded);
+        }
+
+        const binaryString = window.atob(padded);
+        const bytes = Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
+
+        let decodedString;
+        if (typeof TextDecoder !== 'undefined') {
+            decodedString = new TextDecoder('utf-8').decode(bytes);
+        } else {
+            decodedString = decodeURIComponent(Array.from(bytes)
+                .map((byte) => `%${byte.toString(16).padStart(2, '0')}`)
+                .join(''));
+        }
+
+        return JSON.parse(decodedString);
     } catch (error) {
         console.error('Failed to decode Facebook user payload:', error);
         return null;
