@@ -2,7 +2,7 @@
  * ChatRoom Component - Groupchat interface
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../hooks/useAuth';
 import { useChat } from '../../hooks/useChat';
@@ -574,6 +574,33 @@ export default function ChatRoom({ roomId, onClose }) {
         );
     }
 
+    const userAvatarMap = useMemo(() => {
+        const map = new Map();
+        onlineUsers.forEach(u => {
+            if (u?.userId) {
+                map.set(u.userId, u.avatar || null);
+            }
+        });
+        if (user?.id) {
+            map.set(user.id.toString(), user.avatar || null);
+        }
+        return map;
+    }, [onlineUsers, user?.id, user?.avatar]);
+
+    const enrichedMessages = useMemo(() => {
+        if (!messages || messages.length === 0) return messages;
+        return messages.map(msg => {
+            if (msg.senderAvatar && /^https?:\/\//i.test(msg.senderAvatar)) {
+                return msg;
+            }
+            const avatar = msg.senderAvatar || userAvatarMap.get(msg.senderId?.toString?.() || msg.senderId) || null;
+            if (avatar && avatar !== msg.senderAvatar) {
+                return { ...msg, senderAvatar: avatar };
+            }
+            return msg;
+        });
+    }, [messages, userAvatarMap]);
+
     return (
         <div className={styles.chatRoom}>
             {/* New Message Notification */}
@@ -769,8 +796,8 @@ export default function ChatRoom({ roomId, onClose }) {
                         </div>
                     ) : (
                         <>
-                            <MessageList
-                                messages={messages}
+            <MessageList
+                messages={enrichedMessages}
                                 typingUsers={typingUsers}
                                 currentUserId={user?.id}
                                 messagesEndRef={messagesEndRef}

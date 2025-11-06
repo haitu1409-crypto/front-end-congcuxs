@@ -24,7 +24,7 @@ const FacebookCallbackPage = () => {
     const { loginWithProvider } = useAuth();
     const [status, setStatus] = useState('Đang xử lý đăng nhập Facebook...');
     const [errorMessage, setErrorMessage] = useState('');
-    const [redirectDestination, setRedirectDestination] = useState('/');
+    const [redirectDestination, setRedirectDestination] = useState('/chat');
 
     useEffect(() => {
         if (!isReady) return;
@@ -77,42 +77,55 @@ const FacebookCallbackPage = () => {
                 }
             }
         }
+        
+        console.log('Redirecting to:', destination);
         setRedirectDestination(destination);
 
-        // Redirect with multiple fallbacks
-        const redirect = () => {
+        // Redirect function - use window.location.href for hard redirect
+        const performRedirect = (target) => {
+            if (typeof window === 'undefined') {
+                replace(target);
+                return;
+            }
+            
+            // Use window.location.href for hard redirect (works better than router)
             try {
-                if (typeof window !== 'undefined') {
-                    window.location.href = destination;
-                } else {
-                    replace(destination);
-                }
+                window.location.href = target;
             } catch (error) {
-                console.error('Redirect error:', error);
-                if (typeof window !== 'undefined') {
-                    window.location.href = '/';
-                } else {
-                    replace('/');
-                }
+                console.error('Redirect error, trying router:', error);
+                replace(target).catch(() => {
+                    // Last resort: force reload to home then navigate
+                    window.location.href = target;
+                });
             }
         };
 
-        // First attempt after 300ms
+        // First attempt after 100ms (faster)
         const timeout1 = setTimeout(() => {
-            redirect();
-        }, 300);
+            console.log('Attempting redirect to:', destination);
+            performRedirect(destination);
+        }, 100);
 
-        // Fallback after 2 seconds if still on page
+        // Fallback after 1 second if still on page
         const timeout2 = setTimeout(() => {
             if (typeof window !== 'undefined' && window.location.pathname.includes('/auth/facebook/callback')) {
-                console.warn('Auto redirect failed, forcing redirect...');
-                redirect();
+                console.warn('Auto redirect failed, forcing redirect to:', destination);
+                performRedirect(destination);
             }
-        }, 2000);
+        }, 1000);
+
+        // Last resort: force redirect after 3 seconds
+        const timeout3 = setTimeout(() => {
+            if (typeof window !== 'undefined' && window.location.pathname.includes('/auth/facebook/callback')) {
+                console.error('All redirect attempts failed, forcing hard redirect to:', destination);
+                window.location.replace(destination);
+            }
+        }, 3000);
 
         return () => {
             clearTimeout(timeout1);
             clearTimeout(timeout2);
+            clearTimeout(timeout3);
         };
     }, [isReady, query, loginWithProvider, replace]);
 
