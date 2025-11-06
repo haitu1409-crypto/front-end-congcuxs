@@ -25,41 +25,6 @@ export default function ChatPage() {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [authModalMode, setAuthModalMode] = useState('login');
 
-    // Ensure viewport height units behave correctly on mobile browsers
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        const root = document.documentElement;
-
-        const setAppHeight = () => {
-            const viewport = window.visualViewport;
-            const height = viewport?.height ?? window.innerHeight;
-            root.style.setProperty('--app-height', `${height}px`);
-        };
-
-        setAppHeight();
-
-        const viewport = window.visualViewport;
-
-        window.addEventListener('resize', setAppHeight);
-        window.addEventListener('orientationchange', setAppHeight);
-
-        if (viewport) {
-            viewport.addEventListener('resize', setAppHeight);
-            viewport.addEventListener('scroll', setAppHeight);
-        }
-
-        return () => {
-            window.removeEventListener('resize', setAppHeight);
-            window.removeEventListener('orientationchange', setAppHeight);
-
-            if (viewport) {
-                viewport.removeEventListener('resize', setAppHeight);
-                viewport.removeEventListener('scroll', setAppHeight);
-            }
-        };
-    }, []);
-
     // Watch for room query param changes
     useEffect(() => {
         if (router.isReady) {

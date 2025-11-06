@@ -3,13 +3,22 @@
 .chatRoom {
     display: flex;
     flex-direction: column;
-    height: var(--app-height, 100vh);
-    min-height: var(--app-height, 100vh);
+    height: 100vh;
+    min-height: 100vh;
+    height: 100dvh;
+    min-height: 100dvh;
     width: 100%;
     background: white;
     border-radius: 0;
     overflow: hidden;
     box-shadow: none;
+}
+
+@supports (height: 100svh) {
+    .chatRoom {
+        height: 100svh;
+        min-height: 100svh;
+    }
 }
 
 .chatHeader {
@@ -369,8 +378,10 @@
 @media (max-width: 768px) {
     .chatRoom {
         border-radius: 0;
-        height: var(--app-height, 100vh);
-        min-height: var(--app-height, 100vh);
+        height: 100vh;
+        min-height: 100vh;
+        height: 100dvh;
+        min-height: 100dvh;
     }
 
     .userListSidebar {
