@@ -2,7 +2,7 @@
  * MessageInput Component - Input để gửi tin nhắn
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Loader2, X, Smile, Image as ImageIcon, RotateCcw } from 'lucide-react';
 import EmojiPicker from './EmojiPicker';
 import styles from '../../styles/MessageInput.module.css';
@@ -55,7 +55,7 @@ export default function MessageInput({
     const isUploading = uploadingAttachment || attachments.some(att => att.status === 'uploading');
     const hasError = attachments.some(att => att.status === 'error');
 
-    const cleanupAfterSend = (attachmentIdsToClear = []) => {
+    const cleanupAfterSend = useCallback((attachmentIdsToClear = []) => {
         setAttachments(prev => prev.filter(att => {
             const shouldKeep = attachmentIdsToClear.length > 0 && !attachmentIdsToClear.includes(att.id);
             if (!shouldKeep) {
@@ -89,9 +89,9 @@ export default function MessageInput({
         if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current);
         }
-    };
+    }, [onCancelMentions, onCancelReply, onStopTyping]);
 
-    const finalizeSend = (draft, attachmentsToSend) => {
+    const finalizeSend = useCallback((draft, attachmentsToSend) => {
         if (!draft) return;
 
         const clientMessageId = draft.clientMessageId || createClientMessageId();
@@ -118,7 +118,7 @@ export default function MessageInput({
 
         cleanupAfterSend(idsToClear);
         setPendingDraft(null);
-    };
+    }, [cleanupAfterSend, onSend]);
 
     const updateAttachment = (id, updater) => {
         setAttachments(prev => prev.map(att => {
