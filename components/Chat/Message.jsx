@@ -353,7 +353,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
     return (
         <div 
             id={`message-${messageId}`}
-            className={`${styles.message} ${isOwn ? styles.ownMessage : ''} ${selectionMode ? styles.selectableMessage : ''} ${isSelected ? styles.selectedMessage : ''} ${isConsecutive ? styles.consecutiveMessage : ''} ${isLastInGroup ? styles.lastInGroup : ''} ${isPending ? styles.messageOptimistic : ''} ${isError ? styles.messageError : ''}`}
+            className={`${styles.message} ${isOwn ? styles.ownMessage : ''} ${selectionMode ? styles.selectableMessage : ''} ${isSelected ? styles.selectedMessage : ''} ${isConsecutive ? styles.consecutiveMessage : ''} ${isLastInGroup ? styles.lastInGroup : ''}`}
             onClick={handleContainerClick}
         >
             {selectionMode && (
@@ -455,17 +455,24 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                     {hasAttachments && (
                         <div className={styles.attachments}>
                             {attachments.map((attachment, index) => {
-                                const isLocal = attachment.isLocal || attachment.status === 'pending' || attachment.status === 'uploading';
-                                const previewUrl = attachment.previewUrl || attachment.thumbnailUrl || attachment.secureUrl || attachment.url;
+                                const previewUrl = attachment.thumbnailUrl || attachment.secureUrl || attachment.url;
                                 const fullUrl = attachment.secureUrl || attachment.url;
-                                const attachmentKey = `${attachment.publicId || attachment.id || index}`;
 
-                                if (!previewUrl) {
+                                if (!previewUrl || !fullUrl) {
                                     return null;
                                 }
 
-                                const attachmentContent = (
-                                    <>
+                                return (
+                                    <a
+                                        key={`${attachment.publicId || index}-${index}`}
+                                        href={fullUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.attachmentLink}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                        }}
+                                    >
                                         <img
                                             src={previewUrl}
                                             alt={attachment.originalFilename || 'Ảnh đính kèm'}
@@ -477,36 +484,6 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                                                 {attachment.originalFilename}
                                             </span>
                                         )}
-                                        {isLocal && (
-                                            <div className={styles.attachmentPendingOverlay}>
-                                                <Loader2 size={18} className={styles.pendingSpinner} />
-                                                <span>{attachment.progress ? `${Math.min(attachment.progress, 100)}%` : 'Đang gửi...'}</span>
-                                            </div>
-                                        )}
-                                    </>
-                                );
-
-                                if (isLocal || !fullUrl) {
-                                    const containerClass = `${styles.attachmentContainer} ${isLocal ? styles.attachmentContainerPending : ''}`;
-                                    return (
-                                        <div key={attachmentKey} className={containerClass}>
-                                            {attachmentContent}
-                                        </div>
-                                    );
-                                }
-
-                                return (
-                                    <a
-                                        key={attachmentKey}
-                                        href={fullUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={styles.attachmentLink}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        {attachmentContent}
                                     </a>
                                 );
                             })}

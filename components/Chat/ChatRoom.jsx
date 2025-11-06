@@ -17,19 +17,15 @@ import MessageActionModal from './MessageActionModal';
 import MessageModal from './MessageModal';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
+import {
+    warmupChatUploadConfig,
+    uploadChatAttachment,
+    generateChatPublicId
+} from '../../lib/chatUploadService';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const MAX_CHAT_ATTACHMENTS = Number(process.env.NEXT_PUBLIC_CHAT_MAX_IMAGE_COUNT || 4);
 const MAX_CHAT_IMAGE_BYTES = Number(process.env.NEXT_PUBLIC_CHAT_MAX_IMAGE_BYTES || 6 * 1024 * 1024);
-const CHAT_IMAGE_TRANSFORMATION = process.env.NEXT_PUBLIC_CHAT_IMAGE_TRANSFORMATION || 'c_limit,w_1600,h_1600,q_auto,f_auto';
-const CHAT_THUMB_TRANSFORMATION = process.env.NEXT_PUBLIC_CHAT_IMAGE_THUMB_TRANSFORMATION || 'c_limit,w_600,h_600,q_auto,f_auto';
-
-const applyTransformation = (url, transformation) => {
-    if (!url || !url.includes('/upload/')) {
-        return url;
-    }
-    return url.replace('/upload/', `/upload/${transformation}/`);
-};
 
 const resolveAvatarUrl = (avatar) => {
     if (!avatar) return null;
@@ -102,6 +98,10 @@ export default function ChatRoom({ roomId, onClose }) {
     useEffect(() => {
         setAvatarFailed(false);
     }, [user?.avatar]);
+    useEffect(() => {
+        if (!token) return;
+        warmupChatUploadConfig(token);
+    }, [token]);
     const [unreadCounts, setUnreadCounts] = useState({});
     const [otherParticipant, setOtherParticipant] = useState(null);
     const [newMessageNotification, setNewMessageNotification] = useState(null);
@@ -528,147 +528,59 @@ export default function ChatRoom({ roomId, onClose }) {
         activeUploadsRef.current += 1;
         setMediaUploading(true);
 
+        const uploadStartedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+
         let processedFile = file;
-        try {
-            const maxSizeMB = Math.max(Math.min(MAX_CHAT_IMAGE_BYTES / (1024 * 1024), 3.5), 0.3);
-            processedFile = await imageCompression(file, {
-                maxSizeMB,
-                maxWidthOrHeight: 1400,
-                useWebWorker: true,
-                initialQuality: 0.75
-            });
-        } catch (compressionError) {
-            console.warn('Không thể nén ảnh, dùng file gốc:', compressionError);
-            processedFile = file;
-        }
-
-        const publicId = `chat_${user?.id || 'user'}_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
+        const shouldForceWebp = ['image/png', 'image/heic', 'image/heif'].includes(file.type);
+        const shouldCompress = shouldForceWebp || file.size > MAX_CHAT_IMAGE_BYTES * 0.85;
 
         try {
-            const signatureResponse = await axios.get(`${API_URL}/api/chat/media/signature`, {
-                params: { publicId },
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            if (shouldCompress) {
+                const maxSizeMB = Math.min(Math.max(MAX_CHAT_IMAGE_BYTES / (1024 * 1024), 0.45), 4);
+                const compressionOptions = {
+                    maxSizeMB,
+                    maxWidthOrHeight: 1600,
+                    useWebWorker: true,
+                    initialQuality: shouldForceWebp ? 0.78 : 0.82,
+                    alwaysKeepResolution: false,
+                    fileType: shouldForceWebp ? 'image/webp' : undefined
+                };
+
+                try {
+                    processedFile = await imageCompression(file, compressionOptions);
+                } catch (compressionError) {
+                    console.warn('Không thể nén ảnh, dùng file gốc:', compressionError);
+                    processedFile = file;
                 }
-            });
-
-            if (!signatureResponse.data?.success) {
-                throw new Error(signatureResponse.data?.message || 'Không thể tạo cấu hình upload');
             }
 
-            const signatureData = signatureResponse.data.data || {};
-
-            if (signatureData.maxBytes && processedFile.size > signatureData.maxBytes) {
-                const maxMB = Math.round(signatureData.maxBytes / (1024 * 1024));
+            if (processedFile.size > MAX_CHAT_IMAGE_BYTES) {
+                const maxMB = Math.round(MAX_CHAT_IMAGE_BYTES / (1024 * 1024));
                 throw new Error(`Ảnh vượt quá giới hạn ${maxMB}MB.`);
             }
 
-            const formData = new FormData();
-            formData.append('file', processedFile);
-
-            if (signatureData.mode === 'preset') {
-                formData.append('upload_preset', signatureData.uploadPreset);
-                if (signatureData.folder) {
-                    formData.append('folder', signatureData.folder);
-                }
-            } else {
-                if (!signatureData.signature || !signatureData.timestamp || !signatureData.apiKey) {
-                    throw new Error('Thiếu thông tin ký upload');
-                }
-
-                formData.append('timestamp', signatureData.timestamp);
-                formData.append('signature', signatureData.signature);
-                formData.append('api_key', signatureData.apiKey);
-                if (signatureData.folder) {
-                    formData.append('folder', signatureData.folder);
-                }
-                formData.append('public_id', signatureData.publicId || publicId);
-                formData.append('resource_type', 'image');
-            }
-
-            const uploadUrl = signatureData.uploadUrl || `https://api.cloudinary.com/v1_1/${signatureData.cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
-
-            const uploadResponse = await axios.post(uploadUrl, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                onUploadProgress: (event) => {
-                    if (!event.total) return;
-                    const percent = Math.round((event.loaded / event.total) * 100);
-                    if (options?.onProgress) {
-                        options.onProgress(percent);
-                    }
-                }
+            const attachment = await uploadChatAttachment({
+                file: processedFile,
+                token,
+                publicId: generateChatPublicId(user?.id),
+                onProgress: options?.onProgress,
+                originalFileName: file.name
             });
-
-            const uploadData = uploadResponse.data;
-            const secureUrl = uploadData.secure_url || uploadData.url;
-
-            if (!secureUrl || !uploadData.public_id) {
-                throw new Error('Upload ảnh không thành công');
-            }
-
-            const mainTransformation = signatureData.transformation || CHAT_IMAGE_TRANSFORMATION;
-            const thumbTransformation = signatureData.thumbTransformation || CHAT_THUMB_TRANSFORMATION;
-
-            const optimizedUrl = applyTransformation(secureUrl, mainTransformation);
-            const thumbnailUrl = applyTransformation(secureUrl, thumbTransformation);
 
             if (options?.onProgress) {
                 options.onProgress(100);
             }
 
-            return {
-                url: optimizedUrl,
-                secureUrl: optimizedUrl,
-                thumbnailUrl,
-                publicId: uploadData.public_id,
-                resourceType: uploadData.resource_type || 'image',
-                format: uploadData.format,
-                bytes: uploadData.bytes,
-                width: uploadData.width,
-                height: uploadData.height,
-                originalFilename: uploadData.original_filename,
-                type: 'image'
-            };
-        } catch (directError) {
-            console.warn('Cloudinary direct upload thất bại, thử dùng fallback:', directError);
-
-            try {
-                const fallbackForm = new FormData();
-                fallbackForm.append('image', processedFile);
-
-                const fallbackResponse = await axios.post(`${API_URL}/api/chat/media/image`, fallbackForm, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    onUploadProgress: (event) => {
-                        if (!event.total) return;
-                        const percent = Math.round((event.loaded / event.total) * 100);
-                        if (options?.onProgress) {
-                            options.onProgress(percent);
-                        }
-                    }
-                });
-
-                if (fallbackResponse.data?.success && fallbackResponse.data?.data?.attachment) {
-                    if (options?.onProgress) {
-                        options.onProgress(100);
-                    }
-                    return fallbackResponse.data.data.attachment;
-                }
-
-                throw new Error(fallbackResponse.data?.message || 'Upload ảnh thất bại');
-            } catch (fallbackError) {
-                console.error('Upload chat image error:', fallbackError);
-                const message = fallbackError.response?.data?.message || fallbackError.message || directError.message || 'Upload ảnh thất bại';
-                throw new Error(message);
-            }
+            return attachment;
         } finally {
             activeUploadsRef.current = Math.max(0, activeUploadsRef.current - 1);
             if (activeUploadsRef.current === 0) {
                 setMediaUploading(false);
+            }
+
+            if (process.env.NODE_ENV !== 'production' && typeof performance !== 'undefined') {
+                const uploadEndedAt = performance.now();
+                console.log(`📸 Upload ảnh chat mất ${(uploadEndedAt - uploadStartedAt).toFixed(0)}ms`);
             }
         }
     };

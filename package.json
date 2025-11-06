@@ -31,6 +31,8 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^14.2.33",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.0.4",
     "next-sitemap": "^4.2.3",
     "web-vitals": "^3.5.0"
   }

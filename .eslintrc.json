@@ -1,0 +1,10 @@
+{
+  "extends": ["next", "next/core-web-vitals"],
+  "rules": {},
+  "settings": {
+    "next": {
+      "rootDir": ["pages", "components", "hooks", "services", "utils"]
+    }
+  }
+}
+
