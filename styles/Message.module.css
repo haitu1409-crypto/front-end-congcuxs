@@ -388,6 +388,17 @@
     /* Additional word breaking */
 }
 
+.messageLink {
+    color: #2563eb;
+    text-decoration: underline;
+    word-break: break-word;
+}
+
+.messageLink:hover,
+.messageLink:focus {
+    color: #1d4ed8;
+}
+
 .messageFooter {
     position: absolute;
     bottom: 4px;

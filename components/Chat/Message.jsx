@@ -119,6 +119,19 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
             });
         }
 
+        const autoLinkUrls = (text) => {
+            if (!text) return text;
+
+            const urlRegex = /\b((?:https?:\/\/|www\.)[\w-]+(?:\.[\w.-]+)+(?:\/[\w\-._~:/?#[\]@!$&'()*+,;=%]*)?)/gi;
+            return text.replace(urlRegex, (match) => {
+                const trimmed = match.trim();
+                if (/^(https?:\/\/)/i.test(trimmed)) {
+                    return `<a href="${trimmed}" target="_blank" rel="noopener noreferrer" class="${styles.messageLink}">${trimmed}</a>`;
+                }
+                return `<a href="https://${trimmed}" target="_blank" rel="noopener noreferrer" class="${styles.messageLink}">${trimmed}</a>`;
+            });
+        };
+
         // Replace GIF tokens with inline GIF elements
         const gifTokenRegex = /\{\{gif:([a-z0-9-]+)\}\}/gi;
         content = content.replace(gifTokenRegex, (match, rawId) => {
@@ -145,6 +158,8 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
             }
             // Otherwise, escape HTML and process numbers
             let escapedPart = escapeHtml(part);
+
+            escapedPart = autoLinkUrls(escapedPart);
             
             // Highlight 2-digit numbers (00-99) in text
             escapedPart = escapedPart.replace(/\b(\d{2})\b/g, (match) => {
