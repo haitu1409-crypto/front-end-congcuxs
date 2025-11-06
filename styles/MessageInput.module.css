@@ -50,6 +50,32 @@
     cursor: not-allowed;
 }
 
+.gifButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.gifButton:hover:not(:disabled) {
+    background: #e5e7eb;
+    color: #6366f1;
+    transform: scale(1.05);
+}
+
+.gifButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .uploadButton {
     width: 40px;
     height: 40px;
@@ -90,6 +116,24 @@
         width: calc(100vw - 40px);
         max-width: 320px;
         left: 50%;
+    }
+}
+
+.gifPickerWrapper {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    z-index: 1000;
+    width: 320px;
+}
+
+@media (max-width: 768px) {
+    .gifPickerWrapper {
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        width: auto;
     }
 }
 

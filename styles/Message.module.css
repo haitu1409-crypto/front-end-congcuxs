@@ -3,16 +3,19 @@
 .message {
     display: flex;
     gap: 8px;
-    margin-bottom: 2px; /* Giảm khoảng cách giữa các tin nhắn liên tiếp */
+    margin-bottom: 2px;
+    /* Giảm khoảng cách giữa các tin nhắn liên tiếp */
     animation: slideIn 0.2s ease-out;
 }
 
 .message.consecutiveMessage {
-    margin-bottom: 2px; /* Khoảng cách nhỏ hơn cho tin nhắn liên tiếp */
+    margin-bottom: 2px;
+    /* Khoảng cách nhỏ hơn cho tin nhắn liên tiếp */
 }
 
 .message.lastInGroup {
-    margin-bottom: 8px; /* Khoảng cách lớn hơn sau nhóm tin nhắn */
+    margin-bottom: 8px;
+    /* Khoảng cách lớn hơn sau nhóm tin nhắn */
 }
 
 @keyframes slideIn {
@@ -36,7 +39,8 @@
     height: 32px;
     border-radius: 50%;
     display: flex;
-    align-items: center; /* Căn giữa chữ cái */
+    align-items: center;
+    /* Căn giữa chữ cái */
     justify-content: center;
     flex-shrink: 0;
     color: white;
@@ -77,17 +81,20 @@
 }
 
 .messageContent {
-    flex: 0 1 auto; /* Không mở rộng, tự điều chỉnh theo nội dung */
+    flex: 0 1 auto;
+    /* Không mở rộng, tự điều chỉnh theo nội dung */
     max-width: 70%;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: fit-content; /* Tự điều chỉnh theo nội dung */
+    width: fit-content;
+    /* Tự điều chỉnh theo nội dung */
 }
 
 .ownMessage .messageContent {
     align-items: flex-end;
-    margin-left: auto; /* Đẩy tin nhắn của mình sang phải */
+    margin-left: auto;
+    /* Đẩy tin nhắn của mình sang phải */
 }
 
 .messageSenderContainer {
@@ -95,7 +102,8 @@
     flex-direction: column;
     gap: 2px;
     margin-bottom: 4px;
-    align-items: flex-start; /* Căn trái để sender name không chiếm full width */
+    align-items: flex-start;
+    /* Căn trái để sender name không chiếm full width */
 }
 
 .messageSender {
@@ -104,8 +112,10 @@
     padding: 0;
     margin: 0;
     line-height: 1.2;
-    display: inline-block; /* Vùng click chính xác hơn */
-    width: fit-content; /* Chỉ chiếm đúng kích thước text */
+    display: inline-block;
+    /* Vùng click chính xác hơn */
+    width: fit-content;
+    /* Chỉ chiếm đúng kích thước text */
 }
 
 .adminLabel {
@@ -121,11 +131,16 @@
     transition: all 0.2s;
     border-radius: 4px;
     margin: 0;
-    padding: 2px 4px; /* Padding vừa đủ để dễ click nhưng không quá rộng */
-    display: inline-block; /* Vùng click chính xác, chỉ theo text */
-    width: fit-content; /* Chỉ chiếm đúng kích thước text + padding */
-    position: relative; /* Để z-index hoạt động */
-    z-index: 10; /* Đảm bảo click vào tên được ưu tiên */
+    padding: 2px 4px;
+    /* Padding vừa đủ để dễ click nhưng không quá rộng */
+    display: inline-block;
+    /* Vùng click chính xác, chỉ theo text */
+    width: fit-content;
+    /* Chỉ chiếm đúng kích thước text + padding */
+    position: relative;
+    /* Để z-index hoạt động */
+    z-index: 10;
+    /* Đảm bảo click vào tên được ưu tiên */
 }
 
 .messageSender.userSender.clickableSender:hover {
@@ -150,13 +165,23 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     word-wrap: break-word;
     position: relative;
-    min-width: 120px; /* Đảm bảo có đủ chỗ cho footer */
-    max-width: 100%; /* Không vượt quá container */
-    width: fit-content; /* Tự điều chỉnh theo nội dung */
-    overflow: visible; /* Cho phép footer hiển thị */
+    min-width: 120px;
+    /* Đảm bảo có đủ chỗ cho footer */
+    max-width: 100%;
+    /* Không vượt quá container */
+    width: fit-content;
+    /* Tự điều chỉnh theo nội dung */
+    overflow: visible;
+    /* Cho phép footer hiển thị */
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+.mediaOnlyBubble {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
 }
 
 .messageBubble.clickableBubble {
@@ -181,6 +206,23 @@
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 8px;
     margin: 4px 0 8px;
+}
+
+.gifWrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 6px 0;
+    max-width: min(240px, 100%);
+}
+
+.gifImage {
+    display: block;
+    width: 100%;
+    height: 70px;
+    background: #f8fafc;
 }
 
 .attachmentLink {
@@ -242,18 +284,26 @@
 /* Tin nhắn liên tiếp - điều chỉnh border radius */
 /* Tin nhắn giữa (không phải đầu tiên, không phải cuối) */
 .message.consecutiveMessage:not(.lastInGroup) .messageBubble {
-    border-top-left-radius: 4px; /* Bo tròn trên trái nhỏ */
-    border-top-right-radius: 4px; /* Bo tròn trên phải nhỏ */
-    border-bottom-left-radius: 4px; /* Bo tròn dưới trái nhỏ */
-    border-bottom-right-radius: 4px; /* Bo tròn dưới phải nhỏ */
+    border-top-left-radius: 4px;
+    /* Bo tròn trên trái nhỏ */
+    border-top-right-radius: 4px;
+    /* Bo tròn trên phải nhỏ */
+    border-bottom-left-radius: 4px;
+    /* Bo tròn dưới trái nhỏ */
+    border-bottom-right-radius: 4px;
+    /* Bo tròn dưới phải nhỏ */
 }
 
 /* Tin nhắn cuối trong group */
 .message.consecutiveMessage.lastInGroup .messageBubble {
-    border-top-left-radius: 4px; /* Bo tròn trên trái nhỏ */
-    border-top-right-radius: 4px; /* Bo tròn trên phải nhỏ */
-    border-bottom-left-radius: 12px; /* Bo tròn dưới trái đầy đủ */
-    border-bottom-right-radius: 12px; /* Bo tròn dưới phải đầy đủ */
+    border-top-left-radius: 4px;
+    /* Bo tròn trên trái nhỏ */
+    border-top-right-radius: 4px;
+    /* Bo tròn trên phải nhỏ */
+    border-bottom-left-radius: 12px;
+    /* Bo tròn dưới trái đầy đủ */
+    border-bottom-right-radius: 12px;
+    /* Bo tròn dưới phải đầy đủ */
 }
 
 /* Tin nhắn của mình - giữa */
@@ -275,6 +325,14 @@
 .ownMessage .messageBubble {
     background-image: linear-gradient(120deg, #a1c4fd6b, #c2e9fb 100%);
     color: #000;
+}
+
+.ownMessage .mediaOnlyBubble {
+    background: transparent !important;
+    background-image: none !important;
+    color: inherit;
+    padding: 0;
+    box-shadow: none;
 }
 
 .replyPreview {
@@ -318,11 +376,16 @@
     font-size: 14px;
     line-height: 1.5;
     margin-bottom: 0;
-    padding-right: 20px; /* Padding vừa đủ cho footer */
-    padding-bottom: 20px; /* Thêm padding bottom để có chỗ cho footer */
-    white-space: pre-wrap; /* Preserve whitespace and line breaks */
-    word-wrap: break-word; /* Break long words */
-    overflow-wrap: break-word; /* Additional word breaking */
+    padding-right: 20px;
+    /* Padding vừa đủ cho footer */
+    padding-bottom: 20px;
+    /* Thêm padding bottom để có chỗ cho footer */
+    white-space: pre-wrap;
+    /* Preserve whitespace and line breaks */
+    word-wrap: break-word;
+    /* Break long words */
+    overflow-wrap: break-word;
+    /* Additional word breaking */
 }
 
 .messageFooter {
@@ -330,9 +393,12 @@
     bottom: 4px;
     right: 8px;
     display: flex;
-    flex-direction: column; /* Xếp theo chiều dọc */
-    align-items: flex-end; /* Căn phải */
-    gap: 4px; /* Khoảng cách giữa icons và time */
+    flex-direction: column;
+    /* Xếp theo chiều dọc */
+    align-items: flex-end;
+    /* Căn phải */
+    gap: 4px;
+    /* Khoảng cách giữa icons và time */
 }
 
 .messageTime {
@@ -340,9 +406,12 @@
     opacity: 0.7;
     white-space: nowrap;
     font-weight: 400;
-    flex-shrink: 0; /* Không cho thu nhỏ */
-    min-width: fit-content; /* Đảm bảo không bị cắt */
-    text-align: right; /* Căn phải */
+    flex-shrink: 0;
+    /* Không cho thu nhỏ */
+    min-width: fit-content;
+    /* Đảm bảo không bị cắt */
+    text-align: right;
+    /* Căn phải */
 }
 
 .editedLabel {
@@ -395,7 +464,8 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-shrink: 0; /* Không cho thu nhỏ */
+    flex-shrink: 0;
+    /* Không cho thu nhỏ */
 }
 
 .reactionIcon {

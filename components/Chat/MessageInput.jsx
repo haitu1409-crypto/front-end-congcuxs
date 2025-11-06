@@ -3,8 +3,9 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Loader2, X, Smile, Image as ImageIcon, RotateCcw } from 'lucide-react';
+import { Send, Loader2, X, Smile, Image as ImageIcon, RotateCcw, Sticker } from 'lucide-react';
 import EmojiPicker from './EmojiPicker';
+import GifPicker from './GifPicker';
 import styles from '../../styles/MessageInput.module.css';
 
 const createTempId = () => {
@@ -43,11 +44,14 @@ export default function MessageInput({
 }) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showGifPicker, setShowGifPicker] = useState(false);
     const inputRef = useRef(null);
     const typingTimeoutRef = useRef(null);
     const emojiButtonRef = useRef(null);
     const fileInputRef = useRef(null);
     const uploadButtonRef = useRef(null);
+    const gifButtonRef = useRef(null);
+    const gifPickerRef = useRef(null);
     const previewUrlsRef = useRef(new Map());
     const [attachments, setAttachments] = useState([]);
     const [pendingDraft, setPendingDraft] = useState(null);
@@ -244,6 +248,26 @@ export default function MessageInput({
         fileInputRef.current?.click();
     };
 
+    const handleGifSelect = useCallback((gif) => {
+        if (!gif) return;
+
+        const token = `{{gif:${gif.id}}}`;
+
+        finalizeSend({
+            content: token,
+            mentions,
+            replyTo,
+            attachmentIds: [],
+            clientMessageId: createClientMessageId()
+        }, []);
+
+        setShowGifPicker(false);
+
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [finalizeSend, mentions, replyTo]);
+
     const handleFileChange = async (event) => {
         const files = Array.from(event.target.files || []);
         if (!files.length) {
@@ -399,23 +423,36 @@ export default function MessageInput({
         // Note: Don't close emoji picker automatically - let user select multiple emojis
     };
 
-    // Close emoji picker when clicking outside
+    // Close pickers when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
+            const target = event.target;
+
             if (showEmojiPicker) {
                 const emojiPickerEl = document.querySelector('[class*="emojiPicker"]');
                 if (
                     emojiButtonRef.current &&
-                    !emojiButtonRef.current.contains(event.target) &&
+                    !emojiButtonRef.current.contains(target) &&
                     emojiPickerEl &&
-                    !emojiPickerEl.contains(event.target)
+                    !emojiPickerEl.contains(target)
                 ) {
                     setShowEmojiPicker(false);
                 }
             }
+
+            if (showGifPicker) {
+                if (
+                    gifButtonRef.current &&
+                    !gifButtonRef.current.contains(target) &&
+                    gifPickerRef.current &&
+                    !gifPickerRef.current.contains(target)
+                ) {
+                    setShowGifPicker(false);
+                }
+            }
         };
 
-        if (showEmojiPicker) {
+        if (showEmojiPicker || showGifPicker) {
             setTimeout(() => {
                 document.addEventListener('mousedown', handleClickOutside);
             }, 0);
@@ -424,7 +461,25 @@ export default function MessageInput({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showEmojiPicker]);
+    }, [showEmojiPicker, showGifPicker]);
+
+    useEffect(() => {
+        if (!showGifPicker) {
+            return;
+        }
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                event.stopPropagation();
+                setShowGifPicker(false);
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [showGifPicker]);
 
     // Handle Enter key
     const handleKeyPress = (e) => {
@@ -601,7 +656,13 @@ export default function MessageInput({
                         type="button"
                         ref={emojiButtonRef}
                         className={styles.emojiButton}
-                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        onClick={() => {
+                            const nextState = !showEmojiPicker;
+                            setShowEmojiPicker(nextState);
+                            if (nextState) {
+                                setShowGifPicker(false);
+                            }
+                        }}
                         title="Emoji"
                         disabled={disabled || sending}
                     >
@@ -613,6 +674,31 @@ export default function MessageInput({
                                 onEmojiSelect={handleEmojiSelect}
                                 isOpen={showEmojiPicker}
                                 onClose={() => setShowEmojiPicker(false)}
+                            />
+                        </div>
+                    )}
+                    <button
+                        type="button"
+                        ref={gifButtonRef}
+                        className={styles.gifButton}
+                        onClick={() => {
+                            const nextState = !showGifPicker;
+                            setShowGifPicker(nextState);
+                            if (nextState) {
+                                setShowEmojiPicker(false);
+                            }
+                        }}
+                        title="GIF động"
+                        disabled={disabled || sending}
+                    >
+                        <Sticker size={20} />
+                    </button>
+                    {showGifPicker && (
+                        <div className={styles.gifPickerWrapper} ref={gifPickerRef}>
+                            <GifPicker
+                                isOpen={showGifPicker}
+                                onGifSelect={handleGifSelect}
+                                onClose={() => setShowGifPicker(false)}
                             />
                         </div>
                     )}

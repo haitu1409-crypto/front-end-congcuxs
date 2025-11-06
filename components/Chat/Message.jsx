@@ -6,6 +6,7 @@
 import { memo, useState, useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import styles from '../../styles/Message.module.css';
+import { getChatGifById, getChatGifUrl } from '../../lib/chatGifs';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -117,6 +118,22 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                 });
             });
         }
+
+        // Replace GIF tokens with inline GIF elements
+        const gifTokenRegex = /\{\{gif:([a-z0-9-]+)\}\}/gi;
+        content = content.replace(gifTokenRegex, (match, rawId) => {
+            const gifId = (rawId || '').toLowerCase();
+            const gif = getChatGifById(gifId);
+            if (!gif) {
+                return match;
+            }
+            const gifUrl = getChatGifUrl(gif);
+            if (!gifUrl) {
+                return match;
+            }
+            const safeLabel = escapeHtml(gif.label || gif.id || 'GIF');
+            return `<span class="${styles.gifWrapper}" data-gif-id="${gif.id}"><img src="${gifUrl}" alt="${safeLabel}" loading="lazy" decoding="async" class="${styles.gifImage}" /></span>`;
+        });
 
         // Now escape remaining HTML content
         // Split by HTML tags to preserve already-created mentions
@@ -400,7 +417,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
             )}
             <div className={styles.messageContent}>
                 <div 
-                    className={`${styles.messageBubble} ${!selectionMode ? styles.clickableBubble : ''}`}
+                    className={`${styles.messageBubble} ${!selectionMode ? styles.clickableBubble : ''} ${hasAttachments && !hasTextContent ? styles.mediaOnlyBubble : ''}`}
                     onClick={handleBubbleClick}
                     onTouchStart={handleTouchStart}
                     onTouchEnd={handleTouchEnd}
