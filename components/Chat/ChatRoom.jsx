@@ -2,7 +2,7 @@
  * ChatRoom Component - Groupchat interface
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../hooks/useAuth';
 import { useChat } from '../../hooks/useChat';
@@ -177,6 +177,7 @@ export default function ChatRoom({ roomId, onClose }) {
     const notificationTimeoutRef = useRef(null);
     const unreadCountsFetchedRef = useRef(false); // Track if initial fetch done
     const audioRef = useRef(null); // Audio notification for new messages
+    const lastNotifiedMessageIdRef = useRef(null);
     const markAsReadCallRef = useRef({}); // Track mark as read calls to avoid duplicates
     // Use localStorage to persist cleared user IDs across component remounts
     const getClearedUserIds = () => {
@@ -350,6 +351,26 @@ export default function ChatRoom({ roomId, onClose }) {
         createPrivateChatWithRetry();
     };
 
+    const playNotificationSound = useCallback(() => {
+        try {
+            if (audioRef.current) {
+                const audio = audioRef.current.cloneNode();
+                audio.volume = 0.5;
+                audio.play().catch(err => {
+                    console.warn('🔊 Audio play failed (may need user interaction):', err.message);
+                    audioRef.current.play().catch(() => {
+                        console.warn('🔊 Audio fallback also failed');
+                    });
+                });
+                console.log('🔊 Playing notification sound');
+            } else {
+                console.warn('🔊 Audio ref not initialized');
+            }
+        } catch (error) {
+            console.error('🔊 Error playing sound:', error);
+        }
+    }, []);
+
     // 🔥 REAL-TIME: Listen for new private messages via Socket.io
     useEffect(() => {
         if (!socketConnected || !socket) return;
@@ -376,25 +397,7 @@ export default function ChatRoom({ roomId, onClose }) {
                 }));
                 
                 // 🔔 Play notification sound
-                try {
-                    if (audioRef.current) {
-                        // Clone audio to allow playing multiple times
-                        const audio = audioRef.current.cloneNode();
-                        audio.volume = 0.5;
-                        audio.play().catch(err => {
-                            console.warn('🔊 Audio play failed (may need user interaction):', err.message);
-                            // Fallback: try to play original audio
-                            audioRef.current.play().catch(() => {
-                                console.warn('🔊 Audio fallback also failed');
-                            });
-                        });
-                        console.log('🔊 Playing notification sound');
-                    } else {
-                        console.warn('🔊 Audio ref not initialized');
-                    }
-                } catch (error) {
-                    console.error('🔊 Error playing sound:', error);
-                }
+                playNotificationSound();
                 
                 // Show notification popup
                 const sender = onlineUsers.find(u => u.userId === data.fromUserId);
@@ -455,7 +458,7 @@ export default function ChatRoom({ roomId, onClose }) {
             socket.off('private:unread:updated', handleUnreadUpdated);
             socket.off('room:marked-read', handleRoomMarkedRead);
         };
-    }, [socketConnected, socket, isPrivateChat, otherParticipant, onlineUsers]);
+    }, [socketConnected, socket, isPrivateChat, otherParticipant, onlineUsers, playNotificationSound]);
 
     // Initialize audio notification
     useEffect(() => {
@@ -493,6 +496,29 @@ export default function ChatRoom({ roomId, onClose }) {
             }
         }
     }, []);
+
+    useEffect(() => {
+        if (!messages || messages.length === 0) {
+            return;
+        }
+
+        const latestMessage = messages[messages.length - 1];
+        const latestMessageId = latestMessage?.id || latestMessage?._id;
+        if (!latestMessageId || lastNotifiedMessageIdRef.current === latestMessageId) {
+            return;
+        }
+
+        lastNotifiedMessageIdRef.current = latestMessageId;
+
+        const senderId = latestMessage?.senderId?.toString?.() || latestMessage?.senderId;
+        const currentUserId = user?.id?.toString?.() || user?.id;
+        const isOptimistic = latestMessage?.isOptimistic || latestMessage?.status === 'pending';
+        const isFromOtherUser = senderId && currentUserId && senderId !== currentUserId;
+
+        if (!isPrivateChat && isFromOtherUser && !isOptimistic) {
+            playNotificationSound();
+        }
+    }, [messages, isPrivateChat, user?.id, playNotificationSound]);
 
     // 🔥 SIMPLIFIED: No initial fetch - unread counts are managed by socket events only
     // When a new private message arrives, socket event will increment the count
