@@ -10,6 +10,7 @@ import styles from '../../styles/MessageList.module.css';
 export default function MessageList({ messages, typingUsers, currentUserId, messagesEndRef, onMention, onReaction, selectionMode, selectedMessages, onMessageSelect, onMessageClick, isAdmin }) {
     const listRef = useRef(null);
     const [relativeNow, setRelativeNow] = useState(() => Date.now());
+    const userInteractedRef = useRef(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -45,17 +46,57 @@ export default function MessageList({ messages, typingUsers, currentUserId, mess
     }, [relativeNow]);
 
     // Auto scroll when new messages arrive
-    useEffect(() => {
-        if (messages.length > 0 && messagesEndRef?.current) {
-            setTimeout(() => {
-                messagesEndRef.current.scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'end',
-                    inline: 'nearest'
-                });
-            }, 100);
+    const canAutoScroll = useCallback(() => {
+        const container = listRef.current;
+        if (!container) return true;
+
+        const threshold = 120;
+        const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+        return distanceFromBottom <= threshold;
+    }, []);
+
+    const scrollToBottom = useCallback(() => {
+        if (messagesEndRef?.current) {
+            messagesEndRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+                inline: 'nearest'
+            });
         }
-    }, [messages.length, messagesEndRef]);
+    }, [messagesEndRef]);
+
+    useEffect(() => {
+        if (messages.length > 0 && canAutoScroll()) {
+            setTimeout(() => {
+                scrollToBottom();
+            }, 60);
+        }
+    }, [messages.length, canAutoScroll, scrollToBottom]);
+
+    useEffect(() => {
+        if (typingUsers.length > 0 && canAutoScroll()) {
+            setTimeout(() => {
+                scrollToBottom();
+            }, 60);
+        }
+    }, [typingUsers.length, canAutoScroll, scrollToBottom]);
+
+    useEffect(() => {
+        const container = listRef.current;
+        if (!container) return;
+
+        const handleUserScroll = () => {
+            userInteractedRef.current = true;
+        };
+
+        container.addEventListener('wheel', handleUserScroll, { passive: true });
+        container.addEventListener('touchmove', handleUserScroll, { passive: true });
+
+        return () => {
+            container.removeEventListener('wheel', handleUserScroll);
+            container.removeEventListener('touchmove', handleUserScroll);
+        };
+    }, []);
 
     return (
         <div className={styles.messageList} ref={listRef}>
