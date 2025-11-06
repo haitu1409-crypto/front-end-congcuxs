@@ -6,6 +6,16 @@
 import { memo, useState, useEffect, useRef } from 'react';
 import styles from '../../styles/Message.module.css';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+const resolveAvatarUrl = (avatar) => {
+    if (!avatar) return null;
+    if (/^https?:\/\//i.test(avatar)) {
+        return avatar;
+    }
+    return `${API_URL}${avatar}`;
+};
+
 const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, onMention, currentUserId, onReaction, selectionMode, isSelected, onSelect, onMessageClick, isAdmin, isConsecutive, isLastInGroup }) {
     const [avatarFailed, setAvatarFailed] = useState(false);
     const longPressTimerRef = useRef(null);
@@ -360,7 +370,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                 >
                     {message.senderAvatar && !avatarFailed ? (
                         <img 
-                            src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${message.senderAvatar}`}
+                            src={resolveAvatarUrl(message.senderAvatar)}
                             alt={message.senderDisplayName || message.senderUsername}
                             className={styles.avatarImage}
                             crossOrigin="anonymous"

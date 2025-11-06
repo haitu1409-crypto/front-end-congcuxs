@@ -19,6 +19,14 @@ import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+const resolveAvatarUrl = (avatar) => {
+    if (!avatar) return null;
+    if (/^https?:\/\//i.test(avatar)) {
+        return avatar;
+    }
+    return `${API_URL}${avatar}`;
+};
+
 // Helper function to get color from first letter
 const getColorFromLetter = (letter) => {
     const upperLetter = letter.toUpperCase();
@@ -608,8 +616,8 @@ export default function ChatRoom({ roomId, onClose }) {
                         >
                             {user.avatar && !avatarFailed ? (
                                 <img 
-                                    key={user.avatar} // Force re-render when avatar URL changes
-                                    src={`${API_URL}${user.avatar}`}
+                                    key={user.avatar}
+                                    src={resolveAvatarUrl(user.avatar)}
                                     alt={user.displayName || user.username}
                                     className={styles.avatarImage}
                                     crossOrigin="anonymous"

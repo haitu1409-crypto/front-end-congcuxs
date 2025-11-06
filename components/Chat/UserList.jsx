@@ -9,6 +9,14 @@ import styles from '../../styles/UserList.module.css';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+const resolveAvatarUrl = (avatar) => {
+    if (!avatar) return null;
+    if (/^https?:\/\//i.test(avatar)) {
+        return avatar;
+    }
+    return `${API_URL}${avatar}`;
+};
+
 // Format time ago (Vietnamese)
 const formatTimeAgo = (date) => {
     if (!date) return '';
@@ -145,7 +153,7 @@ export default function UserList({ users, currentUserId, currentUserRole, onPriv
                             >
                                 {showAvatar ? (
                                     <img 
-                                        src={`${API_URL}${user.avatar}`}
+                                        src={resolveAvatarUrl(user.avatar)}
                                         alt={displayName}
                                         className={styles.avatarImage}
                                         crossOrigin="anonymous"

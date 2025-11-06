@@ -24,6 +24,7 @@ const FacebookCallbackPage = () => {
     const { loginWithProvider } = useAuth();
     const [status, setStatus] = useState('Đang xử lý đăng nhập Facebook...');
     const [errorMessage, setErrorMessage] = useState('');
+    const [redirectDestination, setRedirectDestination] = useState('/');
 
     useEffect(() => {
         if (!isReady) return;
@@ -58,16 +59,61 @@ const FacebookCallbackPage = () => {
         loginWithProvider(token, userData);
         setStatus('Đăng nhập thành công! Đang chuyển hướng...');
 
-        const destination = redirectState && redirectState.startsWith('/') ? redirectState : '/';
+        // Decode redirect state if it exists (default to chat page)
+        let destination = '/chat';
+        if (redirectState) {
+            try {
+                // Try to decode base64url JSON state
+                const decoded = decodeBase64UrlJson(redirectState);
+                if (decoded && typeof decoded === 'object' && decoded.originalState) {
+                    destination = decoded.originalState.startsWith('/') ? decoded.originalState : destination;
+                } else if (redirectState.startsWith('/')) {
+                    destination = redirectState;
+                }
+            } catch (err) {
+                console.warn('Could not decode redirect state, using default:', err);
+                if (redirectState.startsWith('/')) {
+                    destination = redirectState;
+                }
+            }
+        }
+        setRedirectDestination(destination);
 
-        const timeout = setTimeout(() => {
-            replace(destination).catch((error) => {
-                console.error('Navigation error after Facebook login:', error);
-                replace('/');
-            });
-        }, 500);
+        // Redirect with multiple fallbacks
+        const redirect = () => {
+            try {
+                if (typeof window !== 'undefined') {
+                    window.location.href = destination;
+                } else {
+                    replace(destination);
+                }
+            } catch (error) {
+                console.error('Redirect error:', error);
+                if (typeof window !== 'undefined') {
+                    window.location.href = '/';
+                } else {
+                    replace('/');
+                }
+            }
+        };
 
-        return () => clearTimeout(timeout);
+        // First attempt after 300ms
+        const timeout1 = setTimeout(() => {
+            redirect();
+        }, 300);
+
+        // Fallback after 2 seconds if still on page
+        const timeout2 = setTimeout(() => {
+            if (typeof window !== 'undefined' && window.location.pathname.includes('/auth/facebook/callback')) {
+                console.warn('Auto redirect failed, forcing redirect...');
+                redirect();
+            }
+        }, 2000);
+
+        return () => {
+            clearTimeout(timeout1);
+            clearTimeout(timeout2);
+        };
     }, [isReady, query, loginWithProvider, replace]);
 
     return (
@@ -105,9 +151,35 @@ const FacebookCallbackPage = () => {
                             </button>
                         </>
                     ) : (
-                        <p style={{ color: '#555' }}>
-                            Vui lòng đợi trong giây lát. Bạn sẽ được chuyển tới trang trước đó sau khi hoàn tất.
-                        </p>
+                        <>
+                            <p style={{ color: '#555', marginBottom: '20px' }}>
+                                Vui lòng đợi trong giây lát. Bạn sẽ được chuyển tới trang trước đó sau khi hoàn tất.
+                            </p>
+                            <button
+                                onClick={() => {
+                                    if (typeof window !== 'undefined') {
+                                        window.location.href = redirectDestination;
+                                    } else {
+                                        replace(redirectDestination);
+                                    }
+                                }}
+                                style={{
+                                    padding: '12px 24px',
+                                    borderRadius: '8px',
+                                    background: '#1877f2',
+                                    color: '#fff',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '15px',
+                                    fontWeight: 600,
+                                    transition: 'background 0.2s'
+                                }}
+                                onMouseOver={(e) => e.target.style.background = '#1666d9'}
+                                onMouseOut={(e) => e.target.style.background = '#1877f2'}
+                            >
+                                Tiếp tục
+                            </button>
+                        </>
                     )}
                 </div>
             </div>
