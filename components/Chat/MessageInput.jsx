@@ -45,6 +45,9 @@ export default function MessageInput({
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showGifPicker, setShowGifPicker] = useState(false);
+    const [isMobileLayout, setIsMobileLayout] = useState(false);
+    const [isInputFocused, setIsInputFocused] = useState(false);
+    const [showCompactActions, setShowCompactActions] = useState(false);
     const inputRef = useRef(null);
     const typingTimeoutRef = useRef(null);
     const emojiButtonRef = useRef(null);
@@ -52,12 +55,15 @@ export default function MessageInput({
     const uploadButtonRef = useRef(null);
     const gifButtonRef = useRef(null);
     const gifPickerRef = useRef(null);
+    const compactMenuRef = useRef(null);
+    const compactToggleRef = useRef(null);
     const previewUrlsRef = useRef(new Map());
     const [attachments, setAttachments] = useState([]);
     const [pendingDraft, setPendingDraft] = useState(null);
 
     const isUploading = uploadingAttachment || attachments.some(att => att.status === 'uploading');
     const hasError = attachments.some(att => att.status === 'error');
+    const showInlineEmojiButton = isMobileLayout && isInputFocused && !showCompactActions;
 
     const cleanupAfterSend = useCallback((attachmentIdsToClear = []) => {
         setAttachments(prev => prev.filter(att => {
@@ -242,6 +248,53 @@ export default function MessageInput({
             clientMessageId: createClientMessageId()
         }, uploadedAttachments);
     };
+
+    useEffect(() => {
+        const updateLayout = () => {
+            if (typeof window !== 'undefined') {
+                setIsMobileLayout(window.innerWidth <= 768);
+            }
+        };
+
+        updateLayout();
+        window.addEventListener('resize', updateLayout);
+
+        return () => window.removeEventListener('resize', updateLayout);
+    }, []);
+
+    useEffect(() => {
+        if (!isInputFocused) {
+            setShowCompactActions(false);
+        }
+    }, [isInputFocused]);
+
+    useEffect(() => {
+        if (!isMobileLayout) {
+            setShowCompactActions(false);
+        }
+    }, [isMobileLayout]);
+
+    useEffect(() => {
+        if (!showCompactActions) {
+            return;
+        }
+
+        const handleOutside = (event) => {
+            const menuEl = compactMenuRef.current;
+            const toggleEl = compactToggleRef.current;
+            if (menuEl && !menuEl.contains(event.target) && (!toggleEl || !toggleEl.contains(event.target))) {
+                setShowCompactActions(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutside);
+        document.addEventListener('touchstart', handleOutside, { passive: true });
+
+        return () => {
+            document.removeEventListener('mousedown', handleOutside);
+            document.removeEventListener('touchstart', handleOutside);
+        };
+    }, [showCompactActions]);
 
     const handleUploadButtonClick = () => {
         if (disabled || sending || isUploading || attachments.length >= maxAttachments) return;
@@ -513,6 +566,57 @@ export default function MessageInput({
         inputRef.current?.focus();
     }, []);
 
+    const renderEmojiButton = (extraClass = '') => (
+        <button
+            type="button"
+            ref={emojiButtonRef}
+            className={`${styles.emojiButton} ${extraClass}`.trim()}
+            onClick={() => {
+                const nextState = !showEmojiPicker;
+                setShowEmojiPicker(nextState);
+                if (nextState) {
+                    setShowGifPicker(false);
+                }
+            }}
+            title="Emoji"
+            disabled={disabled || sending}
+        >
+            <Smile size={20} />
+        </button>
+    );
+
+    const renderGifButton = (extraClass = '') => (
+        <button
+            type="button"
+            ref={gifButtonRef}
+            className={`${styles.gifButton} ${extraClass}`.trim()}
+            onClick={() => {
+                const nextState = !showGifPicker;
+                setShowGifPicker(nextState);
+                if (nextState) {
+                    setShowEmojiPicker(false);
+                }
+            }}
+            title="GIF động"
+            disabled={disabled || sending}
+        >
+            <Sticker size={20} />
+        </button>
+    );
+
+    const renderUploadButton = (extraClass = '') => (
+        <button
+            type="button"
+            ref={uploadButtonRef}
+            className={`${styles.uploadButton} ${extraClass}`.trim()}
+            onClick={handleUploadButtonClick}
+            title={`Đính kèm ảnh (${attachments.length}/${maxAttachments})`}
+            disabled={disabled || sending || isUploading || attachments.length >= maxAttachments || !onUploadImage}
+        >
+            {isUploading ? <Loader2 size={18} className={styles.spinner} /> : <ImageIcon size={20} />}
+        </button>
+    );
+
     // Cleanup
     useEffect(() => {
         return () => {
@@ -654,89 +758,138 @@ export default function MessageInput({
             )}
             <div className={styles.inputContainer}>
                 <div className={styles.inputWrapper}>
-                    <button
-                        type="button"
-                        ref={emojiButtonRef}
-                        className={styles.emojiButton}
-                        onClick={() => {
-                            const nextState = !showEmojiPicker;
-                            setShowEmojiPicker(nextState);
-                            if (nextState) {
-                                setShowGifPicker(false);
-                            }
-                        }}
-                        title="Emoji"
-                        disabled={disabled || sending}
-                    >
-                        <Smile size={20} />
-                    </button>
-                    {showEmojiPicker && (
-                        <div className={styles.emojiPickerWrapper}>
-                            <EmojiPicker
-                                onEmojiSelect={handleEmojiSelect}
-                                isOpen={showEmojiPicker}
-                                onClose={() => setShowEmojiPicker(false)}
-                            />
+                    {!(isMobileLayout && isInputFocused) ? (
+                        <>
+                            {renderEmojiButton()}
+                            {showEmojiPicker && (
+                                <div className={styles.emojiPickerWrapper}>
+                                    <EmojiPicker
+                                        onEmojiSelect={handleEmojiSelect}
+                                        isOpen={showEmojiPicker}
+                                        onClose={() => setShowEmojiPicker(false)}
+                                    />
+                                </div>
+                            )}
+                            {renderGifButton()}
+                            {showGifPicker && (
+                                <div className={styles.gifPickerWrapper} ref={gifPickerRef}>
+                                    <GifPicker
+                                        isOpen={showGifPicker}
+                                        onGifSelect={handleGifSelect}
+                                        onClose={() => setShowGifPicker(false)}
+                                    />
+                                </div>
+                            )}
+                            {renderUploadButton()}
+                        </>
+                    ) : (
+                        <div className={styles.compactActions}>
+                            <button
+                                type="button"
+                                ref={compactToggleRef}
+                                className={styles.compactToggleButton}
+                                onClick={() => {
+                                    setShowEmojiPicker(false);
+                                    setShowGifPicker(false);
+                                    setShowCompactActions(prev => !prev);
+                                    inputRef.current?.focus({ preventScroll: true });
+                                }}
+                                aria-label="Mở thêm tùy chọn"
+                            >
+                                <Smile size={20} />
+                            </button>
+                            {showCompactActions && (
+                                <div className={styles.compactActionsMenu} ref={compactMenuRef}>
+                                    {renderEmojiButton(styles.compactMenuButton)}
+                                    {showEmojiPicker && (
+                                        <div className={`${styles.emojiPickerWrapper} ${styles.compactPickerWrapper}`}>
+                                            <EmojiPicker
+                                                onEmojiSelect={handleEmojiSelect}
+                                                isOpen={showEmojiPicker}
+                                                onClose={() => setShowEmojiPicker(false)}
+                                            />
+                                        </div>
+                                    )}
+                                    {renderGifButton(styles.compactMenuButton)}
+                                    {showGifPicker && (
+                                        <div className={`${styles.gifPickerWrapper} ${styles.compactPickerWrapper}`} ref={gifPickerRef}>
+                                            <GifPicker
+                                                isOpen={showGifPicker}
+                                                onGifSelect={handleGifSelect}
+                                                onClose={() => setShowGifPicker(false)}
+                                            />
+                                        </div>
+                                    )}
+                                    {renderUploadButton(styles.compactMenuButton)}
+                                </div>
+                            )}
                         </div>
                     )}
-                    <button
-                        type="button"
-                        ref={gifButtonRef}
-                        className={styles.gifButton}
-                        onClick={() => {
-                            const nextState = !showGifPicker;
-                            setShowGifPicker(nextState);
-                            if (nextState) {
-                                setShowEmojiPicker(false);
-                            }
-                        }}
-                        title="GIF động"
-                        disabled={disabled || sending}
-                    >
-                        <Sticker size={20} />
-                    </button>
-                    {showGifPicker && (
-                        <div className={styles.gifPickerWrapper} ref={gifPickerRef}>
-                            <GifPicker
-                                isOpen={showGifPicker}
-                                onGifSelect={handleGifSelect}
-                                onClose={() => setShowGifPicker(false)}
-                            />
-                        </div>
-                    )}
-                    <button
-                        type="button"
-                        ref={uploadButtonRef}
-                        className={styles.uploadButton}
-                        onClick={handleUploadButtonClick}
-                        title={`Đính kèm ảnh (${attachments.length}/${maxAttachments})`}
-                        disabled={disabled || sending || isUploading || attachments.length >= maxAttachments || !onUploadImage}
-                    >
-                        {isUploading ? <Loader2 size={18} className={styles.spinner} /> : <ImageIcon size={20} />}
-                    </button>
                 </div>
-                <textarea
-                    ref={inputRef}
-                    value={message}
-                    onChange={handleChange}
-                    onKeyDown={handleKeyPress}
-                    placeholder={disabled ? "Đang kết nối..." : "Nhập tin nhắn..."}
-                    className={styles.input}
-                    disabled={disabled || sending}
-                    maxLength={5000}
-                    rows={1}
-                    style={{
-                        resize: 'none',
-                        overflow: 'hidden',
-                        minHeight: '40px',
-                        maxHeight: '120px'
-                    }}
-                    onInput={(e) => {
-                        // Auto-resize textarea
-                        e.target.style.height = 'auto';
-                        e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
-                    }}
-                />
+                <div className={styles.textareaWrapper}>
+                    <textarea
+                        ref={inputRef}
+                        value={message}
+                        onChange={handleChange}
+                        onFocus={() => {
+                            if (isMobileLayout) {
+                                setIsInputFocused(true);
+                            }
+                        }}
+                        onBlur={() => {
+                            setTimeout(() => {
+                                if (typeof document !== 'undefined' && inputRef.current && inputRef.current === document.activeElement) {
+                                    return;
+                                }
+                                setIsInputFocused(false);
+                            }, 80);
+                        }}
+                        onKeyDown={handleKeyPress}
+                        placeholder={disabled ? "Đang kết nối..." : "Nhập tin nhắn..."}
+                        className={`${styles.input} ${(isMobileLayout && isInputFocused) ? styles.inputCompact : ''} ${showInlineEmojiButton ? styles.inputWithInlineButton : ''}`.trim()}
+                        disabled={disabled || sending}
+                        maxLength={5000}
+                        rows={1}
+                        style={{
+                            resize: 'none',
+                            overflow: 'hidden',
+                            minHeight: '40px',
+                            maxHeight: '120px'
+                        }}
+                        onInput={(e) => {
+                            // Auto-resize textarea
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+                        }}
+                    />
+                    {showInlineEmojiButton && (
+                        <>
+                            <button
+                                type="button"
+                                className={styles.inlineEmojiButton}
+                                onClick={() => {
+                                    setShowCompactActions(false);
+                                    setShowGifPicker(false);
+                                    setShowEmojiPicker(prev => !prev);
+                                    inputRef.current?.focus({ preventScroll: true });
+                                }}
+                                title="Emoji"
+                                disabled={disabled || sending}
+                            >
+                                <Smile size={18} />
+                            </button>
+                            {showEmojiPicker && (
+                                <div className={`${styles.emojiPickerWrapper} ${styles.inlinePickerWrapper}`}>
+                                    <EmojiPicker
+                                        onEmojiSelect={handleEmojiSelect}
+                                        isOpen={showEmojiPicker}
+                                        onClose={() => setShowEmojiPicker(false)}
+                                    />
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
                 <button
                     type="submit"
                     className={styles.sendButton}

@@ -25,6 +25,75 @@
     gap: 8px;
 }
 
+.compactActions {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.compactToggleButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: none;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.compactToggleButton:hover {
+    background: #e5e7eb;
+    color: #667eea;
+}
+
+.compactActionsMenu {
+    position: absolute;
+    bottom: 48px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+    z-index: 120;
+}
+
+.compactMenuButton {
+    width: 40px;
+    height: 40px;
+}
+
+.compactPickerWrapper {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: min(280px, 80vw);
+    margin-top: 8px;
+}
+
+.inputCompact {
+    padding-right: 68px;
+}
+
+@media (min-width: 769px) {
+    .compactActions,
+    .compactToggleButton,
+    .compactActionsMenu {
+        display: none;
+    }
+}
+
 .emojiButton {
     width: 40px;
     height: 40px;
@@ -521,5 +590,50 @@
 .cancelReplyButton:hover {
     background: #e5e7eb;
     color: #1f2937;
+}
+
+.textareaWrapper {
+    position: relative;
+    flex: 1;
+}
+
+.inlineEmojiButton {
+    position: absolute;
+    right: 12px;
+    bottom: 5px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: none;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+    transition: all 0.2s ease;
+}
+
+.inlineEmojiButton:hover:not(:disabled) {
+    background: #e5e7eb;
+    color: #667eea;
+}
+
+.inlineEmojiButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.inlinePickerWrapper {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 0;
+    width: min(320px, 85vw);
+    left: auto;
+}
+
+.inputWithInlineButton {
+    padding-right: 68px;
 }
 
