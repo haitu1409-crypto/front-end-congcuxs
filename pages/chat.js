@@ -368,13 +368,15 @@ export default function ChatPage() {
         ? (process.env.NODE_ENV === 'production' 
             ? 'https://www.taodandewukong.pro/chat' 
             : `${window.location.origin}/chat`)
-        : '/chat';
-    
-    // Open Graph image URL - use QR code image for sharing
-    // QR code image URL using qr-server.com API (generates QR code with chat URL)
-    const ogImage = typeof window !== 'undefined'
-        ? `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent(chatUrl)}&bgcolor=ffffff&color=000000&format=png`
-        : `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent('https://www.taodandewukong.pro/chat')}&bgcolor=ffffff&color=000000&format=png`;
+        : 'https://www.taodandewukong.pro/chat';
+
+    const defaultOrigin = typeof window !== 'undefined'
+        ? window.location.origin
+        : 'https://www.taodandewukong.pro';
+
+    const ogImage = process.env.NODE_ENV === 'production'
+        ? 'https://www.taodandewukong.pro/imgs/monkey.png'
+        : `${defaultOrigin}/imgs/monkey.png`;
     
     const ogTitle = 'Group Chat Chốt Dàn 3 Miền Wukong';
     const ogDescription = 'Tham gia Group Chat để chia sẻ và thảo luận về dàn đề chốt số 3 miền cùng cộng đồng Wukong';

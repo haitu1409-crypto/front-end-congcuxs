@@ -208,9 +208,13 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
     };
 
     const handleMentionClick = (e) => {
-        e.preventDefault();
+        if (e.target.closest(`.${styles.messageLink}`)) {
+            return;
+        }
+
         const mentionEl = e.target.closest(`.${styles.mention}`);
         if (mentionEl && onMention) {
+            e.preventDefault();
             const userId = mentionEl.getAttribute('data-user-id');
             const username = mentionEl.getAttribute('data-username');
             const displayName = mentionEl.textContent.replace('@', '');
@@ -291,7 +295,8 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
         if (e && e.target && (
             e.target.closest(`.${styles.messageSender}`) || 
             e.target.closest(`.${styles.messageAvatar}`) ||
-            e.target.closest(`.${styles.mention}`)
+            e.target.closest(`.${styles.mention}`) ||
+            e.target.closest(`.${styles.messageLink}`)
         )) {
             return;
         }
@@ -323,6 +328,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
             e.target.closest(`.${styles.messageSender}`) ||
             e.target.closest(`.${styles.messageAvatar}`) ||
             e.target.closest(`.${styles.mention}`) ||
+            e.target.closest(`.${styles.messageLink}`) ||
             e.target.closest(`.${styles.replyPreview}`)) {
             return;
         }
