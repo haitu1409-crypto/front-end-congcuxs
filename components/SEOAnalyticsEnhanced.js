@@ -4,24 +4,84 @@
  * Tích hợp Google Analytics 4, Search Console, và custom metrics
  */
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 export default function SEOAnalyticsEnhanced() {
-    useEffect(() => {
-        // Initialize SEO tracking
-        initializeSEOTracking();
+    const extractKeywordsFromPage = useCallback(() => {
+        const keywords = [];
 
-        // Track page performance
-        trackPagePerformance();
+        const metaKeywords = document.querySelector('meta[name="keywords"]');
+        if (metaKeywords) {
+            keywords.push(...metaKeywords.content.split(',').map(k => k.trim()));
+        }
 
-        // Track user engagement
-        trackUserEngagement();
+        const title = document.title;
+        keywords.push(...title.toLowerCase().split(' ').filter(word => word.length > 3));
 
-        // Track SEO metrics
-        trackSEOMetrics();
+        const headings = document.querySelectorAll('h1, h2, h3');
+        headings.forEach(heading => {
+            keywords.push(...heading.textContent.toLowerCase().split(' ').filter(word => word.length > 3));
+        });
+
+        return [...new Set(keywords)];
     }, []);
 
-    const initializeSEOTracking = () => {
+    const getPageType = useCallback(() => {
+        const path = window.location.pathname;
+        if (path === '/') return 'homepage';
+        if (path.includes('dan-2d')) return 'dan-2d';
+        if (path.includes('dan-3d4d')) return 'dan-3d4d';
+        if (path.includes('dan-dac-biet')) return 'dan-dac-biet';
+        if (path.includes('thong-ke')) return 'thong-ke';
+        if (path.includes('faq')) return 'faq';
+        return 'other';
+    }, []);
+
+    const getConnectionType = useCallback(() => {
+        if ('connection' in navigator) {
+            return navigator.connection.effectiveType || 'unknown';
+        }
+        return 'unknown';
+    }, []);
+
+    const trackEvent = useCallback((eventName, parameters) => {
+        if (typeof gtag !== 'undefined') {
+            gtag('event', eventName, {
+                event_category: 'SEO Analytics',
+                ...parameters
+            });
+        }
+
+        if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
+            fetch(process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    event: eventName,
+                    parameters: parameters,
+                    timestamp: Date.now(),
+                    url: window.location.href
+                })
+            }).catch(err => console.log('Analytics error:', err));
+        }
+
+        if (process.env.NODE_ENV === 'development' && Math.random() < 0.1) {
+            console.log(`📊 SEO Analytics: ${eventName}`, parameters);
+        }
+    }, []);
+
+    const trackMetric = useCallback((metricName) => (metric) => {
+        trackEvent('web_vitals', {
+            metric_name: metricName,
+            metric_value: metric.value,
+            metric_rating: metric.rating,
+            page_type: getPageType()
+        });
+    }, [trackEvent, getPageType]);
+
+    const initializeSEOTracking = useCallback(() => {
         // Google Analytics 4 với SEO tracking
         if (typeof gtag !== 'undefined') {
             // Enhanced ecommerce tracking
@@ -51,10 +111,9 @@ export default function SEOAnalyticsEnhanced() {
                 pageType: getPageType()
             };
         }
-    };
+    }, [extractKeywordsFromPage, getPageType]);
 
-    const trackPagePerformance = () => {
-        // Track Core Web Vitals
+    const trackPagePerformance = useCallback(() => {
         if ('web-vitals' in window) {
             import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
                 getLCP(trackMetric('LCP'));
@@ -65,19 +124,23 @@ export default function SEOAnalyticsEnhanced() {
             });
         }
 
-        // Track page load time
-        window.addEventListener('load', () => {
+        const loadHandler = () => {
             const loadTime = performance.now();
             trackEvent('page_performance', {
                 load_time: Math.round(loadTime),
                 page_type: getPageType(),
                 connection_type: getConnectionType()
             });
-        });
-    };
+        };
 
-    const trackUserEngagement = () => {
-        // Track scroll depth
+        window.addEventListener('load', loadHandler);
+
+        return () => {
+            window.removeEventListener('load', loadHandler);
+        };
+    }, [trackMetric, trackEvent, getPageType, getConnectionType]);
+
+    const trackUserEngagement = useCallback(() => {
         let maxScroll = 0;
         const scrollHandler = () => {
             const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
@@ -91,7 +154,6 @@ export default function SEOAnalyticsEnhanced() {
         };
         window.addEventListener('scroll', scrollHandler);
 
-        // Track time on page
         const startTime = Date.now();
         const trackTimeOnPage = () => {
             const timeSpent = Date.now() - startTime;
@@ -101,15 +163,14 @@ export default function SEOAnalyticsEnhanced() {
             });
         };
 
-        // Track when user leaves page
         window.addEventListener('beforeunload', trackTimeOnPage);
-        document.addEventListener('visibilitychange', () => {
+        const visibilityHandler = () => {
             if (document.visibilityState === 'hidden') {
                 trackTimeOnPage();
             }
-        });
+        };
+        document.addEventListener('visibilitychange', visibilityHandler);
 
-        // Track interactions
         let interactions = 0;
         const interactionHandler = () => {
             interactions++;
@@ -122,10 +183,14 @@ export default function SEOAnalyticsEnhanced() {
         ['click', 'keydown', 'touchstart'].forEach(event => {
             document.addEventListener(event, interactionHandler, { once: true });
         });
-    };
+        return () => {
+            window.removeEventListener('scroll', scrollHandler);
+            window.removeEventListener('beforeunload', trackTimeOnPage);
+            document.removeEventListener('visibilitychange', visibilityHandler);
+        };
+    }, [trackEvent, getPageType]);
 
-    const trackSEOMetrics = () => {
-        // Track keyword performance
+    const trackSEOMetrics = useCallback(() => {
         const keywords = extractKeywordsFromPage();
         trackEvent('seo_keywords', {
             keywords: keywords,
@@ -148,88 +213,19 @@ export default function SEOAnalyticsEnhanced() {
             viewport_height: window.innerHeight,
             user_agent: navigator.userAgent
         });
-    };
+    }, [extractKeywordsFromPage, trackEvent, getPageType]);
 
-    // Helper functions
-    const trackMetric = (metricName) => (metric) => {
-        trackEvent('web_vitals', {
-            metric_name: metricName,
-            metric_value: metric.value,
-            metric_rating: metric.rating,
-            page_type: getPageType()
-        });
-    };
+    useEffect(() => {
+        initializeSEOTracking();
+        const cleanupPerformance = trackPagePerformance();
+        const cleanupEngagement = trackUserEngagement();
+        trackSEOMetrics();
 
-    const trackEvent = (eventName, parameters) => {
-        // Google Analytics 4
-        if (typeof gtag !== 'undefined') {
-            gtag('event', eventName, {
-                event_category: 'SEO Analytics',
-                ...parameters
-            });
-        }
-
-        // Custom analytics endpoint
-        if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
-            fetch(process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    event: eventName,
-                    parameters: parameters,
-                    timestamp: Date.now(),
-                    url: window.location.href
-                })
-            }).catch(err => console.log('Analytics error:', err));
-        }
-
-        // Console logging for development (reduced frequency)
-        if (process.env.NODE_ENV === 'development' && Math.random() < 0.1) {
-            console.log(`📊 SEO Analytics: ${eventName}`, parameters);
-        }
-    };
-
-    const extractKeywordsFromPage = () => {
-        const keywords = [];
-
-        // Extract from meta keywords
-        const metaKeywords = document.querySelector('meta[name="keywords"]');
-        if (metaKeywords) {
-            keywords.push(...metaKeywords.content.split(',').map(k => k.trim()));
-        }
-
-        // Extract from title
-        const title = document.title;
-        keywords.push(...title.toLowerCase().split(' ').filter(word => word.length > 3));
-
-        // Extract from headings
-        const headings = document.querySelectorAll('h1, h2, h3');
-        headings.forEach(heading => {
-            keywords.push(...heading.textContent.toLowerCase().split(' ').filter(word => word.length > 3));
-        });
-
-        return [...new Set(keywords)]; // Remove duplicates
-    };
-
-    const getPageType = () => {
-        const path = window.location.pathname;
-        if (path === '/') return 'homepage';
-        if (path.includes('dan-2d')) return 'dan-2d';
-        if (path.includes('dan-3d4d')) return 'dan-3d4d';
-        if (path.includes('dan-dac-biet')) return 'dan-dac-biet';
-        if (path.includes('thong-ke')) return 'thong-ke';
-        if (path.includes('faq')) return 'faq';
-        return 'other';
-    };
-
-    const getConnectionType = () => {
-        if ('connection' in navigator) {
-            return navigator.connection.effectiveType || 'unknown';
-        }
-        return 'unknown';
-    };
+        return () => {
+            cleanupPerformance && cleanupPerformance();
+            cleanupEngagement && cleanupEngagement();
+        };
+    }, [initializeSEOTracking, trackPagePerformance, trackUserEngagement, trackSEOMetrics]);
 
     return null; // Component không render gì
 }

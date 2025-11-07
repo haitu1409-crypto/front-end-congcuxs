@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import moment from 'moment';
 
 // API Service
@@ -11,7 +11,9 @@ const ProbabilityStatistics = ({ date, showAllMethods = false }) => {
     const [activeTab, setActiveTab] = useState('overview');
 
     // Fetch probability statistics
-    const fetchStatistics = async () => {
+    const fetchStatistics = useCallback(async () => {
+        if (!date) return;
+
         try {
             setLoading(true);
             setError(null);
@@ -30,13 +32,11 @@ const ProbabilityStatistics = ({ date, showAllMethods = false }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [date]);
 
     useEffect(() => {
-        if (date) {
-            fetchStatistics();
-        }
-    }, [date]);
+        fetchStatistics();
+    }, [fetchStatistics]);
 
     // Format percentage
     const formatPercentage = (value) => {

@@ -103,7 +103,7 @@ const StatisticsSEO = memo(function StatisticsSEO({
         },
         "measurementTechnique": "Statistical Analysis",
         "variableMeasured": "Lottery Statistics"
-    }), [title, description, canonical, metadata, siteUrl]);
+    }), [title, description, canonical, metadata, siteUrl, pageSEO.keywords]);
 
     // Article Schema - Memoized
     const articleSchema = useMemo(() => ({

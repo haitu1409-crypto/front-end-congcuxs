@@ -80,17 +80,7 @@ const TodayPredictions = () => {
     const isHomePage = router.pathname === '/' || router.pathname === '/index';
 
 
-    useEffect(() => {
-        // Prevent duplicate fetches in React Strict Mode (development)
-        if (!hasFetched) {
-            setHasFetched(true);
-            fetchTodayPrediction();
-        }
-    }, [hasFetched]);
-
-
-    // Fallback data khi API bị lỗi 429
-    const getFallbackData = () => {
+    const getFallbackData = useCallback(() => {
         const today = new Date();
         const predictionDate = today.toISOString().split('T')[0];
 
@@ -102,9 +92,9 @@ const TodayPredictions = () => {
             topTableContent: "Bảng lô top: 12, 23, 34, 45, 56, 67, 78, 89, 90, 01",
             wukongContent: "Dự đoán wukong: 12, 23, 34, 45, 56, 67, 78, 89, 90, 01"
         };
-    };
+    }, []);
 
-    const fetchTodayPrediction = async () => {
+    const fetchTodayPrediction = useCallback(async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
             console.log('🔍 Fetching today prediction from:', `${apiUrl}/api/predictions/today`);
@@ -149,7 +139,14 @@ const TodayPredictions = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [getFallbackData]);
+
+    useEffect(() => {
+        if (!hasFetched) {
+            setHasFetched(true);
+            fetchTodayPrediction();
+        }
+    }, [hasFetched, fetchTodayPrediction]);
 
     // Memoized date formatter
     const formatDate = useCallback((dateString) => {
