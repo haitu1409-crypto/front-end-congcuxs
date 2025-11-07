@@ -81,6 +81,14 @@ function generateSiteMap(articles) {
         <lastmod>${lastmod}</lastmod>
     </url>
     
+    <!-- Statistics Hub -->
+    <url>
+        <loc>${SITE_URL}/thong-ke</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.82</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+
     <!-- Statistics Pages - Priority 0.85-0.90 -->
     <url>
         <loc>${SITE_URL}/thongke/dau-duoi</loc>
@@ -263,6 +271,12 @@ export async function getServerSideProps({ res }) {
         <loc>${SITE_URL}/kqxs</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/thong-ke</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.82</priority>
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>

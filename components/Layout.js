@@ -109,8 +109,8 @@ export default function Layout({ children, className = '' }) {
             { href: '/thongke/dau-duoi', label: 'Đầu Đuôi', icon: Percent },
             { href: '/thongke/bac-cau', label: 'Bắc Cầu', icon: TrendingUp, isNew: true },
             { href: '/soi-cau-bac-cau', label: 'Vẽ Đường Cầu', icon: Target, isNew: true },
-            { href: '/thongke/Tan-Suat-Lo-to', label: 'Tần Suất Lô Tô', icon: BarChart3 },
-            { href: '/thongke/Tan-Suat-Lo-Cap', label: 'Tần Suất Lô Cặp', icon: Target }
+            { href: '/thongke/tan-suat-loto', label: 'Tần Suất Lô Tô', icon: BarChart3 },
+            { href: '/thongke/tan-suat-lo-cap', label: 'Tần Suất Lô Cặp', icon: Target }
         ]
     };
 

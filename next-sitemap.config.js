@@ -115,7 +115,8 @@ module.exports = {
             '/dan-dac-biet',       // Priority 0.9 - High search volume
             '/ghep-lo-xien',       // Priority 0.85 - High search volume (3,600/month)
             '/bang-tinh-chao',     // Priority 0.85 - Medium search volume (880/month)
-            '/thong-ke',           // Priority 0.8
+            '/thong-ke',           // Priority 0.82 - Statistics hub
+            '/thongke/dau-duoi',   // Priority 0.8
             '/content',            // Priority 0.8
             '/tin-tuc',            // Priority 0.7
         ];
@@ -186,6 +187,15 @@ module.exports = {
                 ]
             },
             '/thong-ke': {
+                images: [
+                    {
+                        loc: `${config.siteUrl}/imgs/thongke (1).png`,
+                        caption: 'Thống kê xổ số 3 miền XSMB XSMN XSMT, phân tích xu hướng',
+                        title: 'Thống Kê Xổ Số 3 Miền - Tổng quan'
+                    }
+                ]
+            },
+            '/thongke/dau-duoi': {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/thongke (1).png`,

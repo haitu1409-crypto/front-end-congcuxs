@@ -19,18 +19,46 @@ const StatisticsSEO = memo(function StatisticsSEO({
     
     // Memoize pageSEO để tránh re-compute
     const pageSEO = useMemo(() => getPageSEO(pageType), [pageType]);
-    
+
     // Memoize title, description, canonical
     const title = useMemo(() => customTitle || pageSEO.title, [customTitle, pageSEO.title]);
     const description = useMemo(() => customDescription || pageSEO.description, [customDescription, pageSEO.description]);
     const canonical = useMemo(() => pageSEO.canonical, [pageSEO.canonical]);
-    
+
+    // Determine section breadcrumb URL if applicable
+    const sectionBreadcrumb = useMemo(() => {
+        if (!pageSEO.url) {
+            return null;
+        }
+
+        const segments = pageSEO.url.split('/').filter(Boolean);
+        if (segments.length < 2) {
+            return null;
+        }
+
+        const section = segments[0];
+        if (section === 'thongke') {
+            return {
+                name: 'Thống Kê',
+                url: `${siteUrl}/thongke/dau-duoi`
+            };
+        }
+
+        return {
+            name: section.charAt(0).toUpperCase() + section.slice(1),
+            url: `${siteUrl}/${section}`
+        };
+    }, [pageSEO.url, siteUrl]);
+
     // Breadcrumbs for statistics pages - Memoized
-    const breadcrumbs = useMemo(() => [
-        { name: 'Trang chủ', url: siteUrl },
-        { name: 'Thống Kê', url: `${siteUrl}/thong-ke` },
-        { name: title, url: canonical }
-    ], [siteUrl, title, canonical]);
+    const breadcrumbs = useMemo(() => {
+        const items = [{ name: 'Trang chủ', url: siteUrl }];
+        if (sectionBreadcrumb) {
+            items.push(sectionBreadcrumb);
+        }
+        items.push({ name: title, url: canonical });
+        return items;
+    }, [siteUrl, sectionBreadcrumb, title, canonical]);
 
     // Dataset Schema for Statistics - Memoized
     const datasetSchema = useMemo(() => ({

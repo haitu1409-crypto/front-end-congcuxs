@@ -392,11 +392,11 @@ const Home = memo(function Home() {
                                 <Percent className={styles.heroButtonIcon} />
                                 <span>Đầu Đuôi</span>
                             </Link>
-                            <Link href="/thongke/Tan-Suat-Lo-to" className={styles.heroSecondaryButton} prefetch={false}>
+                            <Link href="/thongke/tan-suat-loto" className={styles.heroSecondaryButton} prefetch={false}>
                                 <Activity className={styles.heroButtonIcon} />
                                 <span>Tần Suất Lô</span>
                             </Link>
-                            <Link href="/thongke/Tan-Suat-Lo-Cap" className={styles.heroSecondaryButton} prefetch={false}>
+                            <Link href="/thongke/tan-suat-lo-cap" className={styles.heroSecondaryButton} prefetch={false}>
                                 <Target className={styles.heroButtonIcon} />
                                 <span>Tần Suất Cặp</span>
                             </Link>

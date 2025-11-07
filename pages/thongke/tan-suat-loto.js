@@ -173,8 +173,8 @@ const TanSuatLoto = ({ initialStats, initialMetadata, initialDays }) => {
                             Thống Kê Đầu Đuôi
                         </Link>
                         <Link
-                            className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/Tan-Suat-Lo-to') ? styles.active : ''}`}
-                            href="/thongke/Tan-Suat-Lo-to"
+                            className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/tan-suat-loto') ? styles.active : ''}`}
+                            href="/thongke/tan-suat-loto"
                         >
                             Thống Kê Tần Suất Loto
                         </Link>

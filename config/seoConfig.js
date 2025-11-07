@@ -859,9 +859,9 @@ const SEO_CONFIG = {
             'ló gan', 'lo khan', 'số lâu chưa về',
             'gan cực đại', 'gan max'
         ],
-        url: '/thongke/logan',
+        url: '/thongke/lo-gan',
         image: OG_IMAGES.thongKe,
-        canonical: `${SITE_URL}/thongke/logan`,
+        canonical: `${SITE_URL}/thongke/lo-gan`,
         type: 'article',
         priority: 0.85,
         changefreq: 'daily',
