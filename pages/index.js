@@ -5,36 +5,67 @@
 
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import Layout from '../components/Layout';
 import TodayPredictions from '../components/TodayPredictions';
 import styles from '../styles/Home.module.css';
 import EnhancedSEOHead from '../components/EnhancedSEOHead';
 import { getPageSEO, generateFAQSchema } from '../config/seoConfig';
 import { getAllKeywordsForPage } from '../config/keywordVariations';
-// ✅ Optimized: Import all icons at once (better than 10 dynamic imports)
-import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, ArrowRight, Sparkles, Calendar, Activity, TrendingUp, Award, Percent } from 'lucide-react';
+import { isWithinLiveWindow } from '../utils/lotteryUtils';
+// ✅ Optimized: Import only used icons (tree-shaking)
+import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, Sparkles } from 'lucide-react';
 
-// ✅ Lazy load LatestXSMBResults to avoid hydration mismatch
-const LatestXSMBResults = dynamic(() => import('../components/LatestXSMBResults'), {
+// ✅ Lazy load LiveResult to avoid hydration mismatch
+const LiveResult = dynamic(() => import('../components/LiveResult'), {
     loading: () => (
-        <div style={{ 
-            minHeight: '400px', 
-            display: 'flex', 
-            alignItems: 'center', 
+        <div style={{
+            minHeight: '400px',
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
             background: '#fff',
             borderRadius: '8px',
             margin: '20px 0',
-            contain: 'layout style' 
+            contain: 'layout style'
         }}>
             <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                    width: '40px', 
-                    height: '40px', 
-                    border: '4px solid #f3f3f3', 
-                    borderTop: '4px solid #667eea', 
-                    borderRadius: '50%', 
+                <div style={{
+                    width: '40px',
+                    height: '40px',
+                    border: '4px solid #f3f3f3',
+                    borderTop: '4px solid #ff0000',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                    margin: '0 auto 10px'
+                }}></div>
+                <p>Đang tải kết quả trực tiếp...</p>
+            </div>
+        </div>
+    ),
+    ssr: false
+});
+
+// ✅ Lazy load LatestXSMBResults to avoid hydration mismatch
+const LatestXSMBResults = dynamic(() => import('../components/LatestXSMBResults'), {
+    loading: () => (
+        <div style={{
+            minHeight: '400px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#fff',
+            borderRadius: '8px',
+            margin: '20px 0',
+            contain: 'layout style'
+        }}>
+            <div style={{ textAlign: 'center' }}>
+                <div style={{
+                    width: '40px',
+                    height: '40px',
+                    border: '4px solid #f3f3f3',
+                    borderTop: '4px solid #667eea',
+                    borderRadius: '50%',
                     animation: 'spin 1s linear infinite',
                     margin: '0 auto 10px'
                 }}></div>
@@ -56,11 +87,6 @@ const Testimonials = dynamic(() => import('../components/SEO/Testimonials'), {
     ssr: false
 });
 
-const DirectAnswer = dynamic(() =>
-    import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DirectAnswer })),
-    { ssr: false, loading: () => <div style={{ minHeight: '200px', contain: 'layout style' }}></div> }
-);
-
 const ListSnippet = dynamic(() =>
     import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.ListSnippet })),
     { ssr: false, loading: () => <div style={{ minHeight: '250px', contain: 'layout style' }}></div> }
@@ -71,15 +97,60 @@ const TableSnippet = dynamic(() =>
     { ssr: false, loading: () => <div style={{ minHeight: '300px', contain: 'layout style' }}></div> }
 );
 
+const ThongKeNhanh = dynamic(() => import('../components/ThongKeNhanh'), {
+    ssr: false,
+    loading: () => <div style={{ minHeight: '140px', background: '#fff', border: '1px solid #C4D2E3', margin: '10px 0', contain: 'layout style' }}></div>
+});
+
+// ✅ Lazy load SEO Keywords Section (non-critical content)
+const SEOKeywordsSection = dynamic(() => import('../components/SEO/SEOKeywordsSection'), {
+    ssr: false,
+    loading: () => <div className={styles.seoKeywordsPlaceholder}></div>
+});
+
 // ✅ Memoized Homepage component for better performance
 const Home = memo(function Home() {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+    // ✅ Cache siteUrl to avoid recalculating
+    const siteUrl = useMemo(() => 
+        process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'),
+        []
+    );
 
-    // Get SEO config for homepage
-    const pageSEO = getPageSEO('home');
+    // ✅ Live Window State - Tự động hiển thị LiveResult khi trong live window
+    const [isLiveWindow, setIsLiveWindow] = useState(false);
+    
+    // ✅ Use ref to store interval ID and avoid re-creating interval
+    const intervalRef = useRef(null);
 
-    // ✅ Get all keyword variations for homepage
-    const allKeywords = getAllKeywordsForPage('home');
+    // ✅ Optimized: Check live window periodically with useRef to prevent re-creation
+    useEffect(() => {
+        const checkLiveWindow = () => {
+            setIsLiveWindow(isWithinLiveWindow());
+        };
+
+        // Check immediately
+        checkLiveWindow();
+
+        // Clear existing interval if any
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+        }
+
+        // Set interval based on current state
+        const interval = isLiveWindow ? 5000 : 30000;
+        intervalRef.current = setInterval(checkLiveWindow, interval);
+
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+        };
+    }, [isLiveWindow]);
+
+    // ✅ Memoize SEO config to avoid recalculating on every render
+    const pageSEO = useMemo(() => getPageSEO('home'), []);
+    const allKeywords = useMemo(() => getAllKeywordsForPage('home'), []);
 
     // ✅ Memoized data arrays to prevent unnecessary re-renders
     const breadcrumbs = useMemo(() => [
@@ -151,7 +222,8 @@ const Home = memo(function Home() {
         }
     ], []);
 
-    const features = [
+    // ✅ Memoize features array to prevent unnecessary re-renders
+    const features = useMemo(() => [
         {
             icon: Zap,
             title: 'Nhanh Chóng',
@@ -172,17 +244,19 @@ const Home = memo(function Home() {
             title: 'Mọi Thiết Bị',
             description: 'Hoạt động mượt trên mọi thiết bị'
         }
-    ];
+    ], []);
 
     // ✅ FIX: Structured data với useMemo để tránh hydration error
+    // ✅ Optimized: Use cached siteUrl from component scope
     const structuredData = useMemo(() => {
         // Normalize date để deterministic (set về 00:00:00)
         const normalizedDate = new Date();
         normalizedDate.setHours(0, 0, 0, 0);
         const deterministicDate = normalizedDate.toISOString();
-        
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
-        
+
+        // Use cached siteUrl
+        const schemaSiteUrl = siteUrl || 'https://taodandewukong.pro';
+
         return [
             // SoftwareApplication Schema
             {
@@ -190,8 +264,8 @@ const Home = memo(function Home() {
                 "@type": "SoftwareApplication",
                 "name": "Dàn Đề Wukong",
                 "alternateName": [
-                    "Tạo Dàn Đề Online", 
-                    "Tạo Dàn Số Wukong", 
+                    "Tạo Dàn Đề Online",
+                    "Tạo Dàn Số Wukong",
                     "Tạo Mức Số",
                     "TDDW", // ✅ SHORT ABBREVIATION (giống RBK)
                     "TDDW.Pro",
@@ -200,7 +274,7 @@ const Home = memo(function Home() {
                     "DDW" // Dàn Đề Wukong
                 ],
                 "description": "Bộ công cụ tạo dàn số chuyên nghiệp hàng đầu Việt Nam. Dàn đề 9x-0x, Dàn 2D, Dàn 3D/4D, Dàn đặc biệt, Thống kê xổ số 3 miền. Tốt hơn kangdh, giaimasohoc, sieuketqua. Miễn phí 100%, thuật toán Fisher-Yates chuẩn quốc tế.",
-                "url": siteUrl,
+                "url": schemaSiteUrl,
                 "applicationCategory": "UtilitiesApplication",
                 "operatingSystem": "Web Browser",
                 "browserRequirements": "Requires JavaScript. Requires HTML5.",
@@ -210,14 +284,14 @@ const Home = memo(function Home() {
                 "author": {
                     "@type": "Organization",
                     "name": "Dàn Đề Wukong",
-                    "url": siteUrl
+                    "url": schemaSiteUrl
                 },
                 "publisher": {
                     "@type": "Organization",
                     "name": "Dàn Đề Wukong",
                     "logo": {
                         "@type": "ImageObject",
-                        "url": `${siteUrl}/imgs/wukong.png`
+                        "url": `${schemaSiteUrl}/imgs/wukong.png`
                     }
                 },
                 "offers": {
@@ -246,22 +320,22 @@ const Home = memo(function Home() {
                     "Tốt hơn kangdh, giaimasohoc"
                 ],
                 "screenshot": [
-                    `${siteUrl}/imgs/dan9x0x (1).png`,
-                    `${siteUrl}/imgs/dan2d1d (1).png`,
-                    `${siteUrl}/imgs/dan3d4d (1).png`
+                    `${schemaSiteUrl}/imgs/dan9x0x (1).png`,
+                    `${schemaSiteUrl}/imgs/dan2d1d (1).png`,
+                    `${schemaSiteUrl}/imgs/dan3d4d (1).png`
                 ],
-                "downloadUrl": siteUrl,
-                "installUrl": siteUrl,
+                "downloadUrl": schemaSiteUrl,
+                "installUrl": schemaSiteUrl,
                 "softwareRequirements": "Web Browser with JavaScript enabled"
             },
-            
+
             // Organization Schema
             {
                 "@context": "https://schema.org",
                 "@type": "Organization",
                 "name": "Dàn Đề Wukong",
-                "url": siteUrl,
-                "logo": `${siteUrl}/imgs/wukong.png`,
+                "url": schemaSiteUrl,
+                "logo": `${schemaSiteUrl}/imgs/wukong.png`,
                 "description": "Công cụ tạo dàn đề, tạo dàn số chuyên nghiệp hàng đầu Việt Nam. Tốt hơn kangdh, giaimasohoc, sieuketqua. Miễn phí 100%.",
                 "sameAs": [
                     siteUrl
@@ -272,32 +346,32 @@ const Home = memo(function Home() {
                     "availableLanguage": "Vietnamese"
                 }
             },
-            
+
             // WebSite Schema với SearchAction
             {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
                 "name": "Dàn Đề Wukong",
-                "url": siteUrl,
+                "url": schemaSiteUrl,
                 "description": "Tạo dàn đề, tạo dàn số online miễn phí. Công cụ chuyên nghiệp tốt hơn kangdh, giaimasohoc, sieuketqua.",
                 "publisher": {
                     "@type": "Organization",
                     "name": "Dàn Đề Wukong",
                     "logo": {
                         "@type": "ImageObject",
-                        "url": `${siteUrl}/imgs/wukong.png`
+                        "url": `${schemaSiteUrl}/imgs/wukong.png`
                     }
                 },
                 "potentialAction": {
                     "@type": "SearchAction",
                     "target": {
                         "@type": "EntryPoint",
-                        "urlTemplate": `${siteUrl}/tim-kiem?q={search_term_string}`
+                        "urlTemplate": `${schemaSiteUrl}/tim-kiem?q={search_term_string}`
                     },
                     "query-input": "required name=search_term_string"
                 }
             },
-            
+
             // BreadcrumbList Schema
             {
                 "@context": "https://schema.org",
@@ -307,15 +381,15 @@ const Home = memo(function Home() {
                         "@type": "ListItem",
                         "position": 1,
                         "name": "Trang chủ",
-                        "item": siteUrl
+                        "item": schemaSiteUrl
                     }
                 ]
             },
-            
+
             // FAQ Schema
             generateFAQSchema(faqData)
         ];
-    }, [faqData]);
+    }, [faqData, siteUrl]);
 
     return (
         <>
@@ -341,64 +415,57 @@ const Home = memo(function Home() {
                             <span>Bộ công cụ chuyên nghiệp</span>
                         </div>
                         <h1 className={styles.mainTitle}>
-                            TDDW - <span className={styles.heroTitleHighlight}>Tạo Dàn Đề Wukong</span>
-                            <span style={{ fontSize: '0.6em', fontWeight: 'normal', display: 'block', marginTop: '10px', color: '#666' }}>
-                                (Viết tắt: TDDW - Tạo Dàn Đề Wukong)
-                            </span>
+                            Công Cụ Xổ Số Wukong
                         </h1>
                         <div className={styles.heroActions}>
-                            <Link href="/dan-9x0x" className={styles.heroPrimaryButton} prefetch={false}>
-                                <Dice6 className={styles.heroButtonIcon} />
+                            {/* Group 1 */}
+                            <Link href="/dan-9x0x" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Tạo Dàn Đề 9x-0x</span>
-                                <ArrowRight className={styles.heroButtonArrow} />
+                            </Link>
+                            <Link href="/loc-dan-de" className={styles.heroSecondaryButton} prefetch={false}>
+                                <span>Lọc Dàn Đề 9x-0x</span>
                             </Link>
                             <Link href="/dan-2d" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Target className={styles.heroButtonIcon} />
-                                <span>Dàn 2D</span>
-                            </Link>
-                            <Link href="/kqxs" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Calendar className={styles.heroButtonIcon} />
-                                <span>Kết Quả Xổ Số</span>
+                                <span>Dàn 2D/1D</span>
                             </Link>
                             <Link href="/dan-3d4d" className={styles.heroSecondaryButton} prefetch={false}>
-                                <BarChart3 className={styles.heroButtonIcon} />
                                 <span>Dàn 3D/4D</span>
                             </Link>
-                            <Link href="/dan-dac-biet" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Star className={styles.heroButtonIcon} />
-                                <span>Dàn Đặc Biệt</span>
+
+                            {/* Group 2 */}
+                            <Link href="/kqxs" className={styles.heroSecondaryButton} prefetch={false}>
+                                <span>Kết Quả Xổ Số</span>
                             </Link>
-                            <Link href="/soi-cau" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Target className={styles.heroButtonIcon} />
-                                <span>Soi Cầu</span>
+                            <Link href="/soi-cau-vi-tri" className={styles.heroSecondaryButton} prefetch={false}>
+                                <span>Soi Cầu Vị Trí</span>
                             </Link>
                             <Link href="/soicau-bayesian" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Sparkles className={styles.heroButtonIcon} />
                                 <span>Soi Cầu AI</span>
                             </Link>
+                            <Link href="/dan-dac-biet" className={styles.heroSecondaryButton} prefetch={false}>
+                                <span>Dàn Đặc Biệt</span>
+                            </Link>
+
+                            {/* Group 3 */}
                             <Link href="/thongke/lo-gan" className={styles.heroSecondaryButton} prefetch={false}>
-                                <TrendingUp className={styles.heroButtonIcon} />
                                 <span>Lô Gan</span>
                             </Link>
+                            <Link href="/thongke/dau-duoi" className={styles.heroSecondaryButton} prefetch={false}>
+                                <span>Đầu Đuôi</span>
+                            </Link>
                             <Link href="/thongke/giai-dac-biet" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Award className={styles.heroButtonIcon} />
                                 <span>Giải ĐB</span>
                             </Link>
                             <Link href="/thongke/giai-dac-biet-tuan" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Calendar className={styles.heroButtonIcon} />
                                 <span>ĐB Tuần</span>
                             </Link>
-                            <Link href="/thongke/dau-duoi" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Percent className={styles.heroButtonIcon} />
-                                <span>Đầu Đuôi</span>
-                            </Link>
+
+                            {/* Group 4 */}
                             <Link href="/thongke/tan-suat-loto" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Activity className={styles.heroButtonIcon} />
-                                <span>Tần Suất Lô</span>
+                                <span>Tần Suất Lô Tô</span>
                             </Link>
                             <Link href="/thongke/tan-suat-lo-cap" className={styles.heroSecondaryButton} prefetch={false}>
-                                <Target className={styles.heroButtonIcon} />
-                                <span>Tần Suất Cặp</span>
+                                <span>Tần Suất Lô Cặp</span>
                             </Link>
                         </div>
                     </header>
@@ -407,47 +474,20 @@ const Home = memo(function Home() {
                     <div className={styles.mainContentLayout}>
                         {/* Left Column - Main Content */}
                         <div className={styles.leftColumn}>
-                            {/* Latest XSMB Results */}
-                            <LatestXSMBResults />
+                            {/* ✅ LiveResult - Tự động THAY THẾ LatestXSMBResults khi trong live window (18:10 - 18:33) */}
+                            {isLiveWindow ? (
+                                <LiveResult station="xsmb" />
+                            ) : (
+                                <LatestXSMBResults />
+                            )}
 
                             {/* Today Predictions - Mobile Only */}
                             <div className={styles.mobileOnlyTodayPredictions}>
                                 <TodayPredictions />
                             </div>
 
-                            {/* Featured Snippet - Direct Answer */}
-                            <DirectAnswer
-                                question="Tạo Dàn Đề (Tao Dan De) Là Gì?"
-                                answer="Tạo dàn đề (tao dan de) là phương pháp chọn ra một tập hợp các con số (dàn đề) để đánh lô đề hoặc xổ số, dựa trên các tiêu chí như tổng, chạm, đầu, đuôi, kép nhằm tăng khả năng trúng thưởng. Ứng dụng tạo dàn đề giúp bạn tạo tự động các tổ hợp số 2D (00-99), 3D (000-999), 4D (0000-9999), ghép lô xiên, và lọc dàn theo nhiều điều kiện đặc biệt một cách nhanh chóng, chính xác 100% với thuật toán Fisher-Yates chuẩn quốc tế."
-                            />
-
-                            {/* Featured Snippet - How To List */}
-                            <ListSnippet
-                                title="Cách Tạo Dàn Đề Online Miễn Phí"
-                                ordered={true}
-                                items={[
-                                    { label: 'Bước 1', text: 'Truy cập công cụ tạo dàn số TaoDanDe tại taodandewukong.pro' },
-                                    { label: 'Bước 2', text: 'Chọn loại dàn cần tạo: Dàn 2D (00-99), Dàn 3D (000-999), Dàn 4D (0000-9999), Dàn 9x-0x, hoặc Ghép lô xiên' },
-                                    { label: 'Bước 3', text: 'Nhập các số vào ô text (có thể copy/paste) hoặc click nút "Tạo Ngẫu Nhiên"' },
-                                    { label: 'Bước 4', text: 'Áp dụng bộ lọc nếu cần: Lọc theo chạm, tổng, kép, tài xỉu, chẵn lẻ, đầu đuôi' },
-                                    { label: 'Bước 5', text: 'Click "Tạo Dàn" hoặc "Lọc Ghép Dàn" để xem kết quả' },
-                                    { label: 'Bước 6', text: 'Copy kết quả hoặc xuất file Excel để sử dụng' }
-                                ]}
-                            />
-
-                            {/* Featured Snippet - Comparison Table */}
-                            <TableSnippet
-                                title="So Sánh Các Loại Dàn Đề"
-                                headers={['Loại Dàn', 'Số Lượng', 'Độ Khó', 'Tỷ Lệ Trúng', 'Phù Hợp Cho']}
-                                rows={[
-                                    ['Dàn 2D', '100 số (00-99)', 'Dễ', '1/100', 'Người mới bắt đầu'],
-                                    ['Dàn 3D', '1,000 số (000-999)', 'Trung bình', '1/1,000', 'Người chơi trung cấp'],
-                                    ['Dàn 4D', '10,000 số (0000-9999)', 'Khó', '1/10,000', 'Cao thủ xổ số'],
-                                    ['Dàn 9x-0x', '70-95 số', 'Dễ', 'Cao (nuôi)', 'Chiến lược nuôi dàn'],
-                                    ['Dàn 36 số', '36 số', 'Trung bình', 'Rất cao', 'Phổ biến nhất'],
-                                    ['Lô Xiên 2-3-4', 'Tùy chỉnh', 'Trung bình', 'Cao', 'Tất cả mọi người']
-                                ]}
-                            />
+                            {/* Thống kê nhanh */}
+                            <ThongKeNhanh />
 
                             {/* Features Section - Compact */}
                             <section className={styles.features} aria-label="Tính năng nổi bật">
@@ -455,7 +495,7 @@ const Home = memo(function Home() {
                                     {features.map((feature, idx) => {
                                         const IconComponent = feature.icon;
                                         return (
-                                            <div key={idx} className={styles.featureItem}>
+                                            <div key={`feature-${idx}`} className={styles.featureItem}>
                                                 <div className={styles.featureIcon}>
                                                     <IconComponent size={20} />
                                                 </div>
@@ -464,28 +504,6 @@ const Home = memo(function Home() {
                                             </div>
                                         );
                                     })}
-                                </div>
-                            </section>
-
-                            {/* News Section */}
-                            <section className={styles.newsSection}>
-                                <div className={styles.newsHeader}>
-                                    <h2>Tin Tức Mới Nhất</h2>
-                                    <Link href="/tin-tuc" className={styles.newsLink} prefetch={false}>
-                                        Xem tất cả →
-                                    </Link>
-                                </div>
-                                <div className={styles.newsGrid}>
-                                    <div className={styles.newsCard}>
-                                        <h3>Hướng dẫn sử dụng công cụ tạo dàn số hiệu quả</h3>
-                                        <p>Khám phá các mẹo và chiến thuật để tối ưu hóa việc sử dụng công cụ tạo dàn số...</p>
-                                        <Link href="/content" className={styles.newsReadMore} prefetch={false}>Đọc thêm</Link>
-                                    </div>
-                                    <div className={styles.newsCard}>
-                                        <h3>Thống kê xổ số 3 miền tháng gần đây</h3>
-                                        <p>Phân tích chi tiết xu hướng và tần suất xuất hiện của các số trong xổ số...</p>
-                                        <Link href="/thong-ke" className={styles.newsReadMore} prefetch={false}>Xem thống kê</Link>
-                                    </div>
                                 </div>
                             </section>
 
@@ -509,47 +527,9 @@ const Home = memo(function Home() {
                             </div>
                         </div>
                     </div>
-                    
-                    {/* ✅ SEO Keywords Section (giống RBK strategy - keywords cuối trang) */}
-                    <div style={{ 
-                        marginTop: '40px', 
-                        padding: '20px', 
-                        background: '#f8f9fa', 
-                        borderRadius: '8px',
-                        fontSize: '13px',
-                        color: '#666',
-                        lineHeight: '1.8',
-                        textAlign: 'center'
-                    }}>
-                        <strong>TDDW</strong> - Tạo Dàn Đề Wukong | 
-                        <strong>TDDW.Pro</strong> | 
-                        Tạo dàn số <strong>TDDW</strong> | 
-                        Soi cầu <strong>TDDW</strong> | 
-                        Chốt số <strong>TDDW</strong> | 
-                        <strong>TDDW</strong> hôm nay | 
-                        Cầu lô <strong>TDDW</strong> | 
-                        Dự đoán <strong>TDDW</strong> | 
-                        Thống kê <strong>TDDW</strong> | 
-                        <strong>TDDW</strong> miễn phí | 
-                        Tạo dàn đề online <strong>TDDW</strong> | 
-                        <strong>TDDW</strong> công cụ xổ số | 
-                        <strong>TDDW</strong> loto | 
-                        <strong>TDDW</strong> lô đề | 
-                        <strong>TDDW</strong> tốt hơn kangdh | 
-                        <strong>TDDW</strong> vs giaimasohoc | 
-                        <strong>WK</strong> tool | 
-                        <strong>WK</strong> soi cầu | 
-                        <strong>TDD</strong> công cụ | 
-                        Dàn đề <strong>WK</strong> | 
-                        Mức số <strong>TDDW</strong> | 
-                        Tạo mức số <strong>TDDW</strong> | 
-                        Lập dàn số <strong>TDDW</strong> | 
-                        <strong>TDDW</strong> 2025 | 
-                        <strong>TDDW</strong> mới nhất | 
-                        TDDW xổ số miền bắc | 
-                        TDDW kết quả xổ số | 
-                        TDDW thống kê 3 miền
-                    </div>
+
+                    {/* ✅ SEO Keywords Section - Lazy loaded for better performance */}
+                    <SEOKeywordsSection />
                 </div>
             </Layout>
         </>

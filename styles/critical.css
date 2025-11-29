@@ -54,13 +54,8 @@ h3 {
 /* Reserve space for subtitle element (the one causing CLS) */
 [class*="subtitle"],
 p[class*="subtitle"] {
-  min-height: 60px !important;
-  height: 60px !important;
   contain: layout style !important;
   font-display: swap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
 }
 
 /* Reserve space for dynamic components */
@@ -96,11 +91,6 @@ svg {
 
 /* ===== MOBILE OPTIMIZATIONS ===== */
 @media (max-width: 768px) {
-
-  [class*="subtitle"],
-  p[class*="subtitle"] {
-    min-height: 48px !important;
-  }
 
   .today-predictions-container,
   [class*="TodayPredictions"] {

@@ -31,7 +31,10 @@ pre {
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
     font-display: swap;
 }
-
+h2{
+    font-size: 25px;
+    line-height: 1.4;
+}
 /* ✅ Font loading optimization */
 .font-loading {
     font-display: swap;

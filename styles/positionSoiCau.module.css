@@ -4,7 +4,7 @@
  */
 
 .container {
-    max-width: 1100px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -18,7 +18,7 @@
 }
 
 .title {
-    font-size: 2.5rem;
+    font-size: 1.7rem;
     font-weight: 700;
     color: #1f2937;
     margin-bottom: 10px;
@@ -49,7 +49,7 @@
 .groupSelect {
     background: #f8fafc;
     border-radius: 12px;
-    padding: 20px;
+    padding: 10px;
     border: 1px solid blue;
 }
 
@@ -118,12 +118,70 @@
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.content {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
+.updateButtonContainer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
 }
+
+.updateButton {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.updateButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.updateButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.updateMessage {
+    margin: 15px auto;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    max-width: 1000px;
+}
+
+.updateMessage_success {
+    background: #d1fae5;
+    border: 1px solid #10b981;
+    color: #065f46;
+}
+
+.updateMessage_info {
+    background: #dbeafe;
+    border: 1px solid #3b82f6;
+    color: #1e40af;
+}
+
+.updateMessage_warning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+}
+
+.updateMessage_error {
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    color: #991b1b;
+}
+
 
 .error {
     background: #fef2f2;
@@ -241,7 +299,7 @@
 }
 
 .detailedAnalysis {
-    background: #f8fafc;
+    background: #fFFF;
     border-radius: 8px;
     padding: 20px;
     margin: 20px 0;
@@ -321,7 +379,6 @@
     flex-wrap: wrap;
     background: white;
     border-radius: 8px;
-    padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 1px solid #e5e7eb;
 }
@@ -514,15 +571,14 @@
 }
 
 .gridTitle {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: #374151;
     margin-bottom: 15px;
+    line-height: 1.4;
     text-align: center;
     background: #f8fafc;
-    padding: 10px;
     border-radius: 8px;
-    border: 1px solid #e5e7eb;
 }
 
 .numbersGrid {
@@ -531,7 +587,7 @@
     gap: 8px;
     margin-bottom: 20px;
     padding: 20px;
-    background: #f8fafc;
+    background: #fFFF;
     border-radius: 8px;
     border: 1px solid #e5e7eb;
 }
@@ -575,6 +631,24 @@
     font-weight: 700;
 }
 
+.numberBoxHit {
+    background: #ecfdf5;
+    border-color: #34d399;
+    color: #065f46;
+}
+
+.numberBoxSpecialHit {
+    background: #fee2e2;
+    border-color: #f87171;
+    color: #b91c1c;
+}
+
+.numberBoxHit.numberBoxSpecialHit {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-color: #ef4444;
+    color: #7f1d1d;
+}
+
 .gridInstructions {
     background: #f0f9ff;
     border: 1px solid #bae6fd;
@@ -593,6 +667,203 @@
 .gridInstructions li {
     margin-bottom: 5px;
     line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .numbersGrid {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        gap: 6px;
+        padding: 14px 12px;
+    }
+
+    .numberBox {
+        font-size: 12px;
+        padding: 6px 0;
+        min-height: 26px;
+    }
+}
+
+@media (max-width: 480px) {
+    .numbersGrid {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        gap: 5px;
+        padding: 12px 10px;
+    }
+
+    .numberBox {
+        font-size: 11px;
+        padding: 5px 0;
+        min-height: 24px;
+    }
+}
+
+/* Stats Box */
+.statsBox {
+    background: #fef3c7;
+    border: 2px solid #fbbf24;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.statsItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.statsLabel {
+    font-weight: 600;
+    color: #92400e;
+    font-size: 14px;
+}
+
+.statsValue {
+    font-weight: 700;
+    color: #78350f;
+    font-size: 16px;
+    background: #fde68a;
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid #fbbf24;
+}
+
+/* Numbers List Box */
+.numbersListBox {
+    background: #ffffff;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.numbersListHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.numbersListTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e40af;
+    margin: 0;
+}
+
+.copyButtons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.copyButton {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.copyButton:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.copyButton:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.numbersListContent {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 15px;
+    font-size: 14px;
+    color: #1e293b;
+    line-height: 1.8;
+    word-break: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+}
+
+/* Responsive cho numbers list và stats box */
+@media (max-width: 768px) {
+    .statsBox {
+        padding: 10px 12px;
+        margin-top: 10px;
+        gap: 15px;
+        border-width: 1.5px;
+        border-radius: 6px;
+    }
+
+    .statsItem {
+        gap: 6px;
+    }
+
+    .statsLabel {
+        font-size: 12px;
+    }
+
+    .statsValue {
+        font-size: 14px;
+        padding: 3px 8px;
+    }
+
+    .numbersListBox {
+        padding: 12px;
+        margin-top: 10px;
+        border-width: 1.5px;
+        border-radius: 6px;
+    }
+
+    .numbersListHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        gap: 8px;
+    }
+
+    .numbersListTitle {
+        font-size: 14px;
+    }
+
+    .copyButtons {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .copyButton {
+        flex: 1;
+        justify-content: center;
+        padding: 6px 12px;
+        font-size: 12px;
+        gap: 4px;
+    }
+
+    .numbersListContent {
+        font-size: 12px;
+        padding: 10px;
+        line-height: 1.6;
+    }
 }
 
 /* Skeleton Loading */
@@ -637,34 +908,93 @@
     }
 
     .heading {
-        font-size: 1.25rem;
+        font-size: 1.3rem;
+        margin-top: 10px;
         white-space: normal;
         word-wrap: break-word;
         hyphens: auto;
         line-height: 1.2;
     }
 
-    .selectGroup {
+    .statisticsTable {
+        margin-bottom: 15px;
+    }
+
+    .groupedTableWrapper {
+        gap: 10px;
+        padding: 8px;
+        border-radius: 6px;
+    }
+
+    .countGroup {
+        flex: 0 0 calc(50% - 5px);
+        min-width: 0;
+        border-radius: 6px;
+    }
+
+    .countHeader {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .countLabel {
+        font-size: 12px;
+    }
+
+    .numbersList {
+        padding: 10px;
+        gap: 6px;
+        justify-content: flex-start;
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        align-items: start;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .numberItem {
+        padding: 5px 8px;
+        font-size: 12px;
+        min-width: 0;
+        border-radius: 4px;
+        flex: auto;
+        width: 100%;
+    }
+
+    .groupSelect {
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    .selectGroup {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
     }
 
     .selectItem {
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 3px;
         align-items: center;
+        flex: 1;
+        min-width: 0;
+        padding: 0 2px;
     }
 
     .suggestedDateContainer {
-        grid-column: 1 / -1;
-        margin-top: 10px;
+        width: 100%;
+        margin-top: 6px;
+    }
+    
+    .suggestedDateBtn {
+        padding: 6px 12px;
+        font-size: 12px;
     }
 
     .options {
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 600;
         color: #374151;
         text-align: center;
@@ -672,19 +1002,33 @@
 
     .select {
         width: 100%;
-        padding: 10px 12px;
-        font-size: 14px;
-        border: 2px solid #d1d5db;
-        border-radius: 8px;
+        padding: 6px 8px;
+        font-size: 13px;
+        border: 1.5px solid #d1d5db;
+        border-radius: 6px;
         background: white;
         cursor: pointer;
         transition: all 0.2s ease;
+        min-width: 0;
     }
 
     .select:focus {
         outline: none;
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .updateButtonContainer {
+        margin-top: 8px;
+        padding: 0;
+        width: 100%;
+    }
+
+    .updateButton {
+        width: 100%;
+        max-width: none;
+        padding: 8px 12px;
+        font-size: 13px;
     }
 }
 
@@ -704,7 +1048,7 @@
 
 @media (max-width: 480px) {
     .title {
-        font-size: 1.2rem;
+        font-size: 1.5rem;
         white-space: normal;
         word-wrap: break-word;
         -webkit-hyphens: auto;
@@ -721,7 +1065,8 @@
     }
 
     .heading {
-        font-size: 1.1rem;
+        font-size: 1.3rem;
+        margin-top: 10px;
         white-space: normal;
         word-wrap: break-word;
         hyphens: auto;
@@ -730,42 +1075,100 @@
 
 
 
+    .groupSelect {
+        padding: 6px;
+        border-radius: 6px;
+    }
+
     .selectGroup {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
     }
 
     .selectItem {
-        gap: 3px;
+        gap: 2px;
+        flex: 1;
+        min-width: 0;
+        padding: 0 1px;
     }
 
     .options {
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .select {
-        padding: 8px 10px;
-        font-size: 13px;
+        padding: 5px 6px;
+        font-size: 12px;
+        width: 100%;
+        border-width: 1.5px;
+        border-radius: 5px;
     }
 
-    /* Count group mobile small */
-    .countGroup {
-        min-width: 100%;
+    .updateButtonContainer {
+        margin-top: 6px;
+        padding: 0;
         width: 100%;
     }
 
+    .updateButton {
+        width: 100%;
+        max-width: none;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    /* Count group mobile small */
+    .statisticsTable {
+        margin-bottom: 12px;
+    }
+
+    .heading {
+        font-size: 1rem;
+        margin-bottom: 6px;
+    }
+
+    .groupedTableWrapper {
+        gap: 6px;
+        padding: 6px;
+        border-radius: 5px;
+    }
+
+    .countGroup {
+        flex: 0 0 calc(50% - 3px);
+        min-width: 0;
+        border-radius: 5px;
+    }
+
     .countHeader {
-        padding: 8px 10px;
-        font-size: 13px;
+        padding: 6px 8px;
+        font-size: 11px;
         white-space: nowrap;
         overflow: visible;
         text-overflow: unset;
     }
 
     .countLabel {
+        font-size: 11px;
         white-space: nowrap;
         overflow: visible;
         text-overflow: unset;
+    }
+
+    .numbersList {
+        padding: 8px;
+        gap: 4px;
+    }
+
+    .numberItem {
+        padding: 4px 6px;
+        font-size: 11px;
+        min-width: 30px;
+        border-radius: 4px;
     }
 
     .tablePositionSoiCau th,
@@ -778,24 +1181,51 @@
         font-size: 10px;
     }
 
+    .gridInstructions {
+        padding: 6px 8px;
+        margin-top: 8px;
+        border-radius: 5px;
+        border-width: 1px;
+    }
+
+    .gridInstructions ul {
+        font-size: 11px;
+        padding-left: 12px;
+    }
+
+    .gridInstructions li {
+        line-height: 1.2;
+    }
+
     .position small {
         font-size: 9px;
     }
 
     /* Grouped table responsive */
+    .statisticsTable {
+        margin-bottom: 15px;
+    }
+
+    .heading {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
     .groupedTableWrapper {
-        flex-direction: column;
-        padding: 15px;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 6px;
     }
 
     .countGroup {
-        min-width: 100%;
-        width: 100%;
+        flex: 0 0 calc(50% - 4px);
+        min-width: 0;
+        border-radius: 6px;
     }
 
     .countHeader {
-        padding: 10px 12px;
-        font-size: 14px;
+        padding: 8px 10px;
+        font-size: 12px;
         white-space: nowrap;
         overflow: visible;
         text-overflow: unset;
@@ -805,17 +1235,19 @@
         white-space: nowrap;
         overflow: visible;
         text-overflow: unset;
+        font-size: 12px;
     }
 
     .numbersList {
-        padding: 12px;
-        gap: 6px;
+        padding: 8px;
+        gap: 5px;
     }
 
     .numberItem {
-        padding: 6px 10px;
+        padding: 5px 8px;
         font-size: 12px;
-        min-width: 35px;
+        min-width: 32px;
+        border-radius: 4px;
     }
 
     /* Simple table responsive */
@@ -828,6 +1260,59 @@
     .simpleCount {
         padding: 8px 12px;
         font-size: 12px;
+    }
+
+    .statsBox {
+        padding: 8px 10px;
+        margin-top: 8px;
+        gap: 12px;
+        border-width: 1px;
+        border-radius: 5px;
+    }
+
+    .statsItem {
+        gap: 4px;
+    }
+
+    .statsLabel {
+        font-size: 11px;
+    }
+
+    .statsValue {
+        font-size: 12px;
+        padding: 2px 6px;
+    }
+
+    .numbersListBox {
+        padding: 8px;
+        margin-top: 8px;
+        border-width: 1px;
+        border-radius: 5px;
+    }
+
+    .numbersListHeader {
+        margin-bottom: 8px;
+        gap: 6px;
+    }
+
+    .numbersListTitle {
+        font-size: 12px;
+    }
+
+    .copyButtons {
+        gap: 4px;
+    }
+
+    .copyButton {
+        padding: 5px 8px;
+        font-size: 11px;
+        gap: 3px;
+    }
+
+    .numbersListContent {
+        font-size: 11px;
+        padding: 8px;
+        line-height: 1.5;
     }
 
     /* Statistics table responsive */
@@ -847,12 +1332,12 @@
 
     .numberItem {
         padding: 3px 4px;
-        min-width: 40px;
+        
     }
 
     /* Predictions grid responsive */
     .numbersGrid {
-        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
         gap: 6px;
         padding: 15px;
     }
@@ -864,11 +1349,20 @@
     }
 
     .gridInstructions {
-        padding: 12px;
+        padding: 8px 10px;
+        margin-top: 10px;
+        border-radius: 6px;
     }
 
     .gridInstructions ul {
-        font-size: 13px;
+        font-size: 12px;
+        padding-left: 15px;
+        margin: 0;
+    }
+
+    .gridInstructions li {
+        margin-bottom: 0;
+        line-height: 1.3;
     }
 }
 
@@ -892,6 +1386,10 @@
     flex-wrap: wrap;
 }
 
+.biendoDateHasTomorrow {
+    width: 100%;
+}
+
 .biendoDate .item {
     background: transparent;
     border: 2px solid #3b82f6;
@@ -904,6 +1402,8 @@
     display: inline-block;
     font-weight: 500;
     font-size: 14px;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 .biendoDate .item:hover {
@@ -930,26 +1430,311 @@
     text-decoration: none;
 }
 
+/* Biên độ container */
+.biendo {
+    background: #111827;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.biendoRange {
+    margin-bottom: 16px;
+}
+
+.lifetime {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.listStatistic {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+}
+
+.listStatisticTitle {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #facc15;
+}
+
+.listStatisticGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.cauxs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 50px;
+    text-align: center;
+    aspect-ratio: 1;
+}
+
+.cauxs:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cauxs.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #5a67d8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    font-weight: 700;
+}
+
+.cauxs.active:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    transform: translateY(-2px);
+}
+
+.cauxs.orange {
+    color: #f97316;
+    font-weight: 600;
+    border-color: #f97316;
+}
+
+.cauxs.red {
+    color: #ef4444;
+    font-weight: 600;
+    border-color: #ef4444;
+}
+
+.hitPrediction {
+    color: #f97316 !important;
+    border-color: #f97316 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 6px rgba(249, 115, 22, 0.3);
+}
+
+.cauxs.hitPrediction.active {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: white !important;
+    border-color: #f97316 !important;
+    box-shadow: 0 4px 8px rgba(249, 115, 22, 0.5);
+}
+
+.numbersListHit {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+.caumbresult {
+    color: #f97316;
+    font-weight: 600;
+}
+
+.caumbdb {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.caumbchon {
+    color: #10b981;
+    font-weight: 600;
+}
+
+/* Lifetime Section Styles */
+.lifetimeSection {
+    margin: 20px 0;
+    background: #f8fafc;
+
+}
+
+.listStatistic {
+    /* margin-bottom: 20px; */
+}
+
+.listStatistic:last-child {
+    margin-bottom: 0;
+}
+
+.lifetimeTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 10px 0;
+}
+
+.lifetimeNumbers {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.cauxs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 6px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 45px;
+    text-align: center;
+    aspect-ratio: 1;
+}
+
+/* Mobile optimization for lifetime numbers */
+@media (max-width: 768px) {
+    .lifetimeNumbers {
+        grid-template-columns: repeat(10, 1fr);
+        gap: 2px;
+        margin-top: 6px;
+    }
+
+    .cauxs {
+        padding: 8px 2px;
+        font-size: 14px;
+        min-width: 0;
+        width: 100%;
+        border-radius: 4px;
+        font-weight: 700;
+    }
+}
+
+@media (max-width: 480px) {
+    .lifetimeNumbers {
+        grid-template-columns: repeat(10, 1fr);
+        gap: 1.5px;
+        margin-top: 5px;
+    }
+
+    .cauxs {
+        padding: 7px 2px;
+        font-size: 13px;
+        min-width: 0;
+        width: 100%;
+        border-radius: 3px;
+        font-weight: 700;
+    }
+}
+
+.cauxs:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cauxs.orange {
+    color: #f97316;
+    font-weight: 600;
+    border-color: #f97316;
+}
+
+.cauxs.red {
+    color: #ef4444;
+    font-weight: 600;
+    border-color: #ef4444;
+}
+
+.warningBox {
+    background: #fffaca;
+    padding: 20px;
+    margin: 16px 0;
+    color: #8e0a00;
+    border: 1px dashed #ff9800;
+    border-radius: 10px;
+    line-height: 24px;
+    font-size: 16px;
+}
+
+.warningBox p {
+    margin: 0;
+}
+
 /* Responsive for date buttons */
 @media (max-width: 768px) {
     .biendoDate {
         gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* 2 button đầu tiên (Hôm nay, Hôm qua) - chiếm 50% mỗi cái, nằm trên hàng đầu */
+    .biendoDate .item:nth-child(1),
+    .biendoDate .item:nth-child(2) {
+        flex: 0 0 calc(50% - 4px);
+        max-width: calc(50% - 4px);
+    }
+
+    /* Các button còn lại (từ button thứ 3) - chiếm 25% mỗi cái, nằm trên hàng thứ 2 */
+    .biendoDate .item:nth-child(n+3) {
+        flex: 0 0 calc(25% - 6px);
+        max-width: calc(25% - 6px);
     }
 
     .biendoDate .item {
         padding: 6px 12px;
         font-size: 13px;
     }
+
+    .biendoDateHasTomorrow .item:nth-child(-n+3) {
+        flex: 0 0 calc((100% - 16px) / 3);
+        max-width: calc((100% - 16px) / 3);
+    }
+
+    .biendoDateHasTomorrow .item:nth-child(n+4) {
+        flex: 0 0 calc((100% - 24px) / 4);
+        max-width: calc((100% - 24px) / 4);
+    }
 }
 
 @media (max-width: 480px) {
     .biendoDate {
         gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    /* 2 button đầu tiên (Hôm nay, Hôm qua) - chiếm 50% mỗi cái, nằm trên hàng đầu */
+    .biendoDate .item:nth-child(1),
+    .biendoDate .item:nth-child(2) {
+        flex: 0 0 calc(50% - 3px);
+        max-width: calc(50% - 3px);
+    }
+
+    /* Các button còn lại (từ button thứ 3) - chiếm 25% mỗi cái, nằm trên hàng thứ 2 */
+    .biendoDate .item:nth-child(n+3) {
+        flex: 0 0 calc(25% - 4.5px);
+        max-width: calc(25% - 4.5px);
     }
 
     .biendoDate .item {
         padding: 5px 10px;
         font-size: 12px;
+    }
+
+    .biendoDateHasTomorrow .item:nth-child(-n+3) {
+        flex: 0 0 calc((100% - 12px) / 3);
+        max-width: calc((100% - 12px) / 3);
+    }
+
+    .biendoDateHasTomorrow .item:nth-child(n+4) {
+        flex: 0 0 calc((100% - 18px) / 4);
+        max-width: calc((100% - 18px) / 4);
     }
 }
 

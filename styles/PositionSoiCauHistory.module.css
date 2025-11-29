@@ -1,0 +1,469 @@
+/**
+ * Position Soi Cau History Styles
+ * CSS cho component lịch sử dự đoán soi cầu vị trí
+ */
+
+.historyContainer {
+    /* background: #ffffff;
+    padding: 3px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.mobileHistoryTrigger {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(118, 75, 162, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobileHistoryTrigger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(118, 75, 162, 0.45);
+}
+
+.mobileHistoryTrigger:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 18px rgba(118, 75, 162, 0.35);
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.historyTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    flex: 1;
+    min-width: 200px;
+}
+
+.monthYearSelectors {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.monthSelector,
+.yearSelector {
+    padding: 8px 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.monthSelector:focus,
+.yearSelector:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.monthSelector:hover,
+.yearSelector:hover {
+    border-color: #9ca3af;
+}
+
+.loadingText,
+.errorText {
+    font-size: 14px;
+    color: #6b7280;
+    padding: 8px;
+}
+
+.errorText {
+    color: #dc2626;
+}
+
+/* Modal */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.modalOverlayMobile {
+    align-items: flex-end;
+    padding: 0;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+.modalContentMobile {
+    border-radius: 20px 20px 0 0;
+    max-width: 100%;
+    max-height: 85vh;
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 2px solid #e5e7eb;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px 12px 0 0;
+}
+
+.modalTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+.modalCloseButton {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.modalCloseButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.modalBody {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #000;
+    font-size: 14px;
+}
+
+.historyTable thead {
+    background: #f3f4f6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.historyTable th {
+    padding: 8px 6px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #000;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.historyTable td {
+    padding: 6px 6px;
+    border-bottom: 1px solid #000;
+    vertical-align: top;
+}
+
+.historyTable td.predictions {
+    padding: 4px 6px !important;
+}
+
+.historyTable tbody tr:hover {
+    background: #f9fafb;
+}
+
+.historyTable tbody tr[data-status="hit"] {
+    background: #f0fdf4;
+}
+
+.historyTable tbody tr[data-status="hit"]:hover {
+    background: #dcfce7;
+}
+
+.historyTable tbody tr[data-status="miss"] {
+    /* background: #fef2f2; */
+}
+
+.historyTable tbody tr[data-status="miss"]:hover {
+    /* background: #fee2e2; */
+}
+
+.date {
+    font-weight: 500;
+    color: #1f2937;
+    min-width: 100px;
+}
+
+.daysNote {
+    display: block;
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: normal;
+    margin-top: 2px;
+}
+
+.predictions {
+    color: #374151;
+    line-height: 1.4;
+    font-size: 12px;
+    padding: 4px 6px !important;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Đảm bảo strong và các span hiển thị trên cùng một dòng */
+.predictions > strong,
+.predictions > span,
+.predictions > * {
+    display: inline;
+    vertical-align: baseline;
+}
+
+.predictions strong {
+    color: #1f2937;
+    font-size: 12px;
+    margin-right: 4px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.predictions span {
+    margin: 0;
+    padding: 0;
+    margin-right: 0;
+}
+
+.predictionHit {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.matchedNumber {
+    color: #059669;
+    font-weight: 600;
+}
+
+.missResult {
+    color: #dc2626;
+    font-weight: 500;
+}
+
+.waitingResult {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Result Button Styles */
+.resultCell {
+    padding: 6px 6px;
+    text-align: center;
+}
+
+.resultButton {
+    border: none;
+    border-radius: 18px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.resultButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.hitButton {
+    background: #d1fae5;
+    color: #059669;
+    border: 1px solid #10b981;
+}
+
+.hitButton:hover:not(:disabled) {
+    background: #a7f3d0;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+.missButton {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #ef4444;
+}
+
+.missButton:hover:not(:disabled) {
+    background: #fecaca;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+.waitingButton {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+
+.waitingButton:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.loadingContainer,
+.errorContainer,
+.noDataContainer {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+}
+
+.errorContainer {
+    color: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .headerRow {
+        margin-top: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .historyTitle {
+        width: 100%;
+        text-align: left;
+    }
+
+    .monthYearSelectors {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .monthSelector,
+    .yearSelector {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .modalContent {
+        max-width: 100%;
+        max-height: 95vh;
+        margin: 10px;
+    }
+
+    .modalHeader {
+        padding: 15px 20px;
+    }
+
+    .modalTitle {
+        font-size: 16px;
+    }
+
+    .modalBody {
+        padding: 15px;
+    }
+
+    .historyTable {
+        font-size: 12px;
+    }
+
+    .historyTable th,
+    .historyTable td {
+        padding: 6px 4px;
+    }
+
+    .predictions {
+        max-width: 200px;
+        font-size: 11px;
+        padding: 3px 4px !important;
+        line-height: 1.2;
+    }
+
+    .predictions strong {
+        font-size: 11px;
+    }
+
+    .resultCell {
+        padding: 6px 4px;
+    }
+}

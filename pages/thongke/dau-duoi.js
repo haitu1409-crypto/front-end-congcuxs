@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useEffect, useMemo, lazy, Suspense, startTransition } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import Layout from '../../components/Layout';
-import UpdateButton from '../../components/UpdateButton';
 import { apiMB } from '../api/kqxsMB';
 import styles from '../../styles/dauduoi.module.css';
 import ThongKe from '../../components/ThongKe';
@@ -75,8 +74,6 @@ const SkeletonTableByDate = (props) => (
     </table>
 );
 
-// Lazy load DescriptionContent
-const DescriptionContent = lazy(() => import('./DescriptionDauDuoi'));
 
 const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats, initialMetadata, initialDays }) => {
     const router = useRouter();
@@ -268,67 +265,23 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
         setDuoiByDateDays(selectedDuoiByDateDays);
     }, []);
 
-    // Hàm cập nhật thống kê
-    const handleUpdateStats = async () => {
-        try {
-            // Gọi API cập nhật
-            const result = await apiMB.updateDauDuoiStats(days);
-            
-            if (result.success) {
-                // Sau khi cập nhật thành công, lấy lại dữ liệu
-                setLoading(true);
-                setError(null);
-                try {
-                    const data = await apiMB.getDauDuoiStats(days);
-                    setDauStats(data.dauStats || []);
-                    setDuoiStats(data.duoiStats || []);
-                    setMetadata(data.metadata || {});
-                } catch (err) {
-                    setError(err.message || 'Có lỗi xảy ra khi lấy dữ liệu.');
-                    setDauStats([]);
-                    setDuoiStats([]);
-                    setMetadata({});
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                throw new Error('Cập nhật không thành công');
-            }
-        } catch (error) {
-            console.error('Error updating stats:', error);
-            throw error; // Re-throw để UpdateButton xử lý
-        }
-    };
-
-    // Combine multiple API calls to prevent rate limiting
+    // Fetch dữ liệu khi days thay đổi hoặc khi component mount lần đầu
+    // Điều này đảm bảo dữ liệu luôn được cập nhật mới nhất khi truy cập trang
     useEffect(() => {
-        // Check if we have initial data from SSR
-        const hasInitialData = initialDauStats && initialDauStats.length > 0;
-        
-        if (hasInitialData) {
-            // Already have data from SSR, don't fetch again
-            return;
-        }
-        
-        // Fetch all data together in sequence to avoid rate limiting
-        const fetchAllData = async () => {
-            try {
-                await Promise.all([
-                    fetchDauDuoiStats(days),
-                    fetchSpecialDauDuoiStats(specialDays),
-                    fetchDauStatsByDate(dauByDateDays),
-                    fetchDuoiStatsByDate(duoiByDateDays)
-                ]);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-        
-        // Wrap in startTransition to prevent hydration warnings
-        startTransition(() => {
-            fetchAllData();
-        });
-    }, []); // Only run once on mount
+        fetchDauDuoiStats(days);
+    }, [days, fetchDauDuoiStats]);
+
+    useEffect(() => {
+        fetchSpecialDauDuoiStats(specialDays);
+    }, [specialDays, fetchSpecialDauDuoiStats]);
+
+    useEffect(() => {
+        fetchDauStatsByDate(dauByDateDays);
+    }, [dauByDateDays, fetchDauStatsByDate]);
+
+    useEffect(() => {
+        fetchDuoiStatsByDate(duoiByDateDays);
+    }, [duoiByDateDays, fetchDuoiStatsByDate]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -412,19 +365,13 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                     <div className={styles.actionBtn}>
                         <Link className={styles.actionTK} href="/thongke/giai-dac-biet">Thống Kê Giải Đặc Biệt</Link>
                         <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/dau-duoi') ? styles.active : ''}`} href="/thongke/dau-duoi">Thống Kê Đầu Đuôi</Link>
-                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet-tuan') ? styles.active : ''}`} href="/thongke/giai-dac-biet-tuan">Thống Kê Giải Đặc Biệt Tuần</Link>
+                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet-tuan') ? styles.active : ''}`} href="/thongke/giai-dac-biet-tuan">Giải Đặc Biệt Tuần</Link>
                     </div>
                 </div>
 
                 <div className={styles.content}>
                     {/* Bảng 1: Thống kê Đầu/Đuôi Loto (tất cả các giải) */}
                     <div>
-                        <div className="metadata">
-                            <h2 className={styles.title}>{getMessage()}</h2>
-                            <p className={styles.updateTime}>
-                                Cập nhật lúc: {new Date().toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                            </p>
-                        </div>
 
                         <div className={styles.group_Select}>
                             <div className={styles.selectGroup}>
@@ -440,25 +387,20 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                     <option value={90}>90 ngày</option>
                                     <option value={120}>120 ngày</option>
                                     <option value={180}>6 tháng</option>
+                                    <option value={270}>9 tháng</option>
                                     <option value={365}>1 năm</option>
                                 </select>
                             </div>
 
-                            <div>
-                                <p className={styles.dateTime}>
+                            <div className={styles.dateTimeContainer}>
+                                <span className={styles.dateTime}>
                                     <span>Ngày bắt đầu:</span> {metadata.startDate || 'N/A'}
-                                </p>
-                                <p className={styles.dateTime}>
+                                </span>
+                                <span className={styles.dateTime}>
                                     <span>Ngày kết thúc:</span> {metadata.endDate || 'N/A'}
-                                </p>
+                                </span>
                             </div>
                         </div>
-
-                        {/* Button cập nhật dữ liệu */}
-                        <UpdateButton 
-                            onUpdate={handleUpdateStats}
-                            label="Cập nhật dữ liệu"
-                        />
 
                         {loading && <SkeletonTable />}
                         {error && <p className={styles.error}>{error}</p>}
@@ -531,17 +473,18 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                         <option value={90}>90 ngày</option>
                                         <option value={120}>120 ngày</option>
                                         <option value={180}>6 tháng</option>
+                                        <option value={270}>9 tháng</option>
                                         <option value={365}>1 năm</option>
                                     </select>
                                 </div>
 
-                                <div>
-                                    <p className={styles.dateTime}>
+                                <div className={styles.dateTimeContainer}>
+                                    <span className={styles.dateTime}>
                                         <span>Ngày bắt đầu:</span> {specialMetadata.startDate || 'N/A'}
-                                    </p>
-                                    <p className={styles.dateTime}>
+                                    </span>
+                                    <span className={styles.dateTime}>
                                         <span>Ngày kết thúc:</span> {specialMetadata.endDate || 'N/A'}
-                                    </p>
+                                    </span>
                                 </div>
                             </div>
 
@@ -608,17 +551,18 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                     <option value={90}>90 ngày</option>
                                     <option value={120}>120 ngày</option>
                                     <option value={180}>6 tháng</option>
+                                    <option value={270}>9 tháng</option>
                                     <option value={365}>1 năm</option>
                                 </select>
                             </div>
 
-                            <div>
-                                <p className={styles.dateTime}>
+                            <div className={styles.dateTimeContainer}>
+                                <span className={styles.dateTime}>
                                     <span>Ngày bắt đầu:</span> {dauByDateMetadata.startDate || 'N/A'}
-                                </p>
-                                <p className={styles.dateTime}>
+                                </span>
+                                <span className={styles.dateTime}>
                                     <span>Ngày kết thúc:</span> {dauByDateMetadata.endDate || 'N/A'}
-                                </p>
+                                </span>
                             </div>
                         </div>
 
@@ -692,17 +636,18 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                     <option value={90}>90 ngày</option>
                                     <option value={120}>120 ngày</option>
                                     <option value={180}>6 tháng</option>
+                                    <option value={270}>9 tháng</option>
                                     <option value={365}>1 năm</option>
                                 </select>
                             </div>
 
-                            <div>
-                                <p className={styles.dateTime}>
+                            <div className={styles.dateTimeContainer}>
+                                <span className={styles.dateTime}>
                                     <span>Ngày bắt đầu:</span> {duoiByDateMetadata.startDate || 'N/A'}
-                                </p>
-                                <p className={styles.dateTime}>
+                                </span>
+                                <span className={styles.dateTime}>
                                     <span>Ngày kết thúc:</span> {duoiByDateMetadata.endDate || 'N/A'}
-                                </p>
+                                </span>
                             </div>
                         </div>
 
@@ -756,16 +701,30 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                 </div>
 
                 <div className={styles.Group_Content}>
-                    <h2 className={styles.heading}>TAODANDEWUKONG.PRO - Thống Kê Đầu Đuôi Loto Chính Xác Nhất</h2>
-                    <h3 className={styles.h3}>Thống Kê Đầu Đuôi Loto Là Gì?</h3>
-                    <p className={styles.desc}>
-                        Thống kê Đầu Đuôi loto là bảng thống kê tần suất xuất hiện của các chữ số đầu (Đầu) và chữ số cuối (Đuôi) trong 2 số cuối của các giải xổ số trong một khoảng thời gian nhất định (30 hoặc 60 ngày). Đây là công cụ hữu ích giúp người chơi nhận biết các chữ số nào đang xuất hiện nhiều hoặc ít để đưa ra quyết định chơi loto hiệu quả hơn.
-                    </p>
-                    <Suspense fallback={<div>Loading...</div>}>
-                        <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : styles.collapsed}`}>
-                            <DescriptionContent />
-                        </div>
-                    </Suspense>
+                    <h2 className={styles.heading}>Thống kê đầu đuôi Miền Bắc - Phân tích tần suất số xuất hiện</h2>
+                    <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : styles.collapsed}`}>
+                        <h3 className={styles.h3}>Thống kê đầu đuôi là gì?</h3>
+                        <p className={styles.desc}>Thống kê đầu đuôi là phương pháp phân tích tần suất xuất hiện của chữ số đầu (hàng chục) và chữ số cuối (hàng đơn vị) trong 2 số cuối của các giải xổ số. Công cụ này giúp người chơi nhận biết xu hướng số xuất hiện để tham khảo khi chọn số.</p>
+                        
+                        <h3 className={styles.h3}>Thông tin trong bảng thống kê</h3>
+                        <p className={styles.desc}><strong className={styles.strong}>Đầu số:</strong> Thống kê tần suất của chữ số đầu tiên trong 2 số cuối (Đầu 0 đến Đầu 9).</p>
+                        <p className={styles.desc}><strong className={styles.strong}>Đuôi số:</strong> Thống kê tần suất của chữ số cuối cùng trong 2 số cuối (Đuôi 0 đến Đuôi 9).</p>
+                        <p className={styles.desc}><strong className={styles.strong}>Phần trăm và số lần:</strong> Mỗi đầu/đuôi hiển thị số lần xuất hiện và phần trăm tương ứng, kèm thanh biểu đồ trực quan để dễ so sánh.</p>
+                        <p className={styles.desc}><strong className={styles.strong}>Khoảng thời gian:</strong> Chọn từ 30 ngày, 60 ngày, 90 ngày, 120 ngày, 6 tháng, 9 tháng hoặc 1 năm để phân tích.</p>
+                        
+                        <h3 className={styles.h3}>Tính năng chính</h3>
+                        <p className={styles.desc}><strong className={styles.strong}>Thống kê đầu đuôi tất cả giải:</strong> Phân tích đầu đuôi từ tất cả các giải trong bảng kết quả.</p>
+                        <p className={styles.desc}><strong className={styles.strong}>Thống kê đầu đuôi giải đặc biệt:</strong> Phân tích riêng đầu đuôi của giải đặc biệt.</p>
+                        <p className={styles.desc}><strong className={styles.strong}>Thống kê theo ngày:</strong> Xem chi tiết số lần xuất hiện của từng đầu/đuôi theo từng ngày trong khoảng thời gian đã chọn.</p>
+                        
+                        <h3 className={styles.h3}>Cách sử dụng</h3>
+                        <p className={styles.desc}>Chọn khoảng thời gian muốn phân tích từ menu dropdown. Bảng thống kê sẽ hiển thị tần suất và phần trăm xuất hiện của từng đầu/đuôi. Thanh biểu đồ màu xanh giúp bạn dễ dàng nhận biết số nào xuất hiện nhiều hoặc ít nhất.</p>
+                        
+                        <h3 className={styles.h3}>Lưu ý quan trọng</h3>
+                        <p className={styles.desc}>Thống kê đầu đuôi chỉ mang tính chất tham khảo. Kết quả xổ số là ngẫu nhiên, không có quy luật cố định. Người chơi nên tham gia với tinh thần giải trí, không nên phụ thuộc hoàn toàn vào thống kê.</p>
+                        
+                        <p className={styles.desc}>Dữ liệu được cập nhật tự động ngay sau mỗi kỳ quay thưởng, đảm bảo tính chính xác và kịp thời. Thống kê đầu đuôi Miền Bắc tại <a className={styles.action} href='/'>TAODANDEWUKONG.PRO</a> giúp bạn có thêm thông tin để tham khảo khi chọn số.</p>
+                    </div>
                     <button className={styles.toggleBtn} onClick={toggleContent}>
                         {isExpanded ? 'Thu gọn' : 'Xem thêm'}
                     </button>

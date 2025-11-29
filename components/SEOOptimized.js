@@ -24,6 +24,14 @@ const PAGE_IMAGES = {
         telegram: '/imgs/dan9x0x (1).png',
         tiktok: '/imgs/dan9x0x (1).png'
     },
+    'loc-dan-de': {
+        og: '/imgs/dan9x0x (1).png',
+        twitter: '/imgs/dan9x0x (1).png',
+        facebook: '/imgs/dan9x0x (1).png',
+        zalo: '/imgs/dan9x0x (1).png',
+        telegram: '/imgs/dan9x0x (1).png',
+        tiktok: '/imgs/dan9x0x (1).png'
+    },
     'dan-dac-biet': {
         og: '/imgs/dandacbiet (1).png',
         twitter: '/imgs/dandacbiet (1).png',
@@ -93,6 +101,11 @@ const PAGE_SEO_CONFIG = {
         title: 'Dàn Đề 9x-0x | Tạo Dàn Đề Ngẫu Nhiên | Công Cụ Lọc Dàn Đề Tổng Hợp - Miễn Phí 2025',
         description: 'Tạo dàn số 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế. Công cụ lọc dàn số tổng hợp, tạo dàn số miễn phí. Hỗ trợ xuất Excel, lưu trữ kết quả. Phần mềm AI chuyên nghiệp.',
         keywords: 'dàn số 9x-0x, tạo dàn số ngẫu nhiên, lọc dàn số tổng hợp, thuật toán Fisher-Yates, công cụ dàn số, tạo dàn số miễn phí, phần mềm AI, dàn số Wukong, công cụ xổ số chuyên nghiệp'
+    },
+    'loc-dan-de': {
+        title: 'Lọc Dàn Đề Tổng Hợp | Bộ Lọc Số 9x-0x, 3X, 2X Siêu Cấp - Miễn Phí 2025',
+        description: 'Lọc dàn đề tổng hợp từ mọi nguồn: 9x-0x, 3X, 2X, 1X, 0X. Hỗ trợ thêm số mong muốn, loại bỏ số đặc biệt, bỏ kép bằng, chọn bộ số đặc biệt, chạm, tổng. Thuật toán ưu tiên tần suất kết hợp random thông minh.',
+        keywords: 'lọc dàn đề, loc dan de, lọc dàn đề tổng hợp, lọc dàn 9x, cắt dàn 9x, lọc dàn đề miễn phí, bộ lọc dàn đề, lọc dàn đề theo chạm, lọc dàn đề theo tổng, bỏ kép bằng, bộ số đặc biệt, công cụ lọc dàn đề wukong'
     },
     'dan-dac-biet': {
         title: 'Ghép Dàn Đặc Biệt | Lọc Dàn Đặc Biệt | Dàn Theo Tổng, Chạm, Kép Bằng - Miễn Phí 2025',
@@ -439,14 +452,24 @@ export default function SEOOptimized({
             />
 
             {/* ===== CUSTOM STRUCTURED DATA ===== */}
-            {structuredData && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(structuredData),
-                    }}
-                />
-            )}
+            {Array.isArray(structuredData)
+                ? structuredData.map((schema, index) => (
+                    <script
+                        key={`structured-data-${index}`}
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify(schema),
+                        }}
+                    />
+                ))
+                : structuredData && (
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify(structuredData),
+                        }}
+                    />
+                )}
         </Head>
     );
 }

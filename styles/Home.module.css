@@ -4,7 +4,7 @@
  */
 
 .container {
-    max-width: 1350px;
+    max-width: 1000px;
     margin: 0 auto;
     min-height: 60vh;
     animation: fadeIn var(--transition-slow) ease;
@@ -48,11 +48,11 @@
     gap: 6px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 6px 12px;
+    padding: 3px 12px;
     border-radius: 50px;
     font-size: 13px;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: 7px;
     box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
 }
 
@@ -63,34 +63,31 @@
 
 /* Hero Title Highlight */
 .heroTitleHighlight {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+ 
+    /* background-clip: text; */
 }
 
 /* Hero Actions */
 .heroActions {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    min-height: 120px;
-    align-items: center;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    align-items: stretch;
 }
 
 @media (min-width: 480px) {
     .heroActions {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-        min-height: 150px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+        min-height: 130px;
     }
 }
 
 @media (min-width: 640px) {
     .heroActions {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        min-height: 150px;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 8px;
+        min-height: 140px;
     }
 }
 
@@ -110,7 +107,7 @@
     gap: 4px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 8px 10px;
+    padding: 2px 2px;
     border-radius: 8px;
     font-weight: 600;
     font-size: 12px;
@@ -131,18 +128,18 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 2px;
     background: white;
     color: #667eea;
-    border: 1.5px solid #667eea;
-    border-radius: 8px;
+    border: 1.2px solid #667eea;
+    border-radius: 6px;
     font-weight: 600;
-    font-size: 12px;
+    height: 20px;
+    font-size: 9px;
     text-decoration: none;
     transition: all 0.3s ease;
     text-align: center;
-    min-height: 26px;
-    flex: 1;
+    line-height: 1.2;
 }
 
 .heroSecondaryButton:hover {
@@ -154,23 +151,23 @@
 @media (min-width: 480px) {
     .heroPrimaryButton {
         gap: 6px;
-        padding: 10px 14px;
+        padding: 210px 2px;
         font-size: 13px;
         min-height: 42px;
     }
 
     .heroSecondaryButton {
         gap: 4px;
-        padding: 10px 14px;
-        font-size: 13px;
-        min-height: 42px;
+        padding: 6px 8px;
+        font-size: 12px;
+        min-height: 34px;
     }
 }
 
 @media (min-width: 768px) {
     .heroPrimaryButton {
         gap: 10px;
-        padding: 14px 24px;
+        padding: 2px 2px;
         font-size: 15px;
         min-height: auto;
         flex: 0 0 auto;
@@ -178,7 +175,7 @@
 
     .heroSecondaryButton {
         gap: 6px;
-        padding: 14px 20px;
+        padding: 8px 12px;
         font-size: 15px;
         min-height: auto;
         flex: 0 0 auto;
@@ -198,7 +195,8 @@
     flex-shrink: 0;
 }
 
-.heroPrimaryButton:hover .heroButtonArrow {
+.heroP
+      rimaryButton:hover .heroButtonArrow {
     transform: translateX(4px);
 }
 
@@ -420,8 +418,6 @@
 /* ===== HEADER - COMPACT ===== */
 .header {
     text-align: center;
-    margin-bottom: 20px;
-    padding: 15px;
     background: var(--color-white);
     border-radius: var(--border-radius-lg);
     border: 1px solid var(--color-gray-200);
@@ -430,7 +426,7 @@
 @media (min-width: 768px) {
     .header {
         padding: 20px;
-        margin-bottom: 30px;
+        
     }
 }
 
@@ -439,9 +435,9 @@
     font-weight: var(--font-bold);
     text-transform: uppercase;
     color: var(--color-gray-900);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     letter-spacing: var(--letter-spacing-tight);
-    line-height: var(--line-height-tight);
+    line-height: 1.5;
     /* ✅ Fix CLS: Reserve space to prevent layout shift */
     min-height: 60px;
     contain: layout style;
@@ -1281,18 +1277,16 @@
 /* ===== MAIN CONTENT LAYOUT - 2 COLUMNS ===== */
 .mainContentLayout {
     display: grid;
-    grid-template-columns: 1fr 350px;
-    margin-top: var(--spacing-8);
+    grid-template-columns: 1fr 290px;
+    margin-top: 10px;
     max-width: 100%;
     padding: 10px;
-    background-color: white;
-    gap: var(--spacing-6);
+    gap: 13px;
 }
 
 .leftColumn {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-8);
     min-width: 0;
     /* Prevent grid overflow */
 }
@@ -1355,7 +1349,7 @@
 
     .mainContentLayout {
         grid-template-columns: 1fr 320px;
-        gap: var(--spacing-6);
+        gap: 13px;
         padding: 8px;
     }
 }
@@ -1363,7 +1357,7 @@
 @media (max-width: 1024px) {
     .mainContentLayout {
         grid-template-columns: 1fr;
-        gap: var(--spacing-4);
+        gap: 13px;
         padding: 6px;
     }
 
@@ -1393,13 +1387,13 @@
     .mainContentLayout {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-4);
+        gap: 10px;
         padding: 4px;
         margin-top: var(--spacing-4);
     }
 
     .leftColumn {
-        gap: var(--spacing-6);
+        /* gap removed */
         order: 1;
     }
 
@@ -1428,13 +1422,13 @@
     }
 
     .mainContentLayout {
-        gap: var(--spacing-3);
+        gap: 8px;
         padding: 2px;
         margin-top: var(--spacing-3);
     }
 
     .leftColumn {
-        gap: var(--spacing-4);
+        /* gap removed */
     }
 
     .rightColumn {
@@ -1443,5 +1437,24 @@
 
     .sidebarContent {
         padding: var(--spacing-2);
+    }
+}
+
+/* ===== SEO KEYWORDS PLACEHOLDER ===== */
+.seoKeywordsPlaceholder {
+    margin-top: 40px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    min-height: 60px;
+    /* ✅ Prevent layout shift during lazy loading */
+    contain: layout style paint;
+}
+
+@media (max-width: 768px) {
+    .seoKeywordsPlaceholder {
+        margin-top: 30px;
+        padding: 15px;
+        min-height: 50px;
     }
 }

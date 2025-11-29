@@ -10,12 +10,25 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Target, Star, Zap, BarChart3, Sparkles } from 'lucide-react';
+import { Target, Star, Zap, BarChart3, Sparkles, MessageCircle } from 'lucide-react';
 import styles from '../styles/TodayPredictions.module.css';
+
+// Facebook Icon Component
+const FacebookIcon = ({ size = 20, className }) => (
+    <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className={className}
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+    </svg>
+);
 
 // Memoized PredictionCard component để tránh re-render không cần thiết
 const PredictionCard = memo(({ pred, predictionDate, formattedDate }) => {
-    const IconComponent = pred.icon;
 
     return (
         <article
@@ -30,9 +43,6 @@ const PredictionCard = memo(({ pred, predictionDate, formattedDate }) => {
             aria-labelledby={`prediction-title-${pred.id}`}
         >
             <header className={styles.cardHeader}>
-                <div className={styles.cardIcon} aria-hidden="true">
-                    <IconComponent size={20} />
-                </div>
                 <div>
                     <h3
                         className={styles.cardTitle}
@@ -167,7 +177,7 @@ const TodayPredictions = () => {
     // Memoized predictions array để tránh re-create mỗi lần render
     const predictions = useMemo(() => {
         if (!prediction) return [];
-        const dateText = `Ngày ${formatDate(prediction.predictionDate)}`;
+        const dateText = `${formatDate(prediction.predictionDate)}`;
         return [
             {
                 id: 'lotto',
@@ -339,21 +349,7 @@ const TodayPredictions = () => {
                 aria-label="Dự đoán xổ số miền bắc hôm nay"
             >
 
-                {/* Thông báo nguồn dữ liệu */}
-                {prediction && (
-                    <div style={{
-                        padding: '8px 12px',
-                        background: '#d4edda',
-                        border: '1px solid #c3e6cb',
-                        borderRadius: '4px',
-                        margin: '5px 0',
-                        fontSize: '12px',
-                        color: '#155724',
-                        textAlign: 'center'
-                    }}>
-                        Tham khảo kết quả dự đoán từ rồng bạch kim
-                    </div>
-                )}
+               
 
                 <div className={styles.predictionsGrid} itemProp="articleBody">
                     {predictions.map((pred) => (
@@ -364,6 +360,31 @@ const TodayPredictions = () => {
                             formattedDate={formattedDate}
                         />
                     ))}
+                </div>
+
+                {/* Social Links - Desktop Only */}
+                <div className={styles.socialLinksSection}>
+                    <div className={styles.socialLinksTitle}>Kết nối với chúng tôi</div>
+                    <div className={styles.socialLinksContainer}>
+                        <a
+                            href="https://t.me/+IDI1WNXglndhNTY1"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.socialLink}
+                        >
+                            <MessageCircle size={20} className={styles.socialIcon} />
+                            <span>Nhóm Telegram VIP</span>
+                        </a>
+                        <a
+                            href="https://www.facebook.com/share/g/1FrkgbX6Sw/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.socialLink}
+                        >
+                            <FacebookIcon size={20} className={styles.socialIcon} />
+                            <span>Nhóm Facebook</span>
+                        </a>
+                    </div>
                 </div>
             </section>
         </>

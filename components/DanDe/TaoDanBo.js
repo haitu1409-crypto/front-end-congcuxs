@@ -190,11 +190,9 @@ export default function TaoDanBo() {
                 {/* Left Column: Inputs and Controls */}
                 <div className={styles.leftColumn}>
                     <div className={styles.inputsSection}>
-                        <h3 className={styles.sectionTitle}>Cài đặt tạo dàn</h3>
 
                         {/* Buttons Section */}
                         <div className={styles.buttonsSection}>
-                            <h4 className={styles.sectionTitle}>Thao tác</h4>
                             <div className={styles.buttonRow}>
                                 <button
                                     onClick={handleTaoDan}

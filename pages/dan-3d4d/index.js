@@ -104,6 +104,16 @@ const Dan3D4DPage = memo(function Dan3D4DPage() {
                 "name": "Công cụ tạo dàn số 3D/4D Wukong"
             }
         ],
+        "author": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        },
         "step": [
             {
                 "@type": "HowToStep",
@@ -168,11 +178,8 @@ const Dan3D4DPage = memo(function Dan3D4DPage() {
                     <header className={styles.pageHeader}>
                         <h1 className={styles.pageTitle}>
                             <BarChart3 size={20} style={{ display: 'inline', marginRight: '8px' }} />
-                            Tạo Dàn Đề 3D/4D Chuyên Nghiệp - Công Cụ Cao Thủ 2025
+                            Công Cụ Tạo Dàn Đề 3D/4D
                         </h1>
-                        <p className={styles.pageDescription}>
-                            Tạo dàn số 3D (000-999) và 4D (0000-9999) chuyên nghiệp cho cao thủ • Thuật toán Fisher-Yates chuẩn quốc tế • Phù hợp cho lô số 3 số, 4 số • Miễn phí 100%
-                        </p>
                     </header>
 
                     <main className={styles.mainContent}>
@@ -213,48 +220,6 @@ const Dan3D4DPage = memo(function Dan3D4DPage() {
                             </div>
                         </div>
 
-                        <div className={styles.relatedTools}>
-                            <h3>Công cụ liên quan:</h3>
-                            <p>
-                                Kết hợp với <Link href="/dan-2d">dàn số 2D</Link>,
-                                <Link href="/dan-dac-biet">dàn số đặc biệt</Link>, và
-                                <Link href="/thong-ke">thống kê xổ số 3 miền</Link> để có chiến lược chơi toàn diện.
-                            </p>
-                        </div>
-
-                        <div className={styles.detailedGuide}>
-                            <h3>Hướng dẫn chi tiết tạo dàn số 3D/4D cho cao thủ</h3>
-                            <div className={styles.guideContent}>
-                                <h4>1. Dàn đề 3D vs 4D - Sự khác biệt</h4>
-                                <p>
-                                    Dàn đề 3D bao gồm các số từ 000 đến 999 (1000 số), phù hợp cho lô số 3 số và
-                                    xổ số miền Bắc. Dàn đề 4D từ 0000 đến 9999 (10000 số), dành cho lô số 4 số và
-                                    các hình thức chơi có thưởng cao. Tỷ lệ trúng dàn 3D là 1/1000, dàn 4D là 1/10000,
-                                    nhưng thưởng tương ứng rất lớn.
-                                </p>
-
-                                <h4>2. Chiến lược cho cao thủ</h4>
-                                <p>
-                                    Dàn đề 3D/4D đòi hỏi kinh nghiệm và vốn lớn. Cao thủ thường kết hợp nhiều
-                                    phương pháp: phân tích thống kê, theo dõi xu hướng, sử dụng bảng chốt dàn 3 miền.
-                                    Quan trọng là có kế hoạch quản lý vốn chặt chẽ và không chơi theo cảm tính.
-                                </p>
-
-                                <h4>3. Thuật toán Fisher-Yates</h4>
-                                <p>
-                                    Công cụ sử dụng thuật toán Fisher-Yates chuẩn quốc tế, đảm bảo mỗi số có cơ hội
-                                    xuất hiện ngang nhau. Thuật toán này được sử dụng trong các hệ thống xổ số chính
-                                    thức trên thế giới, đảm bảo tính công bằng và ngẫu nhiên tuyệt đối.
-                                </p>
-
-                                <h4>4. Lưu ý quan trọng</h4>
-                                <p>
-                                    Dàn đề 3D/4D chỉ phù hợp với người chơi có kinh nghiệm và vốn dự phòng.
-                                    Luôn bắt đầu với số tiền nhỏ để làm quen, không bao giờ chơi bằng tiền vay mượn.
-                                    Sử dụng kết hợp với thống kê xổ số để có cái nhìn toàn diện về xu hướng.
-                                </p>
-                            </div>
-                        </div>
                     </section>
 
                     {/* Featured Snippet - Definition */}

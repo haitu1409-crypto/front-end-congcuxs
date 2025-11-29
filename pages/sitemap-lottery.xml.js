@@ -67,14 +67,6 @@ export const getServerSideProps = async ({ res }) => {
     </url>`;
     }).join('')}
     
-    <!-- Soi cầu pages -->
-    <url>
-        <loc>${baseUrl}/soi-cau</loc>
-        <lastmod>${currentDate.toISOString()}</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.8</priority>
-    </url>
-    
     <url>
         <loc>${baseUrl}/soi-cau-vi-tri</loc>
         <lastmod>${currentDate.toISOString()}</lastmod>

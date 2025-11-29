@@ -33,12 +33,18 @@
     color: white;
     width: 100%;
     justify-content: center;
-    margin: 8px 12px;
-    padding: 12px;
+    padding: 6px 12px;
+    font-size: 12px;
+    gap: 6px;
 }
 
 .authButton.mobile:hover {
     background: #357abd;
+}
+
+.authButton.mobile svg {
+    width: 14px;
+    height: 14px;
 }
 
 /* Login button */
@@ -150,6 +156,11 @@
 
 .menuItem span {
     flex: 1;
+}
+
+.menuItemLink {
+    text-decoration: none;
+    color: inherit;
 }
 
 /* Mobile responsive */

@@ -11,7 +11,6 @@
     max-width: 100%;
     margin: 0 auto;
     padding: 0;
-    background: #ffffff;
     font-family: Arial, sans-serif;
     font-size: 12px;
 }
@@ -75,7 +74,7 @@
     border: 1px solid blue;
     text-align: center;
     vertical-align: middle;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 600;
 }
 
@@ -94,7 +93,7 @@
     color: #333333 !important;
     font-weight: bold;
     text-align: center;
-    padding: 12px 8px;
+    padding: 3px 8px;
     font-size: 20px;
 }
 
@@ -103,7 +102,7 @@
     background: #ffffff;
     color: #333333;
     font-weight: bold;
-    padding: 12px 8px;
+    padding: 5px 7px;
     font-size: 22px;
 }
 
@@ -192,7 +191,7 @@
     background: #ffffff;
     table-layout: fixed;
     width: auto;
-    max-width: 220px;
+    max-width: 170px;
     min-width: 160px;
     align-self: flex-start;
 }
@@ -306,7 +305,7 @@
     background: #ffffff;
     table-layout: fixed;
     width: auto;
-    max-width: 220px;
+    max-width: 170px;
     min-width: 160px;
     align-self: flex-start;
 }
@@ -538,7 +537,7 @@
 
 @media (max-width: 1024px) {
     .horizontalLayout {
-        flex-direction: column;
+        /* flex-direction: column; */
         gap: 15px;
     }
 
@@ -614,9 +613,9 @@
     }
 
     .leftcol {
-        width: 60px !important;
-        min-width: 60px !important;
-        max-width: 60px !important;
+        width: 30px !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
         padding: 6px 3px;
         font-size: 16px;
     }
@@ -667,7 +666,7 @@
     .dau td,
     .dit th,
     .dit td {
-        font-size: 14px;
+        /* font-size: 14px; */
         padding: 4px 2px;
     }
 
@@ -676,9 +675,9 @@
     }
 
     .leftcol {
-        width: 50px !important;
-        min-width: 50px !important;
-        max-width: 50px !important;
+        width: 30px !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
         padding: 4px 2px;
         font-size: 14px;
     }

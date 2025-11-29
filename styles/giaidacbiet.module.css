@@ -1,7 +1,7 @@
 /* Tổng thể container */
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     font-family: "Inter", sans-serif;
     padding: 16px;
@@ -88,14 +88,15 @@
     font-size: 1.5rem;
     font-weight: 700;
     color: #c80505;
-    margin-bottom: 8px;
+    margin-top: 4px;
+    margin-bottom: 4px;
     line-height: 1.4;
     text-align: center;
 }
 
 /* Nội dung chính */
 .content {
-    margin-top: 24px;
+    margin-top: 10px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background-color: #ffffff;
@@ -109,7 +110,7 @@
 
 /* Nhóm chọn tỉnh và thời gian */
 .group_Select {
-    margin-top: 24px;
+    margin-top: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -121,6 +122,49 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.timeButton {
+    padding: 8px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #1f2937;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.timeButton:hover {
+    border-color: #c80505;
+    background-color: #fff5f5;
+    color: #c80505;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(200, 5, 5, 0.1);
+}
+
+.timeButton.active {
+    background-color: #c80505;
+    color: #ffffff;
+    border-color: #c80505;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(200, 5, 5, 0.3);
+}
+
+.timeButton.active:hover {
+    background-color: #991b1b;
+    border-color: #991b1b;
+    transform: translateY(-1px);
 }
 
 .dateTime {
@@ -175,6 +219,7 @@
 /* Toggle Buttons */
 .toggleButtons {
     display: flex;
+    margin-top: 10px;
     gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
@@ -282,13 +327,15 @@
 
 /* Month Mode - Căn trên cho dữ liệu theo tháng với lưới grid */
 .table.monthMode {
-    border-collapse: collapse !important; /* Quan trọng để border liền mạch */
+    border-collapse: collapse !important;
+    /* Quan trọng để border liền mạch */
 }
 
 .monthMode td,
 .table.monthMode td {
     vertical-align: top !important;
-    border: 1px solid #d1d5db !important; /* Border rõ ràng cho lưới */
+    border: 1px solid #d1d5db !important;
+    /* Border rõ ràng cho lưới */
     padding: 6px 4px !important;
     min-height: 50px !important;
     height: auto !important;
@@ -320,8 +367,10 @@
 .monthMode .statItem {
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important; /* Căn giữa số và các thông tin theo chiều ngang */
-    justify-content: center !important; /* Căn giữa theo chiều dọc khi chỉ có số */
+    align-items: center !important;
+    /* Căn giữa số và các thông tin theo chiều ngang */
+    justify-content: center !important;
+    /* Căn giữa theo chiều dọc khi chỉ có số */
     width: 100% !important;
     min-height: 100% !important;
 }
@@ -335,11 +384,13 @@
 .monthMode .statItem .number {
     text-align: center !important;
     width: 100% !important;
-    display: block !important; /* Đảm bảo số được hiển thị block để căn giữa */
-    margin: 0 auto !important; /* Căn giữa số */
+    display: block !important;
+    /* Đảm bảo số được hiển thị block để căn giữa */
+    margin: 0 auto !important;
+    /* Căn giữa số */
 }
 
-.monthMode .statItem > div:not(.number):not(.date) {
+.monthMode .statItem>div:not(.number):not(.date) {
     text-align: center !important;
     width: 100% !important;
 }
@@ -397,8 +448,8 @@
     color: #cccccc !important;
 }
 
-.table.oledMode .statItem > div:not(.number):not(.date),
-.oledMode .statItem > div:not(.number):not(.date) {
+.table.oledMode .statItem>div:not(.number):not(.date),
+.oledMode .statItem>div:not(.number):not(.date) {
     color: #ff6b6b !important;
 }
 
@@ -408,7 +459,8 @@
     border: 1px solid #e5e7eb;
     text-align: center;
     transition: background-color 0.3s ease;
-    vertical-align: middle; /* Mặc định căn giữa cho week mode */
+    vertical-align: middle;
+    /* Mặc định căn giữa cho week mode */
 }
 
 .table th {
@@ -548,8 +600,8 @@
 
 /* Phần nội dung mô tả */
 .Group_Content {
-    margin-top: 32px;
-    padding: 24px;
+    margin-top: 10px;
+    padding: 10px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background-color: #ffffff;
@@ -557,9 +609,8 @@
 }
 
 .heading {
-
     font-weight: 700;
-    font-size: 1.3rem;
+    font-size: 0.9rem;
     line-height: 1.4;
     color: #c80505;
     border-bottom: 1px solid #e5e7eb;
@@ -568,7 +619,7 @@
 .h3 {
     padding: 8px 0;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     line-height: 1.3;
     color: #1f2937;
 }
@@ -673,10 +724,19 @@
     }
 
     .actionBtn {
-        display: grid;
-        grid-template-columns: minmax(100px, 1fr);
+        display: flex;
+        flex-direction: row;
+        gap: 6px;
         background-color: #ffffff;
         align-items: center;
+        justify-content: center;
+    }
+
+    .actionTK {
+        padding: 8px 6px;
+        font-size: 0.85rem;
+        flex: 1;
+        min-width: 0;
     }
 
     .titleGroup {
@@ -695,10 +755,19 @@
 
     .selectGroup {
         display: flex;
-        width: 300px;
-        justify-content: space-between;
+        width: 100%;
+        justify-content: flex-start;
         align-items: center;
         gap: 8px;
+    }
+
+    .buttonGroup {
+        gap: 6px;
+    }
+
+    .timeButton {
+        padding: 6px 12px;
+        font-size: 0.9rem;
     }
 
     .select {
@@ -744,8 +813,33 @@
         padding: 8px;
     }
 
+    .titleGroup {
+        padding: 12px 8px;
+        margin-bottom: 16px;
+    }
+
     .title {
-        font-size: 1.2rem;
+        font-size: 1rem;
+        margin-top: 3px;
+        margin-bottom: 3px;
+        line-height: 1.5;
+    }
+
+    .actionBtn {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        background-color: #ffffff;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .actionTK {
+        padding: 6px 4px;
+        font-size: 0.75rem;
+        line-height: 1.2;
+        flex: 1;
+        min-width: 0;
     }
 
     .group_Select {
@@ -758,7 +852,21 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        width: auto;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .buttonGroup {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .timeButton {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        flex: 1;
+        min-width: calc(25% - 6px);
     }
 
     .select {
@@ -786,7 +894,7 @@
 
     .table th,
     .table td {
-        padding: 4px 2px;
+        padding: 2px 1px;
         width: calc(100% / 7);
         min-width: 0;
         word-wrap: break-word;
@@ -799,12 +907,15 @@
     }
 
     .number {
-        font-size: 1rem;
-        padding: 2px 4px;
+        font-size: 0.85rem;
+        padding: 2px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .number .lastTwo {
-        font-size: 1rem;
+        font-size: 0.85rem;
     }
 
     .date {
@@ -817,9 +928,9 @@
     }
 
     .statItem {
-        padding: 2px;
-        gap: 2px;
-        margin-bottom: 4px;
+        padding: 0;
+        gap: 1px;
+        margin-bottom: 2px;
     }
 
     .statItem>div:not(.number):not(.date) {
@@ -828,17 +939,23 @@
     }
 
     .entry {
-        margin-bottom: 4px;
-        padding: 2px;
-        gap: 2px;
+        margin-bottom: 2px;
+        padding: 0;
+        gap: 1px;
     }
 
     .toggleButtons {
+        margin-top: 10px;
         gap: 6px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
     }
 
     .toggleItem {
         gap: 3px;
+        width: 100%;
+        justify-content: center;
     }
 
     .toggleItem label {
@@ -879,6 +996,13 @@
         bottom: 20px;
         right: 20px;
     }
+
+    .toggleBtn {
+        margin: 10px auto;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        border-radius: 4px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -886,8 +1010,33 @@
         padding: 6px;
     }
 
+    .titleGroup {
+        padding: 10px 6px;
+        margin-bottom: 12px;
+    }
+
     .title {
-        font-size: 1rem;
+        font-size: 0.9rem;
+        margin-top: 2px;
+        margin-bottom: 2px;
+        line-height: 1.5;
+    }
+
+    .actionBtn {
+        display: flex;
+        flex-direction: row;
+        gap: 3px;
+        background-color: #ffffff;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .actionTK {
+        padding: 5px 3px;
+        font-size: 0.7rem;
+        line-height: 1.1;
+        flex: 1;
+        min-width: 0;
     }
 
     .group_Select {
@@ -900,7 +1049,21 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        width: auto;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .buttonGroup {
+        width: 100%;
+        gap: 4px;
+    }
+
+    .timeButton {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+        flex: 1;
+        min-width: calc(25% - 4px);
     }
 
     .select {
@@ -923,7 +1086,7 @@
 
     .table th,
     .table td {
-        padding: 2px 1px;
+        padding: 1px 0;
         min-width: 0;
         width: calc(100% / 7);
     }
@@ -940,12 +1103,15 @@
     }
 
     .number {
-        font-size: 0.95rem;
-        padding: 2px;
+        font-size: 0.75rem;
+        padding: 1px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .number .lastTwo {
-        font-size: 0.95rem;
+        font-size: 0.75rem;
     }
 
     .date {
@@ -958,9 +1124,9 @@
     }
 
     .statItem {
-        padding: 2px;
-        gap: 1px;
-        margin-bottom: 3px;
+        padding: 0;
+        gap: 0;
+        margin-bottom: 1px;
     }
 
     .statItem>div:not(.number):not(.date) {
@@ -969,17 +1135,23 @@
     }
 
     .entry {
-        margin-bottom: 3px;
-        padding: 2px;
-        gap: 1px;
+        margin-bottom: 1px;
+        padding: 0;
+        gap: 0;
     }
 
     .toggleButtons {
+        margin-top: 10px;
         gap: 4px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
     }
 
     .toggleItem {
         gap: 2px;
+        width: 100%;
+        justify-content: center;
     }
 
     .toggleItem label {
@@ -1023,5 +1195,12 @@
         font-size: 1.1rem;
         bottom: 16px;
         right: 16px;
+    }
+
+    .toggleBtn {
+        margin: 8px auto;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        border-radius: 4px;
     }
 }

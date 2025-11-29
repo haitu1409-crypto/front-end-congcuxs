@@ -6,18 +6,34 @@
  */
 
 import { useState, useEffect, useCallback, useMemo, memo, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import Layout from '../components/Layout';
 import XSMBLatest10Table from '../components/XSMBLatest10Table';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from '../styles/KQXS.module.css';
 import { getPageSEO, generateFAQSchema } from '../config/seoConfig';
 import EnhancedSEOHead from '../components/EnhancedSEOHead';
+import { isWithinLiveWindow } from '../utils/lotteryUtils';
+
+const LiveResult = dynamic(() => import('../components/LiveResult'), {
+    loading: () => (
+        <div className={styles.liveFallback}>
+            <div className={styles.spinner}></div>
+            <p>Đang tải kết quả trực tiếp...</p>
+        </div>
+    ),
+    ssr: false
+});
 
 const KQXSPage = memo(function KQXSPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pagination, setPagination] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
+    const [isLiveWindow, setIsLiveWindow] = useState(false);
+
+    // ✅ Use ref to store interval ID and avoid re-creating interval
+    const intervalRef = useRef(null);
 
     // Handle page change - Memoized with useCallback
     const handlePageChange = useCallback((newPage) => {
@@ -35,55 +51,101 @@ const KQXSPage = memo(function KQXSPage() {
         setLastUpdated(new Date()); // Track last update
     }, []);
 
+    // ✅ Optimized: Check live window periodically with useRef to prevent re-creation
+    useEffect(() => {
+        const checkLiveWindow = () => {
+            setIsLiveWindow(isWithinLiveWindow());
+        };
+
+        // Check immediately
+        checkLiveWindow();
+
+        // Clear existing interval if any
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+        }
+
+        // Set interval based on current state
+        const interval = isLiveWindow ? 5000 : 30000;
+        intervalRef.current = setInterval(checkLiveWindow, interval);
+
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+        };
+    }, [isLiveWindow]);
+
     // Note: Auto-refresh is handled by useXSMBLatest10 hook
     // No need for manual refresh since the hook fetches latest data on mount
     // and can be configured with refreshInterval if needed
 
-    // SEO Configuration với keywords mở rộng
-    const seoConfig = getPageSEO('kqxs');
-    const today = new Date().toLocaleDateString('vi-VN');
-    const dayOfWeek = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'][new Date().getDay()];
-    
-    // Meta title (cho SEO)
-    const pageTitle = `XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay ${today} | SXMB - KQXSMB - XSTD Nhanh Nhất 2025`;
-    
-    // H1 title (ngắn gọn, user-friendly)
-    const h1Title = `XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay ${today}`;
-    
-    const pageDescription = `XSMB - Kết quả xổ số miền Bắc (xsmb, sxmb, kqxsmb, xstd) hôm nay ${today} nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay. Xem XSMB 30 ngày, XSMB hôm qua, XSMB ${dayOfWeek}. Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100%!`;
+    // ✅ Cache siteUrl to avoid recalculating
+    const siteUrl = useMemo(() => 
+        process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro',
+        []
+    );
 
-    // FIX: Structured data với useMemo để tránh hydration error
+    // ✅ Memoize SEO config to avoid recalculating on every render
+    const seoConfig = useMemo(() => getPageSEO('kqxs'), []);
+
+    // ✅ Memoize date calculations to avoid recalculating on every render
+    const { today, dayOfWeek } = useMemo(() => {
+        const now = new Date();
+        return {
+            today: now.toLocaleDateString('vi-VN'),
+            dayOfWeek: ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'][now.getDay()]
+        };
+    }, []);
+
+    // ✅ Memoize page titles and description
+    const pageTitle = useMemo(() => 
+        `XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay ${today} | SXMB - KQXSMB - XSTD Nhanh Nhất 2025`,
+        [today]
+    );
+
+    const h1Title = useMemo(() => 
+        `XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay ${today}`,
+        [today]
+    );
+
+    const pageDescription = useMemo(() => 
+        `XSMB - Kết quả xổ số miền Bắc (xsmb, sxmb, kqxsmb, xstd) hôm nay ${today} nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay. Xem XSMB 30 ngày, XSMB hôm qua, XSMB ${dayOfWeek}. Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100%!`,
+        [today, dayOfWeek]
+    );
+
+    // ✅ Memoize FAQ data to avoid recreating on every render
+    const faqData = useMemo(() => [
+        {
+            question: 'XSMB là gì?',
+            answer: 'XSMB là viết tắt của Xổ số Miền Bắc (hoặc Xổ số Miền Bắc). Đây là kết quả xổ số được quay thưởng hàng ngày lúc 18h15 tại trường quay số 53E Hàng Bài, Hoàn Kiếm, Hà Nội.'
+        },
+        {
+            question: 'XSMB hôm nay quay lúc mấy giờ?',
+            answer: 'XSMB quay thưởng hàng ngày lúc 18h15 (hoặc 18h10 theo một số nguồn). Kết quả được tường thuật trực tiếp từ trường quay và cập nhật ngay sau khi quay số.'
+        },
+        {
+            question: 'Có thể xem XSMB 30 ngày không?',
+            answer: `Có, bạn có thể xem XSMB 30 ngày gần nhất tại ${siteUrl}/kqxs. Trang này hiển thị kết quả xổ số miền Bắc với phân trang, mỗi trang 10 kết quả, sắp xếp từ mới nhất đến cũ nhất.`
+        },
+        {
+            question: 'XSMB khác với SXMB, KQXSMB, XSTD như thế nào?',
+            answer: 'XSMB, SXMB, KQXSMB, XSTD đều là các cách viết khác nhau của cùng một khái niệm: Kết quả Xổ số Miền Bắc. XSTD là Xổ số Thủ đô. Tất cả đều chỉ kết quả xổ số miền Bắc hàng ngày.'
+        },
+        {
+            question: 'Xem XSMB ở đâu tốt nhất?',
+            answer: 'Taodandewukong.pro cung cấp kết quả XSMB nhanh nhất, chính xác nhất, tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Hoàn toàn miễn phí, không cần đăng ký, cập nhật tự động sau khi quay số.'
+        }
+    ], [siteUrl]);
+
+    // ✅ FIX: Structured data với useMemo để tránh hydration error
+    // ✅ Optimized: Use cached siteUrl and memoized values
     const structuredData = useMemo(() => {
         const normalizedDate = new Date();
         normalizedDate.setHours(0, 0, 0, 0);
         const deterministicDate = normalizedDate.toISOString();
-        
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
-        
-        // FAQ Schema cho SEO
-        const faqData = [
-            {
-                question: 'XSMB là gì?',
-                answer: 'XSMB là viết tắt của Xổ số Miền Bắc (hoặc Xổ số Miền Bắc). Đây là kết quả xổ số được quay thưởng hàng ngày lúc 18h15 tại trường quay số 53E Hàng Bài, Hoàn Kiếm, Hà Nội.'
-            },
-            {
-                question: 'XSMB hôm nay quay lúc mấy giờ?',
-                answer: 'XSMB quay thưởng hàng ngày lúc 18h15 (hoặc 18h10 theo một số nguồn). Kết quả được tường thuật trực tiếp từ trường quay và cập nhật ngay sau khi quay số.'
-            },
-            {
-                question: 'Có thể xem XSMB 30 ngày không?',
-                answer: `Có, bạn có thể xem XSMB 30 ngày gần nhất tại taodandewukong.pro/kqxs. Trang này hiển thị kết quả xổ số miền Bắc với phân trang, mỗi trang 10 kết quả, sắp xếp từ mới nhất đến cũ nhất.`
-            },
-            {
-                question: 'XSMB khác với SXMB, KQXSMB, XSTD như thế nào?',
-                answer: 'XSMB, SXMB, KQXSMB, XSTD đều là các cách viết khác nhau của cùng một khái niệm: Kết quả Xổ số Miền Bắc. XSTD là Xổ số Thủ đô. Tất cả đều chỉ kết quả xổ số miền Bắc hàng ngày.'
-            },
-            {
-                question: 'Xem XSMB ở đâu tốt nhất?',
-                answer: 'Taodandewukong.pro cung cấp kết quả XSMB nhanh nhất, chính xác nhất, tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Hoàn toàn miễn phí, không cần đăng ký, cập nhật tự động sau khi quay số.'
-            }
-        ];
-        
+
         return [
             {
                 '@context': 'https://schema.org',
@@ -128,7 +190,7 @@ const KQXSPage = memo(function KQXSPage() {
                 }
             }
         ];
-    }, [pageTitle, pageDescription, seoConfig.keywords]);
+    }, [pageTitle, pageDescription, seoConfig.keywords, siteUrl, faqData]);
 
     return (
         <>
@@ -143,8 +205,14 @@ const KQXSPage = memo(function KQXSPage() {
 
             <Layout>
                 <div className={styles.container}>
+                    {isLiveWindow && (
+                        <div className={styles.liveSection}>
+                            <LiveResult />
+                        </div>
+                    )}
+
                     {/* Header Section */}
-                    <h1 style={{ marginBottom: '20px', textAlign: 'center', color: 'rgb(51, 51, 51)' }}>
+                    <h1 className={styles.pageTitle}>
                         {h1Title}
                     </h1>
 
@@ -158,56 +226,27 @@ const KQXSPage = memo(function KQXSPage() {
                         />
                     </div>
 
-                    {/* Pagination */}
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '10px',
-                        marginTop: '30px',
-                        padding: '20px',
-                        background: '#f8f9fa',
-                        borderRadius: '8px'
-                    }}>
+                    {/* Pagination - Optimized with CSS module */}
+                    <div className={styles.pagination}>
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            style={{
-                                padding: '10px 15px',
-                                border: '1px solid #ddd',
-                                borderRadius: '5px',
-                                background: currentPage === 1 ? '#f0f0f0' : '#fff',
-                                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '5px'
-                            }}
+                            className={styles.paginationButton}
+                            aria-label="Trang trước"
                         >
                             <ChevronLeft size={20} />
                             Trước
                         </button>
 
-                        <span style={{
-                            padding: '10px 20px',
-                            fontSize: '16px',
-                            fontWeight: '500'
-                        }}>
+                        <span className={styles.paginationInfo}>
                             Trang {currentPage} / {totalPages}
                         </span>
 
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            style={{
-                                padding: '10px 15px',
-                                border: '1px solid #ddd',
-                                borderRadius: '5px',
-                                background: currentPage === totalPages ? '#f0f0f0' : '#fff',
-                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '5px'
-                            }}
+                            className={styles.paginationButton}
+                            aria-label="Trang sau"
                         >
                             Sau
                             <ChevronRight size={20} />
@@ -237,7 +276,7 @@ const KQXSPage = memo(function KQXSPage() {
                                 <li><strong>Thời gian cập nhật:</strong> Tự động ngay sau khi có kết quả quay số</li>
                             </ul>
                         </div>
-                        
+
                         <div className={styles.infoCard}>
                             <h3>Ưu Điểm XSMB Tại Taodandewukong.pro</h3>
                             <ul>

@@ -58,12 +58,6 @@ const SEOPositionSoiCauPage = ({ initialData, initialDate, initialDays, seoData 
                 {
                     "@type": "ListItem",
                     "position": 2,
-                    "name": "Soi Cầu",
-                    "item": "https://yourdomain.com/soi-cau"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 3,
                     "name": "Soi Cầu Vị Trí XSMB",
                     "item": "https://yourdomain.com/seo-soi-cau-vi-tri"
                 }
@@ -169,8 +163,6 @@ const SEOPositionSoiCauPage = ({ initialData, initialDate, initialDays, seoData 
                         color: '#666'
                     }}>
                         <li><a href="/" style={{ color: '#667eea', textDecoration: 'none' }}>Trang chủ</a></li>
-                        <li style={{ margin: '0 8px' }}>›</li>
-                        <li><a href="/soi-cau" style={{ color: '#667eea', textDecoration: 'none' }}>Soi Cầu</a></li>
                         <li style={{ margin: '0 8px' }}>›</li>
                         <li style={{ color: '#333' }}>Soi Cầu Vị Trí XSMB</li>
                     </ol>

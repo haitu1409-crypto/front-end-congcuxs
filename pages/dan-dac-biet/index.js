@@ -170,6 +170,16 @@ export default function DanDacBietPage() {
                 "name": "Công cụ tạo dàn số đặc biệt Wukong"
             }
         ],
+        "author": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        },
         "step": [
             {
                 "@type": "HowToStep",
@@ -236,8 +246,9 @@ export default function DanDacBietPage() {
                         <div className={styles.heroSection}>
                             <div className={styles.heroContent}>
                                 <h1 className={styles.heroTitle}>
-                                    <span className={styles.heroTitleMain}>Tạo Dàn Đặc Biệt</span>
-
+                                    <span className={styles.heroTitleMain}>
+                                        Lọc, Ghép Dàn | Lấy Nhanh Dàn | Tạo Dàn Đầu, Đuôi, Chạm, Bộ
+                                    </span>
                                 </h1>
 
                             </div>
@@ -286,66 +297,7 @@ export default function DanDacBietPage() {
                             </div>
                         </div>
 
-                        {/* Quick Links */}
-                        <div className={styles.quickLinks} data-aos="fade-up" data-aos-delay="500">
-                            <div className={styles.quickLinksHeader}>
-                                <h3 className={styles.quickLinksTitle}>Công cụ khác</h3>
-                                <p className={styles.quickLinksSubtitle}>Khám phá thêm các tính năng hữu ích</p>
-                            </div>
-                            <div className={styles.quickLinksGrid}>
-                                <Link href="/dan-2d" className={styles.quickLink} data-aos="zoom-in" data-aos-delay="100" prefetch={false}>
-                                    <div className={styles.quickLinkIcon}><Target size={20} /></div>
-                                    <div className={styles.quickLinkContent}>
-                                        <span className={styles.quickLinkText}>Tạo Dàn 2D</span>
-                                        <span className={styles.quickLinkDesc}>Dàn đề 2 chữ số</span>
-                                    </div>
-                                    <div className={styles.quickLinkArrow}>→</div>
-                                </Link>
-                                <Link href="/dan-3d4d" className={styles.quickLink} data-aos="zoom-in" data-aos-delay="200" prefetch={false}>
-                                    <div className={styles.quickLinkIcon}><BarChart3 size={20} /></div>
-                                    <div className={styles.quickLinkContent}>
-                                        <span className={styles.quickLinkText}>Tạo Dàn 3D-4D</span>
-                                        <span className={styles.quickLinkDesc}>Dàn đề 3-4 chữ số</span>
-                                    </div>
-                                    <div className={styles.quickLinkArrow}>→</div>
-                                </Link>
-                                <Link href="/" className={styles.quickLink} data-aos="zoom-in" data-aos-delay="300" prefetch={false}>
-                                    <div className={styles.quickLinkIcon}><Home size={20} /></div>
-                                    <div className={styles.quickLinkContent}>
-                                        <span className={styles.quickLinkText}>Trang chủ</span>
-                                        <span className={styles.quickLinkDesc}>Tổng quan công cụ</span>
-                                    </div>
-                                    <div className={styles.quickLinkArrow}>→</div>
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Features Section */}
-                        <div className={styles.featuresSection} data-aos="fade-up" data-aos-delay="600">
-                            <h3 className={styles.featuresTitle}>Tại sao chọn chúng tôi?</h3>
-                            <div className={styles.featuresGrid}>
-                                <div className={styles.featureItem} data-aos="fade-up" data-aos-delay="100">
-                                    <div className={styles.featureIcon}><Zap size={20} /></div>
-                                    <h4 className={styles.featureTitle}>Tốc độ siêu nhanh</h4>
-                                    <p className={styles.featureDesc}>Xử lý hàng nghìn số trong vài giây</p>
-                                </div>
-                                <div className={styles.featureItem} data-aos="fade-up" data-aos-delay="200">
-                                    <div className={styles.featureIcon}><Target size={20} /></div>
-                                    <h4 className={styles.featureTitle}>Độ chính xác cao</h4>
-                                    <p className={styles.featureDesc}>Thuật toán thông minh, kết quả chính xác</p>
-                                </div>
-                                <div className={styles.featureItem} data-aos="fade-up" data-aos-delay="300">
-                                    <div className={styles.featureIcon}><Shield size={20} /></div>
-                                    <h4 className={styles.featureTitle}>Bảo mật tuyệt đối</h4>
-                                    <p className={styles.featureDesc}>Dữ liệu được mã hóa và bảo vệ an toàn</p>
-                                </div>
-                                <div className={styles.featureItem} data-aos="fade-up" data-aos-delay="400">
-                                    <div className={styles.featureIcon}><Smartphone size={20} /></div>
-                                    <h4 className={styles.featureTitle}>Đa nền tảng</h4>
-                                    <p className={styles.featureDesc}>Hoạt động mượt mà trên mọi thiết bị</p>
-                                </div>
-                            </div>
-                        </div>
+                        {/* Quick Links removed */}
 
                         {/* Featured Snippet - Definition */}
                         <DefinitionSnippet

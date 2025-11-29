@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
-import Head from 'next/head';
 // Optimized date handling - using native Date for better performance
 const formatDate = (date) => {
     return new Date(date).toISOString().split('T')[0];
@@ -14,6 +13,8 @@ import styles from '../styles/soicauBayesian.module.css';
 
 // Components
 import Layout from '../components/Layout';
+import EnhancedSEOHead from '../components/EnhancedSEOHead';
+import { getPageSEO, generateFAQSchema } from '../config/seoConfig';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import PerformanceMonitor from '../components/PerformanceMonitor';
@@ -45,6 +46,7 @@ const SoiCauBayesian = () => {
     // Thêm states mới
     const [extendedFeatures, setExtendedFeatures] = useState(null);
     const [lstmStats, setLstmStats] = useState({});
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
 
     // Fetch soi cầu by date
@@ -511,6 +513,93 @@ const SoiCauBayesian = () => {
         return type === 'de' ? 'Đề (2 số cuối giải đặc biệt)' : 'Lô (2 số cuối tất cả giải)';
     };
 
+    // ✅ SEO Configuration
+    const siteUrl = useMemo(() => 
+        process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro',
+        []
+    );
+
+    const seoConfig = useMemo(() => getPageSEO('soiCauBayesian'), []);
+
+    // ✅ Breadcrumbs
+    const breadcrumbs = useMemo(() => [
+        { name: 'Trang chủ', url: siteUrl },
+        { name: 'Soi Cầu Miền Bắc', url: `${siteUrl}/soicau-bayesian` }
+    ], [siteUrl]);
+
+    // ✅ FAQ Data
+    const faqData = useMemo(() => [
+        {
+            question: 'Soi cầu miền bắc hôm nay là gì?',
+            answer: 'Soi cầu miền bắc hôm nay là công cụ dự đoán xổ số miền Bắc (XSMB) sử dụng trí tuệ nhân tạo (AI) với nhiều phương pháp tiên tiến như CDM, EFDM, Collaborative Filtering, Advanced, và Ensemble để đưa ra dự đoán chính xác nhất.'
+        },
+        {
+            question: 'Có những phương pháp soi cầu nào?',
+            answer: 'Hệ thống tích hợp 5 phương pháp: CDM (AI cơ bản), EFDM (Extended Flexible), Collaborative Filtering (tìm ngày tương tự), Advanced (7 phương pháp AI), và Ensemble (kết hợp tất cả để cho kết quả chính xác nhất).'
+        },
+        {
+            question: 'Soi cầu miền bắc có chính xác không?',
+            answer: 'Công cụ sử dụng AI tiên tiến với phương pháp Ensemble kết hợp tất cả các phương pháp để đảm bảo độ chính xác cao nhất. Độ chính xác phụ thuộc vào pattern tìm được và dữ liệu lịch sử.'
+        },
+        {
+            question: 'Soi cầu miền bắc có miễn phí không?',
+            answer: 'Có, công cụ soi cầu miền bắc hoàn toàn miễn phí 100%, không cần đăng ký tài khoản, không giới hạn số lần sử dụng. Bạn có thể sử dụng ngay lập tức.'
+        }
+    ], []);
+
+    // ✅ Structured Data
+    const structuredData = useMemo(() => {
+        const normalizedDate = new Date();
+        normalizedDate.setHours(0, 0, 0, 0);
+        const deterministicDate = normalizedDate.toISOString();
+
+        return [
+            {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": "Soi Cầu Miền Bắc - Dàn Đề Wukong",
+                "description": "Công cụ soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay với AI. Soi cầu bạch thủ, lô gan, thống kê vị trí XSMB.",
+                "url": `${siteUrl}/soicau-bayesian`,
+                "applicationCategory": "UtilitiesApplication",
+                "operatingSystem": "Web Browser",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "VND"
+                },
+                "author": {
+                    "@type": "Organization",
+                    "name": "Dàn Đề Wukong",
+                    "url": siteUrl
+                },
+                "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": "4.8",
+                    "ratingCount": "1250"
+                }
+            },
+            {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Trang chủ",
+                        "item": siteUrl
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "Soi Cầu Miền Bắc",
+                        "item": `${siteUrl}/soicau-bayesian`
+                    }
+                ]
+            },
+            generateFAQSchema(faqData)
+        ];
+    }, [siteUrl, faqData]);
+
     // Render prediction card with statistical confidence - Memoized for performance
     const renderPredictionCard = useCallback((prediction, index, key, isHit = false) => {
         const isTop3 = index < 3;
@@ -572,9 +661,6 @@ const SoiCauBayesian = () => {
                 <div className={styles.predictionNumber}>
                     {prediction.number}
                 </div>
-                <div className={styles.predictionPercentage}>
-                    {formatPercentage(prediction.percentage)}
-                </div>
                 {isTop3 && (
                     <div className={styles.topBadge}>
                         Top {index + 1}
@@ -585,15 +671,7 @@ const SoiCauBayesian = () => {
                         Trúng
                     </div>
                 )}
-                <div className={badgeClass}>{hotCold}</div>
-                <div style={{
-                    fontSize: '11px',
-                    color: confidenceColor,
-                    marginTop: '4px',
-                    fontWeight: 'bold'
-                }}>
-                    ⭐ {confidenceLevel}
-                </div>
+                
                 {uniquenessInfo}
                 {specialNote}
             </div>
@@ -632,55 +710,29 @@ const SoiCauBayesian = () => {
     }
 
     return (
-        <Layout>
-            <PerformanceMonitor />
-            <Head>
-                <title>Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay Miễn Phí | Soi Cầu AI</title>
-                <meta name="description" content="Soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay, soi cầu MB, soi cầu miền bắc với AI. Soi cầu bạch thủ, lô gan, thống kê vị trí XSMB. Soi cầu chính xác 100%." />
-                <meta name="keywords" content="soi cầu miền bắc, soi cau mien bac, soi cầu MB, soi cau MB, dự đoán XSMB, du doan XSMB, soi cầu XSMB, soi cầu miễn phí, soi cầu chính xác, soi cầu bạch thủ, lô gan XSMB, thống kê vị trí MB, cầu MB, dự đoán kết quả xổ số, soi cầu AI, soi cau AI" />
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Soi Cầu AI" />
-                <meta property="og:title" content="Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay Miễn Phí" />
-                <meta property="og:description" content="Soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay với AI. Soi cầu bạch thủ, lô gan, thống kê vị trí XSMB." />
-                <meta property="og:type" content="website" />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content="Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay" />
-                <meta name="twitter:description" content="Soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay với AI." />
-                <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro'}/soicau-bayesian`} />
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "WebPage",
-                            "name": "Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay",
-                            "description": "Soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay với AI. Soi cầu bạch thủ, lô gan, thống kê vị trí XSMB.",
-                            "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro'}/soicau-bayesian`,
-                            "mainEntity": {
-                                "@type": "Service",
-                                "name": "Soi Cầu AI",
-                                "description": "Dịch vụ soi cầu miền bắc miễn phí sử dụng AI",
-                                "provider": {
-                                    "@type": "Organization",
-                                    "name": "Soi Cầu AI"
-                                },
-                                "areaServed": {
-                                    "@type": "Country",
-                                    "name": "Vietnam"
-                                }
-                            },
-                            "keywords": "soi cầu miền bắc, soi cau mien bac, soi cầu MB, dự đoán XSMB, soi cầu XSMB, soi cầu miễn phí, soi cầu AI"
-                        })
-                    }}
-                />
-            </Head>
+        <>
+            {/* ✅ Enhanced SEO Head */}
+            <EnhancedSEOHead
+                pageType="tool"
+                customTitle={seoConfig.title}
+                customDescription={seoConfig.description}
+                customKeywords={seoConfig.keywords.join(', ')}
+                canonicalUrl={seoConfig.canonical}
+                ogImage={seoConfig.image}
+                breadcrumbs={breadcrumbs}
+                faq={faqData}
+                structuredData={structuredData}
+            />
+
+            <Layout>
+                <PerformanceMonitor />
 
             <div className={styles.container}>
 
                 <div className={styles.header}>
-                    <h1 className={styles.title}>Soi Cầu Miền Bắc - Soi Cầu MB - Dự Đoán XSMB Hôm Nay</h1>
+                    <h1 className={styles.title}>Soi Cầu AI Dàn 2X Miền Bắc - Dự Đoán XSMB Hôm Nay</h1>
                     <p className={styles.subtitle}>
-                        Soi cầu miền bắc miễn phí chính xác nhất với AI. Dự đoán XSMB hôm nay, soi cầu MB, soi cầu bạch thủ, lô gan. Soi cầu chính xác 100%.
+                        Soi cầu bạch thủ đề miền bắc theo phương pháp AI tiên tiến. Dự đoán XSMB hôm nay, soi cầu MB công nghệ trí tệ nhân tạo
                     </p>
                 </div>
 
@@ -756,15 +808,6 @@ const SoiCauBayesian = () => {
                     </div>
 
                     <div className={styles.predictionsContent}>
-                        <div className={styles.predictionsHeader}>
-                            <div>
-                                <h3>🎯 Dự Đoán XSMB Hôm Nay - Soi Cầu Miền Bắc - {getTypeDisplayName(selectedType)}</h3>
-                                <p>📅 Ngày: {formatDisplayDate(selectedDate)}</p>
-                                <p style={{ color: '#28a745', fontSize: '14px', marginTop: '8px' }}>
-                                    ✨ Soi cầu miễn phí với AI: Tích hợp CDM, EFDM, CF, Advanced (7 methods), LSTM
-                                </p>
-                            </div>
-                        </div>
 
 
                         {/* Predictions will be loaded here */}
@@ -795,10 +838,28 @@ const SoiCauBayesian = () => {
                     </div>
                 </div>
 
+                <div className={styles.mobileHistoryTriggerWrapper}>
+                    <button
+                        type="button"
+                        className={styles.mobileHistoryTrigger}
+                        onClick={() => setIsHistoryModalOpen(true)}
+                    >
+                        <span className={styles.mobileHistoryTriggerText}>
+                            Xem lịch sử soi cầu lô tô
+                        </span>
+                        <span className={styles.mobileHistoryTriggerIcon} aria-hidden="true">
+                            ➜
+                        </span>
+                    </button>
+                </div>
+
                 {/* Soi Cau History Components - Always visible */}
                 <SoiCauHistoryDe
                     limit={14}
                     days={14}
+                    mobileModalControlled
+                    mobileModalOpen={isHistoryModalOpen}
+                    onMobileModalClose={() => setIsHistoryModalOpen(false)}
                 />
 
                 {/* SEO Content - Giải thích về soi cầu miền bắc */}
@@ -827,6 +888,7 @@ const SoiCauBayesian = () => {
 
             </div>
         </Layout>
+        </>
     );
 };
 

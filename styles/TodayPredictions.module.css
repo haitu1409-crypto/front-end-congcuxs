@@ -23,9 +23,9 @@
     max-width: 100%;
     /* background: #2A7B9B; */
     /* background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%); */
-    padding: 15px 20px;
+
     /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
-    margin-bottom: 15px;
+   
     contain: layout style;
     will-change: auto;
     /* ✅ Fix CLS: Reserve minimum height to prevent layout shift */
@@ -134,7 +134,6 @@
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
     contain: layout;
     /* ✅ Fix CLS: Reserve minimum height for grid */
     min-height: 400px;
@@ -147,10 +146,9 @@
 
 /* Prediction Card - Hardware Accelerated */
 .predictionCard {
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    border: 1px solid #e5e7eb;
+
+    padding: 7px;
+    border: 2px solid #ccc;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     position: relative;
     transition: box-shadow 0.2s ease;
@@ -180,7 +178,6 @@
     right: 0;
     height: 3px;
     background: var(--card-gradient);
-    border-radius: 8px 8px 0 0;
 }
 
 .predictionCard:hover {
@@ -218,6 +215,13 @@
     /* margin-bottom: 10px;
     padding-bottom: 10px; */
     border-bottom: 2px solid #f7fafc;
+    background: #f6f7f9;
+}
+
+.cardHeader > div {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
 }
 
 .cardIcon {
@@ -235,18 +239,20 @@
 
 .cardTitle {
     font-size: 0.9rem;
-    font-weight: 700;
-    color: #2d3748;
-    margin: 0 0 3px 0;
-    text-transform: uppercase;
+    font-weight: 800;
+    color: color-mix(in srgb, var(--card-color, #2d3748) 80%, #000 20%);
+    margin: 0;
     line-height: 1.2;
 }
 
 .cardSubtitle {
-    font-size: 0.85rem;
-    color: red;
-    font-weight: 600;
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--card-color, #2d3748) 80%, #000 20%);
+    font-weight: 700;
     margin: 0;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: baseline;
 }
 
 /* Card Content */
@@ -407,12 +413,10 @@
     justify-content: center;
     min-width: 50px;
     width: 50px;
-    height: 40px;
     padding: 0;
     background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
-    border: 1.5px solid var(--card-color);
-    border-radius: 6px;
-    color: var(--card-color);
+    border: 1.5px solid #1d5aeb;
+    color: #1d5aeb;
     font-weight: 700;
     font-size: 0.9rem !important;
     font-family: Arial, sans-serif !important;
@@ -482,9 +486,9 @@
     height: 30px;
     padding: 0;
     background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
-    border: 1.5px solid var(--card-color);
+    border: 1.5px solid #1d5aeb;
     border-radius: 6px;
-    color: var(--card-color);
+    color: #1d5aeb;
     font-weight: 700;
     font-size: 0.9rem !important;
     font-family: Arial, sans-serif !important;
@@ -611,13 +615,13 @@
 /* Responsive */
 @media (max-width: 1400px) {
     .predictionsGrid {
-        gap: 10px;
+        /* gap removed */
     }
 }
 
 @media (max-width: 1024px) {
     .predictionsGrid {
-        gap: 8px;
+        /* gap removed */
     }
 }
 
@@ -641,7 +645,7 @@
     }
 
     .predictionsGrid {
-        gap: 8px;
+        /* gap removed */
         /* ✅ Fix: Allow cards to have natural height on mobile */
         width: 100%;
     }
@@ -666,8 +670,7 @@
     }
 
     .cardHeader {
-        margin-bottom: 8px;
-        padding-bottom: 8px;
+      
         border-bottom: 2px solid #f0f0f0;
     }
 
@@ -680,12 +683,13 @@
 
     .cardTitle {
         font-size: 0.95rem;
-        color: #333;
+        color: var(--card-color, #333);
     }
 
     .cardSubtitle {
-        font-size: 0.75rem;
-        color: #666;
+        font-size: 0.95rem;
+        color: var(--card-color, #333);
+        font-weight: 700;
     }
 
     .cardContent {
@@ -714,7 +718,7 @@
         all: unset;
         display: inline-block;
         background: #f0f0f0;
-        color: #333;
+        color: #1d5aeb;
         font-size: 1rem !important;
         font-weight: 600;
         font-family: Arial, sans-serif !important;
@@ -722,6 +726,7 @@
         padding: 4px 8px;
         margin: 2px;
         border-radius: 4px;
+        border: 1.5px solid #1d5aeb;
         cursor: text;
         pointer-events: none;
     }
@@ -803,7 +808,7 @@
 @media (max-width: 480px) {
     .container {
         padding: 8px 5px;
-        margin-bottom: 8px;
+    
         /* ✅ Fix: Ensure container doesn't overflow on very small screens */
         width: 100%;
         max-width: 100vw;
@@ -853,7 +858,7 @@
     }
 
     .predictionsGrid {
-        gap: 8px;
+        /* gap removed */
         /* ✅ Fix: Allow cards to have natural height on very small screens */
         grid-auto-rows: auto;
         width: 100%;
@@ -882,8 +887,7 @@
     }
 
     .cardHeader {
-        margin-bottom: 8px;
-        padding-bottom: 8px;
+        
         border-bottom: 2px solid #f0f0f0;
     }
 
@@ -896,12 +900,13 @@
 
     .cardTitle {
         font-size: 0.9rem;
-        color: #333;
+        color: var(--card-color, #333);
     }
 
     .cardSubtitle {
-        font-size: 0.7rem;
-        color: #666;
+        font-size: 0.9rem;
+        color: var(--card-color, #333);
+        font-weight: 700;
     }
 
     .cardContent {
@@ -929,8 +934,7 @@
     .cardContent :global(a.trend_number) {
         all: unset;
         display: inline-block;
-        background: #f0f0f0;
-        color: #333;
+        color: #1d5aeb;
         font-size: 0.95rem !important;
         font-weight: 600;
         font-family: Arial, sans-serif !important;
@@ -938,6 +942,7 @@
         padding: 3px 6px;
         margin: 2px 1px;
         border-radius: 4px;
+        border: 1.5px solid #1d5aeb;
         cursor: text;
         pointer-events: none;
     }
@@ -1046,6 +1051,66 @@
     }
 
     .predictionsGrid {
-        gap: 4px;
+        /* gap removed */
+    }
+}
+
+/* ============================================
+   SOCIAL LINKS SECTION (Desktop Only)
+   ============================================ */
+
+.socialLinksSection {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-gray-200, #e5e7eb);
+    display: none; /* Hidden by default on mobile */
+}
+
+.socialLinksTitle {
+    font-size: 12px;
+    color: var(--color-gray-500, #6b7280);
+    margin-bottom: 12px;
+    padding-left: 16px;
+    font-weight: 600;
+}
+
+.socialLinksContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 16px;
+}
+
+.socialLink {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    color: var(--color-gray-700, #374151);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.socialLink:hover {
+    background: var(--color-gray-100, #f3f4f6);
+    color: var(--color-gray-900, #111827);
+}
+
+.socialIcon {
+    flex-shrink: 0;
+    color: var(--color-gray-600, #4b5563);
+}
+
+.socialLink:hover .socialIcon {
+    color: var(--color-gray-900, #111827);
+}
+
+/* Show on desktop only */
+@media (min-width: 769px) {
+    .socialLinksSection {
+        display: block;
     }
 }

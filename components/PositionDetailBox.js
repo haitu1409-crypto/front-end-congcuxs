@@ -23,13 +23,27 @@ const PositionDetailBox = ({
     positionData,
     onClose,
     isVisible,
-    lotteryData
+    lotteryData,
+    variant = 'special',
+    additionalTables = null
 }) => {
     const [lotteryResults, setLotteryResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const tableContainerRef = useRef(null);
     // State để track các số đang được highlight với màu nào
     const [highlightedDigits, setHighlightedDigits] = useState(new Map());
+
+    const lifetime = selectedPrediction?.lifetime || selectedPrediction?.consecutiveDays || 1;
+    const requiredDays = Math.max(lifetime + 1, 2);
+    const computedAdditionalTables = variant === 'loto'
+        ? (additionalTables !== null ? additionalTables : (requiredDays > 2 ? 1 : 0))
+        : (additionalTables || 0);
+    const totalResultDays = Math.max(requiredDays + computedAdditionalTables, requiredDays);
+    const tablesToRender = useMemo(() => {
+        if (!lotteryResults || lotteryResults.length === 0) return [];
+        return lotteryResults.slice(0, requiredDays);
+    }, [lotteryResults, requiredDays]);
+    const displayedTables = useMemo(() => tablesToRender.slice().reverse(), [tablesToRender]);
 
     if (!isVisible || !selectedNumber || !positionData) {
         return null;
@@ -38,7 +52,7 @@ const PositionDetailBox = ({
     // Lấy dữ liệu kết quả xổ số dựa trên analysisDays
     useEffect(() => {
         const fetchLotteryResults = async () => {
-            if (!positionData?.analysisDays) return;
+            if (!requiredDays) return;
 
             setLoading(true);
             try {
@@ -48,7 +62,7 @@ const PositionDetailBox = ({
                 // Lấy dữ liệu từ ngày trước ngày được chọn
                 const analysisDate = new Date(positionData.analysisDate.split('/').reverse().join('-'));
 
-                for (let i = 1; i <= positionData.analysisDays; i++) {
+                for (let i = 1; i <= totalResultDays; i++) {
                     const date = new Date(analysisDate);
                     date.setDate(date.getDate() - i);
                     const dateStr = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
@@ -78,7 +92,7 @@ const PositionDetailBox = ({
                     }));
 
                 setLotteryResults(validResults);
-                console.log('📊 Loaded lottery results for', positionData.analysisDays, 'days:', validResults);
+                console.log('📊 Loaded lottery results for', totalResultDays, 'days:', validResults);
             } catch (error) {
                 console.error('❌ Error fetching lottery results:', error);
                 // Fallback to sample data if API fails
@@ -117,25 +131,25 @@ const PositionDetailBox = ({
                         sevenPrizes: ["22", "60", "48", "55"]
                     }
                 ];
-                setLotteryResults(fallbackData.slice(0, positionData.analysisDays + 1));
+                setLotteryResults(fallbackData.slice(0, totalResultDays + 1));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchLotteryResults();
-    }, [positionData?.analysisDays, positionData?.analysisDate]);
+    }, [requiredDays, positionData?.analysisDate, totalResultDays]);
 
     // Debug để hiểu cấu trúc prediction
     console.log('🔍 Selected Prediction:', selectedPrediction);
     console.log('🔍 isVisible:', isVisible, 'selectedNumber:', selectedNumber, 'positionData:', positionData);
-    
+
     // Kiểm tra selectedPrediction - chỉ return null nếu không có selectedPrediction
     if (!selectedPrediction) {
         console.log('⚠️ No selectedPrediction, returning null');
         return null;
     }
-    
+
     console.log('🔍 Prediction Structure:', {
         selectedPrediction,
         position1: selectedPrediction?.position1,
@@ -165,11 +179,11 @@ const PositionDetailBox = ({
     // Tạo element object cho CellConnectionArrow từ position - Memoized
     const createElementFromPosition = useCallback((position, tableIndex) => {
         if (!position) return null;
-        
+
         // Tạo unique ID cho element này để CellConnectionArrow có thể tìm được
         // Format: table-{tableIndex}-prize-{prize}-element-{elementIndex}-digit-{digitIndex}
         const elementId = `table-${tableIndex}-prize-${position.prize}-element-${position.elementIndex}-digit-${position.digitIndex}`;
-        
+
         return {
             elementId,
             prize: position.prize,
@@ -214,54 +228,13 @@ const PositionDetailBox = ({
         const posStr = selectedPrediction?.position1 || selectedPrediction?.position;
         return posStr ? parsePosition(posStr) : null;
     }, [selectedPrediction?.position1, selectedPrediction?.position, parsePosition]);
-    
+
     const position2 = useMemo(() => {
         const posStr = selectedPrediction?.position2 || selectedPrediction?.secondPosition;
         return posStr ? parsePosition(posStr) : null;
     }, [selectedPrediction?.position2, selectedPrediction?.secondPosition, parsePosition]);
 
     // Cập nhật highlightedDigits khi selectedPrediction thay đổi - Memoized để tránh tính toán lại
-    const highlightedDigitsMap = useMemo(() => {
-        // Lấy position strings từ selectedPrediction (hỗ trợ cả 2 format)
-        const pos1Str = selectedPrediction?.position1 || selectedPrediction?.position;
-        const pos2Str = selectedPrediction?.position2 || selectedPrediction?.secondPosition;
-        
-        if (!selectedPrediction || !position1 || !position2 || !pos1Str || !pos2Str || lotteryResults.length < 2) {
-            return new Map();
-        }
-
-        const newHighlighted = new Map();
-        
-        // Group 1: position1 ở bảng 0
-        const source1Key = `table-0-prize-${position1.prize}-element-${position1.elementIndex}-digit-${position1.digitIndex}`;
-        newHighlighted.set(source1Key, { color: ARROW_COLORS[0], type: 'source' });
-        const target1Key = `table-1-prize-0-element-0-digit-3`; // Số thứ 4
-        newHighlighted.set(target1Key, { color: ARROW_COLORS[0], type: 'target' });
-        
-        // Group 2: position2 ở bảng 0
-        const source2Key = `table-0-prize-${position2.prize}-element-${position2.elementIndex}-digit-${position2.digitIndex}`;
-        newHighlighted.set(source2Key, { color: ARROW_COLORS[1], type: 'source' });
-        const target2Key = `table-1-prize-0-element-0-digit-4`; // Số thứ 5
-        newHighlighted.set(target2Key, { color: ARROW_COLORS[1], type: 'target' });
-        
-        // Group 3: position1 ở bảng 1
-        const source3Key = `table-1-prize-${position1.prize}-element-${position1.elementIndex}-digit-${position1.digitIndex}`;
-        newHighlighted.set(source3Key, { color: ARROW_COLORS[2], type: 'source' });
-        newHighlighted.set('prediction-digit-0', { color: ARROW_COLORS[2], type: 'target' });
-        
-        // Group 4: position2 ở bảng 1
-        const source4Key = `table-1-prize-${position2.prize}-element-${position2.elementIndex}-digit-${position2.digitIndex}`;
-        newHighlighted.set(source4Key, { color: ARROW_COLORS[3], type: 'source' });
-        newHighlighted.set('prediction-digit-1', { color: ARROW_COLORS[3], type: 'target' });
-        
-        return newHighlighted;
-    }, [selectedPrediction?.position1, selectedPrediction?.position2, selectedPrediction?.position, selectedPrediction?.secondPosition, position1, position2, lotteryResults.length]);
-
-    // Sync với state để trigger re-render khi cần
-    useEffect(() => {
-        setHighlightedDigits(highlightedDigitsMap);
-    }, [highlightedDigitsMap]);
-
     // Helper function để tạo highlight style - Memoized để tránh tạo object mới mỗi lần
     const getHighlightStyle = useCallback((highlightInfo) => {
         if (!highlightInfo) return {};
@@ -276,63 +249,173 @@ const PositionDetailBox = ({
         };
     }, []);
 
+    const highlightedDigitsMap = useMemo(() => {
+        const pos1Str = selectedPrediction?.position1 || selectedPrediction?.position;
+        const pos2Str = selectedPrediction?.position2 || selectedPrediction?.secondPosition;
+
+        if (!selectedPrediction || !position1 || !position2 || !pos1Str || !pos2Str || displayedTables.length < 2) {
+            return new Map();
+        }
+
+        const highlighted = new Map();
+        const tablesCount = displayedTables.length;
+        const transitions = Math.min(lifetime, tablesCount - 1);
+
+        if (transitions < 1) {
+            return highlighted;
+        }
+
+        const transitionColors = [
+            [ARROW_COLORS[0], ARROW_COLORS[1]],
+            [ARROW_COLORS[2], ARROW_COLORS[3]],
+            ['#f97316', '#0ea5e9']
+        ];
+
+        for (let i = 0; i < transitions; i++) {
+            const sourceIndex = i;
+            const targetIndex = i + 1;
+            const [color1, color2] = transitionColors[i % transitionColors.length];
+
+            const source1Key = `table-${sourceIndex}-prize-${position1.prize}-element-${position1.elementIndex}-digit-${position1.digitIndex}`;
+            highlighted.set(source1Key, { color: color1, type: 'source' });
+            const target1Key = `table-${targetIndex}-prize-0-element-0-digit-3`;
+            highlighted.set(target1Key, { color: color1, type: 'target' });
+
+            const source2Key = `table-${sourceIndex}-prize-${position2.prize}-element-${position2.elementIndex}-digit-${position2.digitIndex}`;
+            highlighted.set(source2Key, { color: color2, type: 'source' });
+            const target2Key = `table-${targetIndex}-prize-0-element-0-digit-4`;
+            highlighted.set(target2Key, { color: color2, type: 'target' });
+        }
+
+        const finalTableIndex = transitions;
+        const source3Key = `table-${finalTableIndex}-prize-${position1.prize}-element-${position1.elementIndex}-digit-${position1.digitIndex}`;
+        highlighted.set(source3Key, { color: ARROW_COLORS[2], type: 'source' });
+        highlighted.set('prediction-digit-0', { color: ARROW_COLORS[2], type: 'target' });
+
+        const source4Key = `table-${finalTableIndex}-prize-${position2.prize}-element-${position2.elementIndex}-digit-${position2.digitIndex}`;
+        highlighted.set(source4Key, { color: ARROW_COLORS[3], type: 'source' });
+        highlighted.set('prediction-digit-1', { color: ARROW_COLORS[3], type: 'target' });
+
+        return highlighted;
+    }, [
+        selectedPrediction?.position1,
+        selectedPrediction?.position2,
+        selectedPrediction?.position,
+        selectedPrediction?.secondPosition,
+        position1,
+        position2,
+        displayedTables.length,
+        lifetime
+    ]);
+
+    const renderPredictionDigits = useCallback(() => {
+        if (!selectedNumber) return null;
+        return selectedNumber.split('').map((digit, index) => {
+            const elementId = `prediction-digit-${index}`;
+            const highlightInfo = highlightedDigitsMap.get(elementId);
+            const baseStyle = {
+                display: 'inline-block',
+                position: 'relative',
+                zIndex: 1001
+            };
+            const highlightStyle = highlightInfo
+                ? {
+                    ...baseStyle,
+                    ...getHighlightStyle(highlightInfo),
+                    padding: '4px 8px'
+                }
+                : baseStyle;
+            return (
+                <span
+                    key={index}
+                    data-element-id={elementId}
+                    data-prediction-digit-index={index}
+                    style={highlightStyle}
+                >
+                    {digit}
+                </span>
+            );
+        });
+    }, [selectedNumber, highlightedDigitsMap, getHighlightStyle]);
+
+    // Sync với state để trigger re-render khi cần
+    useEffect(() => {
+        setHighlightedDigits(highlightedDigitsMap);
+    }, [highlightedDigitsMap]);
+
     // Tính toán arrows ở top level - không được đặt trong renderHighlightedTable()
     const arrows = useMemo(() => {
         // Hỗ trợ cả 2 format position
         const pos1Str = selectedPrediction?.position1 || selectedPrediction?.position;
         const pos2Str = selectedPrediction?.position2 || selectedPrediction?.secondPosition;
-        
+
         if (!pos1Str || !pos2Str || !position1 || !position2) {
             return null;
         }
-        
-        // Cần có ít nhất 2 bảng để vẽ đầy đủ
-        if (lotteryResults.length < 2) {
+
+        // Với cầu 2 lần liên tiếp, chỉ highlight số, không vẽ mũi tên
+        if ((selectedPrediction?.lifetime || selectedPrediction?.consecutiveDays || 1) >= 2) {
             return null;
         }
-        
+
+        const tables = displayedTables;
+        if (tables.length < 2) {
+            return null;
+        }
+
+        const transitions = Math.min(lifetime, tables.length - 1);
+        if (transitions < 1) {
+            return null;
+        }
+
+        const transitionColors = [
+            [ARROW_COLORS[0], ARROW_COLORS[1]],
+            [ARROW_COLORS[2], ARROW_COLORS[3]],
+            ['#f97316', '#0ea5e9']
+        ];
         const arrowElements = [];
-        
-        // Group 1: Từ position1 ở bảng 0 -> đến số thứ 4 (số đầu trong 2 số cuối) giải đặc biệt ở bảng 1
-        const source1 = createElementFromPosition(position1, 0);
-        const target1 = createSpecialPrizeLastTwoDigitsElement(1, 0); // Số thứ 4
-        
-        if (source1 && target1) {
-            arrowElements.push(
-                <CellConnectionArrow
-                    key={`arrow-group1-${pos1Str}-${pos2Str}-${selectedNumber}`}
-                    sourceElement={source1}
-                    targetElement={target1}
-                    tableContainerRef={tableContainerRef}
-                    color={ARROW_COLORS[0]}
-                />
-            );
+
+        for (let i = 0; i < transitions; i++) {
+            const sourceIndex = i;
+            const targetIndex = i + 1;
+            const [color1, color2] = transitionColors[i % transitionColors.length];
+
+            const source1 = createElementFromPosition(position1, sourceIndex);
+            const target1 = createSpecialPrizeLastTwoDigitsElement(targetIndex, 0);
+            if (source1 && target1) {
+                arrowElements.push(
+                    <CellConnectionArrow
+                        key={`arrow-step-${i}-pos1-${selectedNumber}`}
+                        sourceElement={source1}
+                        targetElement={target1}
+                        tableContainerRef={tableContainerRef}
+                        color={color1}
+                    />
+                );
+            }
+
+            const source2 = createElementFromPosition(position2, sourceIndex);
+            const target2 = createSpecialPrizeLastTwoDigitsElement(targetIndex, 1);
+            if (source2 && target2) {
+                arrowElements.push(
+                    <CellConnectionArrow
+                        key={`arrow-step-${i}-pos2-${selectedNumber}`}
+                        sourceElement={source2}
+                        targetElement={target2}
+                        tableContainerRef={tableContainerRef}
+                        color={color2}
+                    />
+                );
+            }
         }
-        
-        // Group 2: Từ position2 ở bảng 0 -> đến số thứ 5 (số thứ 2 trong 2 số cuối) giải đặc biệt ở bảng 1
-        const source2 = createElementFromPosition(position2, 0);
-        const target2 = createSpecialPrizeLastTwoDigitsElement(1, 1); // Số thứ 5
-        
-        if (source2 && target2) {
-            arrowElements.push(
-                <CellConnectionArrow
-                    key={`arrow-group2-${pos1Str}-${pos2Str}-${selectedNumber}`}
-                    sourceElement={source2}
-                    targetElement={target2}
-                    tableContainerRef={tableContainerRef}
-                    color={ARROW_COLORS[1]}
-                />
-            );
-        }
-        
-        // Group 3: Từ position1 ở bảng 1 -> đến chữ số đầu tiên của số dự đoán
-        const source3 = createElementFromPosition(position1, 1);
+
+        const finalTableIndex = transitions;
+        const source3 = createElementFromPosition(position1, finalTableIndex);
         const target3 = createPredictionElement(0);
-        
         if (source3 && target3) {
             arrowElements.push(
                 <CellConnectionArrow
-                    key={`arrow-group3-${pos1Str}-${pos2Str}-${selectedNumber}`}
+                    key={`arrow-final-pos1-${selectedNumber}`}
                     sourceElement={source3}
                     targetElement={target3}
                     tableContainerRef={tableContainerRef}
@@ -340,15 +423,13 @@ const PositionDetailBox = ({
                 />
             );
         }
-        
-        // Group 4: Từ position2 ở bảng 1 -> đến chữ số thứ 2 của số dự đoán
-        const source4 = createElementFromPosition(position2, 1);
+
+        const source4 = createElementFromPosition(position2, finalTableIndex);
         const target4 = createPredictionElement(1);
-        
         if (source4 && target4) {
             arrowElements.push(
                 <CellConnectionArrow
-                    key={`arrow-group4-${pos1Str}-${pos2Str}-${selectedNumber}`}
+                    key={`arrow-final-pos2-${selectedNumber}`}
                     sourceElement={source4}
                     targetElement={target4}
                     tableContainerRef={tableContainerRef}
@@ -356,9 +437,23 @@ const PositionDetailBox = ({
                 />
             );
         }
-        
+
         return arrowElements.length > 0 ? arrowElements : null;
-    }, [selectedPrediction?.position1, selectedPrediction?.position2, selectedPrediction?.position, selectedPrediction?.secondPosition, selectedNumber, position1, position2, lotteryResults.length, createElementFromPosition, createSpecialPrizeLastTwoDigitsElement, createPredictionElement, tableContainerRef]);
+    }, [
+        selectedPrediction?.position1,
+        selectedPrediction?.position2,
+        selectedPrediction?.position,
+        selectedPrediction?.secondPosition,
+        selectedNumber,
+        position1,
+        position2,
+        displayedTables,
+        lifetime,
+        createElementFromPosition,
+        createSpecialPrizeLastTwoDigitsElement,
+        createPredictionElement,
+        tableContainerRef
+    ]);
 
     // Debug log để kiểm tra dữ liệu
     console.log('🔍 Position Data:', {
@@ -455,7 +550,15 @@ const PositionDetailBox = ({
             );
         }
 
-        // Function to get day of week
+        const tablesSubset = displayedTables;
+        if (tablesSubset.length === 0) {
+            return (
+                <div className={styles.noData}>
+                    <p>Không có dữ liệu kết quả xổ số</p>
+                </div>
+            );
+        }
+
         const getDayOfWeek = (dateString) => {
             if (!dateString) return '';
             const date = new Date(dateString.split('/').reverse().join('-'));
@@ -463,7 +566,6 @@ const PositionDetailBox = ({
             return days[date.getDay()];
         };
 
-        // Function để render 1 bảng kết quả
         const renderSingleTable = (data, tableIndex) => {
             const {
                 date: resultDate,
@@ -477,9 +579,7 @@ const PositionDetailBox = ({
                 sevenPrizes = []
             } = data;
 
-            // Chỉ highlight nếu đây là bảng tương ứng với prediction
-            // Tạm thời highlight tất cả bảng để test
-            const shouldHighlightThisTable = true; // TODO: Logic để xác định bảng đúng
+            const shouldHighlightThisTable = true;
 
             return (
                 <div key={tableIndex} className={styles.singleTable}>
@@ -506,7 +606,7 @@ const PositionDetailBox = ({
                                             const elementId = `table-${tableIndex}-prize-0-element-0-digit-${index}`;
                                             const highlightInfo = highlightedDigitsMap.get(elementId);
                                             const highlightStyle = getHighlightStyle(highlightInfo);
-                                            
+
                                             return (
                                                 <span
                                                     key={index}
@@ -801,12 +901,15 @@ const PositionDetailBox = ({
             );
         };
 
+        const predictionLabel = selectedPrediction?.targetPrizeLabel
+            || (variant === 'loto' ? 'Lô tô' : 'Đặc biệt');
+
         return (
             <div className={styles.highlightedTable}>
                 {/* Lotto Prediction Section */}
                 <div className={styles.lottoPrediction}>
                     <p className={styles.lottoPredictionText}>
-                        Theo cầu này, dự đoán ngày <span className={styles.predictionDate}>{positionData.analysisDate || '23/10/2025'}</span> Lotto sẽ về
+                        Theo cầu này, dự đoán ngày <span className={styles.predictionDate}>{positionData.analysisDate || '23/10/2025'}</span> {predictionLabel} sẽ về
                         <span className={styles.lottoNumber}> {selectedNumber || '90'}</span> hoặc <span className={styles.lottoNumber}>{selectedNumber ? selectedNumber.split('').reverse().join('') : '09'}</span>
                     </p>
                 </div>
@@ -814,45 +917,27 @@ const PositionDetailBox = ({
                 {/* Phần kết luận và bảng kết quả */}
                 <div className={styles.conclusionAndTables} ref={tableContainerRef} style={{ position: 'relative' }}>
                     {/* Phần kết luận */}
-                    <div className={styles.conclusion}>
-                        <div className={styles.conclusionDate}>{positionData.analysisDate || '23/10'}</div>
-                        <div className={styles.conclusionText}>
-                            <div className={styles.conclusionLabel}>Cầu dự đoán</div>
-                            <div className={styles.conclusionPrize}>Đặc biệt</div>
-                            <div className={styles.conclusionNumber} data-prediction-element="true">
-                                {selectedNumber && selectedNumber.split('').map((digit, index) => {
-                                    const elementId = `prediction-digit-${index}`;
-                                    const highlightInfo = highlightedDigitsMap.get(elementId);
-                                    const baseStyle = {
-                                        display: 'inline-block',
-                                        position: 'relative',
-                                        zIndex: 1001
-                                    };
-                                    const highlightStyle = highlightInfo ? {
-                                        ...baseStyle,
-                                        ...getHighlightStyle(highlightInfo),
-                                        padding: '4px 8px' // Padding lớn hơn cho số dự đoán
-                                    } : baseStyle;
-                                    return (
-                                        <span
-                                            key={index}
-                                            data-element-id={elementId}
-                                            data-prediction-digit-index={index}
-                                            style={highlightStyle}
-                                        >
-                                            {digit}
-                                        </span>
-                                    );
-                                })}
+                    {lifetime >= 2 ? (
+                        <div className={styles.hiddenPredictionAnchor} data-prediction-element="true">
+                            {renderPredictionDigits()}
+                        </div>
+                    ) : (
+                        <div className={styles.conclusion}>
+                            <div className={styles.conclusionDate}>{positionData.analysisDate || '23/10'}</div>
+                            <div className={styles.conclusionText}>
+                                <div className={styles.conclusionLabel}>Cầu dự đoán</div>
+                                <div className={styles.conclusionPrize}>{predictionLabel}</div>
+                                <div className={styles.conclusionNumber} data-prediction-element="true">
+                                    {renderPredictionDigits()}
+                                </div>
                             </div>
                         </div>
+                    )}
+
+                    <div className={styles.tablesContainer} style={{ position: 'relative' }}>
+                        {tablesSubset.map((data, index) => renderSingleTable(data, index))}
                     </div>
 
-                    {/* Render 2 bảng kết quả cho 2 ngày phân tích */}
-                    <div className={styles.tablesContainer} style={{ position: 'relative' }}>
-                        {lotteryResults.slice().reverse().map((data, index) => renderSingleTable(data, index))}
-                    </div>
-                    
                     {/* Vẽ 4 mũi tên theo logic đúng:
                         Group 1,2: Từ position1 và position2 ở bảng 0 -> đến 2 số cuối giải đặc biệt ở bảng 1
                         Group 3,4: Từ position1 và position2 ở bảng 1 -> đến số dự đoán */}
@@ -864,7 +949,7 @@ const PositionDetailBox = ({
 
     // Đảm bảo component luôn render, ngay cả khi không có position1/position2
     console.log('🎨 Rendering PositionDetailBox');
-    
+
     return (
         <div className={styles.detailBox}>
             <div className={styles.content}>

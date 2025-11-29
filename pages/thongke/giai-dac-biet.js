@@ -3,7 +3,6 @@ import Layout from '../../components/Layout';
 import styles from '../../styles/giaidacbiet.module.css';
 import ThongKe from '../../components/ThongKe';
 import CongCuHot from '../../components/CongCuHot';
-import UpdateButton from '../../components/UpdateButton';
 import { apiMB } from '../api/kqxsMB';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -107,8 +106,7 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
         }
     }, []);
 
-    const handleDaysChange = useCallback((e) => {
-        const selectedDays = Number(e.target.value);
+    const handleDaysChange = useCallback((selectedDays) => {
         setDays(selectedDays);
     }, []);
 
@@ -116,39 +114,11 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
         setIsExpanded(prev => !prev);
     }, []);
 
+    // Fetch dữ liệu khi days thay đổi hoặc khi component mount lần đầu
+    // Điều này đảm bảo dữ liệu luôn được cập nhật mới nhất khi truy cập trang
     useEffect(() => {
         fetchSpecialPrizeStatsMB(days);
     }, [days, fetchSpecialPrizeStatsMB]);
-
-    // Hàm cập nhật thống kê
-    const handleUpdateStats = async () => {
-        try {
-            // Gọi API cập nhật
-            const result = await apiMB.updateSpecialStats(days);
-
-            if (result.success) {
-                // Sau khi cập nhật thành công, lấy lại dữ liệu
-                setLoading(true);
-                setError(null);
-                try {
-                    const data = await apiMB.getSpecialStats(days);
-                    setStats(data.statistics || []);
-                    setMetadata(data.metadata || {});
-                } catch (err) {
-                    setError(err.message || 'Có lỗi xảy ra khi lấy dữ liệu.');
-                    setStats([]);
-                    setMetadata({});
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                throw new Error('Cập nhật không thành công');
-            }
-        } catch (error) {
-            console.error('Error updating stats:', error);
-            throw error; // Re-throw để UpdateButton xử lý
-        }
-    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -248,7 +218,7 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
                     <div className={styles.actionBtn}>
                         <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet') ? styles.active : ''}`} href="giai-dac-biet">Thống Kê Giải Đặc Biệt </Link>
                         <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/dau-duoi') ? styles.active : ''}`} href="dau-duoi">Thống Kê Đầu Đuôi </Link>
-                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet-tuan') ? styles.active : ''}`} href="giai-dac-biet-tuan">Thống Kê Giải Đặc Biệt Tuần </Link>
+                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet-tuan') ? styles.active : ''}`} href="giai-dac-biet-tuan">Giải Đặc Biệt Tuần </Link>
                     </div>
                 </div>
 
@@ -260,25 +230,64 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
                     <div className={styles.group_Select}>
                         <div className={styles.selectGroup}>
                             <label className={styles.options}>Chọn thời gian: </label>
-                            <select className={styles.select} value={days} onChange={handleDaysChange}
-                                aria-label="Chọn thời gian để xem thống kê giải đặc biệt"
-                            >
-                                <option value={10}>10 ngày</option>
-                                <option value={20}>20 ngày</option>
-                                <option value={30}>30 ngày</option>
-                                <option value={60}>2 tháng</option>
-                                <option value={90}>3 tháng</option>
-                                <option value={180}>6 tháng</option>
-                                <option value={270}>9 tháng</option>
-                                <option value={365}>1 năm</option>
-                            </select>
-                        </div>
-                        {/* Button cập nhật dữ liệu */}
-                        <div className={styles.updateButtonWrapper}>
-                            <UpdateButton
-                                onUpdate={handleUpdateStats}
-                                label="Cập nhật dữ liệu"
-                            />
+                            <div className={styles.buttonGroup}>
+                                <button
+                                    className={`${styles.timeButton} ${days === 10 ? styles.active : ''}`}
+                                    onClick={() => handleDaysChange(10)}
+                                    aria-label="Chọn 10 ngày"
+                                >
+                                    10 ngày
+                                </button>
+                                <button
+                                    className={`${styles.timeButton} ${days === 20 ? styles.active : ''}`}
+                                    onClick={() => handleDaysChange(20)}
+                                    aria-label="Chọn 20 ngày"
+                                >
+                                    20 ngày
+                                </button>
+                                <button
+                                    className={`${styles.timeButton} ${days === 30 ? styles.active : ''}`}
+                                    onClick={() => handleDaysChange(30)}
+                                    aria-label="Chọn 30 ngày"
+                                >
+                                    30 ngày
+                                </button>
+                                <button
+                                    className={`${styles.timeButton} ${days === 60 ? styles.active : ''}`}
+                                    onClick={() => handleDaysChange(60)}
+                                    aria-label="Chọn 2 tháng"
+                                >
+                                    2 tháng
+                                </button>
+                                <button
+                                    className={`${styles.timeButton} ${days === 90 ? styles.active : ''}`}
+                                    onClick={() => handleDaysChange(90)}
+                                    aria-label="Chọn 3 tháng"
+                                >
+                                    3 tháng
+                                </button>
+                                <button
+                                    className={`${styles.timeButton} ${days === 180 ? styles.active : ''}`}
+                                    onClick={() => handleDaysChange(180)}
+                                    aria-label="Chọn 6 tháng"
+                                >
+                                    6 tháng
+                                </button>
+                                <button
+                                    className={`${styles.timeButton} ${days === 270 ? styles.active : ''}`}
+                                    onClick={() => handleDaysChange(270)}
+                                    aria-label="Chọn 9 tháng"
+                                >
+                                    9 tháng
+                                </button>
+                                <button
+                                    className={`${styles.timeButton} ${days === 365 ? styles.active : ''}`}
+                                    onClick={() => handleDaysChange(365)}
+                                    aria-label="Chọn 1 năm"
+                                >
+                                    1 năm
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -393,28 +402,25 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
                 </div>
 
                 <div className={styles.Group_Content}>
-                    <h2 className={styles.heading}>TAODANDEWUKONG.PRO nơi thống kê giải ĐB, kết quả xổ số Miền Bắc theo tuần, tháng và năm nhanh, chính xác và hoàn toàn miễn phí.</h2>
+                    <h2 className={styles.heading}>Thống kê giải đặc biệt Miền Bắc - Cập nhật nhanh, chính xác, miễn phí</h2>
                     <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : styles.collapsed}`}>
-                        <h3 className={styles.h3}>Thống Kê giải ĐB. Thống kê kết quả xổ số</h3>
-                        <p className={styles.desc}>Thống Kê giải đặc biệt là phương pháp thống kê chỉ duy nhất giải đặc biệt trong bảng kết quả xổ số có nhiều giải khác nhau.</p>
-                        <p className={styles.desc}>Thống kê giải đặc biệt là một trong những cách thống kê nhanh và tiện lợi dành cho những người chơi xổ số chỉ quan tâm duy nhất đến giải đặc biệt.</p>
-                        <h3 className={styles.h3}>Thống kê giải đặc biệt gồm có:</h3>
-                        <p className={styles.desc}><strong className={styles.strong}>- TK giải đặc biệt theo tuần:</strong> là thống kê giải đặc biệt theo mỗi tuần. Trong 1 năm có 53 tuần, nghĩa là sẽ có 53 lần thống kê tuần của giải đặc biệt.</p>
-                        <p className={styles.desc}><strong className={styles.strong}>- TK giải đặc biệt theo tháng:</strong> là thống kê giải đặc biệt theo mỗi tháng. Mỗi năm có 12 tháng, nghĩa là sẽ có 12 lần thống kê tháng giải đặc biệt.</p>
-                        <p className={styles.desc}><strong className={styles.strong}>- TK giải đặc biệt theo năm:</strong> là thống kê giải đặc biệt theo từng năm.</p>
-                        <h3 className={styles.h3}>Tại sao lại cần TK giải đặc biệt?</h3>
-                        <p className={styles.desc}>Nhiều người chơi sẽ thường theo dõi TK giải đặc biệt và quan sát số ngày về để nâng cao xác suất trúng thưởng.</p>
-                        <p className={styles.desc}>Về cơ bản, TK giải đặc biệt là một cách thức để người chơi có thể dự đoán kết quả xổ số. Tuy nhiên, việc quay xổ số có tính chất hoàn toàn ngẫu nhiên và không dựa trên bất kỳ quy luật. Chính vì vậy, bạn khó có thể dự đoán được kết quả chính xác và có cơ may trúng thưởng</p>
-                        <p className={styles.desc}>Do vậy, bạn không nên quá phụ thuộc vào TK giải đặc biệt xổ số Miền Bắc mà chỉ nên đánh xổ số với tinh thần giải trí, thoải mái.</p>
-                        <h3 className={styles.h3}>Thống kê giải đặc biệt Miền Bắc có những gì? Bảng 2 số cuối giải đặc biệt lâu về nhất</h3>
-                        <p className={styles.desc}>– Bảng TK KQXSMB thông tin của 10 cặp 2 số cuối kết quả giải đặc biệt lâu chưa về nhất hôm nay.</p>
-                        <h3 className={styles.h3}>Bảng đầu đuôi giải đặc biệt Miền Bắc lâu chưa về</h3>
-                        <p className={styles.desc}>– Thống kê cho người xem nắm thông tin các số hàng chục và hàng đơn vị của KQXS Miền Bắc chưa về trong thời gian gần đây.</p>
-                        <h3 className={styles.h3}>Bảng thống kê giải đặc biệt ngày này năm xưa</h3>
-                        <p className={styles.desc}>– Cung cấp cho người xem thông tin các giải đặc biệt về cùng ngày hôm đó trong những năm trước đó.</p>
-                        <p className={styles.desc}>Thông tin của TK giải ĐB luôn được cập nhật ngay sau khi có kết quả xổ số trong ngày, mọi thông số đều đảm bảo sự chính xác tuyệt đối cho người xem theo dõi</p>
-                        <p className={styles.desc}>Xổ Số VN luôn mang đến cho bạn những thông tin chính xác và kịp thời. Với tính năng TK giải đặc biệt này, người chơi sẽ có thêm thông tin để tham khảo và chọn cho mình con số may mắn, mang đến cơ hội trúng thưởng cao hơn.</p>
-                        <p className={styles.desc}>TK giải đặc biệt. TK KQXSMB. TK giải đặc biệt XSMB. TK giải đặc biệt XSMB theo tuần, tháng, năm được tổng hợp nhanh chóng và chính xác tại <a className={styles.action} href='/'>TAODANDEWUKONG.PRO</a></p>
+                        <h3 className={styles.h3}>Thống kê giải đặc biệt là gì?</h3>
+                        <p className={styles.desc}>Thống kê giải đặc biệt là phương pháp phân tích kết quả giải đặc biệt trong bảng kết quả xổ số. Đây là công cụ hữu ích giúp người chơi theo dõi và phân tích xu hướng số xuất hiện.</p>
+                        
+                        <h3 className={styles.h3}>Các loại thống kê giải đặc biệt</h3>
+                        <p className={styles.desc}><strong className={styles.strong}>Theo tuần:</strong> Thống kê giải đặc biệt theo từng tuần trong năm (53 tuần/năm).</p>
+                        <p className={styles.desc}><strong className={styles.strong}>Theo tháng:</strong> Thống kê giải đặc biệt theo từng tháng (12 tháng/năm).</p>
+                        <p className={styles.desc}><strong className={styles.strong}>Theo năm:</strong> Thống kê giải đặc biệt theo từng năm để đánh giá xu hướng dài hạn.</p>
+                        
+                        <h3 className={styles.h3}>Tính năng chính</h3>
+                        <p className={styles.desc}><strong className={styles.strong}>Bảng 2 số cuối lâu về nhất:</strong> Hiển thị 10 cặp 2 số cuối giải đặc biệt lâu chưa xuất hiện nhất.</p>
+                        <p className={styles.desc}><strong className={styles.strong}>Thống kê đầu đuôi:</strong> Phân tích số hàng chục và hàng đơn vị của giải đặc biệt chưa về gần đây.</p>
+                        <p className={styles.desc}><strong className={styles.strong}>Ngày này năm xưa:</strong> Xem lại các giải đặc biệt đã về cùng ngày trong các năm trước.</p>
+                        
+                        <h3 className={styles.h3}>Lưu ý quan trọng</h3>
+                        <p className={styles.desc}>Thống kê giải đặc biệt chỉ mang tính chất tham khảo. Kết quả xổ số là ngẫu nhiên, không có quy luật cố định. Người chơi nên tham gia với tinh thần giải trí, không nên phụ thuộc hoàn toàn vào thống kê.</p>
+                        
+                        <p className={styles.desc}>Dữ liệu được cập nhật tự động ngay sau mỗi kỳ quay thưởng, đảm bảo tính chính xác và kịp thời. Thống kê giải đặc biệt Miền Bắc tại <a className={styles.action} href='/'>TAODANDEWUKONG.PRO</a> giúp bạn có thêm thông tin để tham khảo khi chọn số.</p>
                     </div>
                     <button
                         className={styles.toggleBtn}

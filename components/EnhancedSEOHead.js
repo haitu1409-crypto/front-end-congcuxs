@@ -10,26 +10,36 @@ import { memo } from 'react';
 
 const EnhancedSEOHead = memo(function EnhancedSEOHead({
     pageType = 'home',
-    title: customTitle,
-    description: customDescription,
-    keywords: customKeywords,
-    canonical: canonicalUrl,
+    customTitle,
+    customDescription,
+    customKeywords,
+    canonicalUrl,
     ogImage,
     breadcrumbs,
     faq,
     structuredData = [],
     locale = 'vi_VN',
     author = 'Dàn Đề Wukong',
+    // Backward compatibility: support both 'title' and 'customTitle'
+    title,
+    description,
+    keywords,
+    canonical,
 }) {
+    // Support both old prop names (title, description, keywords, canonical) and new ones (customTitle, etc.)
+    const finalTitle = customTitle || title;
+    const finalDescription = customDescription || description;
+    const finalKeywords = customKeywords || keywords;
+    const finalCanonical = canonicalUrl || canonical;
     return (
         <>
             {/* ✅ SEOOptimized - Existing SEO component */}
             <SEOOptimized
                 pageType={pageType}
-                customTitle={customTitle}
-                customDescription={customDescription}
-                customKeywords={customKeywords}
-                canonicalUrl={canonicalUrl}
+                customTitle={finalTitle}
+                customDescription={finalDescription}
+                customKeywords={finalKeywords}
+                canonicalUrl={finalCanonical}
                 ogImage={ogImage}
                 breadcrumbs={breadcrumbs}
                 faq={faq}
@@ -38,25 +48,16 @@ const EnhancedSEOHead = memo(function EnhancedSEOHead({
 
             {/* ✅ MultiSearchEngineOptimizer - Enhanced for Bing, Cốc Cốc */}
             <MultiSearchEngineOptimizer
-                title={customTitle}
-                description={customDescription}
-                keywords={customKeywords}
-                url={canonicalUrl}
+                title={finalTitle}
+                description={finalDescription}
+                keywords={finalKeywords}
+                url={finalCanonical}
                 image={ogImage}
                 locale={locale}
                 type={pageType === 'home' ? 'website' : 'article'}
                 author={author}
                 structuredData={structuredData}
             />
-            
-            {/* ✅ Additional Structured Data nếu có */}
-            {structuredData && Array.isArray(structuredData) && structuredData.map((schema, index) => (
-                <script
-                    key={index}
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-                />
-            ))}
         </>
     );
 });

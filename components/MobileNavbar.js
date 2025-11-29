@@ -95,12 +95,6 @@ export default function MobileNavbar({
         if (itemId.startsWith('page-')) {
             const page = itemId.replace('page-', '');
 
-            // Special handling for dan-9x0x-loc
-            if (page === 'dan-9x0x-loc') {
-                router.push('/dan-9x0x#filter');
-                return;
-            }
-
             // ✅ Fix router abort errors - add error handling
             try {
                 router.push(`/${page}`);
@@ -154,10 +148,10 @@ export default function MobileNavbar({
                 href: '/dan-9x0x'
             },
             {
-                id: 'page-dan-9x0x-loc',
-                label: 'Lọc Dàn Siêu Cấp',
+                id: 'page-loc-dan-de',
+                label: 'Lọc Dàn Đề',
                 icon: Filter,
-                href: '/dan-9x0x#filter'
+                href: '/loc-dan-de'
             },
             {
                 id: 'page-dan-2d',
@@ -203,9 +197,10 @@ export default function MobileNavbar({
 
         // Add current page specific items if needed
         if (showCurrentPageItems && currentPage === 'dan-9x0x') {
+            const locDanDeItem = baseItems.find(item => item.id === 'page-loc-dan-de');
             return [
                 { id: 'generator', label: 'Tạo Dàn 9x0x', icon: Dice6 },
-                { id: 'filter', label: 'Lọc Siêu Cấp', icon: Filter },
+                ...(locDanDeItem ? [locDanDeItem] : []),
                 { id: 'guide', label: 'Hướng Dẫn', icon: Info },
                 ...danDacBietItems
             ];

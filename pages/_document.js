@@ -158,8 +158,6 @@ export default function Document() {
             /* ✅ CRITICAL: Prevent layout shift for subtitle element */
             [class*="subtitle"],
             p[class*="subtitle"] {
-              min-height: 60px !important;
-              height: 60px !important;
               contain: layout style !important;
               font-display: swap !important;
               overflow: hidden !important;

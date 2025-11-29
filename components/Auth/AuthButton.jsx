@@ -3,6 +3,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import AuthModal from './AuthModal';
@@ -83,6 +84,16 @@ export default function AuthButton({ variant = 'desktop' }) {
                     {/* User Menu Dropdown - Giống submenu Thống Kê */}
                     {showUserMenu && (
                         <div className={styles.userMenu}>
+                            {user?.role === 'admin' && (
+                                <Link
+                                    href="/admin"
+                                    className={`${styles.menuItem} ${styles.menuItemLink}`}
+                                    onClick={() => setShowUserMenu(false)}
+                                >
+                                    <Settings size={16} />
+                                    <span>Trang quản trị</span>
+                                </Link>
+                            )}
                             {user?.role === 'admin' && (
                                 <button
                                     onClick={() => {

@@ -240,6 +240,72 @@ class ApiService {
     }
 
     /**
+     * Lấy kết quả soi cầu lô tô theo vị trí số
+     */
+    async getPositionSoiCauLoto(params = {}, options = {}) {
+        const { useCache = true } = options;
+        return this.fetchWithCache('/api/position-soicau-loto', {
+            params,
+            useCache
+        });
+    }
+
+    /**
+     * Kiểm tra và cập nhật soi cầu tự động
+     * Kiểm tra xem kết quả xổ số hôm nay đã có chưa, nếu có thì tính toán soi cầu cho ngày mai
+     */
+    async checkAndUpdateSoiCau(params = {}) {
+        return this.fetchWithCache('/api/position-soicau-loto/check-update', {
+            method: 'POST',
+            params,
+            useCache: false // Không cache vì đây là action cập nhật
+        });
+    }
+
+    /**
+     * Kiểm tra và cập nhật soi cầu vị trí đặc biệt
+     */
+    async checkAndUpdatePositionSoiCau(params = {}) {
+        return this.fetchWithCache('/api/position-soicau/check-update', {
+            method: 'POST',
+            params,
+            useCache: false
+        });
+    }
+
+    /**
+     * Lấy lịch sử dự đoán soi cầu lô tô
+     */
+    async getPositionSoiCauLotoHistory(params = {}, options = {}) {
+        const { useCache = true } = options;
+        return this.fetchWithCache('/api/position-soicau-loto/history', {
+            params,
+            useCache
+        });
+    }
+
+    /**
+     * Lấy lịch sử dự đoán soi cầu vị trí (special)
+     */
+    async getPositionSoiCauHistory(params = {}, options = {}) {
+        const { useCache = true } = options;
+        return this.fetchWithCache('/api/position-soicau/history', {
+            params,
+            useCache
+        });
+    }
+
+    /**
+     * Lấy ngày soi cầu mới nhất
+     */
+    async getLatestSoiCauDate(options = {}) {
+        const { useCache = false } = options;
+        return this.fetchWithCache('/api/position-soicau-loto/latest-date', {
+            useCache
+        });
+    }
+
+    /**
      * Lấy kết quả soi cầu vị trí trong khoảng thời gian
      */
     async getPositionSoiCauRange(params = {}) {

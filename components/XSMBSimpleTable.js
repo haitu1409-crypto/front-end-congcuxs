@@ -46,41 +46,12 @@ const XSMBSimpleTable = ({
     // Chọn hook phù hợp - ưu tiên useToday nếu được set, ngược lại dùng hook thông thường
     const { data: apiData, loading, error, refetch } = useToday ? xsmbTodayHook : xsmbHook;
 
-    // Fallback data khi API bị lỗi 429
-    const getFallbackData = () => {
-        return {
-            date: "21/10/2025",
-            specialPrize: "07081",
-            firstPrize: "66797",
-            secondPrize: ["13815", "27581"],
-            threePrizes: ["00249", "06272", "45716", "96445", "23245", "42742"],
-            fourPrizes: ["2280", "1567", "2908", "2876"],
-            fivePrizes: ["3679", "0541", "1243", "5257", "5004", "6838"],
-            sixPrizes: ["391", "303", "160"],
-            sevenPrizes: ["28", "81", "70", "38"],
-            maDB: "12PD-14PD-3PD-17PD-18PD-8PD-10PD-11PD",
-            loto: {
-                "0": "03, 04, 08",
-                "1": "15, 16",
-                "2": "28",
-                "3": "38, 38",
-                "4": "41, 42, 43, 45, 45, 49",
-                "5": "57",
-                "6": "60, 67",
-                "7": "70, 72, 76, 79",
-                "8": "80, 81, 81, 81",
-                "9": "91, 97"
-            }
-        };
-    };
-
     // Debug: Log để kiểm tra dữ liệu (chỉ khi cần thiết)
     if (process.env.NODE_ENV === 'development') {
         console.log('🔍 XSMBSimpleTable data source:', {
             propData: !!propData,
             apiData: !!apiData,
-            loading: loading,
-            usingFallback: !propData && !apiData && !loading
+            loading: loading
         });
     }
 
@@ -100,8 +71,11 @@ const XSMBSimpleTable = ({
         }
     }, [error, onError]);
 
-    // Loading state
-    if (loading && showLoading) {
+    // Sử dụng dữ liệu từ API hoặc prop - CHỈ dữ liệu thật, không có fallback
+    const data = propData || apiData;
+
+    // Loading state - hiển thị khi đang loading và chưa có data
+    if (loading && showLoading && !data) {
         return (
             <div className={`${styles.container} ${className}`}>
                 <div className={styles.loadingMessage}>
@@ -112,8 +86,8 @@ const XSMBSimpleTable = ({
         );
     }
 
-    // Error state - chỉ khi có lỗi thật sự (không phải fallback)
-    if (error && showError && !apiData && !propData) {
+    // Error state - chỉ khi có lỗi và không có data
+    if (error && showError && !data) {
         return (
             <div className={`${styles.container} ${className}`}>
                 <div className={styles.errorMessage}>
@@ -130,11 +104,20 @@ const XSMBSimpleTable = ({
         );
     }
 
-    // Sử dụng dữ liệu từ API hoặc prop
-    const data = propData || apiData;
-    
-    // Sử dụng fallback data nếu không có data thật
-    const finalData = data || getFallbackData();
+    // Nếu không có data, không hiển thị gì (hoặc loading nếu showLoading = true)
+    if (!data) {
+        if (showLoading) {
+            return (
+                <div className={`${styles.container} ${className}`}>
+                    <div className={styles.loadingMessage}>
+                        <div className={styles.spinner}></div>
+                        <p>Đang tải dữ liệu kết quả xổ số...</p>
+                    </div>
+                </div>
+            );
+        }
+        return null;
+    }
 
     // Destructure dữ liệu
     const {
@@ -149,7 +132,7 @@ const XSMBSimpleTable = ({
         sevenPrizes = [],
         maDB = '',
         loto = {}
-    } = finalData;
+    } = data;
 
     // Function to get day of week
     const getDayOfWeek = (dateString) => {
@@ -164,22 +147,6 @@ const XSMBSimpleTable = ({
 
     return (
         <div className={`${styles.container} ${className}`}>
-            {/* Thông báo nguồn dữ liệu */}
-
-            {!propData && !apiData && !loading && (
-                <div style={{
-                    padding: '8px 12px',
-                    background: '#fff3cd',
-                    border: '1px solid #ffeaa7',
-                    borderRadius: '4px',
-                    margin: '5px 0',
-                    fontSize: '12px',
-                    color: '#856404',
-                    textAlign: 'center'
-                }}>
-                    📊 Hiển thị dữ liệu mẫu - API đang bị giới hạn (429)
-                </div>
-            )}
 
             <div className={styles.horizontalLayout}>
                 <div className={styles.mainTableContainer}>
@@ -188,7 +155,7 @@ const XSMBSimpleTable = ({
                         <thead>
                             <tr>
                                 <th colSpan="13" className={styles.kqcell + ' ' + styles.kq_ngay}>
-                                    {resultDate ? `Thứ ${getDayOfWeek(resultDate)} - ${resultDate}` : 'Kết quả XSMB'}
+                                    {resultDate ? `${getDayOfWeek(resultDate)} - ${resultDate}` : 'Kết quả XSMB'}
                                 </th>
                             </tr>
                         </thead>

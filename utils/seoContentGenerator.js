@@ -184,12 +184,6 @@ class SEOContentGenerator {
                     {
                         "@type": "ListItem",
                         "position": 2,
-                        "name": "Soi Cầu",
-                        "item": "https://yourdomain.com/soi-cau"
-                    },
-                    {
-                        "@type": "ListItem",
-                        "position": 3,
                         "name": "Soi Cầu Vị Trí XSMB",
                         "item": "https://yourdomain.com/seo-soi-cau-vi-tri"
                     }

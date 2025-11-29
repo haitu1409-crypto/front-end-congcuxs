@@ -68,10 +68,8 @@
    ============================================ */
 
 .highlightedTable {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 20px;
+   
+   
 }
 
 
@@ -177,6 +175,16 @@
     background: rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.hiddenPredictionAnchor {
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    gap: 6px;
 }
 
 /* Lotto Prediction Section */
@@ -382,7 +390,7 @@
   
 
     .highlightedTable {
-        padding: 15px;
+      
     }
 
     /* Lotto Prediction responsive */
@@ -405,37 +413,120 @@
     /* Responsive cho conclusion and tables */
     .conclusionAndTables {
         flex-direction: column;
-        gap: 15px;
+        gap: 8px;
+        align-items: stretch;
+        overflow-x: visible;
     }
 
     .conclusion {
         min-width: auto;
         width: 100%;
-        padding: 15px;
-        order: 2;
-        /* Đưa conclusion xuống dưới */
+        flex-shrink: 1;
+        padding: 6px 8px;
+        order: 0;
+        border-radius: 6px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        text-align: left;
+    }
+    
+    .conclusionDate {
+        font-size: 11px;
+        margin-bottom: 0;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    .conclusionText {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        justify-content: flex-end;
+    }
+    
+    .conclusionLabel {
+        font-size: 10px;
+        white-space: nowrap;
+    }
+    
+    .conclusionPrize {
+        font-size: 10px;
+        padding: 2px 5px;
+        white-space: nowrap;
     }
 
     .conclusionNumber {
-        font-size: 28px;
+        font-size: 18px;
+    }
+    
+    .conclusionNumber span[data-prediction-digit-index] {
+        padding: 2px 4px !important;
+        font-size: 14px;
+        border-radius: 3px;
+        border-width: 1.5px !important;
+        box-shadow: 0 0 3px currentColor !important;
     }
 
     /* Responsive cho tables container */
     .tablesContainer {
         flex-direction: row;
-        gap: 15px;
+        gap: 6px;
         order: 1;
-        /* Đưa tables lên trên */
-        overflow-x: auto;
-        /* Cho phép scroll ngang */
-        padding-bottom: 10px;
+        overflow-x: visible;
+        width: 100%;
+        padding-bottom: 0;
+        justify-content: space-between;
+    }
+
+    /* Ẩn arrows trên mobile để tránh rối */
+    .conclusionAndTables svg {
+        display: none;
     }
 
     .singleTable {
-        flex: 0 0 auto;
-        /* Không co lại, giữ kích thước cố định */
-        /* Đảm bảo bảng có chiều rộng tối thiểu */
-        width: auto;
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: calc(50% - 3px);
+    }
+
+    /* Tối ưu bảng XSMBSimpleTable trên mobile */
+    .singleTable :global(.XSMBSimpleTable_ketqua__fQfNb) {
+        width: 100% !important;
+        table-layout: fixed;
+        font-size: 9px;
+        border-spacing: 1px !important;
+    }
+
+    .singleTable :global(.XSMBSimpleTable_ketqua__fQfNb) th,
+    .singleTable :global(.XSMBSimpleTable_ketqua__fQfNb) td {
+        padding: 2px 1px !important;
+        font-size: 10px !important;
+    }
+
+    .singleTable :global(.XSMBSimpleTable_kq_ngay__2QJvr) {
+        font-size: 9px !important;
+        padding: 4px 2px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .singleTable :global(.XSMBSimpleTable_leftcol__kMIqh) {
+        width: 20px !important;
+        min-width: 20px !important;
+        max-width: 20px !important;
+        padding: 2px 1px !important;
+        font-size: 10px !important;
+    }
+
+    .singleTable :global(.XSMBSimpleTable_kqcell__kmqa2) {
+        padding: 2px 0.5px !important;
+        font-size: 10px !important;
     }
 
     .singleTable h5 {
@@ -467,8 +558,16 @@
 
     /* Highlight digit responsive */
     .highlightDigit {
-        font-size: 12px;
-        margin: 0 0.5px;
+        font-size: 10px !important;
+        margin: 0 0.1px;
+    }
+
+    .highlightDigit[style*="padding"] {
+        padding: 1px 2px !important;
+    }
+
+    .highlightDigit[style*="font-size"] {
+        font-size: 10px !important;
     }
 }
 
@@ -488,7 +587,7 @@
   
 
     .highlightedTable {
-        padding: 12px;
+        padding: 2px;
     }
 
     /* Lotto Prediction mobile small */
@@ -515,23 +614,38 @@
 
     /* Conclusion mobile small */
     .conclusion {
-        padding: 12px;
+        min-width: 100px;
+        padding: 6px 8px;
     }
 
     .conclusionDate {
-        font-size: 16px;
+        font-size: 11px;
+        margin-bottom: 4px;
     }
 
+    .conclusionText {
+        gap: 3px;
+    }
+    
     .conclusionNumber {
-        font-size: 24px;
+        font-size: 18px;
+    }
+    
+    .conclusionNumber span[data-prediction-digit-index] {
+        padding: 2px 4px !important;
+        font-size: 14px;
+        border-radius: 3px;
+        border-width: 1.5px !important;
+        box-shadow: 0 0 3px currentColor !important;
     }
 
     .conclusionLabel {
-        font-size: 12px;
+        font-size: 10px;
     }
 
     .conclusionPrize {
-        font-size: 14px;
+        font-size: 11px;
+        padding: 2px 4px;
     }
 
     /* Tables mobile small */
@@ -565,20 +679,133 @@
 
     /* Highlight digit mobile small */
     .highlightDigit {
-        font-size: 11px;
+        font-size: 14px;
         margin: 0 0.25px;
     }
 
     /* Tables container mobile small */
     .tablesContainer {
-        gap: 12px;
-        overflow-x: auto;
-        padding-bottom: 8px;
+        gap: 4px;
+        overflow-x: visible;
+        padding-bottom: 0;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .singleTable {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: calc(50% - 2px);
+    }
+
+    /* Tối ưu bảng XSMBSimpleTable trên mobile nhỏ */
+    .singleTable :global(.XSMBSimpleTable_ketqua__fQfNb) {
+        font-size: 9px;
+        border-spacing: 1px !important;
+    }
+
+    .singleTable :global(.XSMBSimpleTable_ketqua__fQfNb) th,
+    .singleTable :global(.XSMBSimpleTable_ketqua__fQfNb) td {
+        padding: 2px 1px !important;
+        font-size: 10px !important;
+    }
+
+    .singleTable :global(.XSMBSimpleTable_kq_ngay__2QJvr) {
+        font-size: 9px !important;
+        padding: 4px 2px !important;
+    }
+
+    .singleTable :global(.XSMBSimpleTable_leftcol__kMIqh) {
+        width: 22px !important;
+        min-width: 22px !important;
+        max-width: 22px !important;
+        padding: 2px 1px !important;
+        font-size: 10px !important;
+    }
+
+    .singleTable :global(.XSMBSimpleTable_kqcell__kmqa2) {
+        padding: 1px 0.5px !important;
+        font-size: 10px !important;
+    }
+
+    .highlightDigit {
+        font-size: 10px !important;
+        margin: 0 0.1px;
+       
+    }
+
+    .highlightDigit[style*="padding"] {
+        padding: 1px 2px !important;
     }
 
 
 
     .conclusionAndTables {
-        gap: 12px;
+        flex-direction: column;
+        gap: 6px;
+        align-items: stretch;
+    }
+    
+    .conclusion {
+        min-width: auto;
+        width: 100%;
+        padding: 5px 6px;
+        flex-shrink: 1;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        text-align: left;
+    }
+
+    .conclusionDate {
+        font-size: 10px;
+        margin-bottom: 0;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    .conclusionText {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .conclusionLabel {
+        font-size: 9px;
+        white-space: nowrap;
+    }
+
+    .conclusionPrize {
+        font-size: 9px;
+        padding: 1px 4px;
+        white-space: nowrap;
+    }
+    
+    .conclusionNumber {
+        font-size: 16px;
+    }
+
+    .conclusionNumber span[data-prediction-digit-index] {
+        padding: 2px 3px !important;
+        font-size: 13px;
+        border-radius: 3px;
+        border-width: 1.5px !important;
+        box-shadow: 0 0 3px currentColor !important;
+    }
+    
+    .tablesContainer {
+        gap: 10px;
+        width: 100%;
+    }
+
+    /* Ẩn arrows trên mobile nhỏ */
+    .conclusionAndTables svg {
+        display: none;
     }
 }

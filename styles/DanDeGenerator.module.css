@@ -23,9 +23,8 @@
 .card1,
 .card {
   background: var(--color-white);
-  border-radius: var(--border-radius-lg);
   padding: 10px;
-  background-image: linear-gradient(to top, #505285 0%, #585e92 12%, #65689f 25%, #7474b0 37%, #7e7ebb 50%, #8389c7 62%, #9795d4 75%, #a2a1dc 87%, #b5aee4 100%);
+  background-color: #fdd6bd;
   border: 1px solid var(--color-gray-200);
   animation: slideIn var(--transition-slower) ease;
 }
@@ -40,7 +39,7 @@
 }
 
 .card1 {
-  background-image: linear-gradient(-225deg, #473B7B 0%, #3584A7 51%, #30D2BE 100%);
+  background-color: #FFE29F;
 }
 
 @media (min-width: 768px) {
@@ -1373,7 +1372,6 @@
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   line-height: var(--line-height-relaxed);
   border: 2px solid #4e4376;
-  border-radius: var(--border-radius-lg);
   /* background-image: linear-gradient(-20deg, #2b5876 0%, #4e4376 100%); */
   color: #000;
   /* ✅ FIX: Add base min-height to prevent CLS when results populate */
@@ -1394,11 +1392,41 @@
   pointer-events: auto;
 }
 
+.inputResultsSection {
+  min-height: 180px;
+  contain: layout style paint;
+}
+
+.inputResultsTextarea {
+  min-height: 120px;
+  height: 30vh;
+  max-height: 240px;
+  flex: 0 0 auto;
+}
+
+.mobileLevelSelection {
+  display: none;
+}
+
+.desktopLevelSelection {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobileLevelSelection {
+    display: block;
+  }
+
+  .desktopLevelSelection {
+    display: none;
+  }
+}
+
 @media (min-width: 1024px) {
   .resultsTextarea {
     padding: var(--spacing-3);
     font-size: 14px;
-    min-height: 400px;
+
   }
 }
 
@@ -1444,7 +1472,6 @@
 
   overflow-y: auto;
   border: 2px solid #7e7ebb;
-  border-radius: var(--border-radius-lg);
   background: var(--color-gray-50);
   padding: var(--spacing-3);
 }
@@ -1622,7 +1649,6 @@
   max-height: 300px;
   overflow-y: auto;
   border: 2px solid #1e3c72;
-  border-radius: var(--border-radius-lg);
   background: var(--color-gray-50);
   padding: var(--spacing-3);
 }
@@ -1768,7 +1794,6 @@
   max-height: 300px;
   overflow-y: auto;
   border: 2px solid #1e3c72;
-  border-radius: var(--border-radius-lg);
   background: var(--color-gray-50);
   padding: var(--spacing-3);
 }
@@ -2697,10 +2722,6 @@
 /* Additional Desktop Compact Optimizations */
 @media (min-width: 1024px) {
 
-  /* Reduce border radius for more compact look */
-  .card {
-    border-radius: var(--border-radius-md);
-  }
 
   .inputsSection,
   .buttonsSection {
@@ -2710,7 +2731,6 @@
   .specialSetsContainer,
   .touchSelectionContainer,
   .sumSelectionContainer {
-    border-radius: var(--border-radius-md);
     border-width: 1px;
   }
 

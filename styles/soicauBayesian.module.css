@@ -1,7 +1,7 @@
 /* Soi Cầu Bayesian Page Styles */
 
 .container {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -130,12 +130,7 @@
     font-size: 1.2rem;
 }
 
-/* Predictions */
-.predictions {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
+
 
 
 .actionButtons {
@@ -666,5 +661,66 @@
 
     .recommendationText {
         font-size: 0.9rem;
+    }
+}
+
+.mobileHistoryTriggerWrapper {
+    margin: 20px 0;
+}
+
+.mobileHistoryTrigger {
+    width: 100%;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(118, 75, 162, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobileHistoryTrigger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(118, 75, 162, 0.45);
+}
+
+.mobileHistoryTrigger:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 18px rgba(118, 75, 162, 0.35);
+}
+
+.mobileHistoryTriggerText {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mobileHistoryTriggerIcon {
+    margin-left: 10px;
+    display: inline-flex;
+    align-items: center;
+    animation: mobileHistoryIconPulse 1s ease-in-out infinite;
+}
+
+@keyframes mobileHistoryIconPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    50% {
+        opacity: 0.3;
+        transform: translateX(4px);
+    }
+}
+
+@media (min-width: 769px) {
+    .mobileHistoryTriggerWrapper {
+        display: none;
     }
 }

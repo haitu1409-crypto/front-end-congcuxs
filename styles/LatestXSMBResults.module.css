@@ -17,10 +17,10 @@
 }
 
 .title {
-    font-size: var(--text-2xl);
+    font-size: 18px;
     font-weight: var(--font-bold);
     color: var(--color-gray-900);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background:red;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -28,11 +28,11 @@
 }
 
 .refreshButton {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #ccc;
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,6 +68,10 @@
     padding: 0;
 }
 
+.chatPreviewWrapper {
+    margin-top: 16px;
+}
+
 .footer {
     text-align: center;
     margin-top: var(--spacing-4);
@@ -87,7 +91,7 @@
 @media (max-width: 768px) {
     .container {
       
-        margin: var(--spacing-4) 0;
+       
     }
 
     .title {
@@ -106,7 +110,7 @@
 @media (max-width: 480px) {
     .container {
        
-        margin: var(--spacing-3) 0;
+      
     }
 
     .title {

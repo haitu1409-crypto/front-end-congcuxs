@@ -1,7 +1,6 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import Layout from '../../components/Layout';
-import UpdateButton from '../../components/UpdateButton';
 import { useRouter } from 'next/router';
 import { apiMB } from '../api/kqxsMB';
 import styles from '../../styles/tansuatLoto.module.css';
@@ -74,36 +73,8 @@ const TanSuatLoto = ({ initialStats, initialMetadata, initialDays }) => {
         setDays(selectedDays);
     }, []);
 
-    // Hàm cập nhật thống kê
-    const handleUpdateStats = async () => {
-        try {
-            // Gọi API cập nhật
-            const result = await apiMB.updateTanSuatLotoStats(days);
-            
-            if (result.success) {
-                // Sau khi cập nhật thành công, lấy lại dữ liệu
-                setLoading(true);
-                setError(null);
-                try {
-                    const data = await apiMB.getTanSuatLotoStats(days);
-                    setStats(data.statistics || []);
-                    setMetadata(data.metadata || {});
-                } catch (err) {
-                    setError(err.message || 'Có lỗi xảy ra khi lấy dữ liệu.');
-                    setStats([]);
-                    setMetadata({});
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                throw new Error('Cập nhật không thành công');
-            }
-        } catch (error) {
-            console.error('Error updating stats:', error);
-            throw error; // Re-throw để UpdateButton xử lý
-        }
-    };
-
+    // Fetch dữ liệu khi days thay đổi hoặc khi component mount lần đầu
+    // Điều này đảm bảo dữ liệu luôn được cập nhật mới nhất khi truy cập trang
     useEffect(() => {
         fetchTanSuatLotoStats(days);
     }, [days, fetchTanSuatLotoStats]);
@@ -176,7 +147,7 @@ const TanSuatLoto = ({ initialStats, initialMetadata, initialDays }) => {
                             className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/tan-suat-loto') ? styles.active : ''}`}
                             href="/thongke/tan-suat-loto"
                         >
-                            Thống Kê Tần Suất Loto
+                            Tần Suất Loto
                         </Link>
                         <Link className={styles.actionTK} href="/thongke/giai-dac-biet">
                             Thống Kê Giải Đặc Biệt
@@ -186,10 +157,6 @@ const TanSuatLoto = ({ initialStats, initialMetadata, initialDays }) => {
 
                 <div className={styles.content}>
                     <div>
-                        <div className={styles.metadata}>
-                            <p>{getMessage()}</p>
-                        </div>
-
                         <div className={styles.group_Select}>
                             <div className={styles.selectGroup}>
                                 <label className={styles.options}>Chọn thời gian:</label>
@@ -204,17 +171,11 @@ const TanSuatLoto = ({ initialStats, initialMetadata, initialDays }) => {
                                 </select>
                             </div>
 
-                            <div>
-                                <p className={styles.dateTime}><span>Ngày bắt đầu:</span> {metadata.startDate}</p>
-                                <p className={styles.dateTime}><span>Ngày kết thúc:</span> {metadata.endDate}</p>
+                            <div className={styles.dateTimeContainer}>
+                                <span className={styles.dateTime}><span>Ngày bắt đầu:</span> {metadata.startDate || 'N/A'}</span>
+                                <span className={styles.dateTime}><span>Ngày kết thúc:</span> {metadata.endDate || 'N/A'}</span>
                             </div>
                         </div>
-
-                        {/* Button cập nhật dữ liệu */}
-                        <UpdateButton 
-                            onUpdate={handleUpdateStats}
-                            label="Cập nhật dữ liệu"
-                        />
 
                         {loading && (
                             <div className={styles.tableContainer}>

@@ -47,11 +47,13 @@ const Testimonials = memo(function Testimonials({ reviews }) {
         }
     ];
 
+    const displayReviews = defaultReviews.slice(0, 4);
+
     // Review Schema Markup
     const reviewsSchema = {
         "@context": "https://schema.org",
         "@type": "ItemList",
-        "itemListElement": defaultReviews.map((review, index) => ({
+        "itemListElement": displayReviews.map((review, index) => ({
             "@type": "Review",
             "position": index + 1,
             "reviewRating": {
@@ -89,7 +91,7 @@ const Testimonials = memo(function Testimonials({ reviews }) {
                 </div>
 
                 <div className={styles.reviewsGrid}>
-                    {defaultReviews.map((review, index) => (
+                    {displayReviews.map((review, index) => (
                         <div
                             key={index}
                             className={styles.reviewCard}
@@ -132,13 +134,13 @@ const Testimonials = memo(function Testimonials({ reviews }) {
 
                 <div className={styles.overallRating}>
                     <div className={styles.ratingScore}>
-                        <span className={styles.score}>4.8</span>
+                        <span className={styles.score}>5.0</span>
                         <div className={styles.starsLarge}>
                             {[...Array(5)].map((_, i) => (
                                 <Star
                                     key={i}
                                     size={20}
-                                    fill={i < 4.8 ? "#FFB300" : "none"}
+                                    fill="#FFB300"
                                     stroke="#FFB300"
                                 />
                             ))}

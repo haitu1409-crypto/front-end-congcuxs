@@ -11,7 +11,7 @@
 
 .connectionPath {
     /* stroke color sẽ được set inline từ prop color */
-    stroke-width: 2;
+    stroke-width: 3;
     fill: none;
     opacity: 0.8;
     /* Removed drop-shadow filter để không ảnh hưởng màu theo group */

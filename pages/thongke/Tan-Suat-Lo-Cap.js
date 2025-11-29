@@ -167,7 +167,7 @@ const TanSuatLoCap = ({ initialStats, initialMetadata, initialDays }) => {
                             className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/tan-suat-lo-cap') ? styles.active : ''}`}
                             href="/thongke/tan-suat-lo-cap"
                         >
-                            Thống Kê Tần Suất Lô Cặp
+                            Tần Suất Lô Cặp
                         </Link>
                         <Link className={styles.actionTK} href="/thongke/giai-dac-biet">
                             Thống Kê Giải Đặc Biệt
@@ -176,39 +176,24 @@ const TanSuatLoCap = ({ initialStats, initialMetadata, initialDays }) => {
                 </div>
                 <div className={styles.content}>
                     <div>
-                        <div className={styles.metadata}>
-                            <p>{getMessage()}</p>
-                        </div>
-
                         <div className={styles.group_Select}>
-                            {/* Box 1: Chọn thời gian và button cập nhật */}
-                            <div className={styles.controlBox}>
-                                <div className={styles.selectGroup}>
-                                    <label className={styles.options}>Chọn thời gian:</label>
-                                    <select className={styles.seclect} value={days} onChange={handleDaysChange}
-                                        aria-label="Chọn thời gian để xem thống kê tần suất lô cặp"
-                                    >
-                                        <option value={30}>30 ngày</option>
-                                        <option value={60}>60 ngày</option>
-                                        <option value={90}>90 ngày</option>
-                                        <option value={120}>120 ngày</option>
-                                        <option value={180}>6 tháng</option>
-                                        <option value={365}>1 năm</option>
-                                    </select>
-                                </div>
-
-                                <div className={styles.updateButtonWrapper}>
-                                    <UpdateButton 
-                                        onUpdate={handleUpdateStats}
-                                        label="Cập nhật dữ liệu"
-                                    />
-                                </div>
+                            <div className={styles.selectGroup}>
+                                <label className={styles.options}>Chọn thời gian:</label>
+                                <select className={styles.seclect} value={days} onChange={handleDaysChange}
+                                    aria-label="Chọn thời gian để xem thống kê tần suất lô cặp"
+                                >
+                                    <option value={30}>30 ngày</option>
+                                    <option value={60}>60 ngày</option>
+                                    <option value={90}>90 ngày</option>
+                                    <option value={120}>120 ngày</option>
+                                    <option value={180}>6 tháng</option>
+                                    <option value={365}>1 năm</option>
+                                </select>
                             </div>
 
-                            {/* Box 2: Ngày bắt đầu và ngày kết thúc */}
-                            <div className={styles.dateBox}>
-                                <p className={styles.dateTime}><span>Ngày bắt đầu:</span> {metadata.startDate}</p>
-                                <p className={styles.dateTime}><span>Ngày kết thúc:</span> {metadata.endDate}</p>
+                            <div className={styles.dateTimeContainer}>
+                                <span className={styles.dateTime}><span>Ngày bắt đầu:</span> {metadata.startDate || 'N/A'}</span>
+                                <span className={styles.dateTime}><span>Ngày kết thúc:</span> {metadata.endDate || 'N/A'}</span>
                             </div>
                         </div>
 

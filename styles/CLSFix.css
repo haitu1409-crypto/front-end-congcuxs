@@ -67,9 +67,7 @@ img {
 
 /* ✅ Fix button layout shifts */
 button {
-    min-height: 44px;
-    /* Touch target size */
-    min-width: 44px;
+  
 }
 
 /* ✅ Fix form input shifts */

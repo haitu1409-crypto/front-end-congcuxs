@@ -1,0 +1,697 @@
+/**
+ * LiveResult Styles
+ * Kết hợp layout từ LatestXSMBResults và styles từ XSMBSimpleTable
+ * Thêm animation và live features từ kqxs LiveResult
+ */
+
+/* ============================================
+   CONTAINER & LAYOUT (giống XSMBSimpleTable)
+   ============================================ */
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.header {
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-2, 8px);
+    text-align: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 15px;
+    font-weight: var(--font-bold, 700);
+    color: var(--color-gray-900, #000);
+    background: red;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+.liveBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: #ff0000;
+    color: white;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+}
+
+.liveDot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.content {
+    /* Giống LatestXSMBResults */
+}
+
+.tableWrapper {
+    margin: 0;
+    padding: 0;
+}
+
+.chatPreviewWrapper {
+    margin-top: 16px;
+}
+
+.warning {
+    padding: 12px;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #856404;
+    text-align: center;
+}
+
+.loadingMessage {
+    padding: 40px 20px;
+    text-align: center;
+    color: #666666;
+    font-size: 14px;
+    background: #f9f9f9;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    margin: 20px;
+}
+
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #e0e0e0;
+    border-top: 3px solid #666666;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.errorMessage {
+    padding: 40px 20px;
+    text-align: center;
+    color: #666666;
+    font-size: 14px;
+    background: #f9f9f9;
+    border: 1px solid #ff6b6b;
+    border-radius: 4px;
+    margin: 20px;
+}
+
+.errorMessage h3 {
+    color: #ff6b6b;
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.errorMessage p {
+    margin: 0 0 20px 0;
+    line-height: 1.4;
+}
+
+/* ============================================
+   TABLE STYLES (từ XSMBSimpleTable - giống 100%)
+   ============================================ */
+
+.horizontalLayout {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.mainTableContainer {
+    width: auto;
+    margin: 0 auto;
+    flex-shrink: 1;
+}
+
+.sideTablesContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-shrink: 0;
+    width: auto;
+    justify-content: center;
+}
+
+/* Table cell vertical alignment */
+.container td {
+    vertical-align: top;
+}
+
+.ketqua {
+    border-collapse: collapse;
+    margin: 0;
+    background: #ffffff;
+    max-width: 100%;
+}
+
+.ketqua th,
+.ketqua td {
+    border: 1px solid blue;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 20px;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+.kq_ngay {
+    background: #D9EDF7 !important;
+    color: #333333 !important;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 12px;
+}
+
+.leftcol {
+    background: #D9EDF7 !important;
+    color: #333333 !important;
+    font-weight: bold;
+    text-align: center;
+    font-size: 16px !important;
+}
+
+.kqcell {
+    background: #ffffff;
+    color: #333333;
+    font-weight: bold;
+    padding: 5px 7px;
+    font-size: 22px;
+}
+
+.maDBText {
+    display: inline-block;
+    font-size: 16px;
+    letter-spacing: 0.4px;
+}
+
+.kq_maDB {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    line-height: 1.2;
+}
+
+.kq_0 {
+    background: #ffffff !important;
+    color: #FF0000 !important;
+    font-weight: bold !important;
+}
+
+.kq_1 {
+    background: #ffffff !important;
+}
+
+.kq_2,
+.kq_3 {
+    background: #ffffff !important;
+}
+
+.kq_4,
+.kq_5,
+.kq_6,
+.kq_7,
+.kq_8,
+.kq_9 {
+    background: #ffffff !important;
+}
+
+.kq_10,
+.kq_11,
+.kq_12,
+.kq_13 {
+    background: #ffffff !important;
+}
+
+.kq_14,
+.kq_15,
+.kq_16,
+.kq_17,
+.kq_18,
+.kq_19 {
+    background: #ffffff !important;
+}
+
+.kq_20,
+.kq_21,
+.kq_22 {
+    background: #ffffff !important;
+}
+
+.kq_23,
+.kq_24,
+.kq_25,
+.kq_26 {
+    background: #ffffff !important;
+}
+
+.kq_maDB {
+    background: #ffffff !important;
+}
+
+.lastrow td {
+    border: none !important;
+    background: transparent !important;
+    height: 5px;
+}
+
+/* ============================================
+   LOTO TABLES (từ XSMBSimpleTable)
+   ============================================ */
+
+.dau {
+    border-collapse: collapse;
+    margin: 0;
+    background: #ffffff;
+    table-layout: fixed;
+    width: auto;
+    max-width: 170px;
+    min-width: 160px;
+    align-self: flex-start;
+}
+
+.dau th,
+.dau td {
+    border: 1px solid orange;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    font-weight: normal;
+    padding: 8px 6px;
+}
+
+.dauDigitCol {
+    width: 20px !important;
+    max-width: 20px !important;
+    min-width: 20px !important;
+    padding: 4px 2px !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    background-color: #FFE4B5 !important;
+    color: #333333 !important;
+    border: 1px solid orange !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+}
+
+.dauDataCol {
+    padding: 8px 4px !important;
+    font-size: 16px !important;
+    text-align: left !important;
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid orange !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+.dau th {
+    background: #FFE4B5 !important;
+    color: #333333 !important;
+    font-weight: bold;
+}
+
+.dau_0,
+.dau_1,
+.dau_2,
+.dau_3,
+.dau_4,
+.dau_5,
+.dau_6,
+.dau_7,
+.dau_8,
+.dau_9 {
+    background: #ffffff !important;
+}
+
+.dit {
+    border-collapse: collapse;
+    margin: 0;
+    background: #ffffff;
+    table-layout: fixed;
+    width: auto;
+    max-width: 170px;
+    min-width: 160px;
+    align-self: flex-start;
+}
+
+.dit th,
+.dit td {
+    border: 1px solid purple;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    font-weight: normal;
+    padding: 8px 6px;
+}
+
+.ditDigitCol {
+    width: 20px !important;
+    max-width: 20px !important;
+    min-width: 20px !important;
+    padding: 4px 2px !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    background-color: #E6E6FA !important;
+    color: #333333 !important;
+    border: 1px solid purple !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+}
+
+.ditDataCol {
+    padding: 8px 4px !important;
+    font-size: 16px !important;
+    text-align: left !important;
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid purple !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+.dit th {
+    background: #E6E6FA !important;
+    color: #333333 !important;
+    font-weight: bold;
+}
+
+.dit_0,
+.dit_1,
+.dit_2,
+.dit_3,
+.dit_4,
+.dit_5,
+.dit_6,
+.dit_7,
+.dit_8,
+.dit_9 {
+    background: #ffffff !important;
+}
+
+/* ============================================
+   ANIMATION & LIVE FEATURES (từ kqxs LiveResult)
+   ============================================ */
+
+.running_number {
+    display: inline;
+    vertical-align: middle;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: 0;
+}
+
+.running_2,
+.running_3,
+.running_4,
+.running_5 {
+    min-width: auto;
+}
+
+.ellipsis {
+    display: inline-block;
+    width: auto;
+    text-align: center;
+    color: #999;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+/* Spinner loading cho các cell chưa có kết quả */
+.cellSpinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e0e0e0;
+    border-top: 2px solid #666666;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .horizontalLayout {
+        /* flex-direction: column; */
+        gap: 15px;
+    }
+
+    .mainTableContainer {
+        width: 100%;
+    }
+
+    .sideTablesContainer {
+        flex-direction: row;
+        gap: 15px;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        font-size: 11px;
+    }
+
+    .horizontalLayout {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mainTableContainer {
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+    }
+
+    .sideTablesContainer {
+        display: flex !important;
+        flex-direction: row;
+        gap: 8px;
+        justify-content: center !important;
+        align-items: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 0 5px;
+        margin: 0 auto !important;
+        width: 100% !important;
+    }
+
+    .dau,
+    .dit {
+        flex-shrink: 0;
+        max-width: 180px;
+        min-width: 160px;
+    }
+
+    .ketqua th,
+    .ketqua td,
+    .dau th,
+    .dau td,
+    .dit th,
+    .dit td {
+        font-size: 20px;
+        padding: 6px 3px;
+    }
+
+    .kq_ngay {
+        font-size: 16px;
+    }
+
+    .leftcol {
+        width: 30px !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
+        padding: 6px 3px;
+        font-size: 16px;
+    }
+
+    .dauLeftCol,
+    .ditLeftCol {
+        width: 18px !important;
+        max-width: 18px !important;
+        min-width: 18px !important;
+        padding: 4px 1px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        font-size: 10px;
+    }
+
+    .mainTableContainer {
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+    }
+
+    .sideTablesContainer {
+        display: flex !important;
+        flex-direction: row;
+        gap: 4px;
+        justify-content: center !important;
+        align-items: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 0 3px;
+        margin: 0 auto !important;
+        width: 100% !important;
+    }
+
+    .dau,
+    .dit {
+        flex-shrink: 0;
+        min-width: 140px;
+    }
+
+    .ketqua th,
+    .ketqua td,
+    .dau th,
+    .dau td,
+    .dit th,
+    .dit td {
+        /* font-size: 14px; */
+        padding: 4px 2px;
+    }
+
+    .kq_ngay {
+        font-size: 14px;
+    }
+
+    .leftcol {
+        width: 30px !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
+        padding: 4px 2px;
+        font-size: 14px;
+    }
+
+    .dauLeftCol,
+    .ditLeftCol {
+        width: 16px !important;
+        max-width: 16px !important;
+        min-width: 16px !important;
+        padding: 3px 1px;
+        font-size: 12px;
+    }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .container {
+        animation: none;
+    }
+
+    .digit_container .digit[data-status='animating']::before {
+        animation: none;
+    }
+
+    .spinning {
+        animation: none;
+    }
+
+    .liveBadge {
+        animation: none;
+    }
+
+    .liveDot {
+        animation: none;
+    }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+    .container {
+        background: white;
+        border: 2px solid #000;
+    }
+
+    .title {
+        color: #000;
+        -webkit-text-fill-color: #000;
+    }
+
+    .content {
+        border: 1px solid #000;
+    }
+}

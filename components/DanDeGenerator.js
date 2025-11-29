@@ -658,8 +658,8 @@ const DanDeGenerator = memo(() => {
           }
 
           // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
-          if (uniqueNumbers.length > 40) {
-            setCombinationError(`❌ Quá nhiều số! Chỉ được thêm tối đa 40 số. Hiện tại: ${uniqueNumbers.length} số. Vui lòng xóa bớt ${uniqueNumbers.length - 40} số.`);
+          if (uniqueNumbers.length > 100) {
+            setCombinationError(`❌ Quá nhiều số! Chỉ được thêm tối đa 100 số. Hiện tại: ${uniqueNumbers.length} số. Vui lòng xóa bớt ${uniqueNumbers.length - 100} số.`);
             return;
           }
 
@@ -685,17 +685,7 @@ const DanDeGenerator = memo(() => {
           if (invalidNumbers.length > 0) {
             setCombinationError(`❌ Số không hợp lệ: ${invalidNumbers.join(', ')}. Chỉ chấp nhận số 2 chữ số từ 00-99, cách nhau bằng dấu phẩy.`);
           } else {
-            // Kiểm tra xung đột với số loại bỏ
-            const excludeNums = excludeNumbers.trim() ?
-              excludeNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '').split(',').map(n => n.trim()).filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0')) : [];
-            const combinationNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
-            const conflicts = combinationNums.filter(num => excludeNums.includes(num));
-
-            if (conflicts.length > 0) {
-              setCombinationError(`❌ Xung đột! Số ${conflicts.join(', ')} đã được thêm vào "Loại bỏ số". Không thể vừa thêm vừa loại bỏ cùng lúc.`);
-            } else {
-              setCombinationError(null);
-            }
+            setCombinationError(null);
           }
         } else {
           setCombinationError(null);
@@ -739,8 +729,8 @@ const DanDeGenerator = memo(() => {
         }
 
         // Kiểm tra giới hạn số lượng (sau khi loại bỏ trùng lặp)
-        if (uniqueNumbers.length > 10) {
-          setExcludeError(`❌ Quá nhiều số! Chỉ được loại bỏ tối đa 10 số. Hiện tại: ${uniqueNumbers.length} số. Vui lòng xóa bớt ${uniqueNumbers.length - 10} số.`);
+        if (uniqueNumbers.length > 20) {
+          setExcludeError(`❌ Quá nhiều số! Chỉ được loại bỏ tối đa 20 số. Hiện tại: ${uniqueNumbers.length} số. Vui lòng xóa bớt ${uniqueNumbers.length - 20} số.`);
           return;
         }
 
@@ -749,17 +739,7 @@ const DanDeGenerator = memo(() => {
         if (invalidNumbers.length > 0) {
           setExcludeError(`❌ Số không hợp lệ: ${invalidNumbers.join(', ')}. Chỉ chấp nhận số 2 chữ số từ 00-99, cách nhau bằng dấu phẩy.`);
         } else {
-          // Kiểm tra xung đột với số kết hợp
-          const combinationNums = combinationNumbers.trim() ?
-            combinationNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '').split(',').map(n => n.trim()).filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0')) : [];
-          const excludeNums = uniqueNumbers.filter(n => n !== '' && /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
-          const conflicts = combinationNums.filter(num => excludeNums.includes(num));
-
-          if (conflicts.length > 0) {
-            setExcludeError(`❌ Xung đột! Số ${conflicts.join(', ')} đã được thêm vào "Thêm số". Không thể vừa thêm vừa loại bỏ cùng lúc.`);
-          } else {
-            setExcludeError(null);
-          }
+          setExcludeError(null);
         }
       } else {
         setExcludeError(null);
@@ -786,13 +766,21 @@ const DanDeGenerator = memo(() => {
     const processedValue = combinationNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
     const numbers = processedValue.split(',').map(n => n.trim()).filter(n => n !== '');
 
-    // Loại bỏ số trùng lặp và giữ thứ tự
     const uniqueNumbers = [...new Set(numbers)];
+
+    let excludeSet = new Set();
+    if (excludeNumbers.trim()) {
+      const processedExclude = excludeNumbers.replace(/[;,\s]+/g, ',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+      const excludeArr = processedExclude.split(',').map(n => n.trim()).filter(n => n !== '');
+      const validExclude = excludeArr.filter(n => /^\d{2}$/.test(n) && parseInt(n) <= 99).map(n => n.padStart(2, '0'));
+      excludeSet = new Set(validExclude);
+    }
 
     return uniqueNumbers
       .filter(n => /^\d{2}$/.test(n) && parseInt(n) <= 99)
-      .map(n => n.padStart(2, '0'));
-  }, [combinationNumbers]);
+      .map(n => n.padStart(2, '0'))
+      .filter(n => !excludeSet.has(n));
+  }, [combinationNumbers, excludeNumbers]);
 
   // Parse số loại bỏ thành mảng
   const parseExcludeNumbers = useCallback(() => {
@@ -830,25 +818,8 @@ const DanDeGenerator = memo(() => {
     const combinationNums = parseCombinationNumbers();
     const excludeNums = parseExcludeNumbers();
 
-    if (combinationNums.length > 40 || excludeNums.length > 10) {
+    if (combinationNums.length > 100 || excludeNums.length > 20) {
       return false;
-    }
-
-    // Kiểm tra xung đột giữa số mong muốn và số loại bỏ
-    if (combinationNumbers.trim() && excludeNumbers.trim()) {
-      const conflicts = combinationNums.filter(num => excludeNums.includes(num));
-      if (conflicts.length > 0) {
-        return false;
-      }
-    }
-
-    // Kiểm tra xung đột giữa bộ số đặc biệt và số loại bỏ
-    if (selectedSpecialSets.length > 0 && excludeNumbers.trim()) {
-      const specialNumbers = getCombinedSpecialSetNumbers(selectedSpecialSets);
-      const conflicts = specialNumbers.filter(num => excludeNums.includes(num));
-      if (conflicts.length > 0) {
-        return false;
-      }
     }
 
     return true;
@@ -899,23 +870,6 @@ const DanDeGenerator = memo(() => {
     if (excludeNumbers.trim() && excludeNums.length === 0) {
       setError('❌ Loại bỏ số mong muốn không hợp lệ. Vui lòng nhập số 2 chữ số (00-99), cách nhau bằng dấu phẩy.');
       return;
-    }
-
-    // Kiểm tra xung đột
-    const conflicts = combinationNums.filter(num => excludeNums.includes(num));
-    if (conflicts.length > 0) {
-      setError(`❌ Xung đột! Số ${conflicts.join(', ')} không thể vừa có trong "Thêm số mong muốn" vừa có trong "Loại bỏ số mong muốn".\n\n💡 Vui lòng xóa số ${conflicts.join(', ')} khỏi một trong hai ô.`);
-      return;
-    }
-
-    // Kiểm tra xung đột giữa bộ số đặc biệt và số loại bỏ
-    if (selectedSpecialSets.length > 0 && excludeNums.length > 0) {
-      const specialNumbers = getCombinedSpecialSetNumbers(selectedSpecialSets);
-      const specialConflicts = specialNumbers.filter(num => excludeNums.includes(num));
-      if (specialConflicts.length > 0) {
-        setError(`❌ Xung đột! Số ${specialConflicts.join(', ')} từ bộ số đặc biệt đã được chọn không thể vừa có trong "Loại bỏ số mong muốn".\n\n💡 Vui lòng xóa số ${specialConflicts.join(', ')} khỏi ô "Loại bỏ số mong muốn".`);
-        return;
-      }
     }
 
     // Ngăn chặn request trùng lặp
@@ -1660,7 +1614,7 @@ const DanDeGenerator = memo(() => {
 
                     {combinationNumbers.trim() && (
                       <div style={{ color: '#2563eb', marginBottom: '4px' }}>
-                        ✅ <strong>Thêm số mong muốn:</strong> {parseCombinationNumbers().length}/40 số<br />
+                        ✅ <strong>Thêm số mong muốn:</strong> {parseCombinationNumbers().length}/100 số<br />
                         <span style={{ fontSize: '12px', color: '#1e40af', fontFamily: 'monospace' }}>
                           {parseCombinationNumbers().join(', ')}
                         </span>
@@ -1669,7 +1623,7 @@ const DanDeGenerator = memo(() => {
 
                     {excludeNumbers.trim() && (
                       <div style={{ color: '#dc2626', marginBottom: '4px' }}>
-                        ✅ <strong>Loại bỏ số mong muốn:</strong> {parseExcludeNumbers().length}/10 số<br />
+                        ✅ <strong>Loại bỏ số mong muốn:</strong> {parseExcludeNumbers().length}/20 số<br />
                         <span style={{ fontSize: '12px', color: '#991b1b', fontFamily: 'monospace' }}>
                           {parseExcludeNumbers().join(', ')}
                         </span>
@@ -1855,7 +1809,7 @@ const DanDeGenerator = memo(() => {
               {statsDetailType === 'combinationNumbers' && (
                 <div>
                   <div className={styles.statsDetailInfo}>
-                    <strong>Số lượng:</strong> {parseCombinationNumbers().length}/40 số
+                    <strong>Số lượng:</strong> {parseCombinationNumbers().length}/100 số
                   </div>
                   <div className={styles.statsDetailNumbers}>
                     {parseCombinationNumbers().join(', ')}
@@ -1866,7 +1820,7 @@ const DanDeGenerator = memo(() => {
               {statsDetailType === 'excludeNumbers' && (
                 <div>
                   <div className={styles.statsDetailInfo}>
-                    <strong>Số lượng:</strong> {parseExcludeNumbers().length}/10 số
+                    <strong>Số lượng:</strong> {parseExcludeNumbers().length}/20 số
                   </div>
                   <div className={styles.statsDetailNumbers}>
                     {parseExcludeNumbers().join(', ')}

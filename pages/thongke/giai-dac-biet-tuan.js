@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import Layout from '../../components/Layout';
-import UpdateButton from '../../components/UpdateButton';
 import styles from '../../styles/giaidacbiettuan.module.css';
 import ThongKe from '../../components/ThongKe';
 import CongCuHot from '../../components/CongCuHot';
@@ -103,39 +102,6 @@ const GiaiDacBietTheoTuan = ({ initialStats, initialMetadata, initialMonth, init
         const selectedYear = Number(e.target.value);
         setYear(selectedYear);
     }, []);
-
-    // Hàm cập nhật thống kê
-    const handleUpdateStats = async () => {
-        try {
-            // Gọi API cập nhật
-            const result = await apiMB.updateSpecialStatsByWeek(month, year);
-            
-            if (result.success) {
-                // Sau khi cập nhật thành công, lấy lại dữ liệu
-                setLoading(true);
-                setError(null);
-                try {
-                    const data = await apiMB.getSpecialStatsByWeek(month, year);
-                    setStats(data.statistics || []);
-                    setMetadata(data.metadata || {});
-                    if (!data.statistics || data.statistics.length === 0) {
-                        setError(`Không có dữ liệu giải đặc biệt cho Miền Bắc trong tháng ${month}/${year}.`);
-                    }
-                } catch (err) {
-                    setError(`Không có dữ liệu giải đặc biệt cho Miền Bắc trong tháng ${month}/${year}.`);
-                    setStats([]);
-                    setMetadata({});
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                throw new Error('Cập nhật không thành công');
-            }
-        } catch (error) {
-            console.error('Error updating stats:', error);
-            throw error; // Re-throw để UpdateButton xử lý
-        }
-    };
 
     const toggleContent = () => {
         setIsExpanded(!isExpanded);
@@ -257,7 +223,7 @@ const GiaiDacBietTheoTuan = ({ initialStats, initialMetadata, initialMonth, init
                     <div className={styles.actionBtn}>
                         <Link className={styles.actionTK} href="giai-dac-biet">Thống Kê Giải Đặc Biệt </Link>
                         <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/dau-duoi') ? styles.active : ''}`} href="dau-duoi">Thống Kê Đầu Đuôi </Link>
-                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet-tuan') ? styles.active : ''}`} href="giai-dac-biet-tuan">Thống Kê Giải Đặc Biệt Tuần </Link>
+                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet-tuan') ? styles.active : ''}`} href="giai-dac-biet-tuan">Giải Đặc Biệt Tuần </Link>
                     </div>
                 </div>
 
@@ -269,7 +235,7 @@ const GiaiDacBietTheoTuan = ({ initialStats, initialMetadata, initialMonth, init
                     {/* Bộ lọc: Tháng, Năm */}
                     <div className={styles.group_Select}>
                         <div className={styles.selectGroup}>
-                            <label className={styles.options}>Chọn tháng: </label>
+                            <label className={styles.options}>Tháng: </label>
                             <select className={styles.select} value={month} onChange={handleMonthChange}
                                 aria-label="Chọn tháng để xem thống kê giải đặc biệt tuần"
                             >
@@ -280,7 +246,7 @@ const GiaiDacBietTheoTuan = ({ initialStats, initialMetadata, initialMonth, init
                         </div>
 
                         <div className={styles.selectGroup}>
-                            <label className={styles.options}>Chọn năm: </label>
+                            <label className={styles.options}>Năm: </label>
                             <select className={styles.select} value={year} onChange={handleYearChange}
                                 aria-label="Chọn năm để xem thống kê giải đặc biệt tuần"
                             >
@@ -288,14 +254,6 @@ const GiaiDacBietTheoTuan = ({ initialStats, initialMetadata, initialMonth, init
                                     <option key={y} value={y}>{y}</option>
                                 ))}
                             </select>
-                        </div>
-                        
-                        {/* Button cập nhật dữ liệu */}
-                        <div className={styles.updateButtonWrapper}>
-                            <UpdateButton 
-                                onUpdate={handleUpdateStats}
-                                label="Cập nhật dữ liệu"
-                            />
                         </div>
                     </div>
 
@@ -404,14 +362,16 @@ const GiaiDacBietTheoTuan = ({ initialStats, initialMetadata, initialMonth, init
 
                 {/* Phần nội dung mô tả */}
                 <div className={styles.Group_Content}>
-                    <h2 className={styles.heading}>Thống kê giải đặc biệt theo tuần tại Xổ số Miền Bắc</h2>
+                    <h2 className={styles.heading}>Thống kê giải đặc biệt theo tuần Miền Bắc - Phân tích theo ngày trong tuần</h2>
                     <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : styles.collapsed}`}>
-                        <h3 className={styles.h3}>Thống Kê giải đặc biệt theo ngày trong tuần</h3>
-                        <p className={styles.desc}>Chức năng này cho phép người dùng xem thống kê giải đặc biệt theo các ngày trong tuần (Thứ 2, Thứ 3, ..., Chủ Nhật) trong một tháng, đồng thời có thể chọn từng tháng trong năm để xem giải đặc biệt tương ứng.</p>
-                        <p className={styles.desc}>Thống kê được hiển thị theo các ngày trong tuần, mỗi ô hiển thị giải đặc biệt đã xuất hiện trong ngày đó của tháng đã chọn, cùng với thông tin về ngày xổ số.</p>
-                        <h3 className={styles.h3}>Lợi ích của việc thống kê theo ngày trong tuần</h3>
-                        <p className={styles.desc}>Người chơi có thể theo dõi xu hướng của giải đặc biệt theo từng ngày trong tuần, từ đó đưa ra nhận định và lựa chọn số may mắn phù hợp.</p>
-                        <p className={styles.desc}>Chức năng này đặc biệt hữu ích cho những ai muốn phân tích chi tiết hơn về giải đặc biệt trong một khoảng thời gian ngắn (theo ngày trong tuần).</p>
+                        <h3 className={styles.h3}>Thống kê giải đặc biệt theo ngày trong tuần</h3>
+                        <p className={styles.desc}>Thống kê giải đặc biệt theo tuần là công cụ phân tích kết quả xổ số Miền Bắc theo từng ngày trong tuần (Thứ 2, Thứ 3, Thứ 4, Thứ 5, Thứ 6, Thứ 7, Chủ Nhật). Bạn có thể chọn bất kỳ tháng nào trong năm để xem chi tiết các giải đặc biệt đã xuất hiện, bao gồm số giải đặc biệt và ngày quay thưởng.</p>
+                        
+                        <h3 className={styles.h3}>Cách sử dụng</h3>
+                        <p className={styles.desc}>Chọn tháng và năm muốn xem từ menu dropdown. Bảng thống kê sẽ hiển thị dữ liệu giải đặc biệt theo dạng lịch tuần, mỗi ô tương ứng với một ngày. Bạn có thể bật/tắt các thông tin bổ sung như: ngày xổ số, tổng, đầu, đuôi, chẵn lẻ, bộ số.</p>
+                        
+                        <h3 className={styles.h3}>Lợi ích khi sử dụng</h3>
+                        <p className={styles.desc}>Thống kê giải đặc biệt theo tuần giúp bạn phân tích xu hướng số xuất hiện theo từng ngày, từ đó nhận biết các mẫu số thường về vào các ngày cụ thể trong tuần. Công cụ này đặc biệt hữu ích cho việc tham khảo và nghiên cứu kết quả xổ số Miền Bắc một cách có hệ thống.</p>
                     </div>
                     <button
                         className={styles.toggleBtn}

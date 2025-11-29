@@ -17,6 +17,7 @@ const SITE_DESCRIPTION = 'Bộ công cụ tạo dàn đề chuyên nghiệp hàn
 const OG_IMAGES = {
     default: `${SITE_URL}/imgs/wukong.png`,
     dan9x0x: `${SITE_URL}/imgs/dan9x0x (1).png`,
+    locDanDe: `${SITE_URL}/imgs/dan9x0x (1).png`,
     dan2d: `${SITE_URL}/imgs/dan2d1d (1).png`,
     dan3d4d: `${SITE_URL}/imgs/dan3d4d (1).png`,
     danDacBiet: `${SITE_URL}/imgs/dandacbiet (1).png`,
@@ -254,6 +255,51 @@ const SEO_CONFIG = {
         url: '/dan-9x0x',
         image: OG_IMAGES.dan9x0x,
         canonical: `${SITE_URL}/dan-9x0x`,
+        type: 'article',
+        priority: 0.9,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'HowTo',
+            additionalTypes: ['SoftwareApplication', 'FAQPage']
+        }
+    },
+
+    /**
+     * LỌC DÀN ĐỀ
+     * Primary Keywords: lọc dàn đề, cắt dàn 9x, lọc dàn tổng hợp
+     */
+    locDanDe: {
+        title: 'Lọc Dàn Đề Tổng Hợp | Cắt Dàn 9x-0x, 3X, 2X | Bộ Lọc Số Thông Minh 2025',
+        description: 'Công cụ lọc dàn đề tổng hợp từ các dàn 9x-0x, 3X, 2X, 1X, 0X. Hỗ trợ thêm số mong muốn, loại bỏ số, bỏ kép bằng, chọn bộ đặc biệt, chạm, tổng. Thuật toán ưu tiên tần suất, miễn phí 100%.',
+        keywords: [
+            'lọc dàn đề',
+            'loc dan de',
+            'lọc dàn 9x',
+            'loc dan 9x',
+            'cắt dàn 9x',
+            'cat dan 9x',
+            'lọc dàn tổng hợp',
+            'loc dan tong hop',
+            'lọc dàn đề miễn phí',
+            'loc dan de mien phi',
+            'lọc dàn đề online',
+            'loc dan de online',
+            'lọc dàn đề 9x0x',
+            'loc dan de 9x0x',
+            'lọc dàn đề 3x',
+            'lọc dàn đề 2x',
+            'lọc dàn đề theo chạm',
+            'lọc dàn đề theo tổng',
+            'bộ lọc dàn đề',
+            'bo loc dan de',
+            'thuật toán lọc dàn đề',
+            'thuat toan loc dan de',
+            'loc dan de wukong',
+            'lọc dàn đề wukong'
+        ],
+        url: '/loc-dan-de',
+        image: OG_IMAGES.locDanDe,
+        canonical: `${SITE_URL}/loc-dan-de`,
         type: 'article',
         priority: 0.9,
         changefreq: 'daily',
@@ -1162,6 +1208,119 @@ const SEO_CONFIG = {
         structuredData: {
             type: 'Article',
             additionalTypes: ['FAQPage', 'CollectionPage']
+        }
+    },
+
+    /**
+     * VẼ ĐƯỜNG CẦU SOI CẦU MIỀN BẮC
+     * Primary Keywords: vẽ đường cầu, ve duong cau, soi cầu miền bắc, vẽ cầu xổ số
+     */
+    'soi-cau-bac-cau': {
+        title: 'Vẽ Đường Cầu Soi Cầu Miền Bắc | Phân Tích Định Vị Chính Xác Từng Chữ Số - Miễn Phí 2025',
+        description: 'Công cụ vẽ đường cầu soi cầu miền bắc với định vị chính xác từng chữ số trong mỗi ô. Phân tích pattern, vẽ đường cầu kết nối, tìm quy luật số. Miễn phí 100%, cập nhật realtime!',
+        keywords: [
+            // Primary
+            'vẽ đường cầu', 've duong cau', 'vẽ đường cầu soi cầu',
+            'soi cầu miền bắc', 'soi cau mien bac', 'vẽ cầu xổ số',
+            'vẽ đường cầu XSMB', 've duong cau XSMB',
+            
+            // Long-tail
+            'vẽ đường cầu soi cầu miền bắc', 've duong cau soi cau mien bac',
+            'công cụ vẽ đường cầu', 'cong cu ve duong cau',
+            'phân tích đường cầu xổ số', 'phan tich duong cau xo so',
+            'vẽ cầu định vị chính xác', 've cau dinh vi chinh xac',
+            
+            // Method
+            'vẽ đường cầu theo vị trí', 've duong cau theo vi tri',
+            'phân tích pattern đường cầu', 'phan tich pattern duong cau',
+            'tìm quy luật đường cầu', 'tim quy luat duong cau',
+            
+            // Brand
+            'vẽ đường cầu wukong', 've duong cau wukong',
+            'wukong vẽ đường cầu', 'wukong ve duong cau'
+        ],
+        url: '/soi-cau-bac-cau',
+        image: `${SITE_URL}/imgs/wukong.png`,
+        canonical: `${SITE_URL}/soi-cau-bac-cau`,
+        type: 'article',
+        priority: 0.88,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'WebApplication',
+            additionalTypes: ['HowTo', 'FAQPage']
+        }
+    },
+
+    /**
+     * SOI CẦU ĐẶC BIỆT MIỀN BẮC
+     * Primary Keywords: soi cầu đặc biệt miền bắc, soi cau dac biet mien bac, dự đoán giải đặc biệt
+     */
+    'soi-cau-vi-tri': {
+        title: 'Soi Cầu Đặc Biệt Miền Bắc Theo Vị Trí Số | Phân Tích Pattern Dự Đoán XSMB - Miễn Phí 2025',
+        description: 'Công cụ soi cầu đặc biệt miền bắc dựa trên phân tích vị trí số trong kết quả xổ số. Tìm kiếm pattern nhất quán để dự đoán 2 số cuối giải đặc biệt XSMB. Miễn phí 100%!',
+        keywords: [
+            // Primary
+            'soi cầu đặc biệt miền bắc', 'soi cau dac biet mien bac',
+            'soi cầu đặc biệt XSMB', 'soi cau dac biet XSMB',
+            'dự đoán giải đặc biệt', 'du doan giai dac biet',
+            'soi cầu vị trí', 'soi cau vi tri',
+            
+            // Long-tail
+            'soi cầu đặc biệt miền bắc hôm nay', 'soi cau dac biet mien bac hom nay',
+            'dự đoán giải đặc biệt XSMB', 'du doan giai dac biet XSMB',
+            'phân tích vị trí số giải đặc biệt', 'phan tich vi tri so giai dac biet',
+            'tìm pattern giải đặc biệt', 'tim pattern giai dac biet',
+            
+            // Method
+            'soi cầu theo vị trí số', 'soi cau theo vi tri so',
+            'phân tích pattern giải đặc biệt', 'phan tich pattern giai dac biet',
+            
+            // Brand
+            'soi cầu đặc biệt wukong', 'soi cau dac biet wukong',
+            'wukong soi cầu đặc biệt', 'wukong soi cau dac biet'
+        ],
+        url: '/soi-cau-vi-tri',
+        image: `${SITE_URL}/imgs/wukong.png`,
+        canonical: `${SITE_URL}/soi-cau-vi-tri`,
+        type: 'article',
+        priority: 0.88,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'WebApplication',
+            additionalTypes: ['HowTo', 'FAQPage']
+        }
+    },
+
+    /**
+     * SOI CẦU LÔ TÔ
+     * Primary Keywords: soi cầu lô tô, soi cau lo to, dự đoán lô tô miền bắc
+     */
+    'soi-cau-loto': {
+        title: 'Soi Cầu Lô Tô Miền Bắc | Dự Đoán Lô Tô XSMB Theo Vị Trí - Miễn Phí 2025',
+        description: 'Công cụ soi cầu lô tô miền bắc dựa trên phân tích vị trí số. Dự đoán lô tô XSMB chính xác, tìm pattern nhất quán. Miễn phí 100%!',
+        keywords: [
+            // Primary
+            'soi cầu lô tô', 'soi cau lo to', 'soi cầu lô tô miền bắc',
+            'dự đoán lô tô', 'du doan lo to', 'soi cầu lô tô XSMB',
+            
+            // Long-tail
+            'soi cầu lô tô miền bắc hôm nay', 'soi cau lo to mien bac hom nay',
+            'dự đoán lô tô XSMB', 'du doan lo to XSMB',
+            'phân tích lô tô theo vị trí', 'phan tich lo to theo vi tri',
+            
+            // Brand
+            'soi cầu lô tô wukong', 'soi cau lo to wukong',
+            'wukong soi cầu lô tô', 'wukong soi cau lo to'
+        ],
+        url: '/soi-cau-loto',
+        image: `${SITE_URL}/imgs/wukong.png`,
+        canonical: `${SITE_URL}/soi-cau-loto`,
+        type: 'article',
+        priority: 0.85,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'WebApplication',
+            additionalTypes: ['HowTo', 'FAQPage']
         }
     }
 };

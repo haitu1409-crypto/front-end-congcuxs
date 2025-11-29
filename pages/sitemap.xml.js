@@ -58,6 +58,35 @@ function generateSiteMap(articles) {
         <lastmod>${lastmod}</lastmod>
     </url>
     
+    <url>
+        <loc>${SITE_URL}/loc-dan-de</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Soi Cầu Pages - Priority 0.88 -->
+    <url>
+        <loc>${SITE_URL}/soi-cau-vi-tri</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.88</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/soi-cau-bac-cau</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/soi-cau-loto</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
     <!-- Additional Tool Pages - Priority 0.85 -->
     <url>
         <loc>${SITE_URL}/ghep-lo-xien</loc>
@@ -78,6 +107,20 @@ function generateSiteMap(articles) {
         <loc>${SITE_URL}/kqxs</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/kqxs-live</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/kqxs-10-ngay</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
         <lastmod>${lastmod}</lastmod>
     </url>
     
@@ -256,6 +299,30 @@ export async function getServerSideProps({ res }) {
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
+        <loc>${SITE_URL}/loc-dan-de</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/soi-cau-vi-tri</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.88</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/soi-cau-bac-cau</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/soi-cau-loto</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
         <loc>${SITE_URL}/ghep-lo-xien</loc>
         <changefreq>weekly</changefreq>
         <priority>0.85</priority>
@@ -271,6 +338,18 @@ export async function getServerSideProps({ res }) {
         <loc>${SITE_URL}/kqxs</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/kqxs-live</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/kqxs-10-ngay</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>

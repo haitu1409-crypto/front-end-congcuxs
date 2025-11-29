@@ -1,3 +1,5 @@
+import { fetchJSONWithRetry, handle429Error } from '../../utils/apiUtils';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://backendkqxs-1.onrender.com';
 
 // Hàm tạo userId ngẫu nhiên nếu không có hệ thống đăng nhập
@@ -22,23 +24,17 @@ export const apiMB = {
         const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/gan?days=${days}`;
 
         try {
-            const response = await fetch(url, {
+            return await fetchJSONWithRetry(url, {
                 cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache',
                     'x-user-id': getUserId(),
                 },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`);
-            }
-
-            return await response.json();
+            }, 3);
         } catch (error) {
             console.error('Lỗi khi lấy thống kê lô gan:', error);
-            throw new Error('Không thể tải thống kê lô gan, vui lòng thử lại sau');
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'Không thể tải thống kê lô gan, vui lòng thử lại sau');
         }
     },
 
@@ -67,64 +63,52 @@ export const apiMB = {
     },
 
     getSpecialStats: async (days) => {
-        if (!days || !['10', '20', '30', '60', '90', '365'].includes(days.toString())) {
-            throw new Error('Invalid days parameter. Valid options are: 10, 20, 30, 60, 90, 365.');
+        const daysStr = days.toString();
+        
+        if (!daysStr || !['10', '20', '30', '60', '90', '180', '270', '365'].includes(daysStr)) {
+            throw new Error('Invalid days parameter. Valid options are: 10, 20, 30, 60, 90, 180, 270, 365.');
         }
 
-        const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/special?days=${days}`;
+        const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/special?days=${daysStr}`;
 
         try {
-            const response = await fetch(url, {
+            return await fetchJSONWithRetry(url, {
                 cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache',
                     'x-user-id': getUserId(),
                 },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`);
-            }
-
-            return await response.json();
+            }, 3);
         } catch (error) {
             console.error('Lỗi khi lấy thống kê giải đặc biệt:', error);
-            throw new Error('Không thể tải thống kê giải đặc biệt, vui lòng thử lại sau');
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'Không thể tải thống kê giải đặc biệt, vui lòng thử lại sau');
         }
     },
 
     getSoiCauBacCauStats: async (days = 90) => {
-        if (!days || !['90', '120', '150', '180'].includes(days.toString())) {
-            throw new Error('Invalid days parameter. Valid options are: 90, 120, 150, 180.');
+        if (!days || !['90', '120', '150', '180', '240', '270', '300', '365'].includes(days.toString())) {
+            throw new Error('Invalid days parameter. Valid options are: 90, 120, 150, 180, 240, 270, 300, 365.');
         }
 
         const url = `${API_BASE_URL}/api/soicau-bac-cau?days=${days}`;
 
         try {
-            const response = await fetch(url, {
+            return await fetchJSONWithRetry(url, {
                 cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache',
                     'x-user-id': getUserId(),
                 },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                // Pass through error message từ backend (đặc biệt là 404 yêu cầu cập nhật)
-                const errorMessage = errorData.error || errorData.message || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`;
-                throw new Error(errorMessage);
-            }
-
-            return await response.json();
+            }, 3);
         } catch (error) {
             console.error('Lỗi khi lấy thống kê soi cầu bắc cầu:', error);
             // Nếu đã có message từ backend, giữ nguyên; nếu không thì dùng message mặc định
-            if (error.message && !error.message.includes('Không thể tải')) {
+            if (error.message && !error.message.includes('Không thể tải') && !error.message.includes('429')) {
                 throw error; // Re-throw với message gốc
             }
-            throw new Error('Không thể tải thống kê soi cầu bắc cầu, vui lòng thử lại sau');
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'Không thể tải thống kê soi cầu bắc cầu, vui lòng thử lại sau');
         }
     },
 
@@ -153,7 +137,13 @@ export const apiMB = {
     },
 
     updateSpecialStats: async (days) => {
-        const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/special?days=${days}`;
+        const daysStr = days.toString();
+        
+        if (!daysStr || !['10', '20', '30', '60', '90', '180', '270', '365'].includes(daysStr)) {
+            throw new Error('Invalid days parameter. Valid options are: 10, 20, 30, 60, 90, 180, 270, 365.');
+        }
+        
+        const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/special?days=${daysStr}`;
 
         try {
             const response = await fetch(url, {
@@ -177,30 +167,24 @@ export const apiMB = {
     },
 
     getDauDuoiStats: async (days) => {
-        if (!days || !['30', '60', '90', '120', '180', '365'].includes(days.toString())) {
-            throw new Error('Invalid days parameter. Valid options are: 30, 60, 90, 120, 180, 365.');
+        if (!days || !['30', '60', '90', '120', '180', '270', '365'].includes(days.toString())) {
+            throw new Error('Invalid days parameter. Valid options are: 30, 60, 90, 120, 180, 270, 365.');
         }
 
         const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/dau-duoi?days=${days}`;
 
         try {
-            const response = await fetch(url, {
+            return await fetchJSONWithRetry(url, {
                 cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache',
                     'x-user-id': getUserId(),
                 },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`);
-            }
-
-            return await response.json();
+            }, 3);
         } catch (error) {
             console.error('Lỗi khi lấy thống kê đầu đuôi:', error);
-            throw new Error('Không thể tải thống kê đầu đuôi, vui lòng thử lại sau');
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'Không thể tải thống kê đầu đuôi, vui lòng thử lại sau');
         }
     },
 
@@ -229,30 +213,24 @@ export const apiMB = {
     },
 
     getDauDuoiStatsByDate: async (days) => {
-        if (!days || !['30', '60', '90', '120', '180', '365'].includes(days.toString())) {
-            throw new Error('Invalid days parameter. Valid options are: 30, 60, 90, 120, 180, 365.');
+        if (!days || !['30', '60', '90', '120', '180', '270', '365'].includes(days.toString())) {
+            throw new Error('Invalid days parameter. Valid options are: 30, 60, 90, 120, 180, 270, 365.');
         }
 
         const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/dau-duoi-by-date?days=${days}`;
 
         try {
-            const response = await fetch(url, {
+            return await fetchJSONWithRetry(url, {
                 cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache',
                     'x-user-id': getUserId(),
                 },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`);
-            }
-
-            return await response.json();
+            }, 3);
         } catch (error) {
             console.error('Lỗi khi lấy thống kê đầu đuôi theo ngày:', error);
-            throw new Error('Không thể tải thống kê đầu đuôi theo ngày, vui lòng thử lại sau');
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'Không thể tải thống kê đầu đuôi theo ngày, vui lòng thử lại sau');
         }
     },
 
@@ -260,25 +238,19 @@ export const apiMB = {
         const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/special-by-week?month=${month}&year=${year}`;
 
         try {
-            const response = await fetch(url, {
+            const data = await fetchJSONWithRetry(url, {
                 cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache',
                     'x-user-id': getUserId(),
                 },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`);
-            }
-
-            const data = await response.json();
+            }, 3);
             console.log('Dữ liệu từ API getSpecialStatsByWeek:', data); // Log để kiểm tra dữ liệu
             return data;
         } catch (error) {
             console.error('Lỗi khi lấy thống kê giải đặc biệt theo tuần:', error);
-            throw new Error('Không thể tải thống kê giải đặc biệt theo tuần, vui lòng thử lại sau');
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'Không thể tải thống kê giải đặc biệt theo tuần, vui lòng thử lại sau');
         }
     },
 
@@ -307,30 +279,24 @@ export const apiMB = {
     },
 
     getTanSuatLotoStats: async (days) => {
-        if (!days || !['30', '60', '90', '120', '180', '365'].includes(days.toString())) {
-            throw new Error('Invalid days parameter. Valid options are: 30, 60, 90, 120, 180, 365.');
+        if (!days || !['30', '60', '90', '120', '180', '270', '365'].includes(days.toString())) {
+            throw new Error('Invalid days parameter. Valid options are: 30, 60, 90, 120, 180, 270, 365.');
         }
 
         const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/tan-suat-loto?days=${days}`;
 
         try {
-            const response = await fetch(url, {
+            return await fetchJSONWithRetry(url, {
                 cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache',
                     'x-user-id': getUserId(),
                 },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`);
-            }
-
-            return await response.json();
+            }, 3);
         } catch (error) {
             console.error('Lỗi khi lấy thống kê tần suất loto:', error);
-            throw new Error('Không thể tải thống kê tần suất loto, vui lòng thử lại sau');
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'Không thể tải thống kê tần suất loto, vui lòng thử lại sau');
         }
     },
 
@@ -359,26 +325,26 @@ export const apiMB = {
     },
 
     getTanSuatLoCapStats: async (days) => {
-        if (!days || !['30', '60', '90', '120', '180', '365'].includes(days.toString())) {
-            throw new Error('Invalid days parameter. Valid options are: 30, 60, 90, 120, 180, 365.');
+        if (!days || !['30', '60', '90', '120', '180', '270', '365'].includes(days.toString())) {
+            throw new Error('Invalid days parameter. Valid options are: 30, 60, 90, 120, 180, 270, 365.');
         }
 
         const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/tan-suat-lo-cap?days=${days}`;
         console.log('Calling API:', url);
-        const response = await fetch(url, {
-            cache: 'no-store',
-            headers: {
-                'Cache-Control': 'no-cache',
-                'x-user-id': getUserId(),
-            },
-        });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'KHÔNG GỌI ĐƯỢC API THỐNG KÊ TẦN SUẤT LÔ CẶP....');
+        try {
+            return await fetchJSONWithRetry(url, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'x-user-id': getUserId(),
+                },
+            }, 3);
+        } catch (error) {
+            console.error('Lỗi khi lấy thống kê tần suất lô cặp:', error);
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'KHÔNG GỌI ĐƯỢC API THỐNG KÊ TẦN SUẤT LÔ CẶP....');
         }
-
-        return response.json();
     },
 
     updateTanSuatLoCapStats: async (days) => {
@@ -414,23 +380,17 @@ export const apiMB = {
         const url = `${API_BASE_URL}/api/bac-cau/stats?days=${days}`;
 
         try {
-            const response = await fetch(url, {
+            return await fetchJSONWithRetry(url, {
                 cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache',
                     'x-user-id': getUserId(),
                 },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Lỗi khi gọi API: ${response.status} - ${response.statusText}`);
-            }
-
-            return await response.json();
+            }, 3);
         } catch (error) {
             console.error('Lỗi khi lấy thống kê bắc cầu:', error);
-            throw new Error('Không thể tải thống kê bắc cầu, vui lòng thử lại sau');
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'Không thể tải thống kê bắc cầu, vui lòng thử lại sau');
         }
     },
 
@@ -454,6 +414,95 @@ export const apiMB = {
             return await response.json();
         } catch (error) {
             console.error('Lỗi khi cập nhật thống kê bắc cầu:', error);
+            throw error;
+        }
+    },
+
+    // Thống kê chi tiết Giải Đặc Biệt (gan theo bộ, tổng, chạm, đầu đuôi)
+    getSpecialDetailedStats: async (days) => {
+        const daysStr = days.toString();
+        
+        if (!daysStr || !['10', '20', '30', '60', '90', '180', '270', '365'].includes(daysStr)) {
+            throw new Error('Invalid days parameter. Valid options are: 10, 20, 30, 60, 90, 180, 270, 365.');
+        }
+
+        const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/special-detailed?days=${daysStr}`;
+
+        try {
+            return await fetchJSONWithRetry(url, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'x-user-id': getUserId(),
+                },
+            }, 3);
+        } catch (error) {
+            console.error('Lỗi khi lấy thống kê chi tiết giải đặc biệt:', error);
+            const errorMessage = handle429Error(error);
+            throw new Error(errorMessage || 'Không thể tải thống kê chi tiết giải đặc biệt, vui lòng thử lại sau');
+        }
+    },
+
+    updateSpecialDetailedStats: async (days) => {
+        const daysStr = days.toString();
+        
+        if (!daysStr || !['10', '20', '30', '60', '90', '180', '270', '365'].includes(daysStr)) {
+            throw new Error('Invalid days parameter. Valid options are: 10, 20, 30, 60, 90, 180, 270, 365.');
+        }
+        
+        const url = `${API_BASE_URL}/api/kqxs/xsmb/statistics/special-detailed?days=${daysStr}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-id': getUserId(),
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Lỗi khi cập nhật: ${response.status} - ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi cập nhật thống kê chi tiết:', error);
+            throw error;
+        }
+    },
+
+    // API dự đoán kết quả
+    predictNumbers: async (numbers, days = 365, type = 'special') => {
+        if (!numbers || !Array.isArray(numbers) || numbers.length === 0) {
+            throw new Error('Mảng numbers là bắt buộc và không được rỗng');
+        }
+
+        if (!['loto', 'special'].includes(type)) {
+            throw new Error('Type phải là "loto" hoặc "special"');
+        }
+
+        const url = `${API_BASE_URL}/api/predictions/predict`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-id': getUserId(),
+                },
+                body: JSON.stringify({ numbers, days, type })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Lỗi khi dự đoán: ${response.status} - ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi dự đoán:', error);
             throw error;
         }
     },

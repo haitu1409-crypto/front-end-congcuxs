@@ -4,8 +4,9 @@
  */
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import Head from 'next/head';
 import Layout from '../components/Layout';
+import EnhancedSEOHead from '../components/EnhancedSEOHead';
+import { getPageSEO, generateFAQSchema } from '../config/seoConfig';
 import styles from '../styles/giaidacbiet.module.css';
 import soiCauStyles from '../styles/soiCauBacCau.module.css';
 import ThongKe from '../components/ThongKe';
@@ -69,6 +70,120 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
     const [error, setError] = useState(null);
     const [isExpanded, setIsExpanded] = useState(false);
 
+    // ✅ SEO Configuration
+    const siteUrl = useMemo(() =>
+        process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro',
+        []
+    );
+
+    const seoConfig = useMemo(() => getPageSEO('soi-cau-bac-cau'), []);
+
+    // ✅ Breadcrumbs
+    const breadcrumbs = useMemo(() => [
+        { name: 'Trang chủ', url: siteUrl },
+        { name: 'Vẽ Đường Cầu Soi Cầu Miền Bắc', url: `${siteUrl}/soi-cau-bac-cau` }
+    ], [siteUrl]);
+
+    // ✅ FAQ Data
+    const faqData = useMemo(() => [
+        {
+            question: 'Vẽ đường cầu soi cầu miền bắc là gì?',
+            answer: 'Vẽ đường cầu soi cầu miền bắc là phương pháp phân tích xổ số với định vị chính xác từng chữ số trong mỗi ô của bảng kết quả để vẽ các đường cầu kết nối, tìm pattern và quy luật số.'
+        },
+        {
+            question: 'Cách sử dụng công cụ vẽ đường cầu?',
+            answer: 'Chọn Group (1-12) để bắt đầu, mỗi group có màu riêng. Click vào ô để highlight toàn bộ ô, click vào chữ số cụ thể để thêm vào group, click vào ô trống để tạo điểm tựa. Mũi tên sẽ tự động nối các điểm trong cùng group.'
+        },
+        {
+            question: 'Vẽ đường cầu có chính xác không?',
+            answer: 'Công cụ vẽ đường cầu sử dụng định vị chính xác từng chữ số với vị trí duy nhất được xác định bởi giải, phần tử trong giải, vị trí trong số, và global index. Đảm bảo độ chính xác cao trong phân tích.'
+        },
+        {
+            question: 'Có thể vẽ đường cầu cho bao nhiêu ngày?',
+            answer: 'Bạn có thể chọn số ngày từ 30 đến 365 ngày để phân tích. Mặc định là 90 ngày để có đủ dữ liệu phân tích pattern.'
+        }
+    ], []);
+
+    // ✅ Structured Data
+    const structuredData = useMemo(() => {
+        const normalizedDate = new Date();
+        normalizedDate.setHours(0, 0, 0, 0);
+        const deterministicDate = normalizedDate.toISOString();
+
+        return [
+            {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": "Vẽ Đường Cầu Soi Cầu Miền Bắc - Dàn Đề Wukong",
+                "description": "Công cụ vẽ đường cầu soi cầu miền bắc với định vị chính xác từng chữ số trong mỗi ô. Phân tích pattern, vẽ đường cầu kết nối, tìm quy luật số.",
+                "url": `${siteUrl}/soi-cau-bac-cau`,
+                "applicationCategory": "UtilitiesApplication",
+                "operatingSystem": "Web Browser",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "VND"
+                },
+                "author": {
+                    "@type": "Organization",
+                    "name": "Dàn Đề Wukong",
+                    "url": siteUrl
+                }
+            },
+            {
+                "@context": "https://schema.org",
+                "@type": "HowTo",
+                "name": "Cách sử dụng công cụ vẽ đường cầu soi cầu miền bắc",
+                "description": "Hướng dẫn chi tiết cách vẽ đường cầu để phân tích pattern xổ số",
+                "step": [
+                    {
+                        "@type": "HowToStep",
+                        "position": 1,
+                        "name": "Chọn Group",
+                        "text": "Chọn Group (1-12) để bắt đầu, mỗi group có màu riêng"
+                    },
+                    {
+                        "@type": "HowToStep",
+                        "position": 2,
+                        "name": "Click vào ô hoặc chữ số",
+                        "text": "Click vào ô để highlight toàn bộ ô, click vào chữ số cụ thể (1 trong 5 chữ số) để thêm vào group hiện tại"
+                    },
+                    {
+                        "@type": "HowToStep",
+                        "position": 3,
+                        "name": "Tạo điểm tựa",
+                        "text": "Click vào ô trống để tạo điểm tựa (anchor point) với màu của group"
+                    },
+                    {
+                        "@type": "HowToStep",
+                        "position": 4,
+                        "name": "Xem đường cầu",
+                        "text": "Mũi tên sẽ tự động nối các điểm trong cùng group theo thứ tự, giúp bạn phân tích pattern"
+                    }
+                ]
+            },
+            {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Trang chủ",
+                        "item": siteUrl
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "Vẽ Đường Cầu Soi Cầu Miền Bắc",
+                        "item": `${siteUrl}/soi-cau-bac-cau`
+                    }
+                ]
+            },
+            generateFAQSchema(faqData)
+        ];
+    }, [siteUrl, faqData]);
+
     // Toggle states cho các thông tin hiển thị
     const [showDate, setShowDate] = useState(true);
     const [showTotal, setShowTotal] = useState(false);
@@ -82,7 +197,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
     const [lastTwoColorDisplay, setLastTwoColorDisplay] = useState('#c80505'); // Hiển thị ngay trong color picker
     const [isOledMode, setIsOledMode] = useState(false);
     const [viewMode, setViewMode] = useState('week'); // 'week' hoặc 'month'
-    
+
     // Debounce timer ref để tối ưu performance khi đổi màu
     const colorChangeTimerRef = useRef(null);
 
@@ -97,7 +212,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
         let cellKey;
         let weekIndex, dayIndex;
         let isMonthMode = false;
-        
+
         if (viewMode === 'month' && year !== null && month !== null && day !== null) {
             // Month mode: tham số là (dayIndex, monthIndex, year, month, day)
             isMonthMode = true;
@@ -108,23 +223,23 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
             dayIndex = dayIndexOrMonthIndex;
             cellKey = `${weekIndex}-${dayIndex}`;
         }
-        
+
         // Tìm group hiện tại (nếu có)
         const currentGroupIndex = selectedGroups.findIndex(g => g.groupId === currentGroupId);
-        
+
         if (currentGroupIndex >= 0) {
             // Group đã tồn tại, kiểm tra xem ô này đã có virtual anchor chưa
             const currentGroup = selectedGroups[currentGroupIndex];
             const existingVirtualIndex = currentGroup.elements.findIndex(
                 el => el.isVirtual && el.cellKey === cellKey
             );
-            
+
             const newGroups = [...selectedGroups];
-            
+
             if (existingVirtualIndex >= 0) {
                 // Nếu đã có, bỏ chọn
                 newGroups[currentGroupIndex].elements = currentGroup.elements.filter((_, idx) => idx !== existingVirtualIndex);
-                
+
                 // Nếu group rỗng thì xóa group luôn
                 if (newGroups[currentGroupIndex].elements.length === 0) {
                     newGroups.splice(currentGroupIndex, 1);
@@ -149,7 +264,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
                 };
                 newGroups[currentGroupIndex].elements = [...currentGroup.elements, virtualElement];
             }
-            
+
             setSelectedGroups(newGroups);
         } else {
             // Group chưa tồn tại, tạo mới với virtual anchor
@@ -195,7 +310,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
 
         // Tìm group hiện tại (nếu có)
         const currentGroupIndex = selectedGroups.findIndex(g => g.groupId === currentGroupId);
-        
+
         if (currentGroupIndex >= 0) {
             // Group đã tồn tại, thêm/xóa element trong group này
             const currentGroup = selectedGroups[currentGroupIndex];
@@ -204,11 +319,11 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
             );
 
             const newGroups = [...selectedGroups];
-            
+
             if (elementIndex >= 0) {
                 // Nếu đã chọn, bỏ chọn (xóa khỏi group)
                 newGroups[currentGroupIndex].elements = currentGroup.elements.filter((_, idx) => idx !== elementIndex);
-                
+
                 // Nếu group rỗng thì xóa group luôn
                 if (newGroups[currentGroupIndex].elements.length === 0) {
                     newGroups.splice(currentGroupIndex, 1);
@@ -217,7 +332,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
                 // Nếu chưa chọn, thêm vào group hiện tại
                 newGroups[currentGroupIndex].elements = [...currentGroup.elements, element];
             }
-            
+
             setSelectedGroups(newGroups);
         } else {
             // Group chưa tồn tại, tạo mới
@@ -289,7 +404,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
         } catch (err) {
             // Nếu là lỗi 404 (không có cache), hiển thị message yêu cầu cập nhật
             if (err.message && err.message.includes('Không có dữ liệu')) {
-                            setError('Chưa có dữ liệu cho khoảng thời gian này. Vui lòng nhấn nút "Cập nhật dữ liệu" để tính toán.');
+                setError('Chưa có dữ liệu cho khoảng thời gian này. Vui lòng nhấn nút "Cập nhật dữ liệu" để tính toán.');
             } else {
                 setError(err.message || 'Có lỗi xảy ra khi lấy dữ liệu vẽ đường cầu.');
             }
@@ -418,7 +533,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
         // Push the last row if it has data
         if (currentRow.some(slot => slot !== null)) {
             rows.push(currentRow);
-            
+
             // Kiểm tra nếu ô cuối cùng (cột CN - dayIndex = 6) trong dòng cuối cùng đã có dữ liệu
             const lastCellHasData = currentRow[6] !== null && currentRow[6].stats;
             if (lastCellHasData) {
@@ -436,22 +551,22 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
 
         // Group stats theo năm/tháng/ngày
         const statsByYearMonthDay = {};
-        
+
         stats.forEach(stat => {
             if (!stat.drawDate) return;
             const normalizedDate = stat.drawDate.replace(/\s/g, '').replace(/\/+/g, '/');
             const [dayStr, monthStr, yearStr] = normalizedDate.split('/');
             if (!dayStr || !monthStr || !yearStr) return;
-            
+
             const monthNum = parseInt(monthStr, 10);
             const yearNum = parseInt(yearStr, 10);
             const dayNum = parseInt(dayStr, 10);
-            
+
             // Kiểm tra tính hợp lệ
             if (isNaN(monthNum) || isNaN(yearNum) || isNaN(dayNum)) return;
             if (monthNum < 1 || monthNum > 12) return;
             if (dayNum < 1 || dayNum > 31) return;
-            
+
             const key = `${yearNum}-${monthNum}-${dayNum}`;
             if (!statsByYearMonthDay[key]) {
                 statsByYearMonthDay[key] = [];
@@ -467,7 +582,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
         // Tạo cấu trúc lưới: mỗi năm có 31 dòng x 12 cột
         const yearsData = {};
         const allYears = new Set();
-        
+
         // Lấy tất cả năm có dữ liệu
         Object.keys(statsByYearMonthDay).forEach(key => {
             const [year] = key.split('-');
@@ -518,7 +633,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
             return number.split('').map((digit, index) => {
                 const isLastTwo = index >= numberLength - 2;
                 return (
-                    <span 
+                    <span
                         key={index}
                         className={isLastTwo ? styles.lastTwo : ''}
                     >
@@ -528,16 +643,69 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
             });
         }
 
-        return number.split('').map((digit, digitIndex) => {
-            // Tìm position tương ứng với digitIndex trong cellPosition
-            const position = positions.find(p => 
+        // Xác định các nhóm số liên tiếp được chọn trong cùng một số
+        const selectedDigits = [];
+        number.split('').forEach((digit, digitIndex) => {
+            const position = positions.find(p =>
                 p.cellPosition && p.cellPosition.digitIndex === digitIndex
             );
-            
+            if (position) {
+                const groupInfo = globalIndexToGroupMap.get(position.globalIndex);
+                if (groupInfo) {
+                    selectedDigits.push({
+                        digitIndex,
+                        position,
+                        groupInfo
+                    });
+                }
+            }
+        });
+
+        // Tìm các nhóm liên tiếp (các số được chọn gần kề nhau)
+        const consecutiveGroups = [];
+        if (selectedDigits.length > 0) {
+            let currentGroup = [selectedDigits[0]];
+            for (let i = 1; i < selectedDigits.length; i++) {
+                if (selectedDigits[i].digitIndex === selectedDigits[i - 1].digitIndex + 1) {
+                    // Liên tiếp, thêm vào nhóm hiện tại
+                    currentGroup.push(selectedDigits[i]);
+                } else {
+                    // Không liên tiếp, lưu nhóm hiện tại và bắt đầu nhóm mới
+                    consecutiveGroups.push(currentGroup);
+                    currentGroup = [selectedDigits[i]];
+                }
+            }
+            consecutiveGroups.push(currentGroup);
+        }
+
+        // Tạo map để tra cứu nhanh: digitIndex -> { isStart, isEnd, isMiddle }
+        const digitGroupInfo = new Map();
+        consecutiveGroups.forEach(group => {
+            if (group.length === 1) {
+                // Chỉ có 1 số, vừa là đầu vừa là cuối
+                digitGroupInfo.set(group[0].digitIndex, { isStart: true, isEnd: true, isMiddle: false });
+            } else {
+                // Nhiều số liên tiếp
+                group.forEach((item, idx) => {
+                    digitGroupInfo.set(item.digitIndex, {
+                        isStart: idx === 0,
+                        isEnd: idx === group.length - 1,
+                        isMiddle: idx > 0 && idx < group.length - 1
+                    });
+                });
+            }
+        });
+
+        return number.split('').map((digit, digitIndex) => {
+            // Tìm position tương ứng với digitIndex trong cellPosition
+            const position = positions.find(p =>
+                p.cellPosition && p.cellPosition.digitIndex === digitIndex
+            );
+
             if (!position) {
                 return <span key={digitIndex}>{digit}</span>;
             }
-            
+
             const isHighlighted = position && shouldHighlightDigit({
                 prize,
                 elementIndex,
@@ -550,12 +718,18 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
             const foundGroup = groupInfo?.group || null;
             const selectedIndex = groupInfo ? groupInfo.elIdx : -1;
             const isSelected = groupInfo !== undefined;
-            
+
+            // Lấy thông tin về vị trí trong nhóm liên tiếp
+            const groupPosition = digitGroupInfo.get(digitIndex);
+            const isStart = groupPosition?.isStart || false;
+            const isEnd = groupPosition?.isEnd || false;
+            const isMiddle = groupPosition?.isMiddle || false;
+
             // Màu sắc theo group
             let backgroundColor = 'transparent';
             let borderColor = 'none';
             if (isSelected && foundGroup) {
-                backgroundColor = foundGroup.color.bg;
+                backgroundColor = 'transparent'; // Bỏ background khi được chọn
                 borderColor = foundGroup.color.border;
             } else if (isHighlighted) {
                 backgroundColor = '#fff3cd'; // Vàng nhạt khi highlight
@@ -564,6 +738,55 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
             // Check if this is in the last two digits of the number
             const isLastTwo = digitIndex >= number.length - 2;
 
+            // Xác định border style dựa trên vị trí trong nhóm liên tiếp
+            let borderTop = 'none';
+            let borderRight = 'none';
+            let borderBottom = 'none';
+            let borderLeft = 'none';
+            let borderRadius = '3px';
+
+            if (borderColor !== 'none' && isSelected) {
+                const borderWidth = '4px';
+                const borderValue = `${borderWidth} solid ${borderColor}`;
+
+                if (isStart && isEnd) {
+                    // Chỉ có 1 số được chọn, bo tròn tất cả các góc
+                    borderTop = borderValue;
+                    borderRight = borderValue;
+                    borderBottom = borderValue;
+                    borderLeft = borderValue;
+                    borderRadius = '3px';
+                } else if (isStart) {
+                    // Số đầu của nhóm, bo tròn bên trái
+                    borderTop = borderValue;
+                    borderBottom = borderValue;
+                    borderLeft = borderValue;
+                    borderRight = 'none';
+                    borderRadius = '3px 0 0 3px';
+                } else if (isEnd) {
+                    // Số cuối của nhóm, bo tròn bên phải
+                    borderTop = borderValue;
+                    borderBottom = borderValue;
+                    borderRight = borderValue;
+                    borderLeft = 'none';
+                    borderRadius = '0 3px 3px 0';
+                } else if (isMiddle) {
+                    // Số giữa, không bo tròn, chỉ có border trên và dưới
+                    borderTop = borderValue;
+                    borderBottom = borderValue;
+                    borderLeft = 'none';
+                    borderRight = 'none';
+                    borderRadius = '0';
+                } else {
+                    // Trường hợp đơn lẻ (không trong nhóm liên tiếp)
+                    borderTop = borderValue;
+                    borderRight = borderValue;
+                    borderBottom = borderValue;
+                    borderLeft = borderValue;
+                    borderRadius = '3px';
+                }
+            }
+
             // Tối ưu: Sử dụng CSS variable cho màu 2 số cuối thay vì inline style
             // CSS variable được set ở table level, không cần re-render từng chữ số
             const digitStyle = {
@@ -571,7 +794,11 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
                 backgroundColor,
                 // Không set color inline cho 2 số cuối - dùng CSS variable từ table
                 fontWeight: isSelected ? '700' : isHighlighted ? '600' : '600',
-                border: borderColor !== 'none' ? `2px solid ${borderColor}` : 'none',
+                borderTop: borderTop,
+                borderRight: borderRight,
+                borderBottom: borderBottom,
+                borderLeft: borderLeft,
+                borderRadius: borderRadius,
                 zIndex: isSelected ? 1003 : 1002,
                 boxShadow: isSelected ? `0 0 4px ${borderColor}` : 'none'
             };
@@ -594,7 +821,7 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
                     }}
                     style={digitStyle}
                     title={
-                        position 
+                        position
                             ? `Vị trí: ${position.position}, Global Index: ${position.globalIndex}${isSelected && foundGroup ? ` (Group ${foundGroup.groupId + 1}, ${selectedIndex + 1}/${foundGroup.elements.length})` : ''}`
                             : ''
                     }
@@ -614,554 +841,408 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
     const pageDescription = `Vẽ đường cầu với định vị chính xác từng chữ số trong ${days} ngày.`;
 
     return (
-        <Layout>
-            <Head>
-                <title>{pageTitle}</title>
-                <meta name="description" content={pageDescription} />
-                <meta property="og:title" content={pageTitle} />
-                <meta property="og:description" content={pageDescription} />
-                <meta property="og:type" content="website" />
-                <link rel="canonical" href="https://yourdomain.com/soi-cau-bac-cau" />
-                <meta name="robots" content="index, follow" />
-            </Head>
+        <>
+            {/* ✅ Enhanced SEO Head */}
+            <EnhancedSEOHead
+                pageType="tool"
+                customTitle={seoConfig.title}
+                customDescription={seoConfig.description}
+                customKeywords={seoConfig.keywords.join(', ')}
+                canonicalUrl={seoConfig.canonical}
+                ogImage={seoConfig.image}
+                breadcrumbs={breadcrumbs}
+                faq={faqData}
+                structuredData={structuredData}
+            />
 
-            <div className={styles.container}>
-                <div className={styles.titleGroup}>
-                    <h1 className={styles.title}>{pageTitle}</h1>
-                    <div className={styles.actionBtn}>
-                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/soi-cau-bac-cau') ? styles.active : ''}`} href="/soi-cau-bac-cau">Vẽ Đường Cầu</Link>
-                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet') ? styles.active : ''}`} href="/thongke/giai-dac-biet">Thống Kê Giải Đặc Biệt</Link>
-                    </div>
-                </div>
+            <Layout>
 
-                <div className={styles.content}>
-                    <div className="metadata">
-                        <p className={styles.title}>Bảng vẽ đường cầu từ {metadata.startDate || ''} đến {metadata.endDate || ''}</p>
-                    </div>
-
-                    <div className={styles.group_Select}>
-                        <div className={styles.selectGroup}>
-                            <label className={styles.options}>Chọn số ngày: </label>
-                            <select 
-                                className={styles.select} 
-                                value={days} 
-                                onChange={handleDaysChange}
-                                aria-label="Chọn số ngày để xem vẽ đường cầu"
-                            >
-                                <option value={90}>90 ngày</option>
-                                <option value={120}>120 ngày</option>
-                                <option value={150}>150 ngày</option>
-                                <option value={180}>180 ngày</option>
-                            </select>
+                <div className={styles.container}>
+                    <div className={styles.titleGroup}>
+                        <h1 className={styles.title}>{pageTitle}</h1>
+                        <div className={styles.actionBtn}>
+                            <Link className={`${styles.actionTK} ${router.pathname.startsWith('/soi-cau-bac-cau') ? styles.active : ''}`} href="/soi-cau-bac-cau">Vẽ Đường Cầu</Link>
+                            <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet') ? styles.active : ''}`} href="/thongke/giai-dac-biet">Thống Kê Giải Đặc Biệt</Link>
                         </div>
-                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <label style={{ fontWeight: 'bold', fontSize: '14px', whiteSpace: 'nowrap' }}>
-                                    Chế độ hiển thị:
-                                </label>
-                                <button
-                                    onClick={() => setViewMode(viewMode === 'week' ? 'month' : 'week')}
+                    </div>
+
+                    <div className={styles.content}>
+                        <div className="metadata">
+                            <p className={styles.title}>Bảng vẽ đường cầu từ {metadata.startDate || ''} đến {metadata.endDate || ''}</p>
+                            {metadata.coverageStatus === 'partial' && metadata.coverageMessage && (
+                                <p
                                     style={{
-                                        padding: '8px 16px',
-                                        backgroundColor: viewMode === 'week' ? '#c80505' : '#ffffff',
-                                        color: viewMode === 'week' ? '#ffffff' : '#000000',
-                                        border: `2px solid ${viewMode === 'week' ? '#c80505' : '#e5e7eb'}`,
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '14px',
-                                        fontWeight: 'bold',
-                                        transition: 'all 0.3s ease',
-                                        minWidth: '120px'
+                                        marginTop: '8px',
+                                        color: '#c2410c',
+                                        fontStyle: 'italic',
+                                        fontSize: '14px'
                                     }}
-                                    title={viewMode === 'week' ? 'Đang hiển thị theo tuần - Click để chuyển sang tháng' : 'Đang hiển thị theo tháng - Click để chuyển sang tuần'}
                                 >
-                                    {viewMode === 'week' ? '📅 Theo Tuần' : '📆 Theo Tháng'}
-                                </button>
-                            </div>
-                            <div className={styles.updateButtonWrapper}>
-                                <UpdateButton
-                                    onUpdate={handleUpdateStats}
-                                    label="Cập nhật dữ liệu"
-                                />
-                            </div>
+                                    {metadata.coverageMessage}
+                                </p>
+                            )}
                         </div>
-                    </div>
 
-                    {loading && (
-                        <div className={styles.tableContainer}>
-                            <SkeletonTableDaysOfWeek />
-                        </div>
-                    )}
-
-                    {error && <p className={styles.error}>{error}</p>}
-
-                    {!loading && !error && stats.length > 0 && (
-                        <>
-                            {/* UI chọn group và quản lý groups */}
-                            <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                                        <label style={{ fontWeight: 'bold', fontSize: '14px' }}>Chọn Group:</label>
-                                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                                            {Array.from({ length: 12 }).map((_, idx) => (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => setCurrentGroupId(idx)}
-                                                    style={{
-                                                        padding: '6px 12px',
-                                                        backgroundColor: currentGroupId === idx ? GROUP_COLORS[idx].bg : '#fff',
-                                                        color: currentGroupId === idx ? '#fff' : GROUP_COLORS[idx].bg,
-                                                        border: `2px solid ${GROUP_COLORS[idx].border}`,
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        fontWeight: 'bold',
-                                                        fontSize: '12px',
-                                                        minWidth: '50px'
-                                                    }}
-                                                >
-                                                    {idx + 1}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    {selectedGroups.length > 0 && (
-                                        <button
-                                            onClick={() => {
-                                                setSelectedGroups([]);
-                                            }}
-                                            style={{
-                                                padding: '8px 16px',
-                                                backgroundColor: '#dc3545',
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer',
-                                                fontWeight: 'bold',
-                                                fontSize: '14px'
-                                            }}
-                                            onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
-                                            onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
-                                        >
-                                            Xóa tất cả groups
-                                        </button>
-                                    )}
-                                </div>
-                                {selectedGroups.length > 0 && (
-                                    <div style={{ marginTop: '10px', display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-                                        <span style={{ fontWeight: 'bold', fontSize: '12px' }}>Đã tạo:</span>
-                                        {selectedGroups.map(group => (
-                                            <div 
-                                                key={group.groupId} 
-                                                style={{ 
-                                                    display: 'flex', 
-                                                    gap: '5px', 
-                                                    alignItems: 'center',
-                                                    padding: '4px 8px',
-                                                    backgroundColor: group.color.bg,
-                                                    color: 'white',
-                                                    borderRadius: '4px',
-                                                    fontSize: '12px'
-                                                }}
-                                            >
-                                                <span>Group {group.groupId + 1}</span>
-                                                <span>({group.elements.length})</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                        <div className={styles.group_Select}>
+                            <div className={styles.selectGroup}>
+                                <label className={styles.options}>Chọn số ngày: </label>
+                                <select
+                                    className={styles.select}
+                                    value={days}
+                                    onChange={handleDaysChange}
+                                    aria-label="Chọn số ngày để xem vẽ đường cầu"
+                                >
+                                    <option value={90}>90 ngày</option>
+                                    <option value={120}>120 ngày</option>
+                                    <option value={150}>150 ngày</option>
+                                    <option value={180}>180 ngày</option>
+                                    <option value={240}>240 ngày</option>
+                                    <option value={270}>270 ngày</option>
+                                    <option value={300}>300 ngày</option>
+                                    <option value={365}>365 ngày</option>
+                                </select>
                             </div>
-                            
-                            {/* Toggle Buttons */}
-                            <div className={styles.toggleButtons} style={{ marginBottom: '15px' }}>
-                                <div className={styles.toggleItem}>
-                                    <input type="checkbox" id="soicau-is-date" checked={showDate} onChange={(e) => setShowDate(e.target.checked)} />
-                                    <label htmlFor="soicau-is-date">Ngày</label>
-                                </div>
-                                <div className={styles.toggleItem}>
-                                    <input type="checkbox" id="soicau-is-total" checked={showTotal} onChange={(e) => setShowTotal(e.target.checked)} />
-                                    <label htmlFor="soicau-is-total">Tổng</label>
-                                </div>
-                                <div className={styles.toggleItem}>
-                                    <input type="checkbox" id="soicau-is-head" checked={showHead} onChange={(e) => setShowHead(e.target.checked)} />
-                                    <label htmlFor="soicau-is-head">Đầu</label>
-                                </div>
-                                <div className={styles.toggleItem}>
-                                    <input type="checkbox" id="soicau-is-tail" checked={showTail} onChange={(e) => setShowTail(e.target.checked)} />
-                                    <label htmlFor="soicau-is-tail">Đuôi</label>
-                                </div>
-                                <div className={styles.toggleItem}>
-                                    <input type="checkbox" id="soicau-is-even" checked={showEvenOdd} onChange={(e) => setShowEvenOdd(e.target.checked)} />
-                                    <label htmlFor="soicau-is-even">Chẵn lẻ</label>
-                                </div>
-                                <div className={styles.toggleItem}>
-                                    <input type="checkbox" id="soicau-set" checked={showSet} onChange={(e) => setShowSet(e.target.checked)} />
-                                    <label htmlFor="soicau-set">Bộ</label>
-                                </div>
-                            </div>
-
-                            {/* Control Buttons - Màu 2 chữ số cuối và Dark Mode */}
-                            <div style={{ 
-                                marginBottom: '15px', 
-                                padding: '12px', 
-                                backgroundColor: '#f5f5f5', 
-                                borderRadius: '8px',
-                                display: 'flex',
-                                gap: '12px',
-                                alignItems: 'center',
-                                flexWrap: 'wrap',
-                                justifyContent: 'center'
-                            }}>
+                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <label style={{ fontWeight: 'bold', fontSize: '14px', whiteSpace: 'nowrap' }}>
-                                        Màu 2 số cuối:
-                                    </label>
-                                    <input
-                                        type="color"
-                                        value={lastTwoColorDisplay}
-                                        onChange={(e) => {
-                                            const newColor = e.target.value;
-                                            // Cập nhật ngay để UI phản hồi nhanh
-                                            setLastTwoColorDisplay(newColor);
-                                            
-                                            // Debounce việc cập nhật màu thực sự (tránh re-render quá nhiều)
-                                            if (colorChangeTimerRef.current) {
-                                                clearTimeout(colorChangeTimerRef.current);
-                                            }
-                                            colorChangeTimerRef.current = setTimeout(() => {
-                                                setLastTwoColor(newColor);
-                                            }, 150); // 150ms debounce
-                                        }}
-                                        style={{
-                                            width: '50px',
-                                            height: '38px',
-                                            border: '2px solid #e5e7eb',
-                                            borderRadius: '6px',
-                                            cursor: 'pointer',
-                                            backgroundColor: '#ffffff'
-                                        }}
-                                        title="Chọn màu cho 2 chữ số cuối"
-                                    />
-                                    <button
-                                        onClick={() => {
-                                            const defaultColor = '#c80505';
-                                            setLastTwoColorDisplay(defaultColor);
-                                            if (colorChangeTimerRef.current) {
-                                                clearTimeout(colorChangeTimerRef.current);
-                                            }
-                                            setLastTwoColor(defaultColor);
-                                        }}
-                                        style={{
-                                            padding: '6px 12px',
-                                            backgroundColor: '#fff',
-                                            border: '1px solid #e5e7eb',
-                                            borderRadius: '6px',
-                                            cursor: 'pointer',
-                                            fontSize: '12px',
-                                            fontWeight: '500'
-                                        }}
-                                        title="Đặt lại màu mặc định"
-                                    >
-                                        Mặc định
-                                    </button>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <label style={{ fontWeight: 'bold', fontSize: '14px', whiteSpace: 'nowrap' }}>
-                                        Chế độ OLED:
+                                        Chế độ hiển thị:
                                     </label>
                                     <button
-                                        onClick={() => setIsOledMode(!isOledMode)}
+                                        onClick={() => setViewMode(viewMode === 'week' ? 'month' : 'week')}
                                         style={{
                                             padding: '8px 16px',
-                                            backgroundColor: isOledMode ? '#000000' : '#ffffff',
-                                            color: isOledMode ? '#ffffff' : '#000000',
-                                            border: `2px solid ${isOledMode ? '#ffffff' : '#000000'}`,
+                                            backgroundColor: viewMode === 'week' ? '#c80505' : '#ffffff',
+                                            color: viewMode === 'week' ? '#ffffff' : '#000000',
+                                            border: `2px solid ${viewMode === 'week' ? '#c80505' : '#e5e7eb'}`,
                                             borderRadius: '6px',
                                             cursor: 'pointer',
                                             fontSize: '14px',
                                             fontWeight: 'bold',
                                             transition: 'all 0.3s ease',
-                                            minWidth: '100px'
+                                            minWidth: '120px'
                                         }}
-                                        title={isOledMode ? 'Tắt chế độ OLED' : 'Bật chế độ OLED'}
+                                        title={viewMode === 'week' ? 'Đang hiển thị theo tuần - Click để chuyển sang tháng' : 'Đang hiển thị theo tháng - Click để chuyển sang tuần'}
                                     >
-                                        {isOledMode ? 'Tắt OLED' : 'Bật OLED'}
+                                        {viewMode === 'week' ? '📅 Theo Tuần' : '📆 Theo Tháng'}
                                     </button>
                                 </div>
+                                <div className={styles.updateButtonWrapper}>
+                                    <UpdateButton
+                                        onUpdate={handleUpdateStats}
+                                        label="Cập nhật dữ liệu"
+                                    />
+                                </div>
                             </div>
-                            
-                            <div className={styles.tableContainer} ref={tableContainerRef} style={{ position: 'relative', overflow: 'visible' }}>
-                            <table 
-                                className={tableClassName}
-                                aria-label="Bảng vẽ đường cầu"
-                                style={{ 
-                                    '--lastTwoColor': lastTwoColor,
-                                    fontSize: viewMode === 'month' ? '0.85rem' : undefined
-                                }}
-                            >
-                                <caption className={styles.caption}>
-                                    Vẽ Đường Cầu trong {days} ngày - Chọn Group (1-12), click vào các chữ số để thêm vào group, mũi tên sẽ nối từng cặp trong cùng group
-                                </caption>
-                                <thead>
-                                    <tr>
-                                        {viewMode === 'week' ? (
-                                            <>
-                                                <th>Thứ 2</th>
-                                                <th>Thứ 3</th>
-                                                <th>Thứ 4</th>
-                                                <th>Thứ 5</th>
-                                                <th>Thứ 6</th>
-                                                <th>Thứ 7</th>
-                                                <th>CN</th>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <th>Tháng 1</th>
-                                                <th>Tháng 2</th>
-                                                <th>Tháng 3</th>
-                                                <th>Tháng 4</th>
-                                                <th>Tháng 5</th>
-                                                <th>Tháng 6</th>
-                                                <th>Tháng 7</th>
-                                                <th>Tháng 8</th>
-                                                <th>Tháng 9</th>
-                                                <th>Tháng 10</th>
-                                                <th>Tháng 11</th>
-                                                <th>Tháng 12</th>
-                                            </>
+                        </div>
+
+                        {loading && (
+                            <div className={styles.tableContainer}>
+                                <SkeletonTableDaysOfWeek />
+                            </div>
+                        )}
+
+                        {error && <p className={styles.error}>{error}</p>}
+
+                        {!loading && !error && stats.length > 0 && (
+                            <>
+                                {/* UI chọn group và quản lý groups */}
+                                <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                            <label style={{ fontWeight: 'bold', fontSize: '14px' }}>Chọn Group:</label>
+                                            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                                                {Array.from({ length: 12 }).map((_, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => setCurrentGroupId(idx)}
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            backgroundColor: 'transparent',
+                                                            color: GROUP_COLORS[idx].bg,
+                                                            border: `4px solid ${GROUP_COLORS[idx].border}`,
+                                                            borderRadius: '4px',
+                                                            cursor: 'pointer',
+                                                            fontWeight: 'bold',
+                                                            fontSize: '12px',
+                                                            minWidth: '50px'
+                                                        }}
+                                                    >
+                                                        {idx + 1}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {selectedGroups.length > 0 && (
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedGroups([]);
+                                                }}
+                                                style={{
+                                                    padding: '8px 16px',
+                                                    backgroundColor: '#dc3545',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    fontWeight: 'bold',
+                                                    fontSize: '14px'
+                                                }}
+                                                onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
+                                                onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
+                                            >
+                                                Xóa tất cả groups
+                                            </button>
                                         )}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {viewMode === 'week' && weeks.length > 0 ? (
-                                        weeks.map((week, weekIndex) => (
-                                            <tr key={weekIndex}>
-                                                {week.map((slot, dayIndex) => {
-                                                    const cellKey = `${weekIndex}-${dayIndex}`;
-                                                    
-                                                    // Kiểm tra xem ô này có virtual anchor không
-                                                    const hasVirtualAnchor = selectedGroups.some(group => 
-                                                        group.elements.some(el => el.isVirtual && el.cellKey === cellKey)
-                                                    );
-                                                    const virtualAnchorGroup = selectedGroups.find(group => 
-                                                        group.elements.some(el => el.isVirtual && el.cellKey === cellKey)
-                                                    );
-                                                    
-                                                    // Kiểm tra xem ô này có chứa chữ số đã chọn không
-                                                    const hasSelectedDigit = slot && slot.stats && selectedGroups.some(group => {
-                                                        const prizes = slot.stats[0]?.prizes || {};
-                                                        const specialPrize = prizes.specialPrize?.[0];
-                                                        if (!specialPrize?.positions) return false;
-                                                        
-                                                        return specialPrize.positions.some(pos => 
-                                                            group.elements.some(el => !el.isVirtual && el.globalIndex === pos.globalIndex)
-                                                        );
-                                                    });
-                                                    const selectedDigitGroup = slot && slot.stats && selectedGroups.find(group => {
-                                                        const prizes = slot.stats[0]?.prizes || {};
-                                                        const specialPrize = prizes.specialPrize?.[0];
-                                                        if (!specialPrize?.positions) return false;
-                                                        
-                                                        return specialPrize.positions.some(pos => 
-                                                            group.elements.some(el => !el.isVirtual && el.globalIndex === pos.globalIndex)
-                                                        );
-                                                    });
-                                                    
-                                                    // Xác định màu background
-                                                    let cellBackgroundColor = 'transparent';
-                                                    if (hasVirtualAnchor && virtualAnchorGroup) {
-                                                        cellBackgroundColor = virtualAnchorGroup.color.bg;
-                                                    } else if (hasSelectedDigit && selectedDigitGroup) {
-                                                        // Convert hex to rgba với opacity 25%
-                                                        const hexColor = selectedDigitGroup.color.bg;
-                                                        const r = parseInt(hexColor.slice(1, 3), 16);
-                                                        const g = parseInt(hexColor.slice(3, 5), 16);
-                                                        const b = parseInt(hexColor.slice(5, 7), 16);
-                                                        cellBackgroundColor = `rgba(${r}, ${g}, ${b}, 0.25)`;
-                                                    }
-                                                    
-                                                    return (
-                                                        <td
-                                                            key={dayIndex}
-                                                            data-week-index={weekIndex}
-                                                            data-day-index={dayIndex}
-                                                            onClick={(e) => {
-                                                                if (!slot || !slot.stats) {
-                                                                    handleEmptyCellClick(weekIndex, dayIndex);
-                                                                }
-                                                            }}
-                                                            style={{ 
-                                                                cursor: (!slot || !slot.stats) ? 'pointer' : 'default',
-                                                                position: 'relative',
-                                                                backgroundColor: cellBackgroundColor,
-                                                                minHeight: '60px', // Đảm bảo các ô trống có chiều cao tối thiểu
-                                                                padding: '8px' // Thêm padding để dễ click hơn
-                                                            }}
-                                                        >
-                                                            {hasVirtualAnchor && (
-                                                                <div style={{
-                                                                    position: 'absolute',
-                                                                    top: '50%',
-                                                                    left: '50%',
-                                                                    transform: 'translate(-50%, -50%)',
-                                                                    width: '32px',
-                                                                    height: '32px',
-                                                                    borderRadius: '50%',
-                                                                    backgroundColor: '#ff0000',
-                                                                    zIndex: 10,
-                                                                    pointerEvents: 'none',
-                                                                    opacity: 1
-                                                                }} />
-                                                            )}
-                                                            {slot && slot.stats ? (
-                                                                <div className={styles.entry}>
-                                                                    {slot.stats.map((stat, statIndex) => {
-                                                                        const prizes = stat.prizes || {};
-                                                                        // Hiển thị giải đặc biệt
-                                                                        const specialPrize = prizes.specialPrize?.[0];
-                                                                        
-                                                                        // Nếu không có specialPrize nhưng có số trong info, hiển thị số
-                                                                        const displayNumber = specialPrize?.number || stat.info?.lastTwoDigits || '';
-                                                                        
-                                                                        // Tính toán thông tin từ số giải đặc biệt
-                                                                        const info = displayNumber && specialPrize?.number 
-                                                                            ? calculateSpecialInfo(specialPrize.number)
-                                                                            : null;
-                                                                        
-                                                                        return (
-                                                                            <div key={statIndex} className={styles.statItem}>
-                                                                                {displayNumber && (
-                                                                                    <div className={styles.number} style={{ padding: 0, margin: 0 }}>
-                                                                                        {specialPrize && specialPrize.number ? (
-                                                                                            renderNumberWithHighlights(
-                                                                                                specialPrize.number,
-                                                                                                specialPrize.positions || [],
-                                                                                                0, // prize
-                                                                                                0, // elementIndex
-                                                                                                weekIndex,
-                                                                                                dayIndex,
-                                                                                                slot
-                                                                                            )
-                                                                                        ) : (
-                                                                                            <>
-                                                                                                {displayNumber.slice(0, -2)}
-                                                                                                <span 
-                                                                                                    className={styles.lastTwo}
-                                                                                                >
-                                                                                                    {displayNumber.slice(-2)}
-                                                                                                </span>
-                                                                                            </>
-                                                                                        )}
-                                                                                    </div>
-                                                                                )}
-                                                                                {showDate && <div className={styles.date}>{slot.date}</div>}
-                                                                                {showTotal && info && <div>{info.total}</div>}
-                                                                                {showHead && info && <div>{info.head}</div>}
-                                                                                {showTail && info && <div>{info.tail}</div>}
-                                                                                {showEvenOdd && info && <div>{info.evenOdd}</div>}
-                                                                                {showSet && info && <div>{info.lastTwo}</div>}
-                                                                            </div>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            ) : (
-                                                                // Placeholder cho ô trống để đảm bảo có chiều cao
-                                                                <div style={{ minHeight: '44px', width: '100%' }}>&nbsp;</div>
-                                                            )}
-                                                        </td>
-                                                    );
-                                                })}
+                                    </div>
+                                    {selectedGroups.length > 0 && (
+                                        <div style={{ marginTop: '10px', display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                                            <span style={{ fontWeight: 'bold', fontSize: '12px' }}>Đã tạo:</span>
+                                            {selectedGroups.map(group => (
+                                                <div
+                                                    key={group.groupId}
+                                                    style={{
+                                                        display: 'flex',
+                                                        gap: '5px',
+                                                        alignItems: 'center',
+                                                        padding: '4px 8px',
+                                                        backgroundColor: group.color.bg,
+                                                        color: 'white',
+                                                        borderRadius: '4px',
+                                                        fontSize: '12px'
+                                                    }}
+                                                >
+                                                    <span>Group {group.groupId + 1}</span>
+                                                    <span>({group.elements.length})</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Toggle Buttons */}
+                                <div className={styles.toggleButtons} style={{ marginBottom: '15px' }}>
+                                    <div className={styles.toggleItem}>
+                                        <input type="checkbox" id="soicau-is-date" checked={showDate} onChange={(e) => setShowDate(e.target.checked)} />
+                                        <label htmlFor="soicau-is-date">Ngày</label>
+                                    </div>
+                                    <div className={styles.toggleItem}>
+                                        <input type="checkbox" id="soicau-is-total" checked={showTotal} onChange={(e) => setShowTotal(e.target.checked)} />
+                                        <label htmlFor="soicau-is-total">Tổng</label>
+                                    </div>
+                                    <div className={styles.toggleItem}>
+                                        <input type="checkbox" id="soicau-is-head" checked={showHead} onChange={(e) => setShowHead(e.target.checked)} />
+                                        <label htmlFor="soicau-is-head">Đầu</label>
+                                    </div>
+                                    <div className={styles.toggleItem}>
+                                        <input type="checkbox" id="soicau-is-tail" checked={showTail} onChange={(e) => setShowTail(e.target.checked)} />
+                                        <label htmlFor="soicau-is-tail">Đuôi</label>
+                                    </div>
+                                    <div className={styles.toggleItem}>
+                                        <input type="checkbox" id="soicau-is-even" checked={showEvenOdd} onChange={(e) => setShowEvenOdd(e.target.checked)} />
+                                        <label htmlFor="soicau-is-even">Chẵn lẻ</label>
+                                    </div>
+                                    <div className={styles.toggleItem}>
+                                        <input type="checkbox" id="soicau-set" checked={showSet} onChange={(e) => setShowSet(e.target.checked)} />
+                                        <label htmlFor="soicau-set">Bộ</label>
+                                    </div>
+                                </div>
+
+                                {/* Control Buttons - Màu 2 chữ số cuối và Dark Mode */}
+                                <div style={{
+                                    marginBottom: '15px',
+                                    padding: '12px',
+                                    backgroundColor: '#f5f5f5',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    gap: '12px',
+                                    alignItems: 'center',
+                                    flexWrap: 'wrap',
+                                    justifyContent: 'center'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <label style={{ fontWeight: 'bold', fontSize: '14px', whiteSpace: 'nowrap' }}>
+                                            Màu 2 số cuối:
+                                        </label>
+                                        <input
+                                            type="color"
+                                            value={lastTwoColorDisplay}
+                                            onChange={(e) => {
+                                                const newColor = e.target.value;
+                                                // Cập nhật ngay để UI phản hồi nhanh
+                                                setLastTwoColorDisplay(newColor);
+
+                                                // Debounce việc cập nhật màu thực sự (tránh re-render quá nhiều)
+                                                if (colorChangeTimerRef.current) {
+                                                    clearTimeout(colorChangeTimerRef.current);
+                                                }
+                                                colorChangeTimerRef.current = setTimeout(() => {
+                                                    setLastTwoColor(newColor);
+                                                }, 150); // 150ms debounce
+                                            }}
+                                            style={{
+                                                width: '50px',
+                                                height: '38px',
+                                                border: '2px solid #e5e7eb',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                backgroundColor: '#ffffff'
+                                            }}
+                                            title="Chọn màu cho 2 chữ số cuối"
+                                        />
+                                        <button
+                                            onClick={() => {
+                                                const defaultColor = '#c80505';
+                                                setLastTwoColorDisplay(defaultColor);
+                                                if (colorChangeTimerRef.current) {
+                                                    clearTimeout(colorChangeTimerRef.current);
+                                                }
+                                                setLastTwoColor(defaultColor);
+                                            }}
+                                            style={{
+                                                padding: '6px 12px',
+                                                backgroundColor: '#fff',
+                                                border: '1px solid #e5e7eb',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                fontSize: '12px',
+                                                fontWeight: '500'
+                                            }}
+                                            title="Đặt lại màu mặc định"
+                                        >
+                                            Mặc định
+                                        </button>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <label style={{ fontWeight: 'bold', fontSize: '14px', whiteSpace: 'nowrap' }}>
+                                            Chế độ OLED:
+                                        </label>
+                                        <button
+                                            onClick={() => setIsOledMode(!isOledMode)}
+                                            style={{
+                                                padding: '8px 16px',
+                                                backgroundColor: isOledMode ? '#000000' : '#ffffff',
+                                                color: isOledMode ? '#ffffff' : '#000000',
+                                                border: `2px solid ${isOledMode ? '#ffffff' : '#000000'}`,
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                fontSize: '14px',
+                                                fontWeight: 'bold',
+                                                transition: 'all 0.3s ease',
+                                                minWidth: '100px'
+                                            }}
+                                            title={isOledMode ? 'Tắt chế độ OLED' : 'Bật chế độ OLED'}
+                                        >
+                                            {isOledMode ? 'Tắt OLED' : 'Bật OLED'}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className={styles.tableContainer} ref={tableContainerRef} style={{ position: 'relative', overflow: 'visible' }}>
+                                    <table
+                                        className={tableClassName}
+                                        aria-label="Bảng vẽ đường cầu"
+                                        style={{
+                                            '--lastTwoColor': lastTwoColor,
+                                            fontSize: viewMode === 'month' ? '0.85rem' : undefined
+                                        }}
+                                    >
+                                        <caption className={styles.caption}>
+                                            Vẽ Đường Cầu trong {days} ngày - Chọn Group (1-12), click vào các chữ số để thêm vào group, mũi tên sẽ nối từng cặp trong cùng group
+                                        </caption>
+                                        <thead>
+                                            <tr>
+                                                {viewMode === 'week' ? (
+                                                    <>
+                                                        <th>Thứ 2</th>
+                                                        <th>Thứ 3</th>
+                                                        <th>Thứ 4</th>
+                                                        <th>Thứ 5</th>
+                                                        <th>Thứ 6</th>
+                                                        <th>Thứ 7</th>
+                                                        <th>CN</th>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <th>Tháng 1</th>
+                                                        <th>Tháng 2</th>
+                                                        <th>Tháng 3</th>
+                                                        <th>Tháng 4</th>
+                                                        <th>Tháng 5</th>
+                                                        <th>Tháng 6</th>
+                                                        <th>Tháng 7</th>
+                                                        <th>Tháng 8</th>
+                                                        <th>Tháng 9</th>
+                                                        <th>Tháng 10</th>
+                                                        <th>Tháng 11</th>
+                                                        <th>Tháng 12</th>
+                                                    </>
+                                                )}
                                             </tr>
-                                        ))
-                                    ) : viewMode === 'month' && months.length > 0 ? (
-                                        <React.Fragment>
-                                            {months.map((yearData, yearIndex) => {
-                                            const { year, grid } = yearData; // grid là 31 dòng x 12 cột
-                                            
-                                            return (
-                                                <React.Fragment key={`year-${year}`}>
-                                                    {months.length > 1 && (
-                                                        <tr>
-                                                            <td colSpan={12} style={{ 
-                                                                backgroundColor: '#f0f0f0', 
-                                                                fontWeight: 'bold', 
-                                                                fontSize: '16px', 
-                                                                padding: '12px',
-                                                                textAlign: 'center'
-                                                            }}>
-                                                                Năm {year}
-                                                            </td>
-                                                        </tr>
-                                                    )}
-                                                    {grid.map((row, dayIndex) => {
-                                                        const day = dayIndex + 1; // Ngày từ 1-31
-                                                        return (
-                                                            <tr key={`day-${day}`}>
-                                                                {row.map((dayStats, monthIndex) => {
-                                                                    const month = monthIndex + 1; // Tháng từ 1-12
-                                                                    const cellKey = `${year}-${month}-${day}`;
-                                                                    // dayStats có thể là null (không có dữ liệu) hoặc array stats
-                                                                    const slot = dayStats && dayStats.length > 0 ? { stats: dayStats, month, year, day } : null;
-                                                            
-                                                            // Kiểm tra virtual anchor và selected digit (tương tự như week mode)
-                                                            const hasVirtualAnchor = selectedGroups.some(group => 
+                                        </thead>
+                                        <tbody>
+                                            {viewMode === 'week' && weeks.length > 0 ? (
+                                                weeks.map((week, weekIndex) => (
+                                                    <tr key={weekIndex}>
+                                                        {week.map((slot, dayIndex) => {
+                                                            const cellKey = `${weekIndex}-${dayIndex}`;
+
+                                                            // Kiểm tra xem ô này có virtual anchor không
+                                                            const hasVirtualAnchor = selectedGroups.some(group =>
                                                                 group.elements.some(el => el.isVirtual && el.cellKey === cellKey)
                                                             );
-                                                            const virtualAnchorGroup = selectedGroups.find(group => 
+                                                            const virtualAnchorGroup = selectedGroups.find(group =>
                                                                 group.elements.some(el => el.isVirtual && el.cellKey === cellKey)
                                                             );
-                                                            
-                                                            const hasSelectedDigit = slot && slot.stats && slot.stats.length > 0 && selectedGroups.some(group => {
+
+                                                            // Kiểm tra xem ô này có chứa chữ số đã chọn không
+                                                            const hasSelectedDigit = slot && slot.stats && selectedGroups.some(group => {
                                                                 const prizes = slot.stats[0]?.prizes || {};
                                                                 const specialPrize = prizes.specialPrize?.[0];
                                                                 if (!specialPrize?.positions) return false;
-                                                                return specialPrize.positions.some(pos => 
+
+                                                                return specialPrize.positions.some(pos =>
                                                                     group.elements.some(el => !el.isVirtual && el.globalIndex === pos.globalIndex)
                                                                 );
                                                             });
-                                                            const selectedDigitGroup = slot && slot.stats && slot.stats.length > 0 && selectedGroups.find(group => {
+                                                            const selectedDigitGroup = slot && slot.stats && selectedGroups.find(group => {
                                                                 const prizes = slot.stats[0]?.prizes || {};
                                                                 const specialPrize = prizes.specialPrize?.[0];
                                                                 if (!specialPrize?.positions) return false;
-                                                                return specialPrize.positions.some(pos => 
+
+                                                                return specialPrize.positions.some(pos =>
                                                                     group.elements.some(el => !el.isVirtual && el.globalIndex === pos.globalIndex)
                                                                 );
                                                             });
-                                                            
+
+                                                            // Xác định màu background
                                                             let cellBackgroundColor = 'transparent';
                                                             if (hasVirtualAnchor && virtualAnchorGroup) {
                                                                 cellBackgroundColor = virtualAnchorGroup.color.bg;
                                                             } else if (hasSelectedDigit && selectedDigitGroup) {
+                                                                // Convert hex to rgba với opacity 25%
                                                                 const hexColor = selectedDigitGroup.color.bg;
                                                                 const r = parseInt(hexColor.slice(1, 3), 16);
                                                                 const g = parseInt(hexColor.slice(3, 5), 16);
                                                                 const b = parseInt(hexColor.slice(5, 7), 16);
                                                                 cellBackgroundColor = `rgba(${r}, ${g}, ${b}, 0.25)`;
                                                             }
-                                                            
+
                                                             return (
                                                                 <td
-                                                                    key={monthIndex}
-                                                                    data-month-index={monthIndex}
-                                                                    data-year={year}
+                                                                    key={dayIndex}
+                                                                    data-week-index={weekIndex}
                                                                     data-day-index={dayIndex}
-                                                                    data-day={day}
                                                                     onClick={(e) => {
                                                                         if (!slot || !slot.stats) {
-                                                                            // dayIndex là index của dòng (0-30), monthIndex là index của cột (0-11)
-                                                                            // Trong month mode: truyền (dayIndex, monthIndex, year, month, day)
-                                                                            const monthActual = monthIndex + 1; // Tháng thực tế (1-12)
-                                                                            handleEmptyCellClick(dayIndex, monthIndex, year, monthActual, day);
+                                                                            handleEmptyCellClick(weekIndex, dayIndex);
                                                                         }
                                                                     }}
-                                                                    style={{ 
+                                                                    style={{
                                                                         cursor: (!slot || !slot.stats) ? 'pointer' : 'default',
                                                                         position: 'relative',
                                                                         backgroundColor: cellBackgroundColor,
-                                                                        minHeight: '60px',
-                                                                        padding: '8px',
-                                                                        // Căn giữa theo chiều dọc nếu không có date, căn trên nếu có date
-                                                                        verticalAlign: showDate ? 'top' : 'middle',
-                                                                        textAlign: 'center' // Giữ text align center
+                                                                        minHeight: '60px', // Đảm bảo các ô trống có chiều cao tối thiểu
+                                                                        padding: '8px' // Thêm padding để dễ click hơn
                                                                     }}
                                                                 >
                                                                     {hasVirtualAnchor && (
@@ -1180,64 +1261,38 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
                                                                         }} />
                                                                     )}
                                                                     {slot && slot.stats ? (
-                                                                        <div 
-                                                                            className={styles.entry}
-                                                                            style={{ 
-                                                                                // Căn giữa nếu không có date, căn trên nếu có date
-                                                                                alignItems: showDate ? 'flex-start' : 'center',
-                                                                                justifyContent: showDate ? 'flex-start' : 'center',
-                                                                                alignContent: showDate ? 'flex-start' : 'center',
-                                                                                height: showDate ? 'auto' : '100%',
-                                                                                minHeight: showDate ? 'auto' : '50px'
-                                                                            }}
-                                                                        >
+                                                                        <div className={styles.entry}>
                                                                             {slot.stats.map((stat, statIndex) => {
                                                                                 const prizes = stat.prizes || {};
                                                                                 // Hiển thị giải đặc biệt
                                                                                 const specialPrize = prizes.specialPrize?.[0];
-                                                                                
+
                                                                                 // Nếu không có specialPrize nhưng có số trong info, hiển thị số
                                                                                 const displayNumber = specialPrize?.number || stat.info?.lastTwoDigits || '';
-                                                                                
+
                                                                                 // Tính toán thông tin từ số giải đặc biệt
-                                                                                const info = displayNumber && specialPrize?.number 
+                                                                                const info = displayNumber && specialPrize?.number
                                                                                     ? calculateSpecialInfo(specialPrize.number)
                                                                                     : null;
-                                                                                
+
                                                                                 return (
-                                                                                    <div 
-                                                                                        key={statIndex} 
-                                                                                        className={styles.statItem}
-                                                                                        style={{
-                                                                                            // Căn giữa theo chiều dọc nếu không có date
-                                                                                            justifyContent: showDate ? 'flex-start' : 'center',
-                                                                                            alignItems: 'center',
-                                                                                            minHeight: showDate ? 'auto' : '100%'
-                                                                                        }}
-                                                                                    >
+                                                                                    <div key={statIndex} className={styles.statItem}>
                                                                                         {displayNumber && (
-                                                                                            <div 
-                                                                                                className={styles.number} 
-                                                                                                style={{ 
-                                                                                                    padding: 0, 
-                                                                                                    margin: 0,
-                                                                                                    fontSize: viewMode === 'month' ? '1.3rem' : undefined
-                                                                                                }}
-                                                            >
+                                                                                            <div className={styles.number} style={{ padding: 0, margin: 0 }}>
                                                                                                 {specialPrize && specialPrize.number ? (
                                                                                                     renderNumberWithHighlights(
                                                                                                         specialPrize.number,
                                                                                                         specialPrize.positions || [],
                                                                                                         0, // prize
                                                                                                         0, // elementIndex
+                                                                                                        weekIndex,
                                                                                                         dayIndex,
-                                                                                                        monthIndex,
                                                                                                         slot
                                                                                                     )
                                                                                                 ) : (
                                                                                                     <>
                                                                                                         {displayNumber.slice(0, -2)}
-                                                                                                        <span 
+                                                                                                        <span
                                                                                                             className={styles.lastTwo}
                                                                                                         >
                                                                                                             {displayNumber.slice(-2)}
@@ -1246,126 +1301,320 @@ const SoiCauBacCau = ({ initialStats, initialMetadata, initialDays }) => {
                                                                                                 )}
                                                                                             </div>
                                                                                         )}
-                                                                                        {showDate && stat.drawDate && (
-                                                                                            <div 
-                                                                                                className={styles.date}
-                                                                                                style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}
-                                                                                            >
-                                                                                                {stat.drawDate}
-                                                                                            </div>
-                                                                                        )}
-                                                                                        {showTotal && info && (
-                                                                                            <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.total}</div>
-                                                                                        )}
-                                                                                        {showHead && info && (
-                                                                                            <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.head}</div>
-                                                                                        )}
-                                                                                        {showTail && info && (
-                                                                                            <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.tail}</div>
-                                                                                        )}
-                                                                                        {showEvenOdd && info && (
-                                                                                            <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.evenOdd}</div>
-                                                                                        )}
-                                                                                        {showSet && info && (
-                                                                                            <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.lastTwo}</div>
-                                                                                        )}
+                                                                                        {showDate && <div className={styles.date}>{slot.date}</div>}
+                                                                                        {showTotal && info && <div>{info.total}</div>}
+                                                                                        {showHead && info && <div>{info.head}</div>}
+                                                                                        {showTail && info && <div>{info.tail}</div>}
+                                                                                        {showEvenOdd && info && <div>{info.evenOdd}</div>}
+                                                                                        {showSet && info && <div>{info.lastTwo}</div>}
                                                                                     </div>
                                                                                 );
                                                                             })}
                                                                         </div>
                                                                     ) : (
+                                                                        // Placeholder cho ô trống để đảm bảo có chiều cao
                                                                         <div style={{ minHeight: '44px', width: '100%' }}>&nbsp;</div>
                                                                     )}
                                                                 </td>
                                                             );
                                                         })}
                                                     </tr>
-                                                );
-                                            })}
-                                        </React.Fragment>
-                                    );
-                                })}
-                                        </React.Fragment>
-                                    ) : (
-                                        <tr>
-                                            <td colSpan={viewMode === 'week' ? 7 : 12} className={styles.noData}>
-                                                Không có dữ liệu vẽ đường cầu trong khoảng thời gian đã chọn.
-                                            </td>
-                                        </tr>
+                                                ))
+                                            ) : viewMode === 'month' && months.length > 0 ? (
+                                                <React.Fragment>
+                                                    {months.map((yearData, yearIndex) => {
+                                                        const { year, grid } = yearData; // grid là 31 dòng x 12 cột
+
+                                                        return (
+                                                            <React.Fragment key={`year-${year}`}>
+                                                                {months.length > 1 && (
+                                                                    <tr>
+                                                                        <td colSpan={12} style={{
+                                                                            backgroundColor: '#f0f0f0',
+                                                                            fontWeight: 'bold',
+                                                                            fontSize: '16px',
+                                                                            padding: '12px',
+                                                                            textAlign: 'center'
+                                                                        }}>
+                                                                            Năm {year}
+                                                                        </td>
+                                                                    </tr>
+                                                                )}
+                                                                {grid.map((row, dayIndex) => {
+                                                                    const day = dayIndex + 1; // Ngày từ 1-31
+                                                                    return (
+                                                                        <tr key={`day-${day}`}>
+                                                                            {row.map((dayStats, monthIndex) => {
+                                                                                const month = monthIndex + 1; // Tháng từ 1-12
+                                                                                const cellKey = `${year}-${month}-${day}`;
+                                                                                // dayStats có thể là null (không có dữ liệu) hoặc array stats
+                                                                                const slot = dayStats && dayStats.length > 0 ? { stats: dayStats, month, year, day } : null;
+
+                                                                                // Kiểm tra virtual anchor và selected digit (tương tự như week mode)
+                                                                                const hasVirtualAnchor = selectedGroups.some(group =>
+                                                                                    group.elements.some(el => el.isVirtual && el.cellKey === cellKey)
+                                                                                );
+                                                                                const virtualAnchorGroup = selectedGroups.find(group =>
+                                                                                    group.elements.some(el => el.isVirtual && el.cellKey === cellKey)
+                                                                                );
+
+                                                                                const hasSelectedDigit = slot && slot.stats && slot.stats.length > 0 && selectedGroups.some(group => {
+                                                                                    const prizes = slot.stats[0]?.prizes || {};
+                                                                                    const specialPrize = prizes.specialPrize?.[0];
+                                                                                    if (!specialPrize?.positions) return false;
+                                                                                    return specialPrize.positions.some(pos =>
+                                                                                        group.elements.some(el => !el.isVirtual && el.globalIndex === pos.globalIndex)
+                                                                                    );
+                                                                                });
+                                                                                const selectedDigitGroup = slot && slot.stats && slot.stats.length > 0 && selectedGroups.find(group => {
+                                                                                    const prizes = slot.stats[0]?.prizes || {};
+                                                                                    const specialPrize = prizes.specialPrize?.[0];
+                                                                                    if (!specialPrize?.positions) return false;
+                                                                                    return specialPrize.positions.some(pos =>
+                                                                                        group.elements.some(el => !el.isVirtual && el.globalIndex === pos.globalIndex)
+                                                                                    );
+                                                                                });
+
+                                                                                let cellBackgroundColor = 'transparent';
+                                                                                if (hasVirtualAnchor && virtualAnchorGroup) {
+                                                                                    cellBackgroundColor = virtualAnchorGroup.color.bg;
+                                                                                } else if (hasSelectedDigit && selectedDigitGroup) {
+                                                                                    const hexColor = selectedDigitGroup.color.bg;
+                                                                                    const r = parseInt(hexColor.slice(1, 3), 16);
+                                                                                    const g = parseInt(hexColor.slice(3, 5), 16);
+                                                                                    const b = parseInt(hexColor.slice(5, 7), 16);
+                                                                                    cellBackgroundColor = `rgba(${r}, ${g}, ${b}, 0.25)`;
+                                                                                }
+
+                                                                                return (
+                                                                                    <td
+                                                                                        key={monthIndex}
+                                                                                        data-month-index={monthIndex}
+                                                                                        data-year={year}
+                                                                                        data-day-index={dayIndex}
+                                                                                        data-day={day}
+                                                                                        onClick={(e) => {
+                                                                                            if (!slot || !slot.stats) {
+                                                                                                // dayIndex là index của dòng (0-30), monthIndex là index của cột (0-11)
+                                                                                                // Trong month mode: truyền (dayIndex, monthIndex, year, month, day)
+                                                                                                const monthActual = monthIndex + 1; // Tháng thực tế (1-12)
+                                                                                                handleEmptyCellClick(dayIndex, monthIndex, year, monthActual, day);
+                                                                                            }
+                                                                                        }}
+                                                                                        style={{
+                                                                                            cursor: (!slot || !slot.stats) ? 'pointer' : 'default',
+                                                                                            position: 'relative',
+                                                                                            backgroundColor: cellBackgroundColor,
+                                                                                            minHeight: showDate ? '60px' : undefined,
+                                                                                            padding: showDate ? '8px' : '4px',
+                                                                                            // Căn giữa theo chiều dọc nếu không có date, căn trên nếu có date
+                                                                                            verticalAlign: showDate ? 'top' : 'middle',
+                                                                                            textAlign: 'center' // Giữ text align center
+                                                                                        }}
+                                                                                    >
+                                                                                        {hasVirtualAnchor && (
+                                                                                            <div style={{
+                                                                                                position: 'absolute',
+                                                                                                top: '50%',
+                                                                                                left: '50%',
+                                                                                                transform: 'translate(-50%, -50%)',
+                                                                                                width: '32px',
+                                                                                                height: '32px',
+                                                                                                borderRadius: '50%',
+                                                                                                backgroundColor: '#ff0000',
+                                                                                                zIndex: 10,
+                                                                                                pointerEvents: 'none',
+                                                                                                opacity: 1
+                                                                                            }} />
+                                                                                        )}
+                                                                                        {slot && slot.stats ? (
+                                                                                            <div
+                                                                                                className={styles.entry}
+                                                                                                style={{
+                                                                                                    // Căn giữa nếu không có date, căn trên nếu có date
+                                                                                                    alignItems: showDate ? 'flex-start' : 'center',
+                                                                                                    justifyContent: showDate ? 'flex-start' : 'center',
+                                                                                                    alignContent: showDate ? 'flex-start' : 'center',
+                                                                                                    height: 'auto',
+                                                                                                    minHeight: showDate ? 'auto' : '0'
+                                                                                                }}
+                                                                                            >
+                                                                                                {slot.stats.map((stat, statIndex) => {
+                                                                                                    const prizes = stat.prizes || {};
+                                                                                                    // Hiển thị giải đặc biệt
+                                                                                                    const specialPrize = prizes.specialPrize?.[0];
+
+                                                                                                    // Nếu không có specialPrize nhưng có số trong info, hiển thị số
+                                                                                                    const displayNumber = specialPrize?.number || stat.info?.lastTwoDigits || '';
+
+                                                                                                    // Tính toán thông tin từ số giải đặc biệt
+                                                                                                    const info = displayNumber && specialPrize?.number
+                                                                                                        ? calculateSpecialInfo(specialPrize.number)
+                                                                                                        : null;
+
+                                                                                                    return (
+                                                                                                        <div
+                                                                                                            key={statIndex}
+                                                                                                            className={styles.statItem}
+                                                                                                            style={{
+                                                                                                                // Căn giữa theo chiều dọc nếu không có date
+                                                                                                                justifyContent: showDate ? 'flex-start' : 'center',
+                                                                                                                alignItems: 'center',
+                                                                                                                minHeight: 'auto'
+                                                                                                            }}
+                                                                                                        >
+                                                                                                            {displayNumber && (
+                                                                                                                <div
+                                                                                                                    className={styles.number}
+                                                                                                                    style={{
+                                                                                                                        padding: 0,
+                                                                                                                        margin: 0,
+                                                                                                                        fontSize: viewMode === 'month' ? '1rem' : undefined
+                                                                                                                    }}
+                                                                                                                >
+                                                                                                                    {specialPrize && specialPrize.number ? (
+                                                                                                                        renderNumberWithHighlights(
+                                                                                                                            specialPrize.number,
+                                                                                                                            specialPrize.positions || [],
+                                                                                                                            0, // prize
+                                                                                                                            0, // elementIndex
+                                                                                                                            dayIndex,
+                                                                                                                            monthIndex,
+                                                                                                                            slot
+                                                                                                                        )
+                                                                                                                    ) : (
+                                                                                                                        <>
+                                                                                                                            {displayNumber.slice(0, -2)}
+                                                                                                                            <span
+                                                                                                                                className={styles.lastTwo}
+                                                                                                                            >
+                                                                                                                                {displayNumber.slice(-2)}
+                                                                                                                            </span>
+                                                                                                                        </>
+                                                                                                                    )}
+                                                                                                                </div>
+                                                                                                            )}
+                                                                                                            {showDate && stat.drawDate && (
+                                                                                                                <div
+                                                                                                                    className={styles.date}
+                                                                                                                    style={{ fontSize: viewMode === 'month' ? '0.65rem' : undefined }}
+                                                                                                                >
+                                                                                                                    {stat.drawDate}
+                                                                                                                </div>
+                                                                                                            )}
+                                                                                                            {showTotal && info && (
+                                                                                                                <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.total}</div>
+                                                                                                            )}
+                                                                                                            {showHead && info && (
+                                                                                                                <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.head}</div>
+                                                                                                            )}
+                                                                                                            {showTail && info && (
+                                                                                                                <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.tail}</div>
+                                                                                                            )}
+                                                                                                            {showEvenOdd && info && (
+                                                                                                                <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.evenOdd}</div>
+                                                                                                            )}
+                                                                                                            {showSet && info && (
+                                                                                                                <div style={{ fontSize: viewMode === 'month' ? '0.75rem' : undefined }}>{info.lastTwo}</div>
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                    );
+                                                                                                })}
+                                                                                            </div>
+                                                                                        ) : (
+                                                                                            <div style={{ minHeight: '44px', width: '100%' }}>&nbsp;</div>
+                                                                                        )}
+                                                                                    </td>
+                                                                                );
+                                                                            })}
+                                                                        </tr>
+                                                                    );
+                                                                })}
+                                                            </React.Fragment>
+                                                        );
+                                                    })}
+                                                </React.Fragment>
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={viewMode === 'week' ? 7 : 12} className={styles.noData}>
+                                                        Không có dữ liệu vẽ đường cầu trong khoảng thời gian đã chọn.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                    {/* Component vẽ mũi tên nối giữa các phần tử trong từng group */}
+                                    {selectedGroups.map(group =>
+                                        group.elements.length >= 2 && group.elements.map((element, index) => {
+                                            if (index === group.elements.length - 1) return null; // Không vẽ mũi tên cho phần tử cuối
+
+                                            return (
+                                                <CellConnectionArrow
+                                                    key={`arrow-group-${group.groupId}-${index}-${index + 1}`}
+                                                    sourceElement={element}
+                                                    targetElement={group.elements[index + 1]}
+                                                    tableContainerRef={tableContainerRef}
+                                                    color={group.color.border}
+                                                />
+                                            );
+                                        })
                                     )}
-                                </tbody>
-                            </table>
-                            {/* Component vẽ mũi tên nối giữa các phần tử trong từng group */}
-                            {selectedGroups.map(group => 
-                                group.elements.length >= 2 && group.elements.map((element, index) => {
-                                    if (index === group.elements.length - 1) return null; // Không vẽ mũi tên cho phần tử cuối
-                                    
-                                    return (
-                                        <CellConnectionArrow
-                                            key={`arrow-group-${group.groupId}-${index}-${index + 1}`}
-                                            sourceElement={element}
-                                            targetElement={group.elements[index + 1]}
-                                            tableContainerRef={tableContainerRef}
-                                            color={group.color.border}
-                                        />
-                                    );
-                                })
-                            )}
-                            </div>
-                        </>
-                    )}
+                                </div>
+                            </>
+                        )}
 
-                    {!loading && !error && stats.length === 0 && metadata.message && (
-                        <p className={styles.noData}>{metadata.message}</p>
-                    )}
-                </div>
-
-                <div className={styles.Group_Content}>
-                    <h2 className={styles.heading}>Vẽ Đường Cầu - Định Vị Chính Xác Từng Chữ Số</h2>
-                    <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : styles.collapsed}`}>
-                        <h3 className={styles.h3}>Giới thiệu Vẽ Đường Cầu</h3>
-                        <p className={styles.desc}>
-                            Vẽ Đường Cầu là phương pháp phân tích xổ số với định vị chính xác từng chữ số trong mỗi ô của bảng kết quả để vẽ các đường cầu kết nối.
-                            Mỗi chữ số có vị trí duy nhất được xác định bởi: giải, phần tử trong giải, vị trí trong số, và global index.
-                        </p>
-                        <h3 className={styles.h3}>Định vị chính xác</h3>
-                        <p className={styles.desc}>
-                            Với {days} ngày, mỗi chữ số trong bảng có vị trí đặc biệt duy nhất. Click vào chữ số để highlight và vẽ đường cầu kết nối giữa các điểm.
-                        </p>
-                        <h3 className={styles.h3}>Cách sử dụng</h3>
-                        <p className={styles.desc}>
-                            - Chọn Group (1-12) để bắt đầu, mỗi group có màu riêng<br />
-                            - Click vào ô để highlight toàn bộ ô<br />
-                            - Click vào chữ số cụ thể (1 trong 5 chữ số) để thêm vào group hiện tại<br />
-                            - Click vào ô trống để tạo "điểm tựa" (anchor point) với màu của group<br />
-                            - Click lại phần tử đã chọn để bỏ chọn khỏi group<br />
-                            - Mũi tên sẽ tự động nối các điểm trong cùng group theo thứ tự<br />
-                            - Thông tin vị trí hiển thị khi hover vào chữ số
-                        </p>
+                        {!loading && !error && stats.length === 0 && metadata.message && (
+                            <p className={styles.noData}>{metadata.message}</p>
+                        )}
                     </div>
-                    <button
-                        className={styles.toggleBtn}
-                        onClick={toggleContent}
-                    >
-                        {isExpanded ? 'Thu gọn' : 'Xem thêm'}
-                    </button>
+
+                    <div className={styles.Group_Content}>
+                        <h2 className={styles.heading}>Vẽ Đường Cầu - Định Vị Chính Xác Từng Chữ Số</h2>
+                        <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : styles.collapsed}`}>
+                            <h3 className={styles.h3}>Giới thiệu Vẽ Đường Cầu</h3>
+                            <p className={styles.desc}>
+                                Vẽ Đường Cầu là phương pháp phân tích xổ số với định vị chính xác từng chữ số trong mỗi ô của bảng kết quả để vẽ các đường cầu kết nối.
+                                Mỗi chữ số có vị trí duy nhất được xác định bởi: giải, phần tử trong giải, vị trí trong số, và global index.
+                            </p>
+                            <h3 className={styles.h3}>Định vị chính xác</h3>
+                            <p className={styles.desc}>
+                                Với {days} ngày, mỗi chữ số trong bảng có vị trí đặc biệt duy nhất. Click vào chữ số để highlight và vẽ đường cầu kết nối giữa các điểm.
+                            </p>
+                            <h3 className={styles.h3}>Cách sử dụng</h3>
+                            <p className={styles.desc}>
+                                - Chọn Group (1-12) để bắt đầu, mỗi group có màu riêng<br />
+                                - Click vào ô để highlight toàn bộ ô<br />
+                                - Click vào chữ số cụ thể (1 trong 5 chữ số) để thêm vào group hiện tại<br />
+                                - Click vào ô trống để tạo "điểm tựa" (anchor point) với màu của group<br />
+                                - Click lại phần tử đã chọn để bỏ chọn khỏi group<br />
+                                - Mũi tên sẽ tự động nối các điểm trong cùng group theo thứ tự<br />
+                                - Thông tin vị trí hiển thị khi hover vào chữ số
+                            </p>
+                        </div>
+                        <button
+                            className={styles.toggleBtn}
+                            onClick={toggleContent}
+                        >
+                            {isExpanded ? 'Thu gọn' : 'Xem thêm'}
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <ThongKe />
-                <CongCuHot />
-            </div>
+                <div>
+                    <ThongKe />
+                    <CongCuHot />
+                </div>
 
-            <button
-                id="scrollToTopBtn"
-                className={styles.scrollToTopBtn}
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                title="Quay lại đầu trang"
-            >
-                ↑
-            </button>
-        </Layout>
+                <button
+                    id="scrollToTopBtn"
+                    className={styles.scrollToTopBtn}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    title="Quay lại đầu trang"
+                >
+                    ↑
+                </button>
+            </Layout>
+        </>
     );
 };
 

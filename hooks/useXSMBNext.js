@@ -26,7 +26,39 @@ export const useXSMBNext = (options = {}) => {
         refreshInterval = 0
     } = options;
 
-    const [data, setData] = useState(null);
+    // ✅ CRITICAL: Cache data để tránh fetch lại mỗi lần mount
+    const cacheKey = `xsmb_${date}`;
+    const getCachedData = () => {
+        if (typeof window === 'undefined') return null;
+        try {
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                const { data: cachedData, timestamp } = JSON.parse(cached);
+                // Cache trong 5 phút
+                if (Date.now() - timestamp < 5 * 60 * 1000) {
+                    return cachedData;
+                }
+            }
+        } catch (e) {
+            console.warn('Error reading cache:', e);
+        }
+        return null;
+    };
+
+    const setCachedData = (dataToCache) => {
+        if (typeof window === 'undefined') return;
+        try {
+            sessionStorage.setItem(cacheKey, JSON.stringify({
+                data: dataToCache,
+                timestamp: Date.now()
+            }));
+        } catch (e) {
+            console.warn('Error setting cache:', e);
+        }
+    };
+
+    // ✅ CRITICAL: Khởi tạo với cached data nếu có
+    const [data, setData] = useState(() => getCachedData());
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [currentDate, setCurrentDate] = useState(date);
@@ -53,6 +85,8 @@ export const useXSMBNext = (options = {}) => {
 
             setData(result);
             setCurrentDate(targetDate);
+            // ✅ Cache data để tránh fetch lại
+            setCachedData(result);
         } catch (err) {
             console.error('❌ Error fetching XSMB data:', err);
             // Xử lý 429 error đặc biệt
@@ -79,14 +113,20 @@ export const useXSMBNext = (options = {}) => {
         fetchData(newDate);
     }, [fetchData]);
 
-    // Auto fetch khi component mount với debounce
+    // Auto fetch khi component mount - ✅ REMOVED debounce để tăng tốc độ
     useEffect(() => {
         if (autoFetch) {
-            const timeoutId = setTimeout(() => {
+            // ✅ CRITICAL: Nếu đã có cached data, không cần fetch ngay
+            // Chỉ fetch nếu không có data hoặc data quá cũ
+            const cachedData = getCachedData();
+            if (!cachedData) {
+                // Không có cache, fetch ngay lập tức
                 fetchData();
-            }, 1000); // Debounce 1 giây
-
-            return () => clearTimeout(timeoutId);
+            } else {
+                // Có cache, fetch trong background để update nếu cần
+                // Nhưng hiển thị cached data ngay
+                fetchData();
+            }
         }
     }, [autoFetch, fetchData]);
 
@@ -265,7 +305,39 @@ export const useXSMBNextToday = (options = {}) => {
         refreshInterval = 600000 // 10 phút
     } = options;
 
-    const [data, setData] = useState(null);
+    // ✅ CRITICAL: Cache data để tránh fetch lại mỗi lần mount
+    const cacheKey = 'xsmb_today';
+    const getCachedData = () => {
+        if (typeof window === 'undefined') return null;
+        try {
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                const { data: cachedData, timestamp } = JSON.parse(cached);
+                // Cache trong 5 phút
+                if (Date.now() - timestamp < 5 * 60 * 1000) {
+                    return cachedData;
+                }
+            }
+        } catch (e) {
+            console.warn('Error reading cache:', e);
+        }
+        return null;
+    };
+
+    const setCachedData = (dataToCache) => {
+        if (typeof window === 'undefined') return;
+        try {
+            sessionStorage.setItem(cacheKey, JSON.stringify({
+                data: dataToCache,
+                timestamp: Date.now()
+            }));
+        } catch (e) {
+            console.warn('Error setting cache:', e);
+        }
+    };
+
+    // ✅ CRITICAL: Khởi tạo với cached data nếu có
+    const [data, setData] = useState(() => getCachedData());
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isToday, setIsToday] = useState(false);
@@ -282,6 +354,8 @@ export const useXSMBNextToday = (options = {}) => {
             console.log('✅ Today XSMB data fetched:', result);
             setData(result);
             setIsToday(true);
+            // ✅ Cache data
+            setCachedData(result);
         } catch (err) {
             console.warn('⚠️ No data for today, trying latest data...', err.message);
             // Nếu không có dữ liệu hôm nay, thử lấy dữ liệu mới nhất
@@ -291,6 +365,8 @@ export const useXSMBNextToday = (options = {}) => {
                 console.log('✅ Latest XSMB data fetched as fallback:', result);
                 setData(result);
                 setIsToday(false);
+                // ✅ Cache data
+                setCachedData(result);
             } catch (fallbackErr) {
                 console.error('❌ Error fetching latest XSMB data:', fallbackErr);
                 setError(fallbackErr.message);
@@ -305,14 +381,18 @@ export const useXSMBNextToday = (options = {}) => {
         fetchData();
     }, [fetchData]);
 
-    // Auto fetch khi component mount với debounce
+    // Auto fetch khi component mount - ✅ REMOVED debounce để tăng tốc độ
     useEffect(() => {
         if (autoFetch) {
-            const timeoutId = setTimeout(() => {
+            // ✅ CRITICAL: Nếu đã có cached data, không cần fetch ngay
+            const cachedData = getCachedData();
+            if (!cachedData) {
+                // Không có cache, fetch ngay lập tức
                 fetchData();
-            }, 1000); // Debounce 1 giây
-
-            return () => clearTimeout(timeoutId);
+            } else {
+                // Có cache, fetch trong background để update nếu cần
+                fetchData();
+            }
         }
     }, [autoFetch, fetchData]);
 

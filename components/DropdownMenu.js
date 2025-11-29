@@ -67,7 +67,8 @@ export default function DropdownMenu({ items }) {
                             {item.icon && (
                                 <item.icon size={16} className={styles.dropdownMenuIcon} />
                             )}
-                            <span>{item.label}</span>
+                            <span className={styles.dropdownMenuLabel}>{item.label}</span>
+                            {item.isNew && <span className={styles.dropdownBadge}>NEW</span>}
                         </Link>
                     ))}
                 </div>
@@ -75,6 +76,11 @@ export default function DropdownMenu({ items }) {
         </div>
     );
 }
+
+
+
+
+
 
 
 

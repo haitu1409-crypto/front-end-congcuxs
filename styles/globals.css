@@ -434,9 +434,6 @@ body.mobile-menu-open {
   a,
   input[type="button"],
   input[type="submit"] {
-    min-height: 44px;
-    /* Apple's recommended minimum */
-    min-width: 44px;
   }
 
   /* Better spacing on mobile */

@@ -94,6 +94,16 @@ const Dan2DPage = memo(function Dan2DPage() {
                 "name": "Công cụ tạo dàn số 2D Wukong"
             }
         ],
+        "author": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        },
         "step": [
             {
                 "@type": "HowToStep",
@@ -150,13 +160,10 @@ const Dan2DPage = memo(function Dan2DPage() {
                     <MobileNavbar currentPage="dan-2d" showCurrentPageItems={false} />
 
                     <header className={styles.pageHeader}>
-                        <h1 className={styles.pageTitle}>
-                            <Target size={20} style={{ display: 'inline', marginRight: '8px' }} />
-                            Tạo Dàn Đề 2D Chuyên Nghiệp - Công Cụ Miễn Phí 2025
-                        </h1>
-                        <p className={styles.pageDescription}>
-                            Tạo dàn số 2D (00-99) chuyên nghiệp với phân loại theo mức độ xuất hiện • Hỗ trợ chuyển đổi 1D sang 2D • Thuật toán Fisher-Yates chuẩn quốc tế • Miễn phí 100%
-                        </p>
+                    <h1 className={styles.pageTitle}>
+                        <Target size={20} style={{ display: 'inline', marginRight: '8px' }} />
+                        Công Cụ Tạo Dàn Đề 2D/1D
+                    </h1>
                     </header>
 
                     <main className={styles.mainContent}>
@@ -180,50 +187,6 @@ const Dan2DPage = memo(function Dan2DPage() {
                             </div>
                         </div>
 
-                        <div className={styles.relatedTools}>
-                            <h3>Công cụ liên quan:</h3>
-                            <p>
-                                Để có thêm thông tin về <Link href="/dan-3d4d">dàn số 3D/4D</Link>,
-                                <Link href="/dan-dac-biet">dàn số đặc biệt</Link>, hoặc
-                                <Link href="/thong-ke">thống kê xổ số 3 miền</Link> để phân tích hiệu quả hơn.
-                            </p>
-                        </div>
-
-                        <div className={styles.detailedGuide}>
-                            <h3>Hướng dẫn chi tiết tạo dàn số 2D chuyên nghiệp</h3>
-                            <div className={styles.guideContent}>
-                                <h4>1. Tìm hiểu về dàn số 2D</h4>
-                                <p>
-                                    Dàn đề 2D là tập hợp các số có 2 chữ số từ 00 đến 99, được sử dụng rộng rãi trong
-                                    lô số và xổ số. Khác với dàn số 3D hay 4D, dàn số 2D có tỷ lệ trúng cao hơn và
-                                    phù hợp với người chơi mới bắt đầu. Công cụ tạo dàn số 2D của chúng tôi sử dụng
-                                    thuật toán Fisher-Yates chuẩn quốc tế để đảm bảo tính ngẫu nhiên và công bằng.
-                                </p>
-
-                                <h4>2. Phân loại theo mức độ xuất hiện</h4>
-                                <p>
-                                    Hệ thống phân tích và phân loại các số theo 3 mức độ: Mức 1 (ít xuất hiện),
-                                    Mức 2 (trung bình), và Mức 3 (nhiều xuất hiện). Việc phân loại này dựa trên
-                                    thống kê thực tế từ kết quả xổ số 3 miền, giúp người chơi có cái nhìn toàn diện
-                                    về xu hướng số học.
-                                </p>
-
-                                <h4>3. Chiến lược chơi hiệu quả</h4>
-                                <p>
-                                    Để tối ưu hóa tỷ lệ trúng, người chơi nên kết hợp dàn số 2D với thống kê xổ số
-                                    và phân tích xu hướng. Tránh chơi quá nhiều số cùng lúc, tập trung vào các số
-                                    có tần suất xuất hiện ổn định. Luôn có kế hoạch tài chính rõ ràng và không
-                                    chơi vượt quá khả năng kinh tế.
-                                </p>
-
-                                <h4>4. Lợi ích của công cụ</h4>
-                                <p>
-                                    Công cụ tạo dàn số 2D miễn phí 100%, không giới hạn số lần sử dụng. Hỗ trợ
-                                    xuất kết quả ra file Excel, copy nhanh, và lưu trữ lịch sử. Giao diện thân thiện,
-                                    hoạt động mượt mà trên mọi thiết bị từ máy tính đến điện thoại di động.
-                                </p>
-                            </div>
-                        </div>
                     </section>
 
                     {/* Featured Snippet - Definition */}

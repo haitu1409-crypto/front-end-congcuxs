@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, lazy, Suspense } from 'react';
 import Layout from '../../components/Layout';
-import UpdateButton from '../../components/UpdateButton';
 import { apiMB } from '../api/kqxsMB';
 import styles from '../../styles/logan.module.css';
 import ThongKe from '../../components/ThongKe';
@@ -16,7 +15,6 @@ const SkeletonRow = () => (
         <td className={styles.number}><div className={styles.skeleton}></div></td>
         <td className={styles.date}><div className={styles.skeleton}></div></td>
         <td className={styles.gapDraws}><div className={styles.skeleton}></div></td>
-        <td className={styles.maxGap}><div className={styles.skeleton}></div></td>
     </tr>
 );
 
@@ -27,7 +25,6 @@ const SkeletonTable = () => (
                 <th>Số</th>
                 <th>Ngày ra cuối</th>
                 <th>Ngày gan</th>
-                <th>Gan max</th>
             </tr>
         </thead>
         <tbody>
@@ -56,8 +53,13 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
         setError(null);
         try {
             const data = await apiMB.getLoGanStats(days);
+            // Đảm bảo metadata được cập nhật đúng
+            if (data && data.metadata) {
+                setMetadata(data.metadata);
+            } else {
+                setMetadata({});
+            }
             setStats(data.statistics || []);
-            setMetadata(data.metadata || {});
         } catch (err) {
             const errorMessage = err.message || 'Có lỗi xảy ra khi lấy dữ liệu.';
             setError(errorMessage);
@@ -77,36 +79,6 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
         setIsExpanded(!isExpanded);
     };
 
-    // Hàm cập nhật thống kê
-    const handleUpdateStats = async () => {
-        try {
-            // Gọi API cập nhật
-            const result = await apiMB.updateLoGanStats(days);
-            
-            if (result.success) {
-                // Sau khi cập nhật thành công, lấy lại dữ liệu
-                setLoading(true);
-                setError(null);
-                try {
-                    const data = await apiMB.getLoGanStats(days);
-                    setStats(data.statistics || []);
-                    setMetadata(data.metadata || {});
-                } catch (err) {
-                    setError(err.message || 'Có lỗi xảy ra khi lấy dữ liệu.');
-                    setStats([]);
-                    setMetadata({});
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                throw new Error('Cập nhật không thành công');
-            }
-        } catch (error) {
-            console.error('Error updating stats:', error);
-            throw error; // Re-throw để UpdateButton xử lý
-        }
-    };
-
     // Memoize bảng dữ liệu
     const tableData = useMemo(() => {
         if (!stats || !Array.isArray(stats)) {
@@ -117,7 +89,6 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
             number: stat.number?.toString().padStart(2, '0') || index.toString().padStart(2, '0'),
             lastAppeared: stat.lastAppeared || '',
             gapDraws: stat.gapDraws || 0,
-            maxGap: stat.maxGap || 0,
         }));
     }, [stats]);
 
@@ -148,8 +119,8 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                     days === 30 ? 'Trong 30 ngày' : 'Trong 60 ngày';
         return (
             <>
-                Thống kê Lô Gan Xổ Số<br></br>
-                <span className={styles.highlightProvince}>Miền Bắc</span><br></br>
+                Thống kê Lô Gan Xổ Số{' '}
+                <span className={styles.highlightProvince}>Miền Bắc</span>{' '}
                 <span className={styles.highlightDraws}>{daysText}</span>
             </>
         );
@@ -162,8 +133,9 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                     days === 30 ? 'Trong 30 ngày' : 'Trong 60 ngày';
         return (
             <>
-                Thống kê Lô Gan trong<br></br>
-                <span className={styles.highlightDraws}>{daysText}</span> Xổ số <span className={styles.highlightProvince}>Miền Bắc</span>
+                Thống kê Lô Gan trong{' '}
+                <span className={styles.highlightDraws}>{daysText}</span> Xổ số{' '}
+                <span className={styles.highlightProvince}>Miền Bắc</span>
             </>
         );
     };
@@ -203,13 +175,9 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                 </div>
 
                 <div className={styles.content}>
-                    <div className="metadata">
-                        <h2 className={styles.title}>{getMessage()}</h2>
-                    </div>
-
                     <div className={styles.groupSelect}>
                         <div className={styles.selectGroup}>
-                            <label className={styles.options}>Chọn thời gian:</label>
+                            <label className={styles.options}>Thời gian:</label>
                             <select
                                 className={styles.selectBox}
                                 value={days}
@@ -224,21 +192,15 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                             </select>
                     </div>
 
-                    <div>
-                        <p className={styles.dateTime}>
+                    <div className={styles.dateTimeContainer}>
+                        <span className={styles.dateTime}>
                             <span>Ngày bắt đầu:</span> {metadata.startDate || 'N/A'}
-                        </p>
-                        <p className={styles.dateTime}>
+                        </span>
+                        <span className={styles.dateTime}>
                             <span>Ngày kết thúc:</span> {metadata.endDate || 'N/A'}
-                        </p>
+                        </span>
                     </div>
                 </div>
-
-                {/* Button cập nhật dữ liệu */}
-                <UpdateButton 
-                    onUpdate={handleUpdateStats}
-                    label="Cập nhật dữ liệu"
-                />
 
                 {loading && <SkeletonTable />}
                     {error && <p className={styles.error}>{error}</p>}
@@ -252,7 +214,6 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                                     <th>Số</th>
                                     <th>Ngày ra cuối</th>
                                     <th>Ngày gan</th>
-                                    <th>Gan max</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -264,9 +225,6 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                                         <td className={styles.date}>{stat.lastAppeared}</td>
                                         <td className={`${styles.gapDraws} ${stat.gapDraws > 10 ? styles.highlight : ''}`}>
                                             {stat.gapDraws} <span>ngày</span>
-                                        </td>
-                                        <td className={`${styles.maxGap} ${stat.maxGap > 20 ? styles.highlight : ''}`}>
-                                            {stat.maxGap} <span>ngày</span>
                                         </td>
                                     </tr>
                                 ))}
@@ -282,7 +240,7 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                     <h2 className={styles.heading}>TAODANDEWUKONG.PRO - Thống Kê Lô Gan Chính Xác Nhất</h2>
                     <h3 className={styles.h3}>Thống kê Lô Gan Miền Bắc là gì?</h3>
                     <p className={styles.desc}>
-                        Thống kê lô gan Miền Bắc (hay còn gọi là lô khan Miền Bắc, số rắn) là thống kê những cặp số lô tô (2 số cuối) lâu chưa về trên bảng kết quả Miền Bắc trong một khoảng thời gian, ví dụ như 5 ngày hoặc hơn. Đây là những con loto gan lì không chịu xuất hiện. Số ngày gan (kỳ gan) là số lần mở thưởng mà bộ số đó chưa về tính đến hôm nay.
+                        Thống kê lô gan Miền Bắc là danh sách các cặp số (2 số cuối) đã lâu chưa xuất hiện trong kết quả xổ số. Số ngày gan là số ngày mà cặp số đó chưa về tính từ lần cuối cùng xuất hiện đến hôm nay. Ví dụ: nếu một cặp số có 30 ngày gan nghĩa là đã 30 ngày kể từ lần cuối cặp số đó về.
                     </p>
                     {isExpanded && (
                         <Suspense fallback={<div>Loading...</div>}>

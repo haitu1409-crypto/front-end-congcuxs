@@ -98,7 +98,7 @@
 
 /* ===== CONTAINER & LAYOUT ===== */
 .container {
-    max-width: 1100px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 0 var(--spacing-4);
     padding-bottom: 40px;
@@ -109,6 +109,7 @@
 .sectionTitles {
     margin-top: 20px;
     font-size: var(--text-2xl);
+    line-height: 1.6;
     font-weight: var(--font-bold);
     color: var(--color-gray-800);
     margin-bottom: var(--spacing-6);
@@ -187,7 +188,7 @@
     line-height: 1.6;
     opacity: 0.95;
     color: #000;
-    max-width: 600px;
+    max-width: 900px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -219,24 +220,92 @@
 /* ===== MAIN CONTENT ===== */
 .main {
     /* margin: 40px 0; */
-    background: white;
-    border-radius: 20px;
+    background: #fdd6bd;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--color-gray-200);
-    background-image: linear-gradient(-20deg, #f794a4 0%, #fdd6bd 100%);
+
     /* ✅ FIX: Reserve space to prevent CLS when DanDeGenerator loads */
     min-height: 850px;
     contain: layout style paint;
 }
 
+.guideButtonRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: var(--spacing-3);
+    gap: var(--spacing-2);
+}
+
+.guideButton {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.guideButton:hover,
+.guideButton:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
+    outline: none;
+}
+
+.guideButton:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .guideButtonRow {
+        gap: var(--spacing-1);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .guideButton {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+    }
+}
+
+@media (max-width: 480px) {
+    .guideButtonRow {
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .guideButton {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        flex: 1 1 calc(50% - 3px);
+        min-width: 0;
+    }
+}
+
+.chuthich {
+    display: block;
+    border: 1px solid #00bf63;
+    background-color: #c1ff72;
+    padding: 5px;
+    color: #000;
+    font-size: 0.9rem;
+
+    text-align: center;
+}
+
 .main2 {
     /* margin: 40px 0; */
-    margin-top: 40px;
-    background: white;
-    border-radius: 20px;
+
+    background: #FFE29F;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--color-gray-200);
-    background-image: linear-gradient(-225deg, #FFE29F 0%, #FFA99F 48%, #FF719A 100%);
+
     /* ✅ FIX: Reserve space to prevent CLS when DanDeFilter loads */
     min-height: 850px;
     contain: layout style paint;
@@ -245,8 +314,87 @@
 /* ===== GUIDE WRAPPER ===== */
 .guideWrapper {
     /* ✅ FIX: Reserve space to prevent CLS when GuideSection loads */
-    min-height: 600px;
+    min-height: 500px;
     contain: layout style paint;
+}
+
+.guideCard {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: var(--spacing-6);
+    display: flex;
+    flex-direction: column;
+}
+
+.guideCardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #312e81 0%, #1e3a8a 100%);
+    color: #ffffff;
+}
+
+.guideCardHeader h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.guideCardHeader p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.guideCardContent {
+    padding: 24px;
+    color: #1f2937;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.guideCardContent ul {
+    padding-left: 18px;
+    margin-bottom: var(--spacing-3);
+    list-style: disc;
+}
+
+.guideCardContent li {
+    margin-bottom: var(--spacing-2);
+}
+
+.guideCardContent em {
+    font-style: normal;
+    font-weight: 600;
+    color: #1d4ed8;
+}
+
+.guideCardContent em.guideEmWarning {
+    color: #dc2626;
+}
+
+.guideHighlight {
+    color: #0f9d58;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: var(--spacing-2);
+}
+
+.guideWarning {
+    color: #dc2626;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-top: var(--spacing-4);
 }
 
 /* ===== FEATURES SECTION ===== */
@@ -349,7 +497,7 @@
 
 /* ===== QUICK LINKS SECTION ===== */
 .quickLinks {
-    margin: 60px 0;
+    
     padding: 40px 0;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     border-radius: 20px;

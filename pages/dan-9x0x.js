@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import Layout from '../components/Layout';
 import MobileNavbar from '../components/MobileNavbar';
 // ✅ Optimized: Import all icons at once
-import { Target, BarChart3, Star, Zap, CheckCircle } from 'lucide-react';
+import { Target, BarChart3, Star, Zap, CheckCircle, Filter } from 'lucide-react';
 import styles from '../styles/Dan9x0x.module.css';
 import SEOOptimized from '../components/SEOOptimized';
 import { getPageSEO } from '../config/seoConfig';
@@ -35,22 +35,6 @@ const DefinitionSnippet = dynamic(() =>
 const DanDeGenerator = dynamic(() => import('../components/DanDeGenerator'), {
     loading: () => <div className={styles.loadingSkeleton}>Đang tải công cụ...</div>,
     ssr: false
-});
-
-const DanDeFilter = dynamic(() => import('../components/DanDeFilter'), {
-    loading: () => <div className={styles.loadingSkeleton}>Đang tải bộ lọc...</div>,
-    ssr: false
-});
-
-const GuideSection = dynamic(() => import('../components/GuideSection'), {
-    loading: () => <div className={styles.loadingSkeleton}>Đang tải hướng dẫn...</div>,
-    ssr: false
-});
-
-// Lazy load Features section for better performance
-const FeaturesSection = dynamic(() => import('../components/FeaturesSection'), {
-    loading: () => <div className={styles.loadingSkeleton}>Đang tải tính năng...</div>,
-    ssr: false // Disable SSR to avoid hydration errors
 });
 
 export default function Dan9x0xPage() {
@@ -84,7 +68,6 @@ export default function Dan9x0xPage() {
         window.addEventListener('hashchange', handleHashNavigation);
         return () => window.removeEventListener('hashchange', handleHashNavigation);
     }, []);
-
 
     // Register mobile-optimized service worker
     useEffect(() => {
@@ -159,7 +142,17 @@ export default function Dan9x0xPage() {
             "Thuật toán Fisher-Yates chuẩn quốc tế",
             "Miễn phí 100%",
             "Responsive design"
-        ]
+        ],
+        "author": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        }
     };
 
     const breadcrumbSchema = {
@@ -170,19 +163,6 @@ export default function Dan9x0xPage() {
             "position": index + 1,
             "name": item.name,
             "item": item.url
-        }))
-    };
-
-    const faqSchema = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": faqData.map(faq => ({
-            "@type": "Question",
-            "name": faq.question,
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": faq.answer
-            }
         }))
     };
 
@@ -210,6 +190,16 @@ export default function Dan9x0xPage() {
                 "name": "Công cụ tạo dàn số 9x-0x Wukong"
             }
         ],
+        "author": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Dàn Đề Wukong",
+            "url": "https://taodandewukong.pro"
+        },
         "step": [
             {
                 "@type": "HowToStep",
@@ -256,7 +246,7 @@ export default function Dan9x0xPage() {
                 ogImage={pageSEO.image}
                 breadcrumbs={breadcrumbs}
                 faq={faqData}
-                structuredData={[lotterySchema, breadcrumbSchema, faqSchema, howToSchema]}
+                structuredData={[lotterySchema, breadcrumbSchema, howToSchema]}
             />
 
             {/* Core Web Vitals & Mobile SEO Optimization */}
@@ -322,7 +312,70 @@ export default function Dan9x0xPage() {
 
             <Layout>
                 <div className={styles.container}>
-                    {/* Hero Section */}
+
+                    {/* Mobile Navbar */}
+                    <MobileNavbar currentPage="dan-9x0x" showCurrentPageItems={false} />
+
+                    {/* Wukong Slider */}
+                    {/* <WukongSlider /> */}
+
+                    {/* Main Generator Section */}
+                    <main className={styles.main} id="generator" data-section="generator">
+                        <h2 className={styles.sectionTitles}>
+                            {/* <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} /> */}
+                            Công Cụ Tạo Dàn Đề 9X-0X Ngẫu Nhiên
+                        </h2>
+                        <div className={styles.guideButtonRow}>
+                            <Link href="#guide" className={styles.guideButton}>
+                                Hướng dẫn sử dụng
+                            </Link>
+                            <Link href="/loc-dan-de" className={styles.guideButton}>
+                                Chuyển tới Lọc Dàn Đề
+                            </Link>
+                        </div>
+                        <span className={styles.chuthich}>Các Tùy Chọn Khi Tạo Dàn: Thêm Cặp Số Mong Muốn, Loại Bỏ ĐB Đã Ra, Loại Bỏ Kép Bằng, Thêm Bộ Số, Chạm, Tổng</span>
+                        <DanDeGenerator />
+                    </main>
+                    {/* Guide Section */}
+                    <div id="guide" data-section="guide" className={styles.guideWrapper}>
+                        <section className={styles.guideCard} aria-labelledby="guide-card-title">
+                            <div className={styles.guideCardHeader}>
+                                <h2 id="guide-card-title">Hướng dẫn sử dụng công cụ tạo dàn 9x0x ngẫu nhiên</h2>
+                                <p>Tham khảo chi tiết các bước thiết lập để tận dụng tối đa sức mạnh của công cụ.</p>
+                            </div>
+                            <div className={styles.guideCardContent}>
+                                <p className={styles.guideHighlight}><strong>CÓ 7 TRƯỜNG HỢP SỬ DỤNG</strong></p>
+                                <ul>
+                                    <li>
+                                        <strong>TH1 (không lựa chọn gì cả):</strong> Ấn nút <em>"Tạo Dàn"</em> để tạo dàn số từ 95s - 8s.
+                                    </li>
+                                    <li>
+                                        <strong>TH2 (thêm số mong muốn):</strong> Nhập các <em>"cặp số mong muốn"</em>, sau đó ấn <em>"Tạo Dàn"</em>; các cặp số đã nhập sẽ xuất hiện từ 8s → 95s.<br />
+                                        <em className={styles.guideEmWarning}>Lưu ý:</em> 2 cặp số trùng nhau sẽ chỉ lấy 1, các cặp số cách nhau bằng khoảng trắng hoặc dấu phẩy.
+                                    </li>
+                                    <li>
+                                        <strong>TH3 (loại bỏ số mong muốn):</strong> Nhập các số đặc biệt đã ra gần đây hoặc số muốn loại bỏ, sau đó ấn <em>"Tạo Dàn"</em>; các cặp số đó sẽ không xuất hiện từ 8s - 95s.<br />
+                                        <em className={styles.guideEmWarning}>Lưu ý:</em> chỉ được phép loại bỏ tối đa 20 cặp số.
+                                    </li>
+                                    <li>
+                                        <strong>TH4 (loại bỏ kép bằng):</strong> Tích vào ô <em>"Loại bỏ kép bằng"</em>; các cặp kép bằng từ 00 - 99 sẽ không xuất hiện trong dàn 8s - 90s.<br />
+                                        <em className={styles.guideEmWarning}>Lưu ý:</em> vì loại kép bằng đã loại đi 10 cặp nên dàn chỉ còn 90s.
+                                    </li>
+                                    <li>
+                                        <strong>TH5, TH6, TH7 (chọn bộ số, chạm, tổng):</strong> Chọn các bộ số, chạm, tổng mong muốn rồi ấn <em>"Tạo Dàn"</em>; các lựa chọn này sẽ xuất hiện từ 8s - 95s.<br />
+                                        <em className={styles.guideEmWarning}>Lưu ý:</em> khi chọn nhiều bộ/chạm/tổng khiến số lượng lớn hơn 8s, 18s,... thuật toán sẽ lấy ngẫu nhiên trong tổng số đã chọn.
+                                    </li>
+                                </ul>
+                                <p className={styles.guideWarning}><strong>LƯU Ý THÊM</strong></p>
+                                <ul>
+                                    <li>Bạn có thể kết hợp nhiều "Trường Hợp" lại với nhau để cho ra dàn mong muốn.</li>
+                                    <li>Số mong muốn được thêm và số muốn loại bỏ không được trùng nhau.</li>
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Hero Section moved below guide */}
                     <section className={styles.hero}>
                         <div className={styles.heroContent}>
                             <div className={styles.heroBadge}>
@@ -333,8 +386,7 @@ export default function Dan9x0xPage() {
                                 Tạo dàn đề 9x-0x | <span className={styles.heroTitleHighlight}>Lọc Dàn Đề Siêu Cấp</span>
                             </h1>
                             <p className={styles.heroDescription}>
-                                Công cụ tạo dàn số 9x-0x ngẫu nhiên với thuật toán Fisher-Yates chuẩn quốc tế.
-                                Bộ lọc dàn số tổng hợp thông minh, miễn phí 100%, chính xác cho xổ số 3 miền.
+                                Công cụ tạo dàn 9x0x ngẫu nhiên - Công cụ lọc dàn đề tổng hợp từ các dàn số 4X, 3X, 2X, 1X cho ra dàn số có xác suất trúng cao nhất với thuật toán lọc chuyên nghiệp. Công cụ tạo dàn và lọc dàn có hỗ trợ chọn các bộ số, chạm, tổng, loại bỏ đi kép bằng.
                             </p>
                             <div className={styles.heroFeatures}>
                                 <div className={styles.heroFeature}>
@@ -353,67 +405,6 @@ export default function Dan9x0xPage() {
                         </div>
                     </section>
 
-                    {/* Mobile Navbar */}
-                    <MobileNavbar currentPage="dan-9x0x" showCurrentPageItems={false} />
-
-                    {/* Wukong Slider */}
-                    {/* <WukongSlider /> */}
-
-                    {/* Main Generator Section */}
-                    <main className={styles.main} id="generator" data-section="generator">
-                        <h2 className={styles.sectionTitles} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
-                            {/* <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} /> */}
-                            Tạo Dàn Đề 9X-0X Ngẫu Nhiên
-                        </h2>
-                        <DanDeGenerator />
-                    </main>
-
-
-
-
-                    {/* DanDeFilter Component */}
-                    <div data-section="filter" className={styles.main2}>
-                        <h2 className={styles.sectionTitles} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
-                            Lọc Dàn Đề Siêu Cấp
-                        </h2>
-                        <DanDeFilter />
-                    </div>
-
-                    {/* Features Section - Lazy loaded with SSR */}
-                    <FeaturesSection />
-
-                    {/* GuideSection Component */}
-                    <div data-section="guide" className={styles.guideWrapper}>
-                        <GuideSection />
-                    </div>
-
-                    {/* Quick Links Section */}
-                    <section className={styles.quickLinks}>
-                        <h2 className={styles.quickLinksTitle}>Công cụ khác</h2>
-                        <div className={styles.quickLinksGrid}>
-                            <Link href="/dan-2d" className={styles.quickLinkCard}>
-                                <Target className={styles.quickLinkIcon} />
-                                <h3>Dàn 2D</h3>
-                                <p>Dàn đề 2 chữ số (00-99)</p>
-                            </Link>
-                            <Link href="/dan-3d4d" className={styles.quickLinkCard}>
-                                <BarChart3 className={styles.quickLinkIcon} />
-                                <h3>Dàn 3D/4D</h3>
-                                <p>Dàn đề 3-4 chữ số</p>
-                            </Link>
-                            <Link href="/dan-dac-biet" className={styles.quickLinkCard}>
-                                <Star className={styles.quickLinkIcon} />
-                                <h3>Dàn Đặc Biệt</h3>
-                                <p>Bộ lọc dàn số thông minh</p>
-                            </Link>
-                            <Link href="/thong-ke" className={styles.quickLinkCard}>
-                                <BarChart3 className={styles.quickLinkIcon} />
-                                <h3>Thống Kê</h3>
-                                <p>Thống kê xổ số 3 miền</p>
-                            </Link>
-                        </div>
-                    </section>
-
                     {/* Featured Snippet - Definition */}
                     <DefinitionSnippet
                         term="Dàn 9x-0x (Dàn Đề Bất Tử)"
@@ -429,7 +420,6 @@ export default function Dan9x0xPage() {
                     <AuthorBio />
                 </div>
             </Layout>
-
             <SEOAnalytics />
         </>
     );
