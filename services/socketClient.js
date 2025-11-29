@@ -22,9 +22,12 @@ class SocketClient {
         }
 
         // Get socket URL - normalize to http/https (Socket.io will handle ws:// conversion)
+        // Use production API as fallback (only use localhost in development)
         let SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 
                           process.env.NEXT_PUBLIC_API_URL || 
-                          'http://localhost:5000';
+                          (typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+                              ? 'http://localhost:5000' 
+                              : 'https://api1.taodandewukong.pro');
 
         // Normalize URL: remove ws:// or wss:// prefix, use http:// or https://
         // Socket.io client will automatically convert to ws:// or wss://

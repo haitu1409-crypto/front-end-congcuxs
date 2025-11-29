@@ -24,10 +24,21 @@ class LotterySocketClient {
             return this.socket;
         }
 
-        // Get socket URL
+        // Get socket URL - use production API as fallback
         let SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL ||
             process.env.NEXT_PUBLIC_API_URL ||
-            'http://localhost:5000';
+            (typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+                ? 'http://localhost:5000' 
+                : 'https://api1.taodandewukong.pro');
+
+        // Log source of URL for debugging
+        if (process.env.NEXT_PUBLIC_SOCKET_URL) {
+            console.log('📡 Using NEXT_PUBLIC_SOCKET_URL:', process.env.NEXT_PUBLIC_SOCKET_URL);
+        } else if (process.env.NEXT_PUBLIC_API_URL) {
+            console.log('📡 Using NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+        } else {
+            console.warn('⚠️ No API URL env variable found, using fallback:', SOCKET_URL);
+        }
 
         // Normalize URL
         if (SOCKET_URL.startsWith('ws://')) {
