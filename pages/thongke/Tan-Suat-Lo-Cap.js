@@ -316,6 +316,18 @@ export async function getServerSideProps() {
 
         const data = await apiMB.getTanSuatLoCapStats(days);
 
+        // Đảm bảo data tồn tại và có cấu trúc hợp lệ
+        if (!data) {
+            console.warn('API returned null or undefined data');
+            return {
+                props: {
+                    initialStats: [],
+                    initialMetadata: {},
+                    initialDays: days,
+                },
+            };
+        }
+
         return {
             props: {
                 initialStats: data.statistics || [],
@@ -325,6 +337,7 @@ export async function getServerSideProps() {
         };
     } catch (error) {
         console.error('Error in getServerSideProps:', error.message);
+        // Luôn trả về props hợp lệ để tránh 404
         return {
             props: {
                 initialStats: [],
