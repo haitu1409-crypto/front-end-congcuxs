@@ -310,19 +310,31 @@ const TanSuatLoCap = ({ initialStats, initialMetadata, initialDays }) => {
     );
 };
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
+    // Đảm bảo route luôn được tạo, ngay cả khi có lỗi
     try {
         const days = 30;
 
-        const data = await apiMB.getTanSuatLoCapStats(days);
+        let data = null;
+        try {
+            data = await apiMB.getTanSuatLoCapStats(days);
+        } catch (apiError) {
+            console.error('API call failed in getServerSideProps:', apiError.message);
+            // Tiếp tục với data null thay vì throw error
+        }
 
         // Đảm bảo data tồn tại và có cấu trúc hợp lệ
-        if (!data) {
-            console.warn('API returned null or undefined data');
+        if (!data || typeof data !== 'object') {
+            console.warn('API returned invalid data, using defaults');
             return {
                 props: {
                     initialStats: [],
-                    initialMetadata: {},
+                    initialMetadata: {
+                        totalDraws: 0,
+                        filterType: `${days} ngày`,
+                        startDate: 'N/A',
+                        endDate: 'N/A',
+                    },
                     initialDays: days,
                 },
             };
@@ -330,22 +342,32 @@ export async function getServerSideProps() {
 
         return {
             props: {
-                initialStats: data.statistics || [],
-                initialMetadata: data.metadata || {},
+                initialStats: Array.isArray(data.statistics) ? data.statistics : [],
+                initialMetadata: data.metadata && typeof data.metadata === 'object' ? data.metadata : {
+                    totalDraws: 0,
+                    filterType: `${days} ngày`,
+                    startDate: 'N/A',
+                    endDate: 'N/A',
+                },
                 initialDays: days,
             },
         };
     } catch (error) {
-        console.error('Error in getServerSideProps:', error.message);
-        // Luôn trả về props hợp lệ để tránh 404
+        console.error('Unexpected error in getServerSideProps:', error.message, error.stack);
+        // LUÔN trả về props hợp lệ để tránh 404 - không bao giờ throw error
         return {
             props: {
                 initialStats: [],
-                initialMetadata: {},
+                initialMetadata: {
+                    totalDraws: 0,
+                    filterType: '30 ngày',
+                    startDate: 'N/A',
+                    endDate: 'N/A',
+                },
                 initialDays: 30,
             },
         };
     }
-};
+}
 
 export default TanSuatLoCap;
