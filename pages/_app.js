@@ -63,17 +63,77 @@ function MyApp({ Component, pageProps }) {
             console.log('%c🎲 Tạo Dàn Đề v1.0.0', 'font-size: 20px; font-weight: bold; color: #4F46E5;');
             console.log('%cWebsite: ' + process.env.NEXT_PUBLIC_SITE_URL, 'color: #6B7280;');
         }
+
+        // ✅ Disable browser's automatic scroll restoration
+        if (typeof window !== 'undefined') {
+            if ('scrollRestoration' in window.history) {
+                window.history.scrollRestoration = 'manual';
+            }
+            // Clear any existing scroll positions in sessionStorage
+            try {
+                const keys = Object.keys(sessionStorage);
+                keys.forEach(key => {
+                    if (key.startsWith('scrollPosition_')) {
+                        sessionStorage.removeItem(key);
+                    }
+                });
+            } catch (e) {
+                // Ignore errors
+            }
+        }
     }, []);
+
+    // ✅ Reset scroll position when pathname changes (additional safety)
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }
+    }, [router.pathname]);
 
     // Handle route changes for smooth navigation
     useEffect(() => {
-        const handleStart = () => setIsLoading(true);
+        const handleStart = () => {
+            setIsLoading(true);
+            // ✅ Reset scroll position to top when navigation starts
+            if (typeof window !== 'undefined') {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }
+        };
         const handleComplete = () => {
             setIsLoading(false);
+            // ✅ Ensure scroll is at top when navigation completes (backup)
+            if (typeof window !== 'undefined') {
+                // Use multiple strategies to ensure scroll reset
+                const resetScroll = () => {
+                    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                    // Also reset documentElement scroll
+                    if (document.documentElement) {
+                        document.documentElement.scrollTop = 0;
+                    }
+                    if (document.body) {
+                        document.body.scrollTop = 0;
+                    }
+                };
+                
+                // Reset immediately
+                resetScroll();
+                
+                // Reset again after a short delay to catch any delayed scroll restoration
+                requestAnimationFrame(() => {
+                    resetScroll();
+                    setTimeout(() => {
+                        resetScroll();
+                    }, 50);
+                });
+            }
         };
         const handleError = () => {
             setIsLoading(false);
             console.log('Route change error occurred');
+            // ✅ Reset scroll even on error
+            if (typeof window !== 'undefined') {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }
         };
 
         router.events.on('routeChangeStart', handleStart);

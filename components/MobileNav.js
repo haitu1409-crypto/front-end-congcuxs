@@ -3,7 +3,7 @@
  * Tách riêng mobile navigation để dễ quản lý
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChevronDown, MessageCircle, Users } from 'lucide-react';
@@ -34,20 +34,61 @@ const MobileNav = ({
 }) => {
     const router = useRouter();
 
-    if (!isOpen) return null;
+    // Reset scroll position when route changes
+    useEffect(() => {
+        const handleRouteChangeStart = () => {
+            // Reset scroll to top immediately when navigation starts
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        };
+
+        const handleRouteChangeComplete = () => {
+            // Ensure scroll is at top when navigation completes (backup)
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        };
+
+        router.events?.on('routeChangeStart', handleRouteChangeStart);
+        router.events?.on('routeChangeComplete', handleRouteChangeComplete);
+        
+        return () => {
+            router.events?.off('routeChangeStart', handleRouteChangeStart);
+            router.events?.off('routeChangeComplete', handleRouteChangeComplete);
+        };
+    }, [router]);
+
+    // Helper function to handle link click
+    const handleLinkClick = (e) => {
+        if (onClose) {
+            onClose();
+        }
+    };
 
     return (
         <>
-            {/* Mobile Overlay */}
+            {/* Mobile Overlay - Render always but control visibility with CSS */}
             <div
-                className={styles.mobileOverlay}
+                className={`${styles.mobileOverlay} ${isOpen ? styles.mobileOverlayOpen : ''}`}
                 onClick={onClose}
-                aria-hidden="true"
+                onTouchStart={onClose}
+                aria-hidden={!isOpen}
+                role="button"
+                tabIndex={isOpen ? -1 : -1}
+                style={{
+                    display: isOpen ? 'block' : 'none',
+                    opacity: isOpen ? 1 : 0,
+                    pointerEvents: isOpen ? 'auto' : 'none'
+                }}
             />
 
             {/* Mobile Navigation */}
             <div className={`${styles.mobileNav} ${isOpen ? styles.mobileNavOpen : ''}`}>
-                <div className={styles.mobileNavContent} onClick={onLinkClick}>
+                <div 
+                    className={styles.mobileNavContent} 
+                    onClick={(e) => {
+                        // Don't close menu when clicking inside nav content
+                        e.stopPropagation();
+                        if (onLinkClick) onLinkClick(e);
+                    }}
+                >
                     {/* Auth Button - Mobile (top) */}
                     <div className={styles.mobileAuthButton}>
                         <AuthButton variant="mobile" />
@@ -82,8 +123,8 @@ const MobileNav = ({
                                                             key={subIndex}
                                                             href={subItem.href}
                                                             className={`${styles.mobileNavSubLink} ${router.pathname === subItem.href ? styles.active : ''}`}
-                                                            onClick={() => {
-                                                                onClose();
+                                                            onClick={(e) => {
+                                                                if (onClose) onClose();
                                                                 setOpenDropdown(null);
                                                             }}
                                                         >
@@ -106,7 +147,7 @@ const MobileNav = ({
                                 key={link.href}
                                 href={link.href}
                                 className={`${styles.mobileNavLink} ${router.pathname === link.href ? styles.active : ''}`}
-                                onClick={onClose}
+                                onClick={handleLinkClick}
                                 prefetch={false}
                             >
                                 <div className={styles.mobileNavLinkContent}>

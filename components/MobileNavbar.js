@@ -87,6 +87,27 @@ export default function MobileNavbar({
         return () => window.removeEventListener('scroll', throttledHandleScroll);
     }, []);
 
+    // Reset scroll position when route changes
+    useEffect(() => {
+        const handleRouteChangeStart = () => {
+            // Reset scroll to top immediately when navigation starts
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        };
+
+        const handleRouteChangeComplete = () => {
+            // Ensure scroll is at top when navigation completes (backup)
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        };
+
+        router.events?.on('routeChangeStart', handleRouteChangeStart);
+        router.events?.on('routeChangeComplete', handleRouteChangeComplete);
+        
+        return () => {
+            router.events?.off('routeChangeStart', handleRouteChangeStart);
+            router.events?.off('routeChangeComplete', handleRouteChangeComplete);
+        };
+    }, [router]);
+
     // Mobile navbar handlers
     const handleNavItemClick = useCallback((itemId) => {
         setActiveNavItem(itemId);
@@ -94,6 +115,15 @@ export default function MobileNavbar({
         // Handle navigation to other pages
         if (itemId.startsWith('page-')) {
             const page = itemId.replace('page-', '');
+
+            // ✅ Reset scroll immediately before navigation
+            if (typeof window !== 'undefined') {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                // Clear any scroll position from sessionStorage
+                try {
+                    sessionStorage.removeItem(`scrollPosition_${router.pathname}`);
+                } catch (e) {}
+            }
 
             // ✅ Fix router abort errors - add error handling
             try {
@@ -115,6 +145,7 @@ export default function MobileNavbar({
                 smoothScrollToSection(section);
             } else {
                 // Navigate to dan-dac-biet page, then scroll after load
+                // Scroll reset will be handled by routeChangeStart event
                 router.push('/dan-dac-biet').then(() => {
                     setTimeout(() => smoothScrollToSection(section), 500);
                 }).catch((err) => {

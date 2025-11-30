@@ -11,8 +11,12 @@
     max-width: 100%;
     margin: 0 auto;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, sans-serif;
     font-size: 12px;
+    /* Ensure font rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-display: swap;
 }
 
 /* Flex layout for horizontal alignment */
@@ -75,42 +79,54 @@
     text-align: center;
     vertical-align: middle;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 700; /* Use 700 (bold) instead of 600 for better mobile support */
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Header ngày */
 .kq_ngay {
     background: #D9EDF7 !important;
     color: #333333 !important;
-    font-weight: bold;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
     font-size: 16px;
     padding: 12px;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Left column (tên giải) */
 .leftcol {
     background: #D9EDF7 !important;
     color: #333333 !important;
-    font-weight: bold;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
     text-align: center;
     padding: 3px 8px;
     font-size: 20px;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Kết quả cells */
 .kqcell {
     background: #ffffff;
     color: #333333;
-    font-weight: bold;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
     padding: 5px 7px;
     font-size: 22px;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Màu sắc cho các giải */
 .kq_0 {
     background: #ffffff !important;
     color: #FF0000 !important;
-    font-weight: bold !important;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
 }
 
 /* Giải đặc biệt */
@@ -202,8 +218,11 @@
     text-align: center;
     vertical-align: middle;
     font-size: 16px;
-    font-weight: normal;
+    font-weight: 400; /* Use numeric value instead of 'normal' */
     padding: 8px 6px;
+    /* Ensure font rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Cột số cho bảng Loto Đầu */
@@ -217,8 +236,11 @@
     background-color: #FFE4B5 !important;
     color: #333333 !important;
     border: 1px solid orange !important;
-    font-weight: bold !important;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
     white-space: nowrap !important;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Cột dữ liệu cho bảng Loto Đầu */
@@ -239,12 +261,15 @@
 .dau th {
     background: #FFE4B5 !important;
     color: #333333 !important;
-    font-weight: bold;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .dauLeftCol {
     background: #f0f0f0 !important;
-    font-weight: bold;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
     text-align: center;
     width: 15px !important;
     max-width: 15px !important;
@@ -252,6 +277,9 @@
     padding: 4px 1px !important;
     border: 1px solid #cccccc;
     font-size: 11px !important;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Màu sắc cho loto đầu */
@@ -316,8 +344,11 @@
     text-align: center;
     vertical-align: middle;
     font-size: 16px;
-    font-weight: normal;
+    font-weight: 400; /* Use numeric value instead of 'normal' */
     padding: 8px 6px;
+    /* Ensure font rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Cột số cho bảng Loto Đuôi */
@@ -331,8 +362,11 @@
     background-color: #E6E6FA !important;
     color: #333333 !important;
     border: 1px solid purple !important;
-    font-weight: bold !important;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
     white-space: nowrap !important;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Cột dữ liệu cho bảng Loto Đuôi */
@@ -353,12 +387,15 @@
 .dit th {
     background: #E6E6FA !important;
     color: #333333 !important;
-    font-weight: bold;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .ditLeftCol {
     background: #f0f0f0 !important;
-    font-weight: bold;
+    font-weight: 700 !important; /* Use numeric value for better mobile support */
     text-align: center;
     width: 15px !important;
     max-width: 15px !important;
@@ -366,6 +403,9 @@
     padding: 4px 1px !important;
     border: 1px solid #cccccc;
     font-size: 11px !important;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Màu sắc cho loto đuôi */
@@ -420,12 +460,15 @@
     padding: 12px 24px;
     border-radius: 6px;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700; /* Use numeric value for better mobile support */
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
     margin: 20px auto;
     display: block;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .loadMoreButton:hover {
@@ -503,7 +546,10 @@
     color: #ff6b6b;
     margin: 0 0 10px 0;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700; /* Use numeric value for better mobile support */
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .errorMessage p {
@@ -518,9 +564,12 @@
     padding: 8px 16px;
     border-radius: 4px;
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 700; /* Use numeric value for better mobile support */
     cursor: pointer;
     transition: background-color 0.2s ease;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .retryButton:hover {
@@ -556,6 +605,26 @@
 @media (max-width: 768px) {
     .container {
         font-size: 11px;
+        /* Force font rendering on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+    
+    /* Ensure font-weight works on mobile devices */
+    .ketqua th,
+    .ketqua td,
+    .kqcell,
+    .leftcol,
+    .kq_ngay,
+    .dauDigitCol,
+    .ditDigitCol,
+    .dau th,
+    .dit th {
+        font-weight: 700 !important;
+        /* Force font-weight rendering on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .horizontalLayout {

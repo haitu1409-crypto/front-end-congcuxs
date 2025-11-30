@@ -37,10 +37,33 @@ export default function Layout({ children, className = '' }) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Close mobile menu on route change
+    // Close mobile menu on route change and reset scroll
     useEffect(() => {
         setIsMenuOpen(false);
         setOpenDropdown(null);
+        // ✅ Reset scroll position when route changes
+        if (typeof window !== 'undefined') {
+            const resetScroll = () => {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                if (document.documentElement) {
+                    document.documentElement.scrollTop = 0;
+                }
+                if (document.body) {
+                    document.body.scrollTop = 0;
+                }
+            };
+            
+            // Reset immediately
+            resetScroll();
+            
+            // Reset again after DOM is ready
+            requestAnimationFrame(() => {
+                resetScroll();
+                setTimeout(() => {
+                    resetScroll();
+                }, 100);
+            });
+        }
     }, [router.pathname]);
 
     useEffect(() => {
