@@ -998,7 +998,7 @@ const SEO_CONFIG = {
      * PRIMARY: tần suất lô cặp (320)
      * COMPETITIVE: Unique feature
      */
-    'tan-suat-lo-cap': {
+    'tan-suat-locap': {
         title: 'Thống Kê Tần Suất Lô Cặp XSMB - Công Cụ Độc Quyền | Phân Tích XX-YY - Miễn Phí 2025',
         description: 'Thống kê tần suất lô cặp (XX-YY) Xổ số Miền Bắc với phân tích độc đáo. Tính năng độc quyền: Số lần xuất hiện riêng lẻ XX và YY, phần trăm tổng thể. Cập nhật hàng ngày, miễn phí 100%.',
         keywords: [
@@ -1015,9 +1015,9 @@ const SEO_CONFIG = {
             'tính năng độc quyền', 'cong cu doc quyen',
             'phân tích cặp số', 'phan tich cap so'
         ],
-        url: '/thongke/tan-suat-lo-cap',
+        url: '/thongke/tan-suat-locap',
         image: OG_IMAGES.thongKe,
-        canonical: `${SITE_URL}/thongke/tan-suat-lo-cap`,
+        canonical: `${SITE_URL}/thongke/tan-suat-locap`,
         type: 'article',
         priority: 0.80,
         changefreq: 'daily',

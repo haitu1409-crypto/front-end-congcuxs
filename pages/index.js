@@ -464,7 +464,7 @@ const Home = memo(function Home() {
                             <Link href="/thongke/tan-suat-loto" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Tần Suất Lô Tô</span>
                             </Link>
-                            <Link href="/thongke/tan-suat-lo-cap" className={styles.heroSecondaryButton} prefetch={false}>
+                            <Link href="/thongke/tan-suat-locap" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Tần Suất Lô Cặp</span>
                             </Link>
                         </div>

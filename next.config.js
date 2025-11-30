@@ -69,6 +69,11 @@ const nextConfig = {
                 destination: '/',
                 permanent: true,
             },
+            {
+                source: '/thongke/tan-suat-lo-cap',
+                destination: '/thongke/tan-suat-locap',
+                permanent: true,
+            },
         ];
     },
 

@@ -76,7 +76,7 @@ module.exports = {
         }
     ],
 
-    'tan-suat-lo-cap': [
+    'tan-suat-locap': [
         {
             question: 'Tần suất lô cặp có phải công cụ độc quyền?',
             answer: 'Đúng vậy! Tính năng thống kê tần suất lô cặp (XX-YY) với phân tích riêng lẻ số lần xuất hiện của XX và YY là độc quyền của TAODANDEWUKONG.PRO. Không có trang nào khác cung cấp phân tích chi tiết như này.'

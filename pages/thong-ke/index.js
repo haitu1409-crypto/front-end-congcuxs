@@ -44,7 +44,7 @@ const STATISTICS_TOOLS = [
         badges: ['Heatmap', 'Highlight AI', 'Xu hướng 365 ngày']
     },
     {
-        href: '/thongke/tan-suat-lo-cap',
+        href: '/thongke/tan-suat-locap',
         icon: Layers,
         title: 'Tần Suất Lô Cặp',
         description: 'Phân tích các cặp số song hành XX-YY cùng xuất hiện. Tính toán phần trăm và tổng số lần xuất hiện của từng cặp để chọn chiến thuật xiên.',

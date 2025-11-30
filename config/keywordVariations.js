@@ -1041,7 +1041,7 @@ function generateMetaDescription(pageType, includeVariations = true) {
 
         'tan-suat-loto': `Thống kê Tần Suất Lô Tô XSMB phân tích sâu hơn đối thủ. Số nóng số lạnh (00-99), xuất hiện nhiều nhất. ${includeVariations ? 'Hỗ trợ: tan suat lo to, so nong so lanh. ' : ''}Dữ liệu 30-365 ngày, miễn phí 100%!`,
 
-        'tan-suat-lo-cap': `Thống kê Tần Suất Lô Cặp XSMB công cụ độc quyền. Phân tích XX-YY, số lần xuất hiện riêng lẻ. ${includeVariations ? 'Hỗ trợ: tan suat lo cap, phan tich lo cap. ' : ''}Phần trăm tổng thể, miễn phí 100%!`,
+        'tan-suat-locap': `Thống kê Tần Suất Lô Cặp XSMB công cụ độc quyền. Phân tích XX-YY, số lần xuất hiện riêng lẻ. ${includeVariations ? 'Hỗ trợ: tan suat lo cap, phan tich lo cap. ' : ''}Phần trăm tổng thể, miễn phí 100%!`,
 
         'giai-dac-biet-tuan': `Thống kê Giải Đặc Biệt Theo Tuần với view lịch (Thứ 2-CN). Chọn tháng/năm, toggle thông tin chi tiết. ${includeVariations ? 'Hỗ trợ: giai dac biet theo tuan, xem theo ngay trong tuan. ' : ''}Phân tích xu hướng, miễn phí 100%!`,
 

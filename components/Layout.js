@@ -109,7 +109,7 @@ export default function Layout({ children, className = '' }) {
             { href: '/thongke/giai-dac-biet-tuan', label: 'Giải Đặc Biệt Tuần', icon: Calendar },
             { href: '/thongke/dau-duoi', label: 'Đầu Đuôi', icon: Percent },
             { href: '/thongke/tan-suat-loto', label: 'Tần Suất Lô Tô', icon: BarChart3 },
-            { href: '/thongke/tan-suat-lo-cap', label: 'Tần Suất Lô Cặp', icon: Target }
+            { href: '/thongke/tan-suat-locap', label: 'Tần Suất Lô Cặp', icon: Target }
         ]
     };
 

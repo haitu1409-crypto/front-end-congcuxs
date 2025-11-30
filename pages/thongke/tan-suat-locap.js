@@ -150,9 +150,9 @@ const TanSuatLoCap = ({ initialStats, initialMetadata, initialDays }) => {
     return (
         <Layout>
             <StatisticsSEO 
-                pageType="tan-suat-lo-cap"
+                pageType="tan-suat-locap"
                 metadata={metadata}
-                faq={statisticsFAQs['tan-suat-lo-cap']}
+                faq={statisticsFAQs['tan-suat-locap']}
                 customDescription={pageDescription}
             />
 
@@ -164,8 +164,8 @@ const TanSuatLoCap = ({ initialStats, initialMetadata, initialDays }) => {
                             Thống Kê Đầu Đuôi
                         </Link>
                         <Link
-                            className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/tan-suat-lo-cap') ? styles.active : ''}`}
-                            href="/thongke/tan-suat-lo-cap"
+                            className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/tan-suat-locap') ? styles.active : ''}`}
+                            href="/thongke/tan-suat-locap"
                         >
                             Tần Suất Lô Cặp
                         </Link>
@@ -371,3 +371,4 @@ export async function getServerSideProps(context) {
 }
 
 export default TanSuatLoCap;
+

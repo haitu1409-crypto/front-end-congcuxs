@@ -169,7 +169,7 @@ function generateSiteMap(articles) {
     </url>
     
     <url>
-        <loc>${SITE_URL}/thongke/tan-suat-lo-cap</loc>
+        <loc>${SITE_URL}/thongke/tan-suat-locap</loc>
         <changefreq>daily</changefreq>
         <priority>0.80</priority>
         <lastmod>${lastmod}</lastmod>
@@ -389,7 +389,7 @@ export async function getServerSideProps({ res }) {
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
-        <loc>${SITE_URL}/thongke/tan-suat-lo-cap</loc>
+        <loc>${SITE_URL}/thongke/tan-suat-locap</loc>
         <changefreq>daily</changefreq>
         <priority>0.80</priority>
         <lastmod>${lastmod}</lastmod>
