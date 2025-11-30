@@ -27,7 +27,8 @@ Allow: /
 Crawl-delay: 0
 
 # Host
-Host: https://taodandewukong.pro
+Host: https://www.taodandewukong.pro
 
 # Sitemaps
+Sitemap: https://www.taodandewukong.pro/sitemap.xml
 Sitemap: https://taodandewukong.pro/sitemap.xml

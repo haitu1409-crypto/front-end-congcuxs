@@ -519,12 +519,12 @@ const SoiCauBayesian = () => {
         []
     );
 
-    const seoConfig = useMemo(() => getPageSEO('soiCauBayesian'), []);
+    const seoConfig = useMemo(() => getPageSEO('soi-cau-mien-bac-ai'), []);
 
     // ✅ Breadcrumbs
     const breadcrumbs = useMemo(() => [
         { name: 'Trang chủ', url: siteUrl },
-        { name: 'Soi Cầu Miền Bắc', url: `${siteUrl}/soicau-bayesian` }
+        { name: 'Soi Cầu Miền Bắc', url: `${siteUrl}/soi-cau-mien-bac-ai` }
     ], [siteUrl]);
 
     // ✅ FAQ Data
@@ -559,7 +559,7 @@ const SoiCauBayesian = () => {
                 "@type": "WebApplication",
                 "name": "Soi Cầu Miền Bắc - Dàn Đề Wukong",
                 "description": "Công cụ soi cầu miền bắc miễn phí chính xác nhất. Dự đoán XSMB hôm nay với AI. Soi cầu bạch thủ, lô gan, thống kê vị trí XSMB.",
-                "url": `${siteUrl}/soicau-bayesian`,
+                "url": `${siteUrl}/soi-cau-mien-bac-ai`,
                 "applicationCategory": "UtilitiesApplication",
                 "operatingSystem": "Web Browser",
                 "offers": {
@@ -592,7 +592,7 @@ const SoiCauBayesian = () => {
                         "@type": "ListItem",
                         "position": 2,
                         "name": "Soi Cầu Miền Bắc",
-                        "item": `${siteUrl}/soicau-bayesian`
+                        "item": `${siteUrl}/soi-cau-mien-bac-ai`
                     }
                 ]
             },

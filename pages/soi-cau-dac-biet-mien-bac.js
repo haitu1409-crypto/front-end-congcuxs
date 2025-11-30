@@ -1,104 +1,20 @@
 /**
- * Position Soi Cau Loto Page
- * Trang soi cầu lô tô theo vị trí
+ * Position Soi Cau Page
+ * Trang soi cầu dựa trên vị trí số
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
-import dynamic from 'next/dynamic';
+import React, { useState, useMemo } from 'react';
 import Layout from '../components/Layout';
 import EnhancedSEOHead from '../components/EnhancedSEOHead';
 import { getPageSEO, generateFAQSchema } from '../config/seoConfig';
+import PositionSoiCau from '../components/PositionSoiCau';
 import apiService from '../services/apiService';
 
-const DynamicPositionSoiCauLoto = dynamic(() => import('../components/PositionSoiCauLoto'), {
-    loading: () => (
-        <div className="positionSoiCauLoading">
-            Đang tải dữ liệu soi cầu...
-        </div>
-    )
-});
+const INITIAL_DATA_CACHE_TTL = 60 * 1000; // 60s để giảm áp lực SSR
+const FALLBACK_CACHE_TTL = 20 * 1000; // fallback nên refresh nhanh hơn
+const initialDataCache = new Map();
 
-const LATEST_DATE_CACHE_TTL = 60 * 1000; // 60s cache to cut down duplicate API calls
-let cachedLatestDate = {
-    expiresAt: 0,
-    value: null
-};
-
-const fetchWithTimeout = async (url, options = {}, timeout = 3000) => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeout);
-
-    try {
-        return await fetch(url, {
-            ...options,
-            signal: controller.signal
-        });
-    } finally {
-        clearTimeout(timer);
-    }
-};
-
-const parseLatestDateResponse = (data) => {
-    if (!data?.success || !data?.latestDate) {
-        return null;
-    }
-
-    const [day, month, year] = data.latestDate.split('/').map(Number);
-    if (!day || !month || !year) {
-        return null;
-    }
-
-    const parsedDate = new Date(year, month - 1, day);
-    parsedDate.setHours(0, 0, 0, 0);
-    return parsedDate;
-};
-
-const getLatestSoiCauDate = async () => {
-    const now = Date.now();
-    if (cachedLatestDate.value && cachedLatestDate.expiresAt > now) {
-        return new Date(cachedLatestDate.value);
-    }
-
-    try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const apiEndpoint = `${apiUrl}/api/position-soicau-loto/latest-date`;
-        const latestSoiCauResponse = await fetchWithTimeout(apiEndpoint, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (latestSoiCauResponse.ok) {
-            const data = await latestSoiCauResponse.json();
-            const parsedDate = parseLatestDateResponse(data);
-
-            if (parsedDate) {
-                cachedLatestDate = {
-                    value: parsedDate.toISOString(),
-                    expiresAt: now + LATEST_DATE_CACHE_TTL
-                };
-                return parsedDate;
-            }
-        }
-    } catch (error) {
-        if (error.name !== 'AbortError') {
-            console.warn('[getLatestSoiCauDate] Failed to fetch latest date', error.message);
-        }
-    }
-
-    return null;
-};
-
-const isAfterResultCutoff = (date) => {
-    const hour = date.getHours();
-    const minutes = date.getMinutes();
-    return hour > 18 || (hour === 18 && minutes >= 40);
-};
-
-const formatDateForAnalysis = (date) => {
-    return date.toLocaleDateString('vi-VN').replace(/\//g, '/');
-};
-
-const FALLBACK_TEMPLATE = {
+const FALLBACK_DATA_TEMPLATE = {
     totalResults: 3,
     patternsFound: 15,
     consistentPatterns: 8,
@@ -136,50 +52,81 @@ const FALLBACK_TEMPLATE = {
     }
 };
 
-const buildFallbackData = (analysisDate, analysisDays) => ({
-    ...FALLBACK_TEMPLATE,
+const viVNDateFormatter = new Intl.DateTimeFormat('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+});
+
+const createFallbackData = (analysisDate, analysisDays) => ({
+    ...FALLBACK_DATA_TEMPLATE,
     analysisDate,
     analysisDays,
-    metadata: { ...FALLBACK_TEMPLATE.metadata },
-    predictions: FALLBACK_TEMPLATE.predictions.map(prediction => ({ ...prediction })),
-    tableStatistics: Object.entries(FALLBACK_TEMPLATE.tableStatistics).reduce((acc, [key, value]) => {
-        acc[key] = value.map(item => ({ ...item }));
+    metadata: { ...FALLBACK_DATA_TEMPLATE.metadata },
+    predictions: FALLBACK_DATA_TEMPLATE.predictions.map(prediction => ({ ...prediction })),
+    tableStatistics: Object.entries(FALLBACK_DATA_TEMPLATE.tableStatistics).reduce((acc, [key, value]) => {
+        acc[key] = value.map(entry => ({ ...entry }));
         return acc;
     }, {})
 });
 
-const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
+const getCachedInitialProps = (key) => {
+    const cached = initialDataCache.get(key);
+    if (!cached) return null;
+    if (cached.expiresAt < Date.now()) {
+        initialDataCache.delete(key);
+        return null;
+    }
+    return cached.payload;
+};
+
+const setCachedInitialProps = (key, payload, ttl = INITIAL_DATA_CACHE_TTL) => {
+    initialDataCache.set(key, {
+        payload,
+        expiresAt: Date.now() + ttl
+    });
+};
+
+const buildInitialProps = (initialData, dateISO, days) => ({
+    initialData,
+    initialDate: dateISO,
+    initialDays: days
+});
+
+const PositionSoiCauPage = ({ initialData, initialDate, initialDays }) => {
     const [isMobileHistoryModalOpen, setIsMobileHistoryModalOpen] = useState(false);
-    const handleOpenHistory = useCallback(() => setIsMobileHistoryModalOpen(true), []);
-    const handleCloseHistory = useCallback(() => setIsMobileHistoryModalOpen(false), []);
 
     // ✅ SEO Configuration
-    const siteUrl = useMemo(() => 
+    const siteUrl = useMemo(() =>
         process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro',
         []
     );
 
-    const seoConfig = useMemo(() => getPageSEO('soi-cau-loto'), []);
+    const seoConfig = useMemo(() => getPageSEO('soi-cau-dac-biet-mien-bac'), []);
 
     // ✅ Breadcrumbs
     const breadcrumbs = useMemo(() => [
         { name: 'Trang chủ', url: siteUrl },
-        { name: 'Soi Cầu Lô Tô Miền Bắc', url: `${siteUrl}/soi-cau-loto` }
+        { name: 'Soi Cầu Đặc Biệt Miền Bắc', url: `${siteUrl}/soi-cau-dac-biet-mien-bac` }
     ], [siteUrl]);
 
     // ✅ FAQ Data
     const faqData = useMemo(() => [
         {
-            question: 'Soi cầu lô tô miền bắc là gì?',
-            answer: 'Soi cầu lô tô miền bắc là phương pháp phân tích vị trí số trong kết quả xổ số để tìm pattern nhất quán và dự đoán các cầu lô mạnh cho XSMB.'
+            question: 'Soi cầu đặc biệt miền bắc là gì?',
+            answer: 'Soi cầu đặc biệt miền bắc là phương pháp phân tích vị trí số trong kết quả xổ số để tìm pattern nhất quán và dự đoán 2 số cuối giải đặc biệt XSMB một cách chính xác.'
         },
         {
-            question: 'Cách sử dụng công cụ soi cầu lô tô?',
-            answer: 'Chọn ngày phân tích và số ngày cần xem. Hệ thống sẽ tự động phân tích vị trí số trong các giải và đưa ra dự đoán các cầu lô dựa trên pattern nhất quán tìm được.'
+            question: 'Cách sử dụng công cụ soi cầu đặc biệt miền bắc?',
+            answer: 'Chọn ngày phân tích và số ngày cần xem (mặc định 30 ngày). Hệ thống sẽ tự động phân tích vị trí số trong các giải và đưa ra dự đoán dựa trên pattern nhất quán tìm được.'
         },
         {
-            question: 'Soi cầu lô tô có chính xác không?',
+            question: 'Soi cầu đặc biệt có chính xác không?',
             answer: 'Công cụ sử dụng thuật toán phân tích vị trí số tiên tiến, tìm kiếm pattern nhất quán trong lịch sử kết quả. Độ chính xác phụ thuộc vào pattern tìm được và số ngày phân tích.'
+        },
+        {
+            question: 'Có thể soi cầu cho bao nhiêu ngày?',
+            answer: 'Bạn có thể chọn số ngày phân tích từ 7 đến 90 ngày. Số ngày càng nhiều thì dữ liệu phân tích càng đầy đủ, nhưng cần cân nhắc với độ mới của dữ liệu.'
         }
     ], []);
 
@@ -193,9 +140,9 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
             {
                 "@context": "https://schema.org",
                 "@type": "WebApplication",
-                "name": "Soi Cầu Lô Tô Miền Bắc - Dàn Đề Wukong",
-                "description": "Công cụ soi cầu lô tô miền bắc dựa trên phân tích vị trí số. Dự đoán lô tô XSMB chính xác, tìm pattern nhất quán.",
-                "url": `${siteUrl}/soi-cau-loto`,
+                "name": "Soi Cầu Đặc Biệt Miền Bắc - Dàn Đề Wukong",
+                "description": "Công cụ soi cầu đặc biệt miền bắc dựa trên phân tích vị trí số trong kết quả xổ số. Tìm kiếm pattern nhất quán để dự đoán 2 số cuối giải đặc biệt XSMB.",
+                "url": `${siteUrl}/soi-cau-dac-biet-mien-bac`,
                 "applicationCategory": "UtilitiesApplication",
                 "operatingSystem": "Web Browser",
                 "offers": {
@@ -212,8 +159,8 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
             {
                 "@context": "https://schema.org",
                 "@type": "HowTo",
-                "name": "Cách sử dụng công cụ soi cầu lô tô miền bắc",
-                "description": "Hướng dẫn chi tiết cách soi cầu lô tô để dự đoán các cầu lô mạnh",
+                "name": "Cách sử dụng công cụ soi cầu đặc biệt miền bắc",
+                "description": "Hướng dẫn chi tiết cách soi cầu đặc biệt để dự đoán 2 số cuối giải đặc biệt XSMB",
                 "step": [
                     {
                         "@type": "HowToStep",
@@ -225,13 +172,13 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
                         "@type": "HowToStep",
                         "position": 2,
                         "name": "Chọn số ngày phân tích",
-                        "text": "Chọn số ngày cần phân tích. Số ngày càng nhiều thì dữ liệu càng đầy đủ."
+                        "text": "Chọn số ngày cần phân tích (từ 7 đến 90 ngày). Số ngày càng nhiều thì dữ liệu càng đầy đủ."
                     },
                     {
                         "@type": "HowToStep",
                         "position": 3,
                         "name": "Xem kết quả dự đoán",
-                        "text": "Hệ thống sẽ tự động phân tích và hiển thị các cầu lô dự đoán dựa trên pattern nhất quán tìm được."
+                        "text": "Hệ thống sẽ tự động phân tích và hiển thị các số dự đoán dựa trên pattern nhất quán tìm được, kèm theo độ tin cậy."
                     }
                 ]
             },
@@ -248,8 +195,8 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
                     {
                         "@type": "ListItem",
                         "position": 2,
-                        "name": "Soi Cầu Lô Tô Miền Bắc",
-                        "item": `${siteUrl}/soi-cau-loto`
+                        "name": "Soi Cầu Đặc Biệt Miền Bắc",
+                        "item": `${siteUrl}/soi-cau-dac-biet-mien-bac`
                     }
                 ]
             },
@@ -274,45 +221,35 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
 
             <Layout>
 
-            <div className="mobileHistoryTriggerWrapper">
-                <button
-                    type="button"
-                    className="mobileHistoryTrigger"
-                    onClick={handleOpenHistory}
-                >
-                    <span className="mobileHistoryTriggerText">
-                        Xem lịch sử soi cầu lô tô
-                    </span>
-                    <span
-                        className="mobileHistoryTriggerIcon"
-                        aria-hidden="true"
+                <div className="mobileHistoryTriggerWrapper">
+                    <button
+                        type="button"
+                        className="mobileHistoryTrigger"
+                        onClick={() => setIsMobileHistoryModalOpen(true)}
                     >
-                        ➜
-                    </span>
-                </button>
-            </div>
+                        <span className="mobileHistoryTriggerText">
+                            Xem lịch sử soi cầu vị trí
+                        </span>
+                        <span
+                            className="mobileHistoryTriggerIcon"
+                            aria-hidden="true"
+                        >
+                            ➜
+                        </span>
+                    </button>
+                </div>
 
-            <DynamicPositionSoiCauLoto
-                initialData={initialData}
-                initialDate={initialDate}
-                initialDays={initialDays}
-                mobileHistoryModalOpen={isMobileHistoryModalOpen}
-                onCloseMobileHistoryModal={handleCloseHistory}
-                mobileHistoryModalControlled
-            />
+                <PositionSoiCau
+                    initialData={initialData}
+                    initialDate={initialDate}
+                    initialDays={initialDays}
+                    mobileHistoryModalOpen={isMobileHistoryModalOpen}
+                    onCloseMobileHistoryModal={() => setIsMobileHistoryModalOpen(false)}
+                    mobileHistoryModalControlled
+                />
 
-            <style jsx>{`
+                <style jsx>{`
                 .mobileHistoryTriggerWrapper {
-                }
-
-                .positionSoiCauLoading {
-                    width: 100%;
-                    border-radius: 12px;
-                    border: 1px dashed rgba(118, 75, 162, 0.4);
-                    padding: 24px;
-                    text-align: center;
-                    color: #5a2b9a;
-                    background: rgba(255, 255, 255, 0.8);
                 }
 
                 .mobileHistoryTrigger {
@@ -367,8 +304,8 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
                         display: none;
                     }
                 }
-            `}</style>
-        </Layout>
+            `}            </style>
+            </Layout>
         </>
     );
 };
@@ -377,52 +314,47 @@ export async function getServerSideProps() {
     try {
         const currentTime = new Date();
         const isAfterResultTime = currentTime.getHours() >= 18 && currentTime.getMinutes() >= 40;
-        const baseDate = isAfterResultTime
+        const defaultDate = isAfterResultTime
             ? new Date(currentTime.getTime() + 24 * 60 * 60 * 1000)
             : currentTime;
-        const defaultDate = new Date(baseDate);
-        defaultDate.setHours(0, 0, 0, 0);
 
-        const defaultDays = 4;
-        const formattedDate = formatDateForAnalysis(defaultDate);
+        const defaultDays = 2;
+        const formattedDate = viVNDateFormatter.format(defaultDate);
+        const cacheKey = `${formattedDate}:${defaultDays}`;
 
-        // Fallback data để tránh lỗi API
-        const fallbackData = buildFallbackData(formattedDate, defaultDays);
+        const cached = getCachedInitialProps(cacheKey);
+        if (cached) {
+            return { props: cached };
+        }
+
+        const buildAndCache = (data, ttl = INITIAL_DATA_CACHE_TTL) => {
+            const payload = buildInitialProps(data, defaultDate.toISOString(), defaultDays);
+            setCachedInitialProps(cacheKey, payload, ttl);
+            return payload;
+        };
 
         try {
-            // Thử gọi API, nhưng sử dụng fallback nếu có lỗi
-            const positionData = await apiService.getPositionSoiCauLoto({
+            const positionData = await apiService.getPositionSoiCau({
                 date: formattedDate,
                 days: defaultDays
             });
 
             return {
-                props: {
-                    initialData: positionData || fallbackData,
-                    initialDate: defaultDate.toISOString(),
-                    initialDays: defaultDays,
-                },
+                props: buildAndCache(positionData || createFallbackData(formattedDate, defaultDays))
             };
         } catch (apiError) {
             console.warn('Không thể lấy dữ liệu ban đầu, sử dụng dữ liệu mẫu:', apiError.message);
             return {
-                props: {
-                    initialData: fallbackData,
-                    initialDate: defaultDate.toISOString(),
-                    initialDays: defaultDays,
-                },
+                props: buildAndCache(createFallbackData(formattedDate, defaultDays), FALLBACK_CACHE_TTL)
             };
         }
     } catch (error) {
         console.error('Lỗi trong getServerSideProps:', error.message);
+        const safeDate = new Date();
         return {
-            props: {
-                initialData: {},
-                initialDate: new Date().toISOString(),
-                initialDays: 2,
-            },
+            props: buildInitialProps(createFallbackData(viVNDateFormatter.format(safeDate), 2), safeDate.toISOString(), 2),
         };
     }
 }
 
-export default PositionSoiCauLotoPage;
+export default PositionSoiCauPage;

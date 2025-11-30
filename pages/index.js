@@ -433,13 +433,13 @@ const Home = memo(function Home() {
                             </Link>
 
                             {/* Group 2 */}
-                            <Link href="/kqxs" className={styles.heroSecondaryButton} prefetch={false}>
+                            <Link href="/ket-qua-xo-so-mien-bac" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Kết Quả Xổ Số</span>
                             </Link>
-                            <Link href="/soi-cau-vi-tri" className={styles.heroSecondaryButton} prefetch={false}>
+                            <Link href="/soi-cau-dac-biet-mien-bac" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Soi Cầu Vị Trí</span>
                             </Link>
-                            <Link href="/soicau-bayesian" className={styles.heroSecondaryButton} prefetch={false}>
+                            <Link href="/soi-cau-mien-bac-ai" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Soi Cầu AI</span>
                             </Link>
                             <Link href="/dan-dac-biet" className={styles.heroSecondaryButton} prefetch={false}>

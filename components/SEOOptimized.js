@@ -162,7 +162,17 @@ export default function SEOOptimized({
     articleData = null
 }) {
     const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Dàn Đề Wukong';
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
+    // Normalize site URL to use www for production consistency
+    const getNormalizedSiteUrl = () => {
+        const url = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
+        const normalized = url.replace(/\/+$/, '');
+        // If production and doesn't have www, add it (but keep localhost as is)
+        if (normalized.includes('taodandewukong.pro') && !normalized.includes('www.')) {
+            return normalized.replace('https://taodandewukong.pro', 'https://www.taodandewukong.pro');
+        }
+        return normalized;
+    };
+    const siteUrl = getNormalizedSiteUrl();
 
     // ✅ FIX: Map 'home' to 'homepage' for PAGE_SEO_CONFIG
     const configPageType = pageType === 'home' ? 'homepage' : pageType;

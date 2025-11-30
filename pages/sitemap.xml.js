@@ -4,7 +4,24 @@
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
+// Ensure www is used for production consistency
+const getSiteUrl = () => {
+    const url = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
+    // Normalize: ensure www prefix for production, remove trailing slash
+    const normalized = url.replace(/\/+$/, '');
+    // If production and doesn't have www, add it (but keep localhost as is)
+    if (normalized.includes('taodandewukong.pro') && !normalized.includes('www.')) {
+        return normalized.replace('https://taodandewukong.pro', 'https://www.taodandewukong.pro');
+    }
+    return normalized;
+};
+const SITE_URL = getSiteUrl();
+
+// Helper to normalize image URLs (fix old api.taodandewukong.pro to api1.taodandewukong.pro)
+function normalizeImageUrl(url) {
+    if (!url) return '';
+    return url.replace(/https?:\/\/api\.taodandewukong\.pro\//g, 'https://api1.taodandewukong.pro/');
+}
 
 function generateSiteMap(articles) {
     const lastmod = new Date().toISOString().split('T')[0];
@@ -16,7 +33,7 @@ function generateSiteMap(articles) {
     
     <!-- Homepage - Priority 1.0 -->
     <url>
-        <loc>${SITE_URL}</loc>
+        <loc>${SITE_URL}/</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
         <lastmod>${lastmod}</lastmod>
@@ -24,7 +41,7 @@ function generateSiteMap(articles) {
     
     <!-- Main Tool Pages - Priority 0.95 -->
     <url>
-        <loc>${SITE_URL}/soicau-bayesian</loc>
+        <loc>${SITE_URL}/soi-cau-mien-bac-ai</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>
@@ -67,7 +84,7 @@ function generateSiteMap(articles) {
     
     <!-- Soi Cầu Pages - Priority 0.88 -->
     <url>
-        <loc>${SITE_URL}/soi-cau-vi-tri</loc>
+        <loc>${SITE_URL}/soi-cau-dac-biet-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.88</priority>
         <lastmod>${lastmod}</lastmod>
@@ -81,7 +98,7 @@ function generateSiteMap(articles) {
     </url>
     
     <url>
-        <loc>${SITE_URL}/soi-cau-loto</loc>
+        <loc>${SITE_URL}/soi-cau-loto-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.85</priority>
         <lastmod>${lastmod}</lastmod>
@@ -104,7 +121,7 @@ function generateSiteMap(articles) {
     
     <!-- Results Pages - Priority 0.95 -->
     <url>
-        <loc>${SITE_URL}/kqxs</loc>
+        <loc>${SITE_URL}/ket-qua-xo-so-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>
@@ -191,6 +208,21 @@ function generateSiteMap(articles) {
         <lastmod>${lastmod}</lastmod>
     </url>
     
+    <!-- Legal & Policy Pages -->
+    <url>
+        <loc>${SITE_URL}/privacy-policy</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.50</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/data-deletion</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.50</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
     <!-- Article Pages -->
     ${articles.map(article => {
         const publishDate = new Date(article.publishedAt || article.createdAt);
@@ -204,7 +236,7 @@ function generateSiteMap(articles) {
         <priority>${isRecent ? '0.9' : '0.7'}</priority>
         ${article.featuredImage?.url ? `
         <image:image>
-            <image:loc>${article.featuredImage.url}</image:loc>
+            <image:loc>${normalizeImageUrl(article.featuredImage.url)}</image:loc>
             <image:title>${escapeXml(article.title)}</image:title>
             <image:caption>${escapeXml(article.excerpt || article.title)}</image:caption>
         </image:image>` : ''}
@@ -263,13 +295,13 @@ export async function getServerSideProps({ res }) {
         const minimalSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>${SITE_URL}</loc>
+        <loc>${SITE_URL}/</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
-        <loc>${SITE_URL}/soicau-bayesian</loc>
+        <loc>${SITE_URL}/soi-cau-mien-bac-ai</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>
@@ -305,7 +337,7 @@ export async function getServerSideProps({ res }) {
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
-        <loc>${SITE_URL}/soi-cau-vi-tri</loc>
+        <loc>${SITE_URL}/soi-cau-dac-biet-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.88</priority>
         <lastmod>${lastmod}</lastmod>
@@ -317,7 +349,7 @@ export async function getServerSideProps({ res }) {
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
-        <loc>${SITE_URL}/soi-cau-loto</loc>
+        <loc>${SITE_URL}/soi-cau-loto-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.85</priority>
         <lastmod>${lastmod}</lastmod>
@@ -335,7 +367,7 @@ export async function getServerSideProps({ res }) {
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
-        <loc>${SITE_URL}/kqxs</loc>
+        <loc>${SITE_URL}/ket-qua-xo-so-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>
@@ -398,6 +430,18 @@ export async function getServerSideProps({ res }) {
         <loc>${SITE_URL}/tin-tuc</loc>
         <changefreq>hourly</changefreq>
         <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/privacy-policy</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.50</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/data-deletion</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.50</priority>
         <lastmod>${lastmod}</lastmod>
     </url>
 </urlset>`;

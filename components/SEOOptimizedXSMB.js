@@ -206,7 +206,7 @@ const SEOOptimizedXSMB = ({
                     }}>
                         <li><a href="/" style={{ color: '#007bff', textDecoration: 'none' }}>Trang chủ</a></li>
                         <li style={{ margin: '0 8px' }}>›</li>
-                        <li><a href="/kqxs" style={{ color: '#007bff', textDecoration: 'none' }}>Kết quả xổ số</a></li>
+                        <li><a href="/ket-qua-xo-so-mien-bac" style={{ color: '#007bff', textDecoration: 'none' }}>Kết quả xổ số</a></li>
                         <li style={{ margin: '0 8px' }}>›</li>
                         <li style={{ color: '#333' }}>{title || `Ngày ${date}`}</li>
                     </ol>

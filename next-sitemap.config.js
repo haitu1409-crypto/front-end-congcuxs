@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro',
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro',
     generateRobotsTxt: true,
     generateIndexSitemap: true,
 
@@ -33,7 +33,7 @@ module.exports = {
             },
         ],
         additionalSitemaps: [
-            `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/sitemap.xml`,
+            `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro'}/sitemap.xml`,
         ],
     },
 
@@ -58,13 +58,35 @@ module.exports = {
             changefreq = 'daily';
         }
         // Soi cau Bayesian - highest priority (highest search volume)
-        else if (path === '/soicau-bayesian') {
+        else if (path === '/soi-cau-mien-bac-ai') {
             priority = 0.95;
             changefreq = 'daily';
         }
+        // Results pages - very high priority
+        else if (path === '/ket-qua-xo-so-mien-bac') {
+            priority = 0.95;
+            changefreq = 'daily';
+        }
+        else if (path === '/kqxs-live') {
+            priority = 0.90;
+            changefreq = 'daily';
+        }
+        else if (path === '/kqxs-10-ngay') {
+            priority = 0.85;
+            changefreq = 'daily';
+        }
         // Main tool pages - very high priority (high search volume)
-        else if (path.match(/\/(dan-9x0x|dan-2d|dan-3d4d|dan-dac-biet)/)) {
+        else if (path.match(/\/(dan-9x0x|dan-2d|dan-3d4d|dan-dac-biet|loc-dan-de)/)) {
             priority = 0.9;
+            changefreq = 'daily';
+        }
+        // Soi cau pages
+        else if (path === '/soi-cau-dac-biet-mien-bac') {
+            priority = 0.88;
+            changefreq = 'daily';
+        }
+        else if (path.match(/\/(soi-cau-bac-cau|soi-cau-loto-mien-bac)/)) {
+            priority = 0.85;
             changefreq = 'daily';
         }
         // High-value pages (good search volume)
@@ -72,15 +94,41 @@ module.exports = {
             priority = 0.85;
             changefreq = 'weekly';
         }
-        // Statistics & content pages
-        else if (path.match(/\/(thong-ke|content)/)) {
-            priority = 0.8;
+        // Statistics pages
+        else if (path === '/thong-ke') {
+            priority = 0.82;
             changefreq = 'daily';
+        }
+        else if (path.match(/\/thongke\/(dau-duoi|giai-dac-biet|tan-suat-loto)/)) {
+            priority = 0.90;
+            changefreq = 'daily';
+        }
+        else if (path === '/thongke/lo-gan') {
+            priority = 0.85;
+            changefreq = 'daily';
+        }
+        else if (path === '/thongke/tan-suat-locap') {
+            priority = 0.80;
+            changefreq = 'daily';
+        }
+        else if (path === '/thongke/giai-dac-biet-tuan') {
+            priority = 0.78;
+            changefreq = 'daily';
+        }
+        // Statistics & content pages
+        else if (path === '/content') {
+            priority = 0.70;
+            changefreq = 'weekly';
         }
         // News/blog pages
         else if (path.match(/\/tin-tuc/)) {
             priority = 0.7;
             changefreq = 'daily';
+        }
+        // Legal & policy pages
+        else if (path.match(/\/(privacy-policy|data-deletion)/)) {
+            priority = 0.50;
+            changefreq = 'monthly';
         }
 
         return {
@@ -108,17 +156,31 @@ module.exports = {
         // Add custom paths (sorted by SEO priority)
         const customPaths = [
             '/',                    // Priority 1.0
-            '/soicau-bayesian',   // Priority 0.95 - NEW: Highest search volume (74,000/month)
+            '/soi-cau-mien-bac-ai',   // Priority 0.95 - Highest search volume (74,000/month)
+            '/ket-qua-xo-so-mien-bac', // Priority 0.95 - Results page (new URL)
             '/dan-9x0x',           // Priority 0.9 - High search volume
             '/dan-2d',             // Priority 0.9 - High search volume
             '/dan-3d4d',           // Priority 0.9 - High search volume
             '/dan-dac-biet',       // Priority 0.9 - High search volume
+            '/loc-dan-de',         // Priority 0.9 - Filter dàn đề
+            '/kqxs-live',          // Priority 0.90 - Live results
+            '/soi-cau-dac-biet-mien-bac',     // Priority 0.88 - Soi cầu đặc biệt miền bắc
+            '/thongke/dau-duoi',   // Priority 0.90 - Statistics
+            '/thongke/giai-dac-biet', // Priority 0.90 - Statistics
+            '/thongke/tan-suat-loto', // Priority 0.88 - Statistics
+            '/thongke/lo-gan',     // Priority 0.85 - Statistics
+            '/thongke/tan-suat-locap', // Priority 0.80 - Statistics
+            '/thongke/giai-dac-biet-tuan', // Priority 0.78 - Statistics
+            '/soi-cau-bac-cau',    // Priority 0.85 - Soi cầu
+            '/soi-cau-loto-mien-bac',       // Priority 0.85 - Soi cầu lô tô miền bắc
+            '/kqxs-10-ngay',       // Priority 0.85 - Results
             '/ghep-lo-xien',       // Priority 0.85 - High search volume (3,600/month)
             '/bang-tinh-chao',     // Priority 0.85 - Medium search volume (880/month)
             '/thong-ke',           // Priority 0.82 - Statistics hub
-            '/thongke/dau-duoi',   // Priority 0.8
-            '/content',            // Priority 0.8
-            '/tin-tuc',            // Priority 0.7
+            '/content',            // Priority 0.70 - Content page
+            '/tin-tuc',            // Priority 0.70 - News page
+            '/privacy-policy',     // Priority 0.50 - Legal
+            '/data-deletion',      // Priority 0.50 - Legal
         ];
 
         // Image sitemap configuration (with SEO-optimized captions)
@@ -222,7 +284,7 @@ module.exports = {
                     }
                 ]
             },
-            '/soicau-bayesian': {
+            '/soi-cau-mien-bac-ai': {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/soi-cau-bayesian.png`,
@@ -233,11 +295,71 @@ module.exports = {
             }
         };
 
+        // Priority mapping for custom paths
+        const priorityMap = {
+            '/': 1.0,
+            '/soi-cau-mien-bac-ai': 0.95,
+            '/ket-qua-xo-so-mien-bac': 0.95,
+            '/dan-9x0x': 0.9,
+            '/dan-2d': 0.9,
+            '/dan-3d4d': 0.9,
+            '/dan-dac-biet': 0.9,
+            '/loc-dan-de': 0.9,
+            '/kqxs-live': 0.90,
+            '/soi-cau-dac-biet-mien-bac': 0.88,
+            '/thongke/dau-duoi': 0.90,
+            '/thongke/giai-dac-biet': 0.90,
+            '/thongke/tan-suat-loto': 0.88,
+            '/thongke/lo-gan': 0.85,
+            '/thongke/tan-suat-locap': 0.80,
+            '/thongke/giai-dac-biet-tuan': 0.78,
+            '/soi-cau-bac-cau': 0.85,
+            '/soi-cau-loto-mien-bac': 0.85,
+            '/kqxs-10-ngay': 0.85,
+            '/ghep-lo-xien': 0.85,
+            '/bang-tinh-chao': 0.85,
+            '/thong-ke': 0.82,
+            '/content': 0.70,
+            '/tin-tuc': 0.70,
+            '/privacy-policy': 0.50,
+            '/data-deletion': 0.50,
+        };
+
+        // Changefreq mapping
+        const changefreqMap = {
+            '/': 'daily',
+            '/soi-cau-mien-bac-ai': 'daily',
+            '/ket-qua-xo-so-mien-bac': 'daily',
+            '/kqxs-live': 'daily',
+            '/kqxs-10-ngay': 'daily',
+            '/dan-9x0x': 'daily',
+            '/dan-2d': 'daily',
+            '/dan-3d4d': 'daily',
+            '/dan-dac-biet': 'daily',
+            '/loc-dan-de': 'daily',
+            '/soi-cau-dac-biet-mien-bac': 'daily',
+            '/soi-cau-bac-cau': 'daily',
+            '/soi-cau-loto-mien-bac': 'daily',
+            '/thong-ke': 'daily',
+            '/thongke/dau-duoi': 'daily',
+            '/thongke/lo-gan': 'daily',
+            '/thongke/giai-dac-biet': 'daily',
+            '/thongke/giai-dac-biet-tuan': 'daily',
+            '/thongke/tan-suat-loto': 'daily',
+            '/thongke/tan-suat-locap': 'daily',
+            '/tin-tuc': 'hourly',
+            '/ghep-lo-xien': 'weekly',
+            '/bang-tinh-chao': 'weekly',
+            '/content': 'weekly',
+            '/privacy-policy': 'monthly',
+            '/data-deletion': 'monthly',
+        };
+
         for (const path of customPaths) {
             const pathConfig = {
                 loc: path,
-                changefreq: 'daily',
-                priority: path === '/' ? 1.0 : 0.9,
+                changefreq: changefreqMap[path] || 'weekly',
+                priority: priorityMap[path] || 0.7,
                 lastmod: new Date().toISOString(),
             };
 
@@ -257,7 +379,7 @@ module.exports = {
 
     // News sitemap configuration
     additionalSitemaps: [
-        `${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}/news-sitemap.xml`,
+        `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro'}/news-sitemap.xml`,
     ],
 
     // Output directory

@@ -623,7 +623,7 @@ const SEO_CONFIG = {
      * ENHANCED: Multi-search engine optimization + User behavior keywords
      * COMPETITIVE: Tối ưu để cạnh tranh với xskt, xosothantai, atrungroi, xsmn247
      */
-    soiCauBayesian: {
+    'soi-cau-mien-bac-ai': {
         title: 'Soi Cầu Miền Bắc Hôm Nay | Dự Đoán XSMB Chính Xác 100% - Tốt Hơn XSKT, Xosothantai 2025',
         description: 'Soi cầu miền bắc hôm nay (soi cau mien bac hom nay) chính xác 100%, tốt hơn xskt, xosothantai, atrungroi, xsmn247. Dự đoán XSMB bằng 5 phương pháp truyền thống: Pascal, Hình Quả Trám, Tần Suất Lô Cặp, Lô Gan Kết Hợp, Lô Rơi. Miễn phí 100%, cập nhật realtime!',
         keywords: [
@@ -806,9 +806,9 @@ const SEO_CONFIG = {
             'soi cầu MB hôm nay khẩn cấp', 'soi cau MB hom nay khan cap',
             'soi cầu miền bắc hôm nay ngay', 'soi cau mien bac hom nay ngay'
         ],
-        url: '/soicau-bayesian',
+        url: '/soi-cau-mien-bac-ai',
         image: `${SITE_URL}/imgs/soi-cau-bayesian.png`,
-        canonical: `${SITE_URL}/soicau-bayesian`,
+        canonical: `${SITE_URL}/soi-cau-mien-bac-ai`,
         type: 'article',
         priority: 0.95,
         changefreq: 'daily',
@@ -819,17 +819,17 @@ const SEO_CONFIG = {
         sections: {
             soiCauHomNay: {
                 title: 'Soi Cầu Miền Bắc Hôm Nay',
-                url: '/soicau-bayesian#soi-cau-hom-nay',
+                url: '/soi-cau-mien-bac-ai#soi-cau-hom-nay',
                 keywords: ['soi cầu miền bắc hôm nay', 'soi cau mien bac hom nay', 'dự đoán XSMB hôm nay']
             },
             thongKeViTri: {
                 title: 'Thống Kê Vị Trí XSMB',
-                url: '/soicau-bayesian#thong-ke-vi-tri',
+                url: '/soi-cau-mien-bac-ai#thong-ke-vi-tri',
                 keywords: ['thống kê vị trí XSMB', 'thong ke vi tri XSMB', 'phân tích xổ số miền Bắc']
             },
             phuongPhapBayesian: {
                 title: 'Phương Pháp Bayesian',
-                url: '/soicau-bayesian#phuong-phap-bayesian',
+                url: '/soi-cau-mien-bac-ai#phuong-phap-bayesian',
                 keywords: ['soi cầu Bayesian', 'dự đoán Bayesian XSMB', 'thuật toán Bayesian']
             }
         }
@@ -1201,7 +1201,91 @@ const SEO_CONFIG = {
         ],
         url: '/kqxs',
         image: OG_IMAGES.default,
-        canonical: `${SITE_URL}/kqxs`,
+        canonical: `${SITE_URL}/ket-qua-xo-so-mien-bac`,
+        type: 'website',
+        priority: 0.95,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Article',
+            additionalTypes: ['FAQPage', 'CollectionPage']
+        }
+    },
+
+    /**
+     * KẾT QUẢ XỔ SỐ MIỀN BẮC (SEO-friendly URL)
+     * Primary Keywords: kết quả xổ số miền bắc, ket qua xo so mien bac, xsmb
+     */
+    'ket-qua-xo-so-mien-bac': {
+        title: 'XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay | SXMB - KQXSMB - XSTD Nhanh Nhất 2025',
+        description: 'XSMB - Kết quả xổ số miền Bắc (xsmb, sxmb, kqxsmb, xstd) hôm nay nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay. Xem XSMB 30 ngày, XSMB hôm qua, XSMB theo thứ. Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100%!',
+        keywords: [
+            // ✅ PRIMARY KEYWORDS - Từ khóa chính volume cao
+            'kết quả xổ số miền bắc', 'ket qua xo so mien bac',
+            'xsmb', 'XSMB', 'xs mb', 'xổ số mb',
+            'sxmb', 'SXMB', 'sx mb',
+            'kqxsmb', 'KQXSMB', 'kq xsmb', 'kqxs mb',
+            'xstd', 'XSTD', 'xổ số thủ đô',
+            'xo so mien bac', 'xổ số miền bắc',
+            'danh sách kết quả xổ số', 'danh sach ket qua xo so',
+            'kqxs', 'kq xs', 'ket qua xo so',
+
+            // ✅ TIME-BASED KEYWORDS - Theo thời gian
+            'xsmb hôm nay', 'xsmb hom nay', 'XSMB hôm nay',
+            'xsmb 30 ngày', 'xsmb 30 ngay', 'XSMB 30 ngày',
+            'xsmb hôm qua', 'xsmb hom qua', 'XSMB hôm qua',
+            'xsmb 90 ngày', 'xsmb 90 ngay',
+            'xsmb ngày hôm nay', 'xsmb ngay hom nay',
+            'kết quả xsmb hôm nay', 'ket qua xsmb hom nay',
+            
+            // ✅ DAY-OF-WEEK KEYWORDS - Theo thứ trong tuần
+            'xsmb thứ 2', 'xsmb thu 2', 'XSMB thứ 2', 'xsmb thứ hai',
+            'xsmb thứ 3', 'xsmb thu 3', 'XSMB thứ 3', 'xsmb thứ ba',
+            'xsmb thứ 4', 'xsmb thu 4', 'XSMB thứ 4', 'xsmb thứ tư',
+            'xsmb thứ 5', 'xsmb thu 5', 'XSMB thứ 5', 'xsmb thứ năm', 'xsmb thu 5',
+            'xsmb thứ 6', 'xsmb thu 6', 'XSMB thứ 6', 'xsmb thứ sáu',
+            'xsmb thứ 7', 'xsmb thu 7', 'XSMB thứ 7', 'xsmb thứ bảy',
+            'xsmb chủ nhật', 'xsmb chu nhat', 'XSMB chủ nhật',
+            
+            // ✅ ACTION KEYWORDS - Hành động
+            'xsmb trực tiếp', 'xsmb truc tiep', 'XSMB trực tiếp',
+            'tường thuật xsmb', 'tuong thuat xsmb',
+            'xem xsmb trực tiếp', 'xem xsmb truc tiep',
+            'kết quả xsmb trực tiếp', 'ket qua xsmb truc tiep',
+            'xsmb tường thuật', 'xsmb tuong thuat',
+            'quay số xsmb', 'quay so xsmb',
+            
+            // ✅ COMPETITIVE KEYWORDS - Đối thủ cạnh tranh
+            'xsmb xosodaiphat', 'xosodaiphat xsmb',
+            'xsmb tốt hơn xosodaiphat', 'xsmb tot hon xosodaiphat',
+            'xsmb xoso', 'xoso.com.vn xsmb',
+            'xsmb tốt hơn xoso', 'xsmb tot hon xoso',
+            'xsmb xskt', 'xskt.com.vn xsmb',
+            'xsmb tốt hơn xskt', 'xsmb tot hon xskt',
+            
+            // ✅ LONG-TAIL KEYWORDS
+            'xem kết quả xổ số hôm nay', 'xem ket qua xo so hom nay',
+            'kết quả xổ số miền bắc mới nhất', 'ket qua xo so mien bac moi nhat',
+            'danh sách kết quả xsmb', 'danh sach ket qua xsmb',
+            'bảng kết quả xổ số miền bắc', 'bang ket qua xo so mien bac',
+            
+            // ✅ LOCATION KEYWORDS
+            'xsmb hà nội', 'xsmb ha noi', 'XSMB Hà Nội',
+            'xổ số hà nội', 'xo so ha noi',
+            'xổ số thủ đô', 'xo so thu do',
+            
+            // ✅ ACCURACY KEYWORDS
+            'xsmb chính xác', 'xsmb chinh xac',
+            'kết quả xsmb nhanh nhất', 'ket qua xsmb nhanh nhat',
+            'xsmb cập nhật nhanh', 'xsmb cap nhat nhanh',
+            
+            // ✅ FREE KEYWORDS
+            'xsmb miễn phí', 'xsmb mien phi',
+            'kết quả xsmb miễn phí', 'ket qua xsmb mien phi',
+            'xem xsmb miễn phí', 'xem xsmb mien phi'
+        ],
+        url: '/ket-qua-xo-so-mien-bac',
+        image: OG_IMAGES.default,
+        canonical: `${SITE_URL}/ket-qua-xo-so-mien-bac`,
         type: 'website',
         priority: 0.95,
         changefreq: 'daily',
@@ -1255,7 +1339,7 @@ const SEO_CONFIG = {
      * SOI CẦU ĐẶC BIỆT MIỀN BẮC
      * Primary Keywords: soi cầu đặc biệt miền bắc, soi cau dac biet mien bac, dự đoán giải đặc biệt
      */
-    'soi-cau-vi-tri': {
+    'soi-cau-dac-biet-mien-bac': {
         title: 'Soi Cầu Đặc Biệt Miền Bắc Theo Vị Trí Số | Phân Tích Pattern Dự Đoán XSMB - Miễn Phí 2025',
         description: 'Công cụ soi cầu đặc biệt miền bắc dựa trên phân tích vị trí số trong kết quả xổ số. Tìm kiếm pattern nhất quán để dự đoán 2 số cuối giải đặc biệt XSMB. Miễn phí 100%!',
         keywords: [
@@ -1279,9 +1363,9 @@ const SEO_CONFIG = {
             'soi cầu đặc biệt wukong', 'soi cau dac biet wukong',
             'wukong soi cầu đặc biệt', 'wukong soi cau dac biet'
         ],
-        url: '/soi-cau-vi-tri',
+        url: '/soi-cau-dac-biet-mien-bac',
         image: `${SITE_URL}/imgs/wukong.png`,
-        canonical: `${SITE_URL}/soi-cau-vi-tri`,
+        canonical: `${SITE_URL}/soi-cau-dac-biet-mien-bac`,
         type: 'article',
         priority: 0.88,
         changefreq: 'daily',
@@ -1295,7 +1379,7 @@ const SEO_CONFIG = {
      * SOI CẦU LÔ TÔ
      * Primary Keywords: soi cầu lô tô, soi cau lo to, dự đoán lô tô miền bắc
      */
-    'soi-cau-loto': {
+    'soi-cau-loto-mien-bac': {
         title: 'Soi Cầu Lô Tô Miền Bắc | Dự Đoán Lô Tô XSMB Theo Vị Trí - Miễn Phí 2025',
         description: 'Công cụ soi cầu lô tô miền bắc dựa trên phân tích vị trí số. Dự đoán lô tô XSMB chính xác, tìm pattern nhất quán. Miễn phí 100%!',
         keywords: [
@@ -1312,9 +1396,9 @@ const SEO_CONFIG = {
             'soi cầu lô tô wukong', 'soi cau lo to wukong',
             'wukong soi cầu lô tô', 'wukong soi cau lo to'
         ],
-        url: '/soi-cau-loto',
+        url: '/soi-cau-loto-mien-bac',
         image: `${SITE_URL}/imgs/wukong.png`,
-        canonical: `${SITE_URL}/soi-cau-loto`,
+        canonical: `${SITE_URL}/soi-cau-loto-mien-bac`,
         type: 'article',
         priority: 0.85,
         changefreq: 'daily',
