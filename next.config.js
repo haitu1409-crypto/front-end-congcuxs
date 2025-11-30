@@ -20,7 +20,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'api.taodandewukong.pro',
+                hostname: 'api1.taodandewukong.pro',
                 pathname: '/uploads/**',
             },
         ],
