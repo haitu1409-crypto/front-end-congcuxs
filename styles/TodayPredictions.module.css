@@ -25,13 +25,16 @@
     /* background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%); */
 
     /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
-   
+    /* ✅ Font family với fallback tốt cho mobile */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, sans-serif;
+    /* ✅ Font rendering optimizations */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-display: swap;
     contain: layout style;
     will-change: auto;
     /* ✅ Fix CLS: Reserve minimum height to prevent layout shift */
     min-height: 50px;
-    /* ✅ Prevent font loading shifts */
-    font-display: swap;
     /* ✅ Fix: Prevent container overflow */
     box-sizing: border-box;
     /* ✅ Fix: Ensure it stays within parent container */
@@ -64,7 +67,10 @@
     cursor: pointer;
     color: white;
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 700; /* Use 700 for better mobile support */
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
     backdrop-filter: blur(10px);
@@ -239,10 +245,13 @@
 
 .cardTitle {
     font-size: 0.9rem;
-    font-weight: 800;
+    font-weight: 700; /* Use 700 instead of 800 for better mobile support */
     color: color-mix(in srgb, var(--card-color, #2d3748) 80%, #000 20%);
     margin: 0;
     line-height: 1.2;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .cardSubtitle {
@@ -345,8 +354,11 @@
 
 .cardContent table th {
     background: #f7fafc;
-    font-weight: 600;
+    font-weight: 700; /* Use 700 for better mobile support */
     color: #2d3748;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .cardContent table tr:hover {
@@ -355,7 +367,10 @@
 
 .cardContent strong {
     color: #2d3748;
-    font-weight: 600;
+    font-weight: 700; /* Use 700 for better mobile support */
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .cardContent em {
@@ -419,7 +434,7 @@
     color: #1d5aeb;
     font-weight: 700;
     font-size: 0.9rem !important;
-    font-family: Arial, sans-serif !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif !important;
     text-decoration: none;
     transition: all 0.2s;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -491,7 +506,7 @@
     color: #1d5aeb;
     font-weight: 700;
     font-size: 0.9rem !important;
-    font-family: Arial, sans-serif !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif !important;
     text-decoration: none;
     transition: all 0.2s;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -518,7 +533,7 @@
 }
 
 .cardContent :global(.table-prediction) :global(td.name) {
-    font-weight: 600;
+    font-weight: 700; /* Use 700 for better mobile support */
     color: #2d3748;
     padding: 6px 8px;
     border: 1px solid #e2e8f0;
@@ -545,8 +560,11 @@
 
 .cardContent :global(.table-prediction) strong,
 .cardContent :global(.table-prediction) b {
-    font-weight: 600;
+    font-weight: 700; /* Use 700 for better mobile support */
     font-size: 0.95rem;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .cardContent :global(.table-prediction) :global(.emoji),
@@ -720,8 +738,11 @@
         background: #f0f0f0;
         color: #1d5aeb;
         font-size: 1rem !important;
-        font-weight: 600;
-        font-family: Arial, sans-serif !important;
+        font-weight: 700 !important; /* Use 700 for better mobile support */
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif !important;
+        /* Ensure font-weight works on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
         line-height: 1.4;
         padding: 4px 8px;
         margin: 2px;
@@ -780,9 +801,12 @@
 
     .cardContent :global(.table-prediction) strong,
     .cardContent :global(.table-prediction) b {
-        font-weight: 600;
+        font-weight: 700; /* Use 700 for better mobile support */
         font-size: 1.1rem;
         line-height: 1;
+        /* Ensure font-weight works on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .cardContent :global(.table-prediction) :global(.emoji),
@@ -936,8 +960,11 @@
         display: inline-block;
         color: #1d5aeb;
         font-size: 0.95rem !important;
-        font-weight: 600;
-        font-family: Arial, sans-serif !important;
+        font-weight: 700 !important; /* Use 700 for better mobile support */
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif !important;
+        /* Ensure font-weight works on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
         line-height: 1.4;
         padding: 3px 6px;
         margin: 2px 1px;
@@ -996,9 +1023,12 @@
 
     .cardContent :global(.table-prediction) strong,
     .cardContent :global(.table-prediction) b {
-        font-weight: 600;
+        font-weight: 700; /* Use 700 for better mobile support */
         font-size: 1rem;
         line-height: 1.2;
+        /* Ensure font-weight works on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .cardContent :global(.table-prediction) :global(.emoji),
@@ -1071,7 +1101,10 @@
     color: var(--color-gray-500, #6b7280);
     margin-bottom: 12px;
     padding-left: 16px;
-    font-weight: 600;
+    font-weight: 700; /* Use 700 for better mobile support */
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .socialLinksContainer {

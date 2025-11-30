@@ -422,8 +422,11 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 	const headerStyle = useMemo(() => ({
 		background: '#3a8de0',
 		color: '#FFFFFF',
-		fontWeight: 'bold',
-		padding: '6px 8px'
+		fontWeight: 700, // Use 700 for better mobile support
+		padding: '6px 8px',
+		// Ensure font-weight works on mobile
+		WebkitFontSmoothing: 'antialiased',
+		MozOsxFontSmoothing: 'grayscale'
 	}), []);
 
 	const headerRow = useMemo(() => ({
@@ -443,18 +446,24 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 		border: '1px solid rgba(255,255,255,0.7)',
 		borderRadius: '4px',
 		padding: isMobile ? '4px 6px' : '4px 8px',
-		fontWeight: 'bold',
+		fontWeight: 700, // Use 700 for better mobile support
 		fontSize: isMobile ? '13px' : '14px',
-		cursor: 'pointer'
+		cursor: 'pointer',
+		// Ensure font-weight works on mobile
+		WebkitFontSmoothing: 'antialiased',
+		MozOsxFontSmoothing: 'grayscale'
 	}), [isMobile]);
 
 	const sectionTitleStyle = useMemo(() => ({
 		padding: '5px',
 		margin: 0,
 		color: '#0141B6',
-		fontWeight: 'bold',
+		fontWeight: 700, // Use 700 for better mobile support
 		fontSize: '16px',
-		background: '#D5E9FD'
+		background: '#D5E9FD',
+		// Ensure font-weight works on mobile
+		WebkitFontSmoothing: 'antialiased',
+		MozOsxFontSmoothing: 'grayscale'
 	}), []);
 
 	// Grid badge style như ảnh mẫu
@@ -710,7 +719,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 
 				{/* Các cặp lotto dẫn đầu bảng gan */}
 				<div style={{ padding: '5px' }}>
-					<div style={{ margin: '5px', color: '#0141B6', fontSize: '16px', fontWeight: 'bold' }}>
+					<div style={{ margin: '5px', color: '#0141B6', fontSize: '16px', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 						Các cặp lotto dẫn đầu bảng gan:
 					</div>
 					<ul style={{ margin: 0, paddingLeft: '15px' }}>
@@ -729,7 +738,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 
 				{/* Các cặp lô tô lộn cùng gan nhiều nhất */}
 				<div style={{ padding: '5px' }}>
-					<div style={{ margin: '5px 0 30px 0', fontSize: '16px', color: '#3C3C3C', fontWeight: 'bold' }}>
+					<div style={{ margin: '5px 0 30px 0', fontSize: '16px', color: '#3C3C3C', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 						Các cặp lô tô lộn cùng gan nhiều nhất:
 					</div>
 					<div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'flex-end' }}>
@@ -779,7 +788,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 			{/* Đặc biệt lâu chưa ra */}
 			{specialGapTop.length > 0 && (
 				<div style={{ border: '#C4D2E3 1px solid', marginTop: '10px' }}>
-					<div style={{ padding: '5px', marginTop: '10px', color: '#B70000', fontWeight: 'bold', background: '#FDECD5', fontSize: '15px' }}>
+					<div style={{ padding: '5px', marginTop: '10px', color: '#B70000', fontWeight: 700, background: '#FDECD5', fontSize: '15px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 						Đặc biệt lâu chưa ra:
 					</div>
 					<div style={groupWrapStyle}>
@@ -800,7 +809,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 			{/* Thống kê gan đặc biệt theo tổng */}
 			{specialSumGaps.length === 10 && (
 				<div style={{ padding: '5px' }}>
-					<div style={{ margin: '5px 0 0 0', color: '#770060', fontWeight: 'bold', fontSize: '15px' }}>
+					<div style={{ margin: '5px 0 0 0', color: '#770060', fontWeight: 700, fontSize: '15px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 						Thống kê gan đặc biệt theo tổng:
 					</div>
 					<div style={{ display: 'flex', alignItems: 'flex-end', flexWrap: 'wrap', marginTop: '10px' }}>
@@ -822,7 +831,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 					</div>
 					{topSumGap && (
 						<div style={{ padding: '5px 0' }}>
-							Thống kê cho thấy tổng đề lâu chưa xuất hiện nhất là tổng {topSumGap.sum} (bao gồm 10 cặp số: <span style={{ color: '#A901D3', fontWeight: 'bold' }}>{topSumGapPairs.join(', ')}</span>) đã {topSumGap.days} ngày chưa ra.
+							Thống kê cho thấy tổng đề lâu chưa xuất hiện nhất là tổng {topSumGap.sum} (bao gồm 10 cặp số: <span style={{ color: '#A901D3', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{topSumGapPairs.join(', ')}</span>) đã {topSumGap.days} ngày chưa ra.
 						</div>
 					)}
 				</div>
@@ -831,7 +840,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 			{/* Thống kê gan đặc biệt theo chạm */}
 			{specialChamGaps.length === 10 && (
 				<div style={{ padding: '5px' }}>
-					<div style={{ margin: '5px 0 0 0', color: '#C20171', fontWeight: 'bold', fontSize: '15px' }}>
+					<div style={{ margin: '5px 0 0 0', color: '#C20171', fontWeight: 700, fontSize: '15px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 						Thống kê gan đặc biệt theo chạm:
 					</div>
 					<div style={{ display: 'flex', alignItems: 'flex-end', flexWrap: 'wrap', marginTop: '10px' }}>
@@ -862,7 +871,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 			{/* Thống kê gan đặc biệt theo bộ */}
 			{specialBoGanTop.length > 0 && (
 				<div style={{ border: '#C4D2E3 1px solid', marginTop: '10px' }}>
-					<div style={{ padding: '5px', marginTop: '10px', color: '#8E00CC', fontWeight: 'bold', background: '#F0E6FF', fontSize: '15px' }}>
+					<div style={{ padding: '5px', marginTop: '10px', color: '#8E00CC', fontWeight: 700, background: '#F0E6FF', fontSize: '15px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 						Thống kê gan đặc biệt theo bộ (1 năm):
 					</div>
 					<div style={groupWrapStyle}>
@@ -893,7 +902,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 					{/* Bộ ra nhiều nhất - 5 cột 10 dòng */}
 					{specialBoHotTop.length > 0 && (
 						<div style={{ padding: '5px', marginTop: '15px', borderTop: '1px solid #E0E0E0' }}>
-							<div style={{ margin: '5px 0 10px 0', fontSize: '16px', fontWeight: 'bold', color: '#0141B6' }}>
+							<div style={{ margin: '5px 0 10px 0', fontSize: '16px', fontWeight: 700, color: '#0141B6', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 								Bộ số đặc biệt ra nhiều nhất:
 							</div>
 							<div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
@@ -916,7 +925,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 			)}
 
 			<div style={{ border: '#C4D2E3 1px solid', marginTop: '10px' }}>
-				<div style={{ padding: '5px', marginTop: '10px', color: '#C20171', fontWeight: 'bold', background: '#FDECF5', fontSize: '15px' }}>
+				<div style={{ padding: '5px', marginTop: '10px', color: '#C20171', fontWeight: 700, background: '#FDECF5', fontSize: '15px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 					Thống kê gan đầu/đuôi giải đặc biệt theo 1 năm:
 				</div>
 				{specialDauDuoiBoxLoading && <div style={{ padding: '8px' }}>Đang tải thống kê đầu đuôi đặc biệt...</div>}
@@ -925,7 +934,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 				)}
 				{!specialDauDuoiBoxLoading && !specialDauDuoiBoxError && (
 					<div style={{ padding: '5px' }}>
-						<div style={{ margin: '5px 0', fontSize: '16px', fontWeight: 'bold', color: '#C20171' }}>
+						<div style={{ margin: '5px 0', fontSize: '16px', fontWeight: 700, color: '#C20171', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 							Đầu giải đặc biệt lâu chưa ra:
 						</div>
 						<div style={{ display: 'flex', alignItems: 'flex-end', flexWrap: 'wrap', marginTop: '10px' }}>
@@ -947,11 +956,11 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 						</div>
 						{topDauGap && (
 							<div style={{ padding: '5px 0', color: '#333', fontSize: '14px', lineHeight: '1.6' }}>
-								Thống kê cho thấy <span style={{ color: '#C20171', fontWeight: 'bold' }}>đầu đặc biệt</span> lâu chưa xuất hiện nhất là đầu <span style={{ color: '#C20171', fontWeight: 'bold', fontSize: '16px' }}>{topDauGap.digit}</span>, đã <span style={{ color: '#B70000', fontWeight: 'bold' }}>{topDauGap.days} ngày</span> chưa ra.
+								Thống kê cho thấy <span style={{ color: '#C20171', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>đầu đặc biệt</span> lâu chưa xuất hiện nhất là đầu <span style={{ color: '#C20171', fontWeight: 700, fontSize: '16px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{topDauGap.digit}</span>, đã <span style={{ color: '#B70000', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{topDauGap.days} ngày</span> chưa ra.
 							</div>
 						)}
 
-						<div style={{ margin: '20px 0 5px 0', fontSize: '16px', fontWeight: 'bold', color: '#C20171' }}>
+						<div style={{ margin: '20px 0 5px 0', fontSize: '16px', fontWeight: 700, color: '#C20171', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 							Đuôi giải đặc biệt lâu chưa ra:
 						</div>
 						<div style={{ display: 'flex', alignItems: 'flex-end', flexWrap: 'wrap', marginTop: '10px' }}>
@@ -973,13 +982,13 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 						</div>
 						{topDuoiGap && (
 							<div style={{ padding: '5px 0', color: '#333', fontSize: '14px', lineHeight: '1.6' }}>
-								Thống kê cho thấy <span style={{ color: '#C20171', fontWeight: 'bold' }}>đuôi đặc biệt</span> lâu chưa xuất hiện nhất là đuôi <span style={{ color: '#C20171', fontWeight: 'bold', fontSize: '16px' }}>{topDuoiGap.digit}</span>, đã <span style={{ color: '#B70000', fontWeight: 'bold' }}>{topDuoiGap.days} ngày</span> chưa ra.
+								Thống kê cho thấy <span style={{ color: '#C20171', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>đuôi đặc biệt</span> lâu chưa xuất hiện nhất là đuôi <span style={{ color: '#C20171', fontWeight: 700, fontSize: '16px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{topDuoiGap.digit}</span>, đã <span style={{ color: '#B70000', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{topDuoiGap.days} ngày</span> chưa ra.
 							</div>
 						)}
 
 						<div style={{ display: 'flex', gap: '16px', marginTop: '20px' }}>
 							<div style={{ flex: '1 1 260px' }}>
-								<div style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 'bold', color: '#0141B6' }}>
+								<div style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 700, color: '#0141B6', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 									Đầu đặc biệt ra nhiều nhất:
 								</div>
 								<div style={groupWrapStyle}>
@@ -997,7 +1006,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 							</div>
 
 							<div style={{ flex: '1 1 260px' }}>
-								<div style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 'bold', color: '#0141B6' }}>
+								<div style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 700, color: '#0141B6', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 									Đuôi đặc biệt ra nhiều nhất:
 								</div>
 								<div style={groupWrapStyle}>
@@ -1020,12 +1029,12 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 
 			{/* Box Dự đoán kết quả */}
 			<div style={{ border: '#C4D2E3 1px solid', marginTop: '10px' }}>
-				<div style={{ padding: '5px', marginTop: '10px', color: '#0141B6', fontWeight: 'bold', background: '#D5E9FD', fontSize: '15px' }}>
+				<div style={{ padding: '5px', marginTop: '10px', color: '#0141B6', fontWeight: 700, background: '#D5E9FD', fontSize: '15px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 					Dự đoán kết quả dựa trên thống kê:
 				</div>
 				<div style={{ padding: '10px' }}>
 					<div style={{ marginBottom: '10px' }}>
-						<label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: 'bold' }}>
+						<label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 							Loại dự đoán:
 						</label>
 						<div style={{ display: 'flex', gap: '20px', marginTop: '5px' }}>
@@ -1054,7 +1063,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 						</div>
 					</div>
 					<div style={{ marginBottom: '10px' }}>
-						<label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: 'bold' }}>
+						<label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 							Nhập các số cần dự đoán (00-99, cách nhau bằng dấu phẩy hoặc khoảng trắng):
 						</label>
 						<input
@@ -1072,7 +1081,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 						/>
 					</div>
 					<div style={{ marginBottom: '10px' }}>
-						<label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: 'bold' }}>
+						<label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 							Khoảng thời gian thống kê:
 						</label>
 						<select
@@ -1133,7 +1142,9 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 							border: 'none',
 							borderRadius: '4px',
 							fontSize: '14px',
-							fontWeight: 'bold',
+							fontWeight: 700, // Use 700 for better mobile support
+							WebkitFontSmoothing: 'antialiased',
+							MozOsxFontSmoothing: 'grayscale',
 							cursor: predictionLoading ? 'not-allowed' : 'pointer',
 							display: 'flex',
 							alignItems: 'center',
@@ -1168,7 +1179,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 								<>
 									{/* Khả năng cao nhất */}
 									<div style={{ marginTop: '15px', marginBottom: '10px' }}>
-										<div style={{ fontSize: '16px', fontWeight: 'bold', color: '#0a8a2a', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+										<div style={{ fontSize: '16px', fontWeight: 700, color: '#0a8a2a', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 											<span>✓</span>
 											<span>{predictionResult.categories.high?.label} ({predictionResult.categories.high?.count} số)</span>
 										</div>
@@ -1179,7 +1190,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 											{predictionResult.categories.high?.predictions?.map((pred, idx) => (
 												<div key={`high-${idx}`} style={{ ...itemBoxStyle, borderColor: '#0a8a2a', background: '#E8F5E9' }}>
 													<span style={numStyle}>#{pred.rank} {pred.number}</span>
-													<span style={{ ...valStyle, color: '#0a8a2a', fontWeight: 'bold' }}>
+													<span style={{ ...valStyle, color: '#0a8a2a', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 														{pred.score} điểm
 													</span>
 												</div>
@@ -1189,7 +1200,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 
 									{/* Khả năng trung bình */}
 									<div style={{ marginTop: '15px', marginBottom: '10px' }}>
-										<div style={{ fontSize: '16px', fontWeight: 'bold', color: '#FFA500', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+										<div style={{ fontSize: '16px', fontWeight: 700, color: '#FFA500', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 											<span>○</span>
 											<span>{predictionResult.categories.medium?.label} ({predictionResult.categories.medium?.count} số)</span>
 										</div>
@@ -1200,7 +1211,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 											{predictionResult.categories.medium?.predictions?.map((pred, idx) => (
 												<div key={`medium-${idx}`} style={{ ...itemBoxStyle, borderColor: '#FFA500', background: '#FFF8E1' }}>
 													<span style={numStyle}>#{pred.rank} {pred.number}</span>
-													<span style={{ ...valStyle, color: '#FFA500', fontWeight: 'bold' }}>
+													<span style={{ ...valStyle, color: '#FFA500', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 														{pred.score} điểm
 													</span>
 												</div>
@@ -1210,7 +1221,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 
 									{/* Khả năng thấp */}
 									<div style={{ marginTop: '15px', marginBottom: '10px' }}>
-										<div style={{ fontSize: '16px', fontWeight: 'bold', color: '#d70000', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+										<div style={{ fontSize: '16px', fontWeight: 700, color: '#d70000', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 											<span>●</span>
 											<span>{predictionResult.categories.low?.label} ({predictionResult.categories.low?.count} số)</span>
 										</div>
@@ -1221,7 +1232,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 											{predictionResult.categories.low?.predictions?.map((pred, idx) => (
 												<div key={`low-${idx}`} style={{ ...itemBoxStyle, borderColor: '#d70000', background: '#FFEBEE' }}>
 													<span style={numStyle}>#{pred.rank} {pred.number}</span>
-													<span style={{ ...valStyle, color: '#d70000', fontWeight: 'bold' }}>
+													<span style={{ ...valStyle, color: '#d70000', fontWeight: 700, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 														{pred.score} điểm
 													</span>
 												</div>
@@ -1233,7 +1244,7 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 
 							{/* Chi tiết từng số */}
 							<div style={{ marginTop: '15px' }}>
-								<div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', color: '#0141B6' }}>
+								<div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '8px', color: '#0141B6', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 									Chi tiết điểm số:
 								</div>
 								<div style={{ maxHeight: '300px', overflowY: 'auto' }}>
@@ -1247,10 +1258,10 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 											fontSize: '13px'
 										}}>
 											<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-												<span style={{ fontWeight: 'bold', color: '#0141B6' }}>
+												<span style={{ fontWeight: 700, color: '#0141B6', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 													#{pred.rank} Số {pred.number}
 												</span>
-												<span style={{ fontWeight: 'bold', fontSize: '16px', color: pred.score > 40 ? '#0a8a2a' : pred.score > 30 ? '#FFA500' : '#d70000' }}>
+												<span style={{ fontWeight: 700, fontSize: '16px', color: pred.score > 40 ? '#0a8a2a' : pred.score > 30 ? '#FFA500' : '#d70000', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
 													{pred.score} điểm
 												</span>
 											</div>

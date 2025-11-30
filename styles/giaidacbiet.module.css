@@ -3,9 +3,13 @@
     width: 100%;
     max-width: 1000px;
     margin: 0 auto;
-    font-family: "Inter", sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     padding: 16px;
     background-color: #ffffff;
+    /* Ensure font rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-display: swap;
 }
 
 /* Tiêu đề chính */
@@ -84,7 +88,7 @@
 }
 
 .title {
-    font-family: "Inter", sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-size: 1.5rem;
     font-weight: 700;
     color: #c80505;
@@ -157,8 +161,11 @@
     background-color: #c80505;
     color: #ffffff;
     border-color: #c80505;
-    font-weight: 600;
+    font-weight: 700 !important; /* Use 700 for better mobile support */
     box-shadow: 0 2px 6px rgba(200, 5, 5, 0.3);
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .timeButton.active:hover {
@@ -206,8 +213,11 @@
 .select.active {
     border-color: #ed1c25;
     background-color: #fff5f5;
-    font-weight: 600;
+    font-weight: 700 !important; /* Use 700 for better mobile support */
     color: #ed1c25;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .options {
@@ -497,11 +507,14 @@
 /* Số giải đặc biệt */
 .number {
     color: #1f2937;
-    font-weight: 600;
+    font-weight: 700 !important; /* Use 700 for better mobile support */
     font-size: 1.5rem;
     padding: 4px 8px;
     border-radius: 4px;
     width: 100%;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-align: center;
 }
 
@@ -557,9 +570,12 @@
 /* Toggle info styles (Tổng, Đầu, Đuôi, Chẵn lẻ, Bộ) */
 .statItem>div:not(.number):not(.date) {
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700 !important; /* Use 700 for better mobile support */
     color: #c80505;
     line-height: 1.2;
+    /* Ensure font-weight works on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Skeleton loading */
@@ -935,7 +951,10 @@
 
     .statItem>div:not(.number):not(.date) {
         font-size: 0.7rem;
-        font-weight: 600;
+        font-weight: 700 !important; /* Use 700 for better mobile support */
+        /* Ensure font-weight works on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .entry {
@@ -1131,7 +1150,10 @@
 
     .statItem>div:not(.number):not(.date) {
         font-size: 0.65rem;
-        font-weight: 600;
+        font-weight: 700 !important; /* Use 700 for better mobile support */
+        /* Ensure font-weight works on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .entry {
