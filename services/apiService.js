@@ -87,17 +87,40 @@ class ApiService {
             }
         });
 
+        // Tạo request promise với timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 150000); // 2.5 phút timeout
+
         // Tạo request promise
         const requestPromise = fetch(urlWithParams.toString(), {
             headers: {
                 'Content-Type': 'application/json',
                 ...fetchOptions.headers
             },
+            signal: controller.signal,
             ...fetchOptions
         })
             .then(async response => {
+                clearTimeout(timeoutId);
+                
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    // Đọc error message từ response nếu có
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.error || errorData.message) {
+                            errorMessage = errorData.error || errorData.message;
+                            // Thêm suggestion nếu có
+                            if (errorData.suggestion) {
+                                const error = new Error(errorMessage);
+                                error.suggestion = errorData.suggestion;
+                                throw error;
+                            }
+                        }
+                    } catch (e) {
+                        // Ignore JSON parse errors
+                    }
+                    throw new Error(errorMessage);
                 }
                 return response.json();
             })
@@ -109,16 +132,36 @@ class ApiService {
                 return data;
             })
             .catch(error => {
+                clearTimeout(timeoutId);
+                
                 // Provide more descriptive error logging
-                const errorMessage = error.message || error.toString();
+                let errorMessage = error.message || error.toString();
+                
+                // Xử lý các loại lỗi đặc biệt
+                if (error.name === 'AbortError' || error.message.includes('aborted')) {
+                    errorMessage = 'Request timeout. Server đang quá tải hoặc mất kết nối.';
+                } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    errorMessage = 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.';
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = 'Lỗi CORS. Vui lòng liên hệ quản trị viên.';
+                }
+                
                 console.error('API Error:', {
                     message: errorMessage,
                     url: urlWithParams.toString(),
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    originalError: error.message
                 });
-                throw error;
+                
+                // Tạo error object với message đã được xử lý
+                const enhancedError = new Error(errorMessage);
+                if (error.suggestion) {
+                    enhancedError.suggestion = error.suggestion;
+                }
+                throw enhancedError;
             })
             .finally(() => {
+                clearTimeout(timeoutId);
                 // Xóa khỏi pending requests
                 this.pendingRequests.delete(cacheKey);
             });

@@ -246,3 +246,4 @@ export function getPagePriority(path, pageType) {
     return 0.80;
 }
 
+

@@ -242,9 +242,12 @@ export default function Layout({ children, className = '' }) {
                             <>
                                 {/* Mobile Overlay */}
                                 <div
-                                    className={styles.mobileOverlay}
+                                    className={`${styles.mobileOverlay} ${styles.mobileOverlayOpen}`}
                                     onClick={() => setIsMenuOpen(false)}
-                                    aria-hidden="true"
+                                    onTouchStart={() => setIsMenuOpen(false)}
+                                    aria-hidden="false"
+                                    role="button"
+                                    tabIndex={-1}
                                 />
 
                                 {/* Mobile Navigation */}

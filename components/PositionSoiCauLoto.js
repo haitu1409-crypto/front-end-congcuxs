@@ -440,6 +440,16 @@ const PositionSoiCauLoto = ({
         setError(null);
 
         try {
+            // Validate selectedDays trước khi gọi API
+            if (selectedDays > 10) {
+                setUpdateMessage({
+                    type: 'error',
+                    text: 'Số ngày phân tích không được vượt quá 10 để tránh quá tải server. Vui lòng chọn số ngày nhỏ hơn.'
+                });
+                setIsUpdating(false);
+                return;
+            }
+
             const response = await apiService.checkAndUpdateSoiCau({
                 days: selectedDays
             });
@@ -495,14 +505,37 @@ const PositionSoiCauLoto = ({
             }
         } catch (err) {
             console.error('Lỗi khi cập nhật soi cầu:', err);
+            
+            // Xử lý các loại lỗi khác nhau
+            let errorMessage = 'Không thể cập nhật soi cầu. Vui lòng thử lại sau.';
+            
+            if (err.message) {
+                if (err.message.includes('timeout') || err.message.includes('Timeout')) {
+                    errorMessage = 'Tính toán vượt quá thời gian cho phép. Server đang quá tải. Vui lòng thử lại sau hoặc giảm số ngày phân tích.';
+                } else if (err.message.includes('memory') || err.message.includes('Memory')) {
+                    errorMessage = 'Server hết bộ nhớ. Vui lòng giảm số ngày phân tích xuống 2-4 ngày.';
+                } else if (err.message.includes('429') || err.message.includes('Quá nhiều yêu cầu')) {
+                    errorMessage = 'Quá nhiều yêu cầu. Vui lòng đợi 5 phút trước khi thử lại.';
+                } else if (err.message.includes('Failed to fetch') || err.message.includes('CORS')) {
+                    errorMessage = 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng và thử lại.';
+                } else {
+                    errorMessage = err.message;
+                }
+            }
+            
+            // Nếu có suggestion từ server, hiển thị thêm
+            if (err.suggestion) {
+                errorMessage += ` Gợi ý: ${err.suggestion}`;
+            }
+            
             setUpdateMessage({
                 type: 'error',
-                text: err.message || 'Không thể cập nhật soi cầu. Vui lòng thử lại sau.'
+                text: errorMessage
             });
         } finally {
             setIsUpdating(false);
         }
-    }, [selectedDays]);
+    }, [selectedDays, fetchPositionSoiCau]);
 
     // Handler cho click vào số trong bảng dự đoán
     const handleNumberClick = useCallback((prediction, predictionIndex, lifetimeKey = null) => {

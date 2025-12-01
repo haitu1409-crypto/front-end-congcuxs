@@ -64,20 +64,17 @@ const MobileNav = ({
 
     return (
         <>
-            {/* Mobile Overlay - Render always but control visibility with CSS */}
-            <div
-                className={`${styles.mobileOverlay} ${isOpen ? styles.mobileOverlayOpen : ''}`}
-                onClick={onClose}
-                onTouchStart={onClose}
-                aria-hidden={!isOpen}
-                role="button"
-                tabIndex={isOpen ? -1 : -1}
-                style={{
-                    display: isOpen ? 'block' : 'none',
-                    opacity: isOpen ? 1 : 0,
-                    pointerEvents: isOpen ? 'auto' : 'none'
-                }}
-            />
+            {/* Mobile Overlay - Control visibility with CSS class only */}
+            {isOpen && (
+                <div
+                    className={`${styles.mobileOverlay} ${styles.mobileOverlayOpen}`}
+                    onClick={onClose}
+                    onTouchStart={onClose}
+                    aria-hidden="false"
+                    role="button"
+                    tabIndex={-1}
+                />
+            )}
 
             {/* Mobile Navigation */}
             <div className={`${styles.mobileNav} ${isOpen ? styles.mobileNavOpen : ''}`}>

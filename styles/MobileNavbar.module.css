@@ -1,14 +1,76 @@
 /* Mobile Navbar Component Styles - Reusable */
 
+/* ===== MOBILE NAVBAR TOGGLE BUTTON ===== */
+.mobileNavbarToggle {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobileNavbarToggle:hover {
+    background: #2563eb;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+    transform: scale(1.05);
+}
+
+.mobileNavbarToggle:active {
+    transform: scale(0.95);
+}
+
+.mobileNavbarToggleIcon {
+    color: #ffffff;
+}
+
+/* ===== MOBILE NAVBAR OVERLAY ===== */
+.mobileNavbarOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobileNavbarOverlay {
+    opacity: 1;
+}
+
 /* ===== MOBILE NAVBAR ===== */
 .mobileNavbar {
     display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: var(--border-radius-lg);
-    margin-bottom: var(--spacing-4);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    z-index: 999;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    max-height: 70vh;
+}
+
+.mobileNavbar.mobileNavbarOpen {
+    transform: translateY(0);
 }
 
 .mobileNavbarContainer {
@@ -68,6 +130,14 @@
 /* Mobile navbar responsive */
 @media (max-width: 768px) {
     .mobileNavbar {
+        display: block;
+    }
+
+    .mobileNavbarToggle {
+        display: flex;
+    }
+
+    .mobileNavbarOverlay {
         display: block;
     }
 }
