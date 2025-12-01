@@ -674,7 +674,7 @@
     .dau,
     .dit {
         flex-shrink: 0;
-        min-width: 180px;
+        min-width: 191px;
         width: 180px !important;
         /* Set width cố định cho từng bảng */
     }
