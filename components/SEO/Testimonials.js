@@ -49,36 +49,41 @@ const Testimonials = memo(function Testimonials({ reviews }) {
 
     const displayReviews = defaultReviews.slice(0, 4);
 
-    // Review Schema Markup
-    const reviewsSchema = {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "itemListElement": displayReviews.map((review, index) => ({
+    // Review Schema Markup - Create separate Review schemas for each review
+    const reviewsSchemas = displayReviews.map((review) => {
+        // Ensure author name is always a valid non-empty string
+        const authorName = (review.author && review.author.trim()) || "Người dùng";
+        const toolName = (review.tool && review.tool.trim()) || "Công cụ";
+        
+        return {
+            "@context": "https://schema.org",
             "@type": "Review",
-            "position": index + 1,
             "reviewRating": {
                 "@type": "Rating",
-                "ratingValue": review.rating,
+                "ratingValue": review.rating || 5,
                 "bestRating": "5"
             },
             "author": {
                 "@type": "Person",
-                "name": review.author
+                "name": authorName
             },
-            "reviewBody": review.text,
+            "reviewBody": review.text || "",
             "itemReviewed": {
                 "@type": "SoftwareApplication",
-                "name": `TaoDanDe - ${review.tool}`
+                "name": toolName
             }
-        }))
-    };
+        };
+    });
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewsSchema) }}
-            />
+            {reviewsSchemas.map((schema, index) => (
+                <script
+                    key={index}
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+                />
+            ))}
 
             <section className={styles.testimonials}>
                 <div className={styles.testimonialsHeader}>
