@@ -501,8 +501,34 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 		background: '#fff'
 	}), []);
 
-	const numStyle = useMemo(() => ({ color: '#d70000', fontWeight: 700, minWidth: 22, textAlign: 'center' }), []);
-	const valStyle = useMemo(() => ({ color: '#0a8a2a', fontWeight: 700 }), []);
+	const numStyle = useMemo(() => {
+		const style = { 
+			color: '#d70000', 
+			fontWeight: 700, 
+			minWidth: 22, 
+			textAlign: 'center'
+		};
+		// Tăng font-size lên 2px trên mobile
+		if (isMobile) {
+			style.fontSize = '14px'; // Tăng 2px so với desktop (12px -> 14px)
+		} else {
+			style.fontSize = '12px'; // Font-size mặc định trên desktop
+		}
+		return style;
+	}, [isMobile]);
+	const valStyle = useMemo(() => {
+		const style = { 
+			color: '#0a8a2a', 
+			fontWeight: 700
+		};
+		// Tăng font-size lên 2px trên mobile
+		if (isMobile) {
+			style.fontSize = '14px'; // Tăng 2px so với desktop (12px -> 14px)
+		} else {
+			style.fontSize = '12px'; // Font-size mặc định trên desktop
+		}
+		return style;
+	}, [isMobile]);
 
 	const loCapCell = useMemo(() => ({
 		borderRadius: '4px 4px 0 0',
