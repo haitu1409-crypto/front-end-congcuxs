@@ -4,7 +4,7 @@
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
 
 function generateSiteMap(articles) {
     const lastmod = new Date().toISOString().split('T')[0];
