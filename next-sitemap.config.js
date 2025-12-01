@@ -57,8 +57,21 @@ module.exports = {
             priority = 1.0;
             changefreq = 'daily';
         }
-        // Soi cau Bayesian - highest priority (highest search volume)
-        else if (path === '/soicau-bayesian') {
+        // Soi cau pages - highest priority (highest search volume)
+        else if (path === '/soi-cau-mien-bac-ai') {
+            priority = 0.95;
+            changefreq = 'daily';
+        }
+        else if (path === '/soi-cau-dac-biet-mien-bac') {
+            priority = 0.95;
+            changefreq = 'daily';
+        }
+        else if (path === '/soi-cau-loto-mien-bac') {
+            priority = 0.95;
+            changefreq = 'daily';
+        }
+        // Kết quả xổ số
+        else if (path === '/ket-qua-xo-so-mien-bac') {
             priority = 0.95;
             changefreq = 'daily';
         }
@@ -107,18 +120,22 @@ module.exports = {
 
         // Add custom paths (sorted by SEO priority)
         const customPaths = [
-            '/',                    // Priority 1.0
-            '/soicau-bayesian',   // Priority 0.95 - NEW: Highest search volume (74,000/month)
-            '/dan-9x0x',           // Priority 0.9 - High search volume
-            '/dan-2d',             // Priority 0.9 - High search volume
-            '/dan-3d4d',           // Priority 0.9 - High search volume
-            '/dan-dac-biet',       // Priority 0.9 - High search volume
-            '/ghep-lo-xien',       // Priority 0.85 - High search volume (3,600/month)
-            '/bang-tinh-chao',     // Priority 0.85 - Medium search volume (880/month)
-            '/thong-ke',           // Priority 0.82 - Statistics hub
-            '/thongke/dau-duoi',   // Priority 0.8
-            '/content',            // Priority 0.8
-            '/tin-tuc',            // Priority 0.7
+            '/',                              // Priority 1.0
+            '/soi-cau-mien-bac-ai',          // Priority 0.95 - Highest search volume
+            '/soi-cau-dac-biet-mien-bac',    // Priority 0.95 - Soi cầu đặc biệt
+            '/soi-cau-loto-mien-bac',        // Priority 0.95 - Soi cầu lô tô
+            '/ket-qua-xo-so-mien-bac',       // Priority 0.95 - Kết quả xổ số
+            '/dan-9x0x',                     // Priority 0.9 - High search volume
+            '/dan-2d',                       // Priority 0.9 - High search volume
+            '/dan-3d4d',                     // Priority 0.9 - High search volume
+            '/dan-dac-biet',                 // Priority 0.9 - High search volume
+            '/ghep-lo-xien',                 // Priority 0.85 - High search volume (3,600/month)
+            '/bang-tinh-chao',               // Priority 0.85 - Medium search volume (880/month)
+            '/thong-ke',                     // Priority 0.82 - Statistics hub
+            '/thongke/dau-duoi',             // Priority 0.8
+            '/thongke/tan-suat-locap',       // Priority 0.8 - Tần suất lô cặp
+            '/content',                      // Priority 0.8
+            '/tin-tuc',                      // Priority 0.7
         ];
 
         // Image sitemap configuration (with SEO-optimized captions)
@@ -222,12 +239,39 @@ module.exports = {
                     }
                 ]
             },
-            '/soicau-bayesian': {
+            '/soi-cau-mien-bac-ai': {
                 images: [
                     {
                         loc: `${config.siteUrl}/imgs/soi-cau-bayesian.png`,
-                        caption: 'Soi cầu miền bắc hôm nay chính xác 100%, dự đoán XSMB bằng thuật toán Bayesian',
-                        title: 'Soi Cầu Bayesian - Dự đoán XSMB AI'
+                        caption: 'Soi cầu miền bắc hôm nay chính xác 100%, dự đoán XSMB bằng thuật toán AI',
+                        title: 'Soi Cầu AI - Dự đoán XSMB AI'
+                    }
+                ]
+            },
+            '/soi-cau-dac-biet-mien-bac': {
+                images: [
+                    {
+                        loc: `${config.siteUrl}/imgs/soi-cau-bayesian.png`,
+                        caption: 'Soi cầu đặc biệt miền bắc, dự đoán giải đặc biệt XSMB chính xác',
+                        title: 'Soi Cầu Đặc Biệt - Dự đoán giải đặc biệt'
+                    }
+                ]
+            },
+            '/soi-cau-loto-mien-bac': {
+                images: [
+                    {
+                        loc: `${config.siteUrl}/imgs/soi-cau-bayesian.png`,
+                        caption: 'Soi cầu lô tô miền bắc, dự đoán lô tô XSMB chính xác',
+                        title: 'Soi Cầu Lô Tô - Dự đoán lô tô miền Bắc'
+                    }
+                ]
+            },
+            '/ket-qua-xo-so-mien-bac': {
+                images: [
+                    {
+                        loc: `${config.siteUrl}/imgs/wukong.png`,
+                        caption: 'Kết quả xổ số miền Bắc hôm nay, XSMB trực tiếp nhanh nhất',
+                        title: 'Kết Quả Xổ Số Miền Bắc - XSMB hôm nay'
                     }
                 ]
             }
@@ -257,7 +301,7 @@ module.exports = {
 
     // News sitemap configuration
     additionalSitemaps: [
-        `${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}/news-sitemap.xml`,
+        `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro'}/news-sitemap.xml`,
     ],
 
     // Output directory

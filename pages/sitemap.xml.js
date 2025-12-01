@@ -4,11 +4,11 @@
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
 
 function generateSiteMap(articles) {
     const lastmod = new Date().toISOString().split('T')[0];
-    
+
     return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
@@ -24,7 +24,21 @@ function generateSiteMap(articles) {
     
     <!-- Main Tool Pages - Priority 0.95 -->
     <url>
-        <loc>${SITE_URL}/soicau-bayesian</loc>
+        <loc>${SITE_URL}/soi-cau-mien-bac-ai</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/soi-cau-dac-biet-mien-bac</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL}/soi-cau-loto-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>
@@ -75,7 +89,7 @@ function generateSiteMap(articles) {
     
     <!-- Results Pages - Priority 0.95 -->
     <url>
-        <loc>${SITE_URL}/kqxs</loc>
+        <loc>${SITE_URL}/ket-qua-xo-so-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>
@@ -126,7 +140,7 @@ function generateSiteMap(articles) {
     </url>
     
     <url>
-        <loc>${SITE_URL}/thongke/tan-suat-lo-cap</loc>
+        <loc>${SITE_URL}/thongke/tan-suat-locap</loc>
         <changefreq>daily</changefreq>
         <priority>0.80</priority>
         <lastmod>${lastmod}</lastmod>
@@ -226,7 +240,19 @@ export async function getServerSideProps({ res }) {
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
-        <loc>${SITE_URL}/soicau-bayesian</loc>
+        <loc>${SITE_URL}/soi-cau-mien-bac-ai</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/soi-cau-dac-biet-mien-bac</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL}/soi-cau-loto-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>
@@ -268,7 +294,7 @@ export async function getServerSideProps({ res }) {
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
-        <loc>${SITE_URL}/kqxs</loc>
+        <loc>${SITE_URL}/ket-qua-xo-so-mien-bac</loc>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
         <lastmod>${lastmod}</lastmod>
@@ -310,7 +336,7 @@ export async function getServerSideProps({ res }) {
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>
-        <loc>${SITE_URL}/thongke/tan-suat-lo-cap</loc>
+        <loc>${SITE_URL}/thongke/tan-suat-locap</loc>
         <changefreq>daily</changefreq>
         <priority>0.80</priority>
         <lastmod>${lastmod}</lastmod>

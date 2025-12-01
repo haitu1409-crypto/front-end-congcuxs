@@ -61,12 +61,27 @@ const nextConfig = {
         ];
     },
 
+    // Rewrites - Map clean URLs to actual page files
+    async rewrites() {
+        return [
+            {
+                source: '/ket-qua-xo-so-mien-bac',
+                destination: '/kqxs',
+            },
+        ];
+    },
+
     // Basic redirects
     async redirects() {
         return [
             {
                 source: '/home',
                 destination: '/',
+                permanent: true,
+            },
+            {
+                source: '/kqxs',
+                destination: '/ket-qua-xo-so-mien-bac',
                 permanent: true,
             },
         ];

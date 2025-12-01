@@ -9,7 +9,7 @@
 
 const { getAllKeywordsForPage, generateMetaDescription } = require('./keywordVariations');
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
 const SITE_NAME = 'Dàn Đề Wukong';
 const SITE_DESCRIPTION = 'Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam';
 
@@ -806,9 +806,9 @@ const SEO_CONFIG = {
             'soi cầu MB hôm nay khẩn cấp', 'soi cau MB hom nay khan cap',
             'soi cầu miền bắc hôm nay ngay', 'soi cau mien bac hom nay ngay'
         ],
-        url: '/soicau-bayesian',
+        url: '/soi-cau-mien-bac-ai',
         image: `${SITE_URL}/imgs/soi-cau-bayesian.png`,
-        canonical: `${SITE_URL}/soicau-bayesian`,
+        canonical: `${SITE_URL}/soi-cau-mien-bac-ai`,
         type: 'article',
         priority: 0.95,
         changefreq: 'daily',
@@ -819,19 +819,75 @@ const SEO_CONFIG = {
         sections: {
             soiCauHomNay: {
                 title: 'Soi Cầu Miền Bắc Hôm Nay',
-                url: '/soicau-bayesian#soi-cau-hom-nay',
+                url: '/soi-cau-mien-bac-ai#soi-cau-hom-nay',
                 keywords: ['soi cầu miền bắc hôm nay', 'soi cau mien bac hom nay', 'dự đoán XSMB hôm nay']
             },
             thongKeViTri: {
                 title: 'Thống Kê Vị Trí XSMB',
-                url: '/soicau-bayesian#thong-ke-vi-tri',
+                url: '/soi-cau-mien-bac-ai#thong-ke-vi-tri',
                 keywords: ['thống kê vị trí XSMB', 'thong ke vi tri XSMB', 'phân tích xổ số miền Bắc']
             },
             phuongPhapBayesian: {
                 title: 'Phương Pháp Bayesian',
-                url: '/soicau-bayesian#phuong-phap-bayesian',
+                url: '/soi-cau-mien-bac-ai#phuong-phap-bayesian',
                 keywords: ['soi cầu Bayesian', 'dự đoán Bayesian XSMB', 'thuật toán Bayesian']
             }
+        }
+    },
+
+    /**
+     * SOI CẦU ĐẶC BIỆT MIỀN BẮC
+     * Page: soi-cau-dac-biet-mien-bac.js
+     */
+    'soi-cau-vi-tri': {
+        title: 'Soi Cầu Đặc Biệt Miền Bắc | Dự Đoán Giải Đặc Biệt XSMB Chính Xác 100% - Miễn Phí 2025',
+        description: 'Soi cầu đặc biệt miền bắc (soi cau dac biet mien bac) dựa trên vị trí số. Phân tích pattern vị trí chữ số để dự đoán 2 số cuối giải đặc biệt XSMB. Cập nhật hàng ngày, miễn phí 100%!',
+        keywords: [
+            'soi cầu đặc biệt miền bắc', 'soi cau dac biet mien bac',
+            'soi cầu vị trí', 'soi cau vi tri',
+            'dự đoán giải đặc biệt', 'du doan giai dac biet',
+            'soi cầu đặc biệt XSMB', 'soi cau dac biet XSMB',
+            'soi cầu đặc biệt hôm nay', 'soi cau dac biet hom nay',
+            'phân tích vị trí số', 'phan tich vi tri so',
+            'dự đoán 2 số cuối', 'du doan 2 so cuoi'
+        ],
+        url: '/soi-cau-dac-biet-mien-bac',
+        image: `${SITE_URL}/imgs/soi-cau-bayesian.png`,
+        canonical: `${SITE_URL}/soi-cau-dac-biet-mien-bac`,
+        type: 'article',
+        priority: 0.95,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Article',
+            additionalTypes: ['FAQPage', 'SoftwareApplication']
+        }
+    },
+
+    /**
+     * SOI CẦU LÔ TÔ MIỀN BẮC
+     * Page: soi-cau-loto-mien-bac.js
+     */
+    'soi-cau-loto': {
+        title: 'Soi Cầu Lô Tô Miền Bắc | Dự Đoán Lô Tô XSMB Chính Xác 100% - Miễn Phí 2025',
+        description: 'Soi cầu lô tô miền bắc (soi cau loto mien bac) dựa trên vị trí số. Phân tích pattern vị trí chữ số để dự đoán lô tô XSMB. Cập nhật hàng ngày, miễn phí 100%!',
+        keywords: [
+            'soi cầu lô tô miền bắc', 'soi cau loto mien bac',
+            'soi cầu loto', 'soi cau loto',
+            'dự đoán lô tô', 'du doan lo to',
+            'soi cầu lô tô XSMB', 'soi cau loto XSMB',
+            'soi cầu lô tô hôm nay', 'soi cau loto hom nay',
+            'phân tích lô tô', 'phan tich lo to',
+            'dự đoán loto', 'du doan loto'
+        ],
+        url: '/soi-cau-loto-mien-bac',
+        image: `${SITE_URL}/imgs/soi-cau-bayesian.png`,
+        canonical: `${SITE_URL}/soi-cau-loto-mien-bac`,
+        type: 'article',
+        priority: 0.95,
+        changefreq: 'daily',
+        structuredData: {
+            type: 'Article',
+            additionalTypes: ['FAQPage', 'SoftwareApplication']
         }
     },
 
@@ -1015,9 +1071,9 @@ const SEO_CONFIG = {
             'tính năng độc quyền', 'cong cu doc quyen',
             'phân tích cặp số', 'phan tich cap so'
         ],
-        url: '/thongke/tan-suat-lo-cap',
+        url: '/thongke/tan-suat-locap',
         image: OG_IMAGES.thongKe,
-        canonical: `${SITE_URL}/thongke/tan-suat-lo-cap`,
+        canonical: `${SITE_URL}/thongke/tan-suat-locap`,
         type: 'article',
         priority: 0.80,
         changefreq: 'daily',
@@ -1199,9 +1255,9 @@ const SEO_CONFIG = {
             'kết quả xsmb miễn phí', 'ket qua xsmb mien phi',
             'xem xsmb miễn phí', 'xem xsmb mien phi'
         ],
-        url: '/kqxs',
+        url: '/ket-qua-xo-so-mien-bac',
         image: OG_IMAGES.default,
-        canonical: `${SITE_URL}/kqxs`,
+        canonical: `${SITE_URL}/ket-qua-xo-so-mien-bac`,
         type: 'website',
         priority: 0.95,
         changefreq: 'daily',
