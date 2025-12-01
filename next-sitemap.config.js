@@ -1,6 +1,12 @@
 /** @type {import('next-sitemap').IConfig} */
+// Normalize siteUrl to remove trailing slash to avoid double slashes in URLs
+const getSiteUrl = () => {
+    const url = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
+    return url.replace(/\/+$/, '');
+};
+
 module.exports = {
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro',
+    siteUrl: getSiteUrl(),
     generateRobotsTxt: true,
     generateIndexSitemap: true,
 
@@ -33,7 +39,7 @@ module.exports = {
             },
         ],
         additionalSitemaps: [
-            `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro'}/sitemap.xml`,
+            `${getSiteUrl()}/sitemap.xml`,
         ],
     },
 
@@ -301,7 +307,7 @@ module.exports = {
 
     // News sitemap configuration
     additionalSitemaps: [
-        `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro'}/news-sitemap.xml`,
+        `${getSiteUrl()}/news-sitemap.xml`,
     ],
 
     // Output directory

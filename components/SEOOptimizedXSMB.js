@@ -39,7 +39,7 @@ const SEOOptimizedXSMB = ({
             "@type": "LotteryGame",
             "name": "Xổ Số Miền Bắc",
             "description": "Kết quả xổ số miền Bắc chính thức",
-            "url": canonicalUrl || `https://taodandewukong.pro/kqxs/${date}`,
+            "url": canonicalUrl || `https://www.taodandewukong.pro/ket-qua-xo-so-mien-bac/${date}`,
             "datePublished": data.drawDate || new Date().toISOString(),
             "publisher": {
                 "@type": "Organization",
@@ -82,7 +82,7 @@ const SEOOptimizedXSMB = ({
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Kết quả xổ số",
-                "item": "https://taodandewukong.pro/kqxs"
+                "item": "https://www.taodandewukong.pro/ket-qua-xo-so-mien-bac"
             },
             {
                 "@type": "ListItem",
@@ -206,7 +206,7 @@ const SEOOptimizedXSMB = ({
                     }}>
                         <li><a href="/" style={{ color: '#007bff', textDecoration: 'none' }}>Trang chủ</a></li>
                         <li style={{ margin: '0 8px' }}>›</li>
-                        <li><a href="/kqxs" style={{ color: '#007bff', textDecoration: 'none' }}>Kết quả xổ số</a></li>
+                        <li><a href="/ket-qua-xo-so-mien-bac" style={{ color: '#007bff', textDecoration: 'none' }}>Kết quả xổ số</a></li>
                         <li style={{ margin: '0 8px' }}>›</li>
                         <li style={{ color: '#333' }}>{title || `Ngày ${date}`}</li>
                     </ol>

@@ -4,7 +4,8 @@
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
+// Normalize SITE_URL to remove trailing slash to avoid double slashes in URLs
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro').replace(/\/+$/, '');
 
 function generateSiteMap(articles) {
     const lastmod = new Date().toISOString().split('T')[0];

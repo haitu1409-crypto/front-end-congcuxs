@@ -9,7 +9,8 @@
 
 const { getAllKeywordsForPage, generateMetaDescription } = require('./keywordVariations');
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
+// Normalize SITE_URL to remove trailing slash to avoid double slashes in URLs
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro').replace(/\/+$/, '');
 const SITE_NAME = 'Dàn Đề Wukong';
 const SITE_DESCRIPTION = 'Bộ công cụ tạo dàn đề chuyên nghiệp hàng đầu Việt Nam';
 

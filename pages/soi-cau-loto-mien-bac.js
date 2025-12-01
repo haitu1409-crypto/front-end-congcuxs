@@ -164,7 +164,7 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
     // ✅ Breadcrumbs
     const breadcrumbs = useMemo(() => [
         { name: 'Trang chủ', url: siteUrl },
-        { name: 'Soi Cầu Lô Tô Miền Bắc', url: `${siteUrl}/soi-cau-loto` }
+        { name: 'Soi Cầu Lô Tô Miền Bắc', url: `${siteUrl}/soi-cau-loto-mien-bac` }
     ], [siteUrl]);
 
     // ✅ FAQ Data
@@ -195,7 +195,7 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
                 "@type": "WebApplication",
                 "name": "Soi Cầu Lô Tô Miền Bắc - Dàn Đề Wukong",
                 "description": "Công cụ soi cầu lô tô miền bắc dựa trên phân tích vị trí số. Dự đoán lô tô XSMB chính xác, tìm pattern nhất quán.",
-                "url": `${siteUrl}/soi-cau-loto`,
+                "url": `${siteUrl}/soi-cau-loto-mien-bac`,
                 "applicationCategory": "UtilitiesApplication",
                 "operatingSystem": "Web Browser",
                 "offers": {
@@ -249,7 +249,7 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
                         "@type": "ListItem",
                         "position": 2,
                         "name": "Soi Cầu Lô Tô Miền Bắc",
-                        "item": `${siteUrl}/soi-cau-loto`
+                        "item": `${siteUrl}/soi-cau-loto-mien-bac`
                     }
                 ]
             },

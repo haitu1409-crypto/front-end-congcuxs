@@ -108,7 +108,7 @@ export default function Layout({ children, className = '' }) {
             { href: '/thongke/giai-dac-biet-tuan', label: 'Giải Đặc Biệt Tuần', icon: Calendar },
             { href: '/thongke/dau-duoi', label: 'Đầu Đuôi', icon: Percent },
             { href: '/thongke/tan-suat-loto', label: 'Tần Suất Lô Tô', icon: BarChart3 },
-            { href: '/thongke/tan-suat-lo-cap', label: 'Tần Suất Lô Cặp', icon: Target }
+            { href: '/thongke/tan-suat-locap', label: 'Tần Suất Lô Cặp', icon: Target }
         ]
     };
 
@@ -118,9 +118,9 @@ export default function Layout({ children, className = '' }) {
         icon: Target,
         description: 'Soi cầu bạch thủ miền Bắc',
         submenu: [
-            { href: '/soicau-bayesian', label: 'Soi Cầu AI', icon: BarChart3, isNew: true },
-            { href: '/soi-cau-vi-tri', label: 'Soi Cầu Bạch Thủ Đề', icon: Target, isNew: true },
-            { href: '/soi-cau-loto', label: 'Soi Cầu Lô Tô', icon: Target, isNew: true }
+            { href: '/soi-cau-mien-bac-ai', label: 'Soi Cầu AI', icon: BarChart3, isNew: true },
+            { href: '/soi-cau-dac-biet-mien-bac', label: 'Soi Cầu Đặc Biệt', icon: Target, isNew: true },
+            { href: '/soi-cau-loto-mien-bac', label: 'Soi Cầu Lô Tô', icon: Target, isNew: true }
         ]
     };
 
@@ -140,7 +140,7 @@ export default function Layout({ children, className = '' }) {
 
     const navLinks = [
         { href: '/', label: 'Trang chủ', icon: Home, description: 'Trang chủ chính' },
-        { href: '/kqxs', label: 'Kết Quả Xổ Số', icon: Calendar, description: 'Xem kết quả xổ số 3 miền mới nhất' },
+        { href: '/ket-qua-xo-so-mien-bac', label: 'Kết Quả Xổ Số', icon: Calendar, description: 'Xem kết quả xổ số 3 miền mới nhất' },
         { isDropdown: true, ...congCuXoSoMenu },
         { isDropdown: true, ...soiCauMenu },
         { isDropdown: true, ...thongKeMenu },
@@ -377,7 +377,7 @@ export default function Layout({ children, className = '' }) {
                                 <h4 className={styles.footerSectionTitle}>Công cụ</h4>
                                 <ul className={styles.footerLinks}>
                                     <li>
-                                        <Link href="/kqxs" className={styles.footerLink}>
+                                        <Link href="/ket-qua-xo-so-mien-bac" className={styles.footerLink}>
                                             Kết Quả Xổ Số
                                         </Link>
                                     </li>
@@ -414,8 +414,8 @@ export default function Layout({ children, className = '' }) {
                                 <h4 className={styles.footerSectionTitle}>Hỗ trợ</h4>
                                 <ul className={styles.footerLinks}>
                                     <li>
-                                        <Link href="/soicau-bayesian" className={styles.footerLink}>
-                                            Soi Cầu Bayesian
+                                        <Link href="/soi-cau-mien-bac-ai" className={styles.footerLink}>
+                                            Soi Cầu AI
                                         </Link>
                                     </li>
                                     <li>

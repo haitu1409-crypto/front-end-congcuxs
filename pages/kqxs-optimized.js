@@ -31,7 +31,7 @@ const KQXSOptimizedPage = ({ initialData, initialPagination }) => {
             "@type": "WebPage",
             "name": "Kết quả xổ số miền Bắc - Dàn Đề Wukong",
             "description": "Xem kết quả xổ số miền Bắc mới nhất, cập nhật trực tiếp từ Công ty Xổ số Điện toán Việt Nam",
-            "url": "https://taodandewukong.pro/kqxs",
+            "url": "https://www.taodandewukong.pro/ket-qua-xo-so-mien-bac",
             "mainEntity": {
                 "@type": "ItemList",
                 "name": "Danh sách kết quả xổ số miền Bắc",
@@ -120,7 +120,7 @@ const KQXSOptimizedPage = ({ initialData, initialPagination }) => {
                 <meta property="og:title" content="Kết quả xổ số miền Bắc mới nhất - Dàn Đề Wukong" />
                 <meta property="og:description" content="Xem kết quả xổ số miền Bắc mới nhất, cập nhật trực tiếp từ Công ty Xổ số Điện toán Việt Nam." />
                 <meta property="og:type" content="website" />
-                <meta property="og:url" content="https://taodandewukong.pro/kqxs" />
+                <meta property="og:url" content="https://www.taodandewukong.pro/ket-qua-xo-so-mien-bac" />
                 <meta property="og:site_name" content="Dàn Đề Wukong" />
                 <meta property="og:locale" content="vi_VN" />
 
@@ -140,10 +140,10 @@ const KQXSOptimizedPage = ({ initialData, initialPagination }) => {
                 <meta name="geo.country" content="Vietnam" />
 
                 {/* Canonical URL */}
-                <link rel="canonical" href="https://taodandewukong.pro/kqxs" />
+                <link rel="canonical" href="https://www.taodandewukong.pro/ket-qua-xo-so-mien-bac" />
 
                 {/* Alternate Language Versions */}
-                <link rel="alternate" hrefLang="vi" href="https://taodandewukong.pro/kqxs" />
+                <link rel="alternate" hrefLang="vi" href="https://www.taodandewukong.pro/ket-qua-xo-so-mien-bac" />
 
                 {/* Structured Data */}
                 <script

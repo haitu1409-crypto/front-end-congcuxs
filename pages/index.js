@@ -364,13 +364,13 @@ const Home = memo(function Home() {
                             </Link>
 
                             {/* Group 2 */}
-                            <Link href="/kqxs" className={styles.heroSecondaryButton} prefetch={false}>
+                            <Link href="/ket-qua-xo-so-mien-bac" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Kết Quả Xổ Số</span>
                             </Link>
-                            <Link href="/soi-cau-vi-tri" className={styles.heroSecondaryButton} prefetch={false}>
-                                <span>Soi Cầu Vị Trí</span>
+                            <Link href="/soi-cau-dac-biet-mien-bac" className={styles.heroSecondaryButton} prefetch={false}>
+                                <span>Soi Cầu Đặc Biệt</span>
                             </Link>
-                            <Link href="/soicau-bayesian" className={styles.heroSecondaryButton} prefetch={false}>
+                            <Link href="/soi-cau-mien-bac-ai" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Soi Cầu AI</span>
                             </Link>
                             <Link href="/dan-dac-biet" className={styles.heroSecondaryButton} prefetch={false}>
@@ -395,7 +395,7 @@ const Home = memo(function Home() {
                             <Link href="/thongke/tan-suat-loto" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Tần Suất Lô Tô</span>
                             </Link>
-                            <Link href="/thongke/tan-suat-lo-cap" className={styles.heroSecondaryButton} prefetch={false}>
+                            <Link href="/thongke/tan-suat-locap" className={styles.heroSecondaryButton} prefetch={false}>
                                 <span>Tần Suất Lô Cặp</span>
                             </Link>
                         </div>

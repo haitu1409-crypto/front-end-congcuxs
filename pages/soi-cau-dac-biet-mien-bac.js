@@ -107,7 +107,7 @@ const PositionSoiCauPage = ({ initialData, initialDate, initialDays }) => {
     // ✅ Breadcrumbs
     const breadcrumbs = useMemo(() => [
         { name: 'Trang chủ', url: siteUrl },
-        { name: 'Soi Cầu Đặc Biệt Miền Bắc', url: `${siteUrl}/soi-cau-vi-tri` }
+        { name: 'Soi Cầu Đặc Biệt Miền Bắc', url: `${siteUrl}/soi-cau-dac-biet-mien-bac` }
     ], [siteUrl]);
 
     // ✅ FAQ Data
@@ -142,7 +142,7 @@ const PositionSoiCauPage = ({ initialData, initialDate, initialDays }) => {
                 "@type": "WebApplication",
                 "name": "Soi Cầu Đặc Biệt Miền Bắc - Dàn Đề Wukong",
                 "description": "Công cụ soi cầu đặc biệt miền bắc dựa trên phân tích vị trí số trong kết quả xổ số. Tìm kiếm pattern nhất quán để dự đoán 2 số cuối giải đặc biệt XSMB.",
-                "url": `${siteUrl}/soi-cau-vi-tri`,
+                "url": `${siteUrl}/soi-cau-dac-biet-mien-bac`,
                 "applicationCategory": "UtilitiesApplication",
                 "operatingSystem": "Web Browser",
                 "offers": {
@@ -196,7 +196,7 @@ const PositionSoiCauPage = ({ initialData, initialDate, initialDays }) => {
                         "@type": "ListItem",
                         "position": 2,
                         "name": "Soi Cầu Đặc Biệt Miền Bắc",
-                        "item": `${siteUrl}/soi-cau-vi-tri`
+                        "item": `${siteUrl}/soi-cau-dac-biet-mien-bac`
                     }
                 ]
             },

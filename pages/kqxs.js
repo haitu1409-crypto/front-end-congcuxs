@@ -127,7 +127,7 @@ const KQXSPage = memo(function KQXSPage() {
         },
         {
             question: 'Có thể xem XSMB 30 ngày không?',
-            answer: `Có, bạn có thể xem XSMB 30 ngày gần nhất tại ${siteUrl}/kqxs. Trang này hiển thị kết quả xổ số miền Bắc với phân trang, mỗi trang 10 kết quả, sắp xếp từ mới nhất đến cũ nhất.`
+            answer: `Có, bạn có thể xem XSMB 30 ngày gần nhất tại ${siteUrl}/ket-qua-xo-so-mien-bac. Trang này hiển thị kết quả xổ số miền Bắc với phân trang, mỗi trang 10 kết quả, sắp xếp từ mới nhất đến cũ nhất.`
         },
         {
             question: 'XSMB khác với SXMB, KQXSMB, XSTD như thế nào?',
@@ -168,7 +168,7 @@ const KQXSPage = memo(function KQXSPage() {
                 },
                 'mainEntityOfPage': {
                     '@type': 'WebPage',
-                    '@id': `${siteUrl}/kqxs`
+                    '@id': `${siteUrl}/ket-qua-xo-so-mien-bac`
                 },
                 'keywords': seoConfig.keywords.slice(0, 50).join(', ')
             },
@@ -178,7 +178,7 @@ const KQXSPage = memo(function KQXSPage() {
                 '@type': 'Dataset',
                 'name': 'Kết Quả Xổ Số Miền Bắc (XSMB)',
                 'description': 'Kết quả xổ số miền Bắc (XSMB, SXMB, KQXSMB, XSTD) được cập nhật hàng ngày lúc 18h15',
-                'url': `${siteUrl}/kqxs`,
+                'url': `${siteUrl}/ket-qua-xo-so-mien-bac`,
                 'temporalCoverage': '2025-01-01/..',
                 'spatialCoverage': 'Hà Nội, Miền Bắc, Việt Nam',
                 'keywords': 'xsmb, sxmb, kqxsmb, xstd, kết quả xổ số miền bắc',
