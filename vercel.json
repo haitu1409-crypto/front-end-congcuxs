@@ -1,8 +1,8 @@
 {
   "version": 2,
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://api.taodandewukong.pro",
-    "NEXT_PUBLIC_SITE_URL": "https://taodandewukong.pro",
+    "NEXT_PUBLIC_API_URL": "https://api1.taodandewukong.pro",
+    "NEXT_PUBLIC_SITE_URL": "https://www.taodandewukong.pro",
     "NEXT_PUBLIC_SITE_NAME": "Tạo Dàn Đề"
   },
   "functions": {

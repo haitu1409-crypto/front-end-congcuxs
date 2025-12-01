@@ -133,7 +133,7 @@
     background: white;
     color: #000;
     border: 1.2px solid #667eea;
-    font-weight: 800;
+    font-weight: 700;
     height: 20px;
     font-size: 10px;
     text-decoration: none;
@@ -438,7 +438,7 @@
     letter-spacing: var(--letter-spacing-tight);
     line-height: 1.5;
     /* ✅ Fix CLS: Reserve space to prevent layout shift */
-   
+
     contain: layout style;
     font-display: swap;
     /* ✅ CRITICAL: Prevent layout shift during font loading */
