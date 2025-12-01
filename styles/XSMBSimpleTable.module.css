@@ -79,7 +79,8 @@
     text-align: center;
     vertical-align: middle;
     font-size: 18px;
-    font-weight: 700; /* Use 700 (bold) instead of 600 for better mobile support */
+    font-weight: 700;
+    /* Use 700 (bold) instead of 600 for better mobile support */
     /* Ensure font-weight works on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -89,7 +90,8 @@
 .kq_ngay {
     background: #D9EDF7 !important;
     color: #333333 !important;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
     font-size: 16px;
     padding: 12px;
     /* Ensure font-weight works on mobile */
@@ -101,7 +103,8 @@
 .leftcol {
     background: #D9EDF7 !important;
     color: #333333 !important;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
     text-align: center;
     padding: 3px 8px;
     font-size: 20px;
@@ -114,7 +117,8 @@
 .kqcell {
     background: #ffffff;
     color: #333333;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
     padding: 5px 7px;
     font-size: 22px;
     /* Ensure font-weight works on mobile */
@@ -126,7 +130,8 @@
 .kq_0 {
     background: #ffffff !important;
     color: #FF0000 !important;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
 }
 
 /* Giải đặc biệt */
@@ -218,7 +223,8 @@
     text-align: center;
     vertical-align: middle;
     font-size: 16px;
-    font-weight: 400; /* Use numeric value instead of 'normal' */
+    font-weight: 400;
+    /* Use numeric value instead of 'normal' */
     padding: 8px 6px;
     /* Ensure font rendering on mobile */
     -webkit-font-smoothing: antialiased;
@@ -236,7 +242,8 @@
     background-color: #FFE4B5 !important;
     color: #333333 !important;
     border: 1px solid orange !important;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
     white-space: nowrap !important;
     /* Ensure font-weight works on mobile */
     -webkit-font-smoothing: antialiased;
@@ -261,7 +268,8 @@
 .dau th {
     background: #FFE4B5 !important;
     color: #333333 !important;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
     /* Ensure font-weight works on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -269,7 +277,8 @@
 
 .dauLeftCol {
     background: #f0f0f0 !important;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
     text-align: center;
     width: 15px !important;
     max-width: 15px !important;
@@ -344,7 +353,8 @@
     text-align: center;
     vertical-align: middle;
     font-size: 16px;
-    font-weight: 400; /* Use numeric value instead of 'normal' */
+    font-weight: 400;
+    /* Use numeric value instead of 'normal' */
     padding: 8px 6px;
     /* Ensure font rendering on mobile */
     -webkit-font-smoothing: antialiased;
@@ -362,7 +372,8 @@
     background-color: #E6E6FA !important;
     color: #333333 !important;
     border: 1px solid purple !important;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
     white-space: nowrap !important;
     /* Ensure font-weight works on mobile */
     -webkit-font-smoothing: antialiased;
@@ -387,7 +398,8 @@
 .dit th {
     background: #E6E6FA !important;
     color: #333333 !important;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
     /* Ensure font-weight works on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -395,7 +407,8 @@
 
 .ditLeftCol {
     background: #f0f0f0 !important;
-    font-weight: 700 !important; /* Use numeric value for better mobile support */
+    font-weight: 700 !important;
+    /* Use numeric value for better mobile support */
     text-align: center;
     width: 15px !important;
     max-width: 15px !important;
@@ -460,7 +473,8 @@
     padding: 12px 24px;
     border-radius: 6px;
     font-size: 16px;
-    font-weight: 700; /* Use numeric value for better mobile support */
+    font-weight: 700;
+    /* Use numeric value for better mobile support */
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
@@ -546,7 +560,8 @@
     color: #ff6b6b;
     margin: 0 0 10px 0;
     font-size: 16px;
-    font-weight: 700; /* Use numeric value for better mobile support */
+    font-weight: 700;
+    /* Use numeric value for better mobile support */
     /* Ensure font-weight works on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -564,7 +579,8 @@
     padding: 8px 16px;
     border-radius: 4px;
     font-size: 12px;
-    font-weight: 700; /* Use numeric value for better mobile support */
+    font-weight: 700;
+    /* Use numeric value for better mobile support */
     cursor: pointer;
     transition: background-color 0.2s ease;
     /* Ensure font-weight works on mobile */
@@ -610,7 +626,7 @@
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
     }
-    
+
     /* Ensure font-weight works on mobile devices */
     .ketqua th,
     .ketqua td,
@@ -673,7 +689,7 @@
     .dau td,
     .dit th,
     .dit td {
-        font-size: 16px;
+        font-size: 19px;
         padding: 6px 3px;
     }
 

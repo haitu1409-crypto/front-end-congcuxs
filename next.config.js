@@ -20,7 +20,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'api1.taodandewukong.pro',
+                hostname: 'api.taodandewukong.pro',
                 pathname: '/uploads/**',
             },
         ],
@@ -67,11 +67,6 @@ const nextConfig = {
             {
                 source: '/home',
                 destination: '/',
-                permanent: true,
-            },
-            {
-                source: '/thongke/tan-suat-lo-cap',
-                destination: '/thongke/tan-suat-locap',
                 permanent: true,
             },
         ];

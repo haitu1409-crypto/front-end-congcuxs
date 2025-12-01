@@ -162,17 +162,7 @@ export default function SEOOptimized({
     articleData = null
 }) {
     const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Dàn Đề Wukong';
-    // Normalize site URL to use www for production consistency
-    const getNormalizedSiteUrl = () => {
-        const url = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
-        const normalized = url.replace(/\/+$/, '');
-        // If production and doesn't have www, add it (but keep localhost as is)
-        if (normalized.includes('taodandewukong.pro') && !normalized.includes('www.')) {
-            return normalized.replace('https://taodandewukong.pro', 'https://www.taodandewukong.pro');
-        }
-        return normalized;
-    };
-    const siteUrl = getNormalizedSiteUrl();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
 
     // ✅ FIX: Map 'home' to 'homepage' for PAGE_SEO_CONFIG
     const configPageType = pageType === 'home' ? 'homepage' : pageType;
@@ -215,12 +205,12 @@ export default function SEOOptimized({
             <link rel="dns-prefetch" href="//fonts.googleapis.com" />
             <link rel="dns-prefetch" href="//www.google-analytics.com" />
             <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-            <link rel="dns-prefetch" href="//api1.taodandewukong.pro" />
+            <link rel="dns-prefetch" href="//api.taodandewukong.pro" />
 
             {/* ===== PRECONNECT FOR CRITICAL RESOURCES ===== */}
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-            <link rel="preconnect" href="https://api1.taodandewukong.pro" />
+            <link rel="preconnect" href="https://api.taodandewukong.pro" />
 
             {/* ===== OPEN GRAPH - FACEBOOK & TELEGRAM ===== */}
             <meta property="og:title" content={title} />

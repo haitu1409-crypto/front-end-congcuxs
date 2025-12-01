@@ -7,14 +7,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings, Calendar, Activity, Award, Percent, MessageCircle, Filter } from 'lucide-react';
+import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings, Calendar, Activity, Award, Percent, ChevronDown, MessageCircle, Filter } from 'lucide-react';
 import Image from 'next/image';
 import RouterErrorBoundary, { useRouterErrorHandler } from './RouterErrorBoundary';
 import DesktopHeader from './DesktopHeader';
 import DropdownMenu from './DropdownMenu';
 import AuthButton from './Auth/AuthButton';
 import AuthModal from './Auth/AuthModal';
-import MobileNav from './MobileNav';
 import styles from '../styles/Layout.module.css';
 
 export default function Layout({ children, className = '' }) {
@@ -37,33 +36,10 @@ export default function Layout({ children, className = '' }) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Close mobile menu on route change and reset scroll
+    // Close mobile menu on route change
     useEffect(() => {
         setIsMenuOpen(false);
         setOpenDropdown(null);
-        // ✅ Reset scroll position when route changes
-        if (typeof window !== 'undefined') {
-            const resetScroll = () => {
-                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-                if (document.documentElement) {
-                    document.documentElement.scrollTop = 0;
-                }
-                if (document.body) {
-                    document.body.scrollTop = 0;
-                }
-            };
-            
-            // Reset immediately
-            resetScroll();
-            
-            // Reset again after DOM is ready
-            requestAnimationFrame(() => {
-                resetScroll();
-                setTimeout(() => {
-                    resetScroll();
-                }, 100);
-            });
-        }
     }, [router.pathname]);
 
     useEffect(() => {
@@ -132,7 +108,7 @@ export default function Layout({ children, className = '' }) {
             { href: '/thongke/giai-dac-biet-tuan', label: 'Giải Đặc Biệt Tuần', icon: Calendar },
             { href: '/thongke/dau-duoi', label: 'Đầu Đuôi', icon: Percent },
             { href: '/thongke/tan-suat-loto', label: 'Tần Suất Lô Tô', icon: BarChart3 },
-            { href: '/thongke/tan-suat-locap', label: 'Tần Suất Lô Cặp', icon: Target }
+            { href: '/thongke/tan-suat-lo-cap', label: 'Tần Suất Lô Cặp', icon: Target }
         ]
     };
 
@@ -142,9 +118,9 @@ export default function Layout({ children, className = '' }) {
         icon: Target,
         description: 'Soi cầu bạch thủ miền Bắc',
         submenu: [
-            { href: '/soi-cau-mien-bac-ai', label: 'Soi Cầu AI', icon: BarChart3, isNew: true },
-            { href: '/soi-cau-dac-biet-mien-bac', label: 'Soi Cầu Bạch Thủ Đề', icon: Target, isNew: true },
-            { href: '/soi-cau-loto-mien-bac', label: 'Soi Cầu Lô Tô', icon: Target, isNew: true }
+            { href: '/soicau-bayesian', label: 'Soi Cầu AI', icon: BarChart3, isNew: true },
+            { href: '/soi-cau-vi-tri', label: 'Soi Cầu Bạch Thủ Đề', icon: Target, isNew: true },
+            { href: '/soi-cau-loto', label: 'Soi Cầu Lô Tô', icon: Target, isNew: true }
         ]
     };
 
@@ -164,7 +140,7 @@ export default function Layout({ children, className = '' }) {
 
     const navLinks = [
         { href: '/', label: 'Trang chủ', icon: Home, description: 'Trang chủ chính' },
-        { href: '/ket-qua-xo-so-mien-bac', label: 'Kết Quả Xổ Số', icon: Calendar, description: 'Xem kết quả xổ số 3 miền mới nhất' },
+        { href: '/kqxs', label: 'Kết Quả Xổ Số', icon: Calendar, description: 'Xem kết quả xổ số 3 miền mới nhất' },
         { isDropdown: true, ...congCuXoSoMenu },
         { isDropdown: true, ...soiCauMenu },
         { isDropdown: true, ...thongKeMenu },
@@ -262,14 +238,94 @@ export default function Layout({ children, className = '' }) {
                         </div>
 
                         {/* Mobile Navigation */}
-                        <MobileNav
-                            isOpen={isMenuOpen}
-                            navLinks={navLinks}
-                            openDropdown={openDropdown}
-                            setOpenDropdown={setOpenDropdown}
-                            onClose={() => setIsMenuOpen(false)}
-                            onLinkClick={handleLinkClick}
-                        />
+                        {isMenuOpen && (
+                            <>
+                                {/* Mobile Overlay */}
+                                <div
+                                    className={styles.mobileOverlay}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    aria-hidden="true"
+                                />
+
+                                {/* Mobile Navigation */}
+                                <div className={`${styles.mobileNav} ${isMenuOpen ? styles.mobileNavOpen : ''}`}>
+                                <div className={styles.mobileNavContent} onClick={handleLinkClick}>
+                                        {/* Auth Button - Mobile (top) */}
+                                        <div className={styles.mobileAuthButton}>
+                                            <AuthButton variant="mobile" />
+                                        </div>
+
+                                        {navLinks.map((link, index) => {
+                                            // Handle dropdown menu in mobile
+                                            if (link.isDropdown) {
+                                                const IconComponent = link.icon;
+                                                const isOpen = openDropdown === link.label;
+                                                return (
+                                                    <div key={`mobile-dropdown-${index}`}>
+                                                        <div className={styles.mobileDropdownWrapper}>
+                                                            <div 
+                                                                className={styles.mobileDropdownHeader}
+                                                                onClick={() => setOpenDropdown(isOpen ? null : link.label)}
+                                                            >
+                                                            <div className={styles.mobileNavLinkContent}>
+                                                                <div className={styles.mobileNavLinkHeader}>
+                                                                    <IconComponent size={20} className={styles.mobileNavIcon} />
+                                                                    <span className={styles.mobileNavLinkLabel}>{link.label}</span>
+                                                                        <ChevronDown size={16} className={`${styles.mobileDropdownIcon} ${isOpen ? styles.rotate : ''}`} />
+                                                                </div>
+                                                            </div>
+                                                            </div>
+                                                            {isOpen && (
+                                                            <div className={styles.mobileDropdownSubmenu}>
+                                                                {link.submenu.map((subItem, subIndex) => {
+                                                                    const SubIconComponent = subItem.icon;
+                                                                    return (
+                                                                        <Link
+                                                                            key={subIndex}
+                                                                            href={subItem.href}
+                                                                            className={`${styles.mobileNavSubLink} ${router.pathname === subItem.href ? styles.active : ''}`}
+                                                                            onClick={() => {
+                                                                                setIsMenuOpen(false);
+                                                                                setOpenDropdown(null);
+                                                                            }}
+                                                                        >
+                                                                            <SubIconComponent size={18} className={styles.mobileNavSubIcon} />
+                                                                            <span>{subItem.label}</span>
+                                                                        </Link>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+
+                                            // Handle regular links
+                                            const IconComponent = link.icon;
+                                            return (
+                                                <Link
+                                                    key={link.href}
+                                                    href={link.href}
+                                                    className={`${styles.mobileNavLink} ${router.pathname === link.href ? styles.active : ''
+                                                        }`}
+                                                    onClick={() => setIsMenuOpen(false)}
+                                                    prefetch={false} // Disable automatic prefetch
+                                                >
+                                                    <div className={styles.mobileNavLinkContent}>
+                                                        <div className={styles.mobileNavLinkHeader}>
+                                                            <IconComponent size={20} className={styles.mobileNavIcon} />
+                                                            <span className={styles.mobileNavLinkLabel}>{link.label}</span>
+                                                            {link.isNew && <span className={styles.mobileNewBadge}>NEW</span>}
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </nav>
                 </header>
 
@@ -321,7 +377,7 @@ export default function Layout({ children, className = '' }) {
                                 <h4 className={styles.footerSectionTitle}>Công cụ</h4>
                                 <ul className={styles.footerLinks}>
                                     <li>
-                                        <Link href="/ket-qua-xo-so-mien-bac" className={styles.footerLink}>
+                                        <Link href="/kqxs" className={styles.footerLink}>
                                             Kết Quả Xổ Số
                                         </Link>
                                     </li>
@@ -358,7 +414,7 @@ export default function Layout({ children, className = '' }) {
                                 <h4 className={styles.footerSectionTitle}>Hỗ trợ</h4>
                                 <ul className={styles.footerLinks}>
                                     <li>
-                                        <Link href="/soi-cau-mien-bac-ai" className={styles.footerLink}>
+                                        <Link href="/soicau-bayesian" className={styles.footerLink}>
                                             Soi Cầu Bayesian
                                         </Link>
                                     </li>
@@ -385,7 +441,14 @@ export default function Layout({ children, className = '' }) {
                                 Công cụ miễn phí cho mục đích giải trí và nghiên cứu.
                             </p>
                             {/* ✅ SEO Keywords Footer (giống RBK strategy) */}
-                            <div className={styles.seoKeywords}>
+                            <div style={{ 
+                                marginTop: '15px', 
+                                fontSize: '11px', 
+                                color: '#999', 
+                                textAlign: 'center',
+                                lineHeight: '1.6',
+                                opacity: 0.7
+                            }}>
                                 TDDW | Tạo dàn đề Wukong | Tao dan de wukong | TDDW.Pro | WK | TDD | DDW | 
                                 Tạo dàn số TDDW | Soi cầu TDDW | Chốt số TDDW | TDDW hôm nay | 
                                 Cầu lô TDDW | Dự đoán TDDW | Thống kê TDDW | TDDW miễn phí

@@ -97,17 +97,17 @@ const PositionSoiCauPage = ({ initialData, initialDate, initialDays }) => {
     const [isMobileHistoryModalOpen, setIsMobileHistoryModalOpen] = useState(false);
 
     // ✅ SEO Configuration
-    const siteUrl = useMemo(() =>
+    const siteUrl = useMemo(() => 
         process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro',
         []
     );
 
-    const seoConfig = useMemo(() => getPageSEO('soi-cau-dac-biet-mien-bac'), []);
+    const seoConfig = useMemo(() => getPageSEO('soi-cau-vi-tri'), []);
 
     // ✅ Breadcrumbs
     const breadcrumbs = useMemo(() => [
         { name: 'Trang chủ', url: siteUrl },
-        { name: 'Soi Cầu Đặc Biệt Miền Bắc', url: `${siteUrl}/soi-cau-dac-biet-mien-bac` }
+        { name: 'Soi Cầu Đặc Biệt Miền Bắc', url: `${siteUrl}/soi-cau-vi-tri` }
     ], [siteUrl]);
 
     // ✅ FAQ Data
@@ -142,7 +142,7 @@ const PositionSoiCauPage = ({ initialData, initialDate, initialDays }) => {
                 "@type": "WebApplication",
                 "name": "Soi Cầu Đặc Biệt Miền Bắc - Dàn Đề Wukong",
                 "description": "Công cụ soi cầu đặc biệt miền bắc dựa trên phân tích vị trí số trong kết quả xổ số. Tìm kiếm pattern nhất quán để dự đoán 2 số cuối giải đặc biệt XSMB.",
-                "url": `${siteUrl}/soi-cau-dac-biet-mien-bac`,
+                "url": `${siteUrl}/soi-cau-vi-tri`,
                 "applicationCategory": "UtilitiesApplication",
                 "operatingSystem": "Web Browser",
                 "offers": {
@@ -196,7 +196,7 @@ const PositionSoiCauPage = ({ initialData, initialDate, initialDays }) => {
                         "@type": "ListItem",
                         "position": 2,
                         "name": "Soi Cầu Đặc Biệt Miền Bắc",
-                        "item": `${siteUrl}/soi-cau-dac-biet-mien-bac`
+                        "item": `${siteUrl}/soi-cau-vi-tri`
                     }
                 ]
             },
@@ -221,34 +221,34 @@ const PositionSoiCauPage = ({ initialData, initialDate, initialDays }) => {
 
             <Layout>
 
-                <div className="mobileHistoryTriggerWrapper">
-                    <button
-                        type="button"
-                        className="mobileHistoryTrigger"
-                        onClick={() => setIsMobileHistoryModalOpen(true)}
+            <div className="mobileHistoryTriggerWrapper">
+                <button
+                    type="button"
+                    className="mobileHistoryTrigger"
+                    onClick={() => setIsMobileHistoryModalOpen(true)}
+                >
+                    <span className="mobileHistoryTriggerText">
+                        Xem lịch sử soi cầu vị trí
+                    </span>
+                    <span
+                        className="mobileHistoryTriggerIcon"
+                        aria-hidden="true"
                     >
-                        <span className="mobileHistoryTriggerText">
-                            Xem lịch sử soi cầu vị trí
-                        </span>
-                        <span
-                            className="mobileHistoryTriggerIcon"
-                            aria-hidden="true"
-                        >
-                            ➜
-                        </span>
-                    </button>
-                </div>
+                        ➜
+                    </span>
+                </button>
+            </div>
 
-                <PositionSoiCau
-                    initialData={initialData}
-                    initialDate={initialDate}
-                    initialDays={initialDays}
-                    mobileHistoryModalOpen={isMobileHistoryModalOpen}
-                    onCloseMobileHistoryModal={() => setIsMobileHistoryModalOpen(false)}
-                    mobileHistoryModalControlled
-                />
+            <PositionSoiCau
+                initialData={initialData}
+                initialDate={initialDate}
+                initialDays={initialDays}
+                mobileHistoryModalOpen={isMobileHistoryModalOpen}
+                onCloseMobileHistoryModal={() => setIsMobileHistoryModalOpen(false)}
+                mobileHistoryModalControlled
+            />
 
-                <style jsx>{`
+            <style jsx>{`
                 .mobileHistoryTriggerWrapper {
                 }
 
@@ -305,7 +305,7 @@ const PositionSoiCauPage = ({ initialData, initialDate, initialDays }) => {
                     }
                 }
             `}            </style>
-            </Layout>
+        </Layout>
         </>
     );
 };

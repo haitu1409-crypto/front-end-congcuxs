@@ -76,7 +76,7 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(handleApiRequest(request));
     } else if (url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/)) {
         event.respondWith(handleStaticRequest(request));
-    } else if (url.pathname.startsWith('/kqxs') || url.pathname.startsWith('/ket-qua-xo-so-mien-bac') || url.pathname === '/') {
+    } else if (url.pathname.startsWith('/kqxs') || url.pathname === '/') {
         event.respondWith(handleHtmlRequest(request));
     } else {
         event.respondWith(fetch(request));
@@ -246,7 +246,7 @@ self.addEventListener('notificationclick', (event) => {
 
     if (event.action === 'view') {
         event.waitUntil(
-            clients.openWindow('/ket-qua-xo-so-mien-bac')
+            clients.openWindow('/kqxs')
         );
     }
 });

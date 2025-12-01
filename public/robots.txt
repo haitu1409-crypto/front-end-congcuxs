@@ -4,8 +4,6 @@ Allow: /
 Disallow: /api/
 Disallow: /_next/
 Disallow: /static/
-Disallow: /admin/
-Disallow: /auth/
 
 # Googlebot
 User-agent: Googlebot
@@ -27,8 +25,7 @@ Allow: /
 Crawl-delay: 0
 
 # Host
-Host: https://www.taodandewukong.pro
+Host: https://taodandewukong.pro
 
 # Sitemaps
-Sitemap: https://www.taodandewukong.pro/sitemap.xml
 Sitemap: https://taodandewukong.pro/sitemap.xml

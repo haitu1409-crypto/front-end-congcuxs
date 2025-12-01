@@ -29,12 +29,12 @@ export default function SEODomainOptimized({
       <link rel="dns-prefetch" href="//fonts.googleapis.com" />
       <link rel="dns-prefetch" href="//www.google-analytics.com" />
       <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-      <link rel="dns-prefetch" href="//api1.taodandewukong.pro" />
+      <link rel="dns-prefetch" href="//api.taodandewukong.pro" />
 
       {/* Preconnect for Critical Resources */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-      <link rel="preconnect" href="https://api1.taodandewukong.pro" />
+      <link rel="preconnect" href="https://api.taodandewukong.pro" />
 
       {/* Open Graph */}
       <meta property="og:title" content={title} />

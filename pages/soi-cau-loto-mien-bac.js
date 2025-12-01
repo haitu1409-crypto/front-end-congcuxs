@@ -154,17 +154,17 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
     const handleCloseHistory = useCallback(() => setIsMobileHistoryModalOpen(false), []);
 
     // ✅ SEO Configuration
-    const siteUrl = useMemo(() =>
+    const siteUrl = useMemo(() => 
         process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro',
         []
     );
 
-    const seoConfig = useMemo(() => getPageSEO('soi-cau-loto-mien-bac'), []);
+    const seoConfig = useMemo(() => getPageSEO('soi-cau-loto'), []);
 
     // ✅ Breadcrumbs
     const breadcrumbs = useMemo(() => [
         { name: 'Trang chủ', url: siteUrl },
-        { name: 'Soi Cầu Lô Tô Miền Bắc', url: `${siteUrl}/soi-cau-loto-mien-bac` }
+        { name: 'Soi Cầu Lô Tô Miền Bắc', url: `${siteUrl}/soi-cau-loto` }
     ], [siteUrl]);
 
     // ✅ FAQ Data
@@ -195,7 +195,7 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
                 "@type": "WebApplication",
                 "name": "Soi Cầu Lô Tô Miền Bắc - Dàn Đề Wukong",
                 "description": "Công cụ soi cầu lô tô miền bắc dựa trên phân tích vị trí số. Dự đoán lô tô XSMB chính xác, tìm pattern nhất quán.",
-                "url": `${siteUrl}/soi-cau-loto-mien-bac`,
+                "url": `${siteUrl}/soi-cau-loto`,
                 "applicationCategory": "UtilitiesApplication",
                 "operatingSystem": "Web Browser",
                 "offers": {
@@ -249,7 +249,7 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
                         "@type": "ListItem",
                         "position": 2,
                         "name": "Soi Cầu Lô Tô Miền Bắc",
-                        "item": `${siteUrl}/soi-cau-loto-mien-bac`
+                        "item": `${siteUrl}/soi-cau-loto`
                     }
                 ]
             },
@@ -274,34 +274,34 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
 
             <Layout>
 
-                <div className="mobileHistoryTriggerWrapper">
-                    <button
-                        type="button"
-                        className="mobileHistoryTrigger"
-                        onClick={handleOpenHistory}
+            <div className="mobileHistoryTriggerWrapper">
+                <button
+                    type="button"
+                    className="mobileHistoryTrigger"
+                    onClick={handleOpenHistory}
+                >
+                    <span className="mobileHistoryTriggerText">
+                        Xem lịch sử soi cầu lô tô
+                    </span>
+                    <span
+                        className="mobileHistoryTriggerIcon"
+                        aria-hidden="true"
                     >
-                        <span className="mobileHistoryTriggerText">
-                            Xem lịch sử soi cầu lô tô
-                        </span>
-                        <span
-                            className="mobileHistoryTriggerIcon"
-                            aria-hidden="true"
-                        >
-                            ➜
-                        </span>
-                    </button>
-                </div>
+                        ➜
+                    </span>
+                </button>
+            </div>
 
-                <DynamicPositionSoiCauLoto
-                    initialData={initialData}
-                    initialDate={initialDate}
-                    initialDays={initialDays}
-                    mobileHistoryModalOpen={isMobileHistoryModalOpen}
-                    onCloseMobileHistoryModal={handleCloseHistory}
-                    mobileHistoryModalControlled
-                />
+            <DynamicPositionSoiCauLoto
+                initialData={initialData}
+                initialDate={initialDate}
+                initialDays={initialDays}
+                mobileHistoryModalOpen={isMobileHistoryModalOpen}
+                onCloseMobileHistoryModal={handleCloseHistory}
+                mobileHistoryModalControlled
+            />
 
-                <style jsx>{`
+            <style jsx>{`
                 .mobileHistoryTriggerWrapper {
                 }
 
@@ -368,7 +368,7 @@ const PositionSoiCauLotoPage = ({ initialData, initialDate, initialDays }) => {
                     }
                 }
             `}</style>
-            </Layout>
+        </Layout>
         </>
     );
 };

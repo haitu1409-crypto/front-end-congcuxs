@@ -23,17 +23,7 @@ const MultiSearchEngineOptimizer = memo(function MultiSearchEngineOptimizer({
     author = 'Dàn Đề Wukong',
     structuredData = null,
 }) {
-    // Normalize site URL to use www for production consistency
-    const getNormalizedSiteUrl = () => {
-        const url = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
-        const normalized = url.replace(/\/+$/, '');
-        // If production and doesn't have www, add it (but keep localhost as is)
-        if (normalized.includes('taodandewukong.pro') && !normalized.includes('www.')) {
-            return normalized.replace('https://taodandewukong.pro', 'https://www.taodandewukong.pro');
-        }
-        return normalized;
-    };
-    const siteUrl = getNormalizedSiteUrl();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
     const canonicalUrl = url || siteUrl;
     const ogImage = image || `${siteUrl}/imgs/wukong.png`;
 

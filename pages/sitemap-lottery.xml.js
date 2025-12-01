@@ -27,7 +27,7 @@ export const getServerSideProps = async ({ res }) => {
     
     <!-- Main lottery results page -->
     <url>
-        <loc>${baseUrl}/ket-qua-xo-so-mien-bac</loc>
+        <loc>${baseUrl}/kqxs</loc>
         <lastmod>${currentDate.toISOString()}</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
@@ -52,7 +52,7 @@ export const getServerSideProps = async ({ res }) => {
 
         return `
     <url>
-        <loc>${baseUrl}/ket-qua-xo-so-mien-bac/${formattedDate}</loc>
+        <loc>${baseUrl}/kqxs/${formattedDate}</loc>
         <lastmod>${date.toISOString()}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -68,7 +68,7 @@ export const getServerSideProps = async ({ res }) => {
     }).join('')}
     
     <url>
-        <loc>${baseUrl}/soi-cau-dac-biet-mien-bac</loc>
+        <loc>${baseUrl}/soi-cau-vi-tri</loc>
         <lastmod>${currentDate.toISOString()}</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>

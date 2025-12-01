@@ -331,7 +331,7 @@ const getImageUrl = (imageUrl) => {
     try {
         const url = new URL(imageUrl);
         // If it's from our API, return as is
-        if (url.hostname === 'api1.taodandewukong.pro' || url.hostname === 'localhost') {
+        if (url.hostname === 'api.taodandewukong.pro' || url.hostname === 'localhost') {
             return imageUrl;
         }
     } catch {

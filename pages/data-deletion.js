@@ -53,7 +53,7 @@ const DataDeletionPage = () => {
                         overflowX: 'auto'
                     }}
                 >
-{`POST https://api1.taodandewukong.pro/api/auth/facebook/delete-data
+{`POST https://api.taodandewukong.pro/api/auth/facebook/delete-data
 Body: {
   "userId": "<facebook_user_id>",
   "signedRequest": "<signed_request_from_facebook>"
