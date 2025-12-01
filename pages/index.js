@@ -416,11 +416,6 @@ const Home = memo(function Home() {
                             {/* Featured Snippet - Direct Answer */}
                             {/* Thống kê nhanh */}
                             <ThongKeNhanh />
-                            {/* Featured Snippet - Direct Answer (moved below thống kê nhanh) */}
-                            <DirectAnswer
-                                question="Tạo Dàn Đề (Tao Dan De) Là Gì?"
-                                answer="Tạo dàn đề (tao dan de) là phương pháp chọn ra một tập hợp các con số (dàn đề) để đánh lô đề hoặc xổ số, dựa trên các tiêu chí như tổng, chạm, đầu, đuôi, kép nhằm tăng khả năng trúng thưởng. Ứng dụng tạo dàn đề giúp bạn tạo tự động các tổ hợp số 2D (00-99), 3D (000-999), 4D (0000-9999), ghép lô xiên, và lọc dàn theo nhiều điều kiện đặc biệt một cách nhanh chóng, chính xác 100% với thuật toán Fisher-Yates chuẩn quốc tế."
-                            />
 
                             {/* Features Section - Compact */}
                             <section className={styles.features} aria-label="Tính năng nổi bật">

@@ -172,11 +172,6 @@ export default function Document() {
             }
             
             h1 {
-              min-height: 2.5rem !important;
-              height: 2.5rem !important;
-              overflow: hidden !important;
-              text-overflow: ellipsis !important;
-              white-space: nowrap !important;
             }
             
             h2 {

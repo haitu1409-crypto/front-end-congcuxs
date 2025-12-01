@@ -645,7 +645,7 @@
 
 @media (max-width: 768px) {
     .container {
-        padding: 8px 5px;
+        padding: 8px 0px;
         /* ✅ Fix: Ensure container doesn't overflow */
         background: #f8f9fa;
     }
@@ -831,7 +831,6 @@
 
 @media (max-width: 480px) {
     .container {
-        padding: 8px 5px;
     
         /* ✅ Fix: Ensure container doesn't overflow on very small screens */
         width: 100%;
@@ -923,12 +922,12 @@
     }
 
     .cardTitle {
-        font-size: 0.9rem;
+        font-size: 1.1rem;
         color: var(--card-color, #333);
     }
 
     .cardSubtitle {
-        font-size: 0.9rem;
+        font-size: 1.1rem;
         color: var(--card-color, #333);
         font-weight: 700;
     }

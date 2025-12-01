@@ -48,9 +48,10 @@
     gap: 6px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 3px 12px;
+    padding: 3px 5px;
+    margin-top: 5px;
     border-radius: 50px;
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 600;
     margin-bottom: 7px;
     box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
@@ -63,7 +64,7 @@
 
 /* Hero Title Highlight */
 .heroTitleHighlight {
- 
+
     /* background-clip: text; */
 }
 
@@ -130,12 +131,11 @@
     justify-content: center;
     gap: 2px;
     background: white;
-    color: #667eea;
+    color: #000;
     border: 1.2px solid #667eea;
-    border-radius: 6px;
-    font-weight: 600;
+    font-weight: 800;
     height: 20px;
-    font-size: 9px;
+    font-size: 10px;
     text-decoration: none;
     transition: all 0.3s ease;
     text-align: center;
@@ -195,8 +195,7 @@
     flex-shrink: 0;
 }
 
-.heroP
-      rimaryButton:hover .heroButtonArrow {
+.heroP rimaryButton:hover .heroButtonArrow {
     transform: translateX(4px);
 }
 
@@ -426,7 +425,7 @@
 @media (min-width: 768px) {
     .header {
         padding: 20px;
-        
+
     }
 }
 
@@ -439,11 +438,11 @@
     letter-spacing: var(--letter-spacing-tight);
     line-height: 1.5;
     /* ✅ Fix CLS: Reserve space to prevent layout shift */
-    min-height: 60px;
+   
     contain: layout style;
     font-display: swap;
     /* ✅ CRITICAL: Prevent layout shift during font loading */
-    height: 60px;
+    height: 30px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
