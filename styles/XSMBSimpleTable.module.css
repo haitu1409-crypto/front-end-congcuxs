@@ -180,12 +180,15 @@
     background: #ffffff !important;
 }
 
-/* Giải sáu */
+/* Giải sáu - đã được di chuyển sang giải bảy */
+
+/* Giải bảy - tách CSS riêng với màu đỏ (4 giá trị) */
 .kq_23,
 .kq_24,
 .kq_25,
 .kq_26 {
     background: #ffffff !important;
+    color: #FF0000 !important;
 }
 
 /* Giải bảy */
@@ -254,7 +257,7 @@
 .dauDataCol {
     width: 160px !important;
     max-width: 160px !important;
-    padding: 8px 4px !important;
+    padding: 6px 4px !important;
     font-size: 16px !important;
     text-align: left !important;
     background-color: #ffffff !important;
@@ -263,6 +266,12 @@
     white-space: normal !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
+    font-weight: 600 !important;
+    /* Ensure font-weight works on mobile - use numeric value */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Fallback: Nếu font không hỗ trợ 600, dùng 700 (bold) */
+    font-synthesis: weight;
 }
 
 .dau th {
@@ -384,7 +393,7 @@
 .ditDataCol {
     width: 160px !important;
     max-width: 160px !important;
-    padding: 8px 4px !important;
+    padding: 6px 4px !important;
     font-size: 16px !important;
     text-align: left !important;
     background-color: #ffffff !important;
@@ -393,6 +402,12 @@
     white-space: normal !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
+    font-weight: 600 !important;
+    /* Ensure font-weight works on mobile - use numeric value */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Fallback: Nếu font không hỗ trợ 600, dùng 700 (bold) */
+    font-synthesis: weight;
 }
 
 .dit th {
@@ -632,11 +647,29 @@
     .ketqua td,
     .kqcell,
     .leftcol,
-    .kq_ngay,
     .dauDigitCol,
     .ditDigitCol,
     .dau th,
     .dit th {
+        font-weight: 700 !important;
+        /* Force font-weight rendering on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Đảm bảo font-weight 600 hoạt động trên mobile cho cột dữ liệu */
+    .dauDataCol,
+    .ditDataCol {
+        font-weight: 600 !important;
+        /* Force font-weight rendering on mobile */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        /* Nếu font không hỗ trợ 600, fallback về 700 */
+        font-synthesis: weight;
+    }
+
+    /* Tách CSS riêng cho tiêu đề ngày */
+    .kq_ngay {
         font-weight: 700 !important;
         /* Force font-weight rendering on mobile */
         -webkit-font-smoothing: antialiased;
@@ -657,12 +690,10 @@
     .sideTablesContainer {
         display: flex !important;
         flex-direction: row;
-        gap: 8px;
         justify-content: center !important;
         align-items: flex-start;
         flex-wrap: nowrap;
         overflow-x: auto;
-        padding: 0 5px;
         margin: 0 auto !important;
         width: 100% !important;
     }
@@ -685,24 +716,43 @@
 
     .ketqua th,
     .ketqua td,
-    .dau th,
     .dau td,
-    .dit th,
     .dit td {
-        font-size: 21px;
+        font-size: 23px;
         padding: 6px 3px;
     }
 
-    .kq_ngay {
-        font-size: 16px;
+    /* Tách CSS riêng cho thẻ Đầu và Đuôi - font-size nhỏ hơn 4px so với kết quả */
+    .dau th,
+    .dit th {
+        font-size: 19px !important;
+        padding: 6px 3px;
     }
 
+    /* Tách CSS riêng cho tiêu đề ngày - font-size nhỏ hơn 2px so với kết quả */
+    .kq_ngay {
+        font-size: 19px !important;
+        padding: 6px 3px;
+    }
+
+    /* Tách CSS riêng cho mã đặc biệt - font-size nhỏ hơn 2px so với kết quả */
+    .kq_maDB {
+        font-size: 19px !important;
+        padding: 6px 3px;
+    }
+
+    /* Giảm padding cho các ô giá trị kết quả trên mobile */
+    .kqcell {
+        padding: 3px 3px !important;
+    }
+
+    /* Tách CSS riêng cho cột tiêu đề giải - font-size nhỏ hơn 4px so với kết quả */
     .leftcol {
         width: 30px !important;
         min-width: 30px !important;
         max-width: 30px !important;
         padding: 6px 3px;
-        font-size: 16px;
+        font-size: 19px !important;
     }
 
     .dauLeftCol,
@@ -729,12 +779,10 @@
     .sideTablesContainer {
         display: flex !important;
         flex-direction: row;
-        gap: 4px;
         justify-content: center !important;
         align-items: flex-start;
         flex-wrap: nowrap;
         overflow-x: auto;
-        padding: 0 3px;
         margin: 0 auto !important;
         width: 100% !important;
     }
@@ -747,24 +795,42 @@
 
     .ketqua th,
     .ketqua td,
-    .dau th,
     .dau td,
-    .dit th,
     .dit td {
         /* font-size: 14px; */
         padding: 3px 1px;
     }
 
-    .kq_ngay {
-        font-size: 14px;
+    /* Tách CSS riêng cho thẻ Đầu và Đuôi - font-size nhỏ hơn 4px so với kết quả */
+    .dau th,
+    .dit th {
+        font-size: 19px !important;
+        padding: 3px 1px;
     }
 
+    /* Tách CSS riêng cho tiêu đề ngày - font-size nhỏ hơn so với kết quả */
+    .kq_ngay {
+        font-size: 17px !important;
+    }
+
+    /* Tách CSS riêng cho mã đặc biệt - font-size nhỏ hơn 2px so với kết quả */
+    .kq_maDB {
+        font-size: 17px !important;
+        padding: 3px 1px;
+    }
+
+    /* Giảm padding cho các ô giá trị kết quả trên mobile nhỏ */
+    .kqcell {
+        padding: 2px 1px !important;
+    }
+
+    /* Tách CSS riêng cho cột tiêu đề giải - font-size nhỏ hơn 4px so với kết quả */
     .leftcol {
         width: 30px !important;
         min-width: 30px !important;
         max-width: 30px !important;
         padding: 4px 2px;
-        font-size: 14px;
+        font-size: 19px !important;
     }
 
     .dauLeftCol,

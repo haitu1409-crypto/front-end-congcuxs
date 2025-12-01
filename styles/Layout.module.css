@@ -332,6 +332,9 @@
 .menuIcon {
     color: var(--color-gray-900);
     transition: all var(--transition-base);
+    width: 27px !important;
+    height: 27px !important;
+    /* Tăng kích thước icon lên 3px (từ 24px lên 27px) */
 }
 
 .menuButton:hover .menuIcon {
