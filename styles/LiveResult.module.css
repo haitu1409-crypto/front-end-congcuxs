@@ -564,6 +564,7 @@
     .sideTablesContainer {
         display: flex !important;
         flex-direction: row;
+        gap: 8px;
         justify-content: center !important;
         align-items: flex-start;
         flex-wrap: nowrap;
@@ -674,7 +675,7 @@
     .dau,
     .dit {
         flex-shrink: 0;
-        min-width: 191px;
+        min-width: 180px;
         width: 180px !important;
         /* Set width cố định cho từng bảng */
     }

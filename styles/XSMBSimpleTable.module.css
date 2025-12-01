@@ -719,7 +719,7 @@
     .dit {
         flex-shrink: 0;
         width: auto;
-        max-width: 194px;
+        max-width: 180px;
         min-width: 160px;
     }
 
