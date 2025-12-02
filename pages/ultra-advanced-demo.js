@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import styles from '../styles/soi-cau.module.css';
-// ✅ Performance: Remove moment.js (saves ~67KB) - use native Date instead
+import moment from 'moment';
 
 export default function UltraAdvancedDemo() {
     const [predictions, setPredictions] = useState(null);

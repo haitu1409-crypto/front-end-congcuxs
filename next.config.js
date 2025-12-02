@@ -6,9 +6,8 @@ const nextConfig = {
     compress: true,
     poweredByHeader: false,
 
-    // ✅ Performance: Only transpile packages that need it
-    // lucide-react is ESM and doesn't need transpilation for modern browsers
-    transpilePackages: [],
+    // Transpile packages for better performance
+    transpilePackages: ['lucide-react'],
 
     // Images configuration
     images: {
@@ -101,56 +100,29 @@ const nextConfig = {
             config.devtool = 'eval-source-map';
         }
         
-        // ✅ Performance: Advanced bundle splitting to reduce unused code
+        // ✅ Performance: Optimize bundle splitting
         if (!isServer) {
             config.optimization = {
                 ...config.optimization,
-                // ✅ Note: usedExports is enabled by default in Next.js
-                // Don't set it explicitly to avoid conflicts with cacheUnaffected
                 splitChunks: {
                     chunks: 'all',
-                    minSize: 20000, // Only split chunks larger than 20KB
-                    maxSize: 244000, // Max chunk size ~244KB
                     cacheGroups: {
                         default: false,
                         vendors: false,
-                        // Large libraries that should be split separately
-                        framework: {
-                            name: 'framework',
-                            test: /[\\/]node_modules[\\/](react|react-dom|scheduler|object-assign)[\\/]/,
-                            priority: 40,
-                            reuseExistingChunk: true,
-                        },
-                        // UI libraries
-                        ui: {
-                            name: 'ui',
-                            test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
-                            priority: 30,
-                            reuseExistingChunk: true,
-                        },
-                        // Utility libraries
-                        utils: {
-                            name: 'utils',
-                            test: /[\\/]node_modules[\\/](lodash|moment|axios|debounce)[\\/]/,
-                            priority: 25,
-                            reuseExistingChunk: true,
-                        },
-                        // Other vendor libraries
+                        // Vendor chunk for large libraries
                         vendor: {
                             name: 'vendor',
-                            test: /[\\/]node_modules[\\/]/,
+                            chunks: 'all',
+                            test: /node_modules/,
                             priority: 20,
-                            reuseExistingChunk: true,
-                            minChunks: 2, // Only include if used in 2+ chunks
                         },
-                        // Common chunk for shared code (smaller threshold)
+                        // Common chunk for shared code
                         common: {
                             name: 'common',
-                            minChunks: 3, // Increased from 2 to reduce unused code
+                            minChunks: 2,
                             chunks: 'all',
                             priority: 10,
                             reuseExistingChunk: true,
-                            enforce: true, // Force creation even if small
                         },
                     },
                 },
@@ -166,27 +138,13 @@ const nextConfig = {
     compress: true,
     
     // ✅ Performance: Target modern browsers only (remove legacy polyfills)
-    // This reduces bundle size by ~14 KiB
+    // This reduces bundle size by ~13 KiB
     compiler: {
         // Remove console.log in production
         removeConsole: process.env.NODE_ENV === 'production' ? {
             exclude: ['error', 'warn'],
         } : false,
     },
-    
-    // ✅ Performance: Experimental features for better optimization
-    experimental: {
-        optimizeCss: true, // Enable CSS optimization (removes unused CSS)
-        optimizePackageImports: [
-            'lucide-react', // Tree shake lucide-react icons
-            'lodash', // Tree shake lodash functions
-        ],
-    },
-    
-    // ✅ Performance: Optimize CSS output
-    // Next.js automatically removes unused CSS in production builds
-    // This is handled by the CSS optimization in experimental.optimizeCss
-    // Note: SWC minification is enabled by default in Next.js 15
 };
 
 module.exports = nextConfig;

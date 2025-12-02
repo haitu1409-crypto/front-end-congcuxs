@@ -1,24 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-// ✅ Performance: Remove moment.js (saves ~67KB) - use native Date instead
-
-// Helper function to format date (replaces moment)
-const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-};
-
-const formatTime = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const seconds = date.getSeconds().toString().padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-};
+import moment from 'moment';
 
 // API Service
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -308,7 +289,7 @@ const ProbabilityStatistics = ({ date, showAllMethods = false }) => {
                 <div className="overview-grid">
                     <div className="overview-card">
                         <div className="overview-title">Ngày phân tích</div>
-                        <div className="overview-value">{formatDate(statistics.targetDate)}</div>
+                        <div className="overview-value">{moment(statistics.targetDate).format('DD/MM/YYYY')}</div>
                     </div>
                     <div className="overview-card">
                         <div className="overview-title">Số ngày lịch sử</div>
@@ -316,7 +297,7 @@ const ProbabilityStatistics = ({ date, showAllMethods = false }) => {
                     </div>
                     <div className="overview-card">
                         <div className="overview-title">Thời gian tính toán</div>
-                        <div className="overview-value">{formatTime(statistics.calculatedAt)}</div>
+                        <div className="overview-value">{moment(statistics.calculatedAt).format('HH:mm:ss')}</div>
                     </div>
                 </div>
             </div>
