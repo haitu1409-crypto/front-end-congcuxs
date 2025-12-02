@@ -175,7 +175,7 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
             />
 
             <div className={styles.container}>
-                <div className={styles.titleGroup}>
+                <div className={styles.titleGroup} data-lcp="true">
                     <h1 className={styles.title}>{getTitle()}</h1>
                     <div className={styles.actionBtn}>
                         <Link className={styles.actionTK} href="/thongke/dau-duoi">

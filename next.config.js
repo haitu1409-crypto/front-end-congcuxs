@@ -164,6 +164,15 @@ const nextConfig = {
     // ✅ Performance: Modern browser targets (ES2020+)
     // This tells Next.js to target modern browsers and avoid unnecessary polyfills
     swcMinify: true,
+    
+    // ✅ Performance: Configure SWC to target modern browsers (ES2020+)
+    // This reduces polyfills by ~14 KiB
+    modularizeImports: {
+        'lucide-react': {
+            transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+            skipDefaultConversion: true,
+        },
+    },
 };
 
 module.exports = nextConfig;
