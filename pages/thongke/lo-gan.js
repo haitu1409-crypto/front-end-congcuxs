@@ -1,13 +1,15 @@
-import React, { useState, useCallback, useEffect, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, lazy, Suspense, useRef } from 'react';
 import Layout from '../../components/Layout';
 import { apiMB } from '../api/kqxsMB';
 import styles from '../../styles/logan.module.css';
-import ThongKe from '../../components/ThongKe';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import CongCuHot from '../../components/CongCuHot';
 import StatisticsSEO from '../../components/StatisticsSEO';
 const statisticsFAQs = require('../../config/statisticsFAQs');
+
+// Lazy load non-critical components
+const ThongKe = lazy(() => import('../../components/ThongKe'));
+const CongCuHot = lazy(() => import('../../components/CongCuHot'));
 
 // Skeleton Loading Component
 const SkeletonRow = () => (
@@ -46,6 +48,8 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isExpanded, setIsExpanded] = useState(false);
+    const scrollBtnRef = useRef(null);
+    const scrollTimeoutRef = useRef(null);
 
     // Fetch API
     const fetchLoGanStats = useCallback(async (days) => {
@@ -96,20 +100,35 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
         fetchLoGanStats(days);
     }, [days, fetchLoGanStats]);
 
+    // Optimized scroll handler with debounce and CSS-based visibility
     useEffect(() => {
         const handleScroll = () => {
-            const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercentage = (scrollTop / windowHeight) * 100;
-            const scrollBtn = document.getElementById('scrollToTopBtn');
-            if (scrollPercentage > 50) {
-                scrollBtn.style.display = 'block';
-            } else {
-                scrollBtn.style.display = 'none';
+            if (scrollTimeoutRef.current) {
+                cancelAnimationFrame(scrollTimeoutRef.current);
+            }
+            
+            scrollTimeoutRef.current = requestAnimationFrame(() => {
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercentage = (scrollTop / windowHeight) * 100;
+                
+                if (scrollBtnRef.current) {
+                    if (scrollPercentage > 50) {
+                        scrollBtnRef.current.classList.add(styles.scrollBtnVisible);
+                    } else {
+                        scrollBtnRef.current.classList.remove(styles.scrollBtnVisible);
+                    }
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (scrollTimeoutRef.current) {
+                cancelAnimationFrame(scrollTimeoutRef.current);
             }
         };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const getTitle = () => {
@@ -200,9 +219,12 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                             <span>Ngày kết thúc:</span> {metadata.endDate || 'N/A'}
                         </span>
                     </div>
+                    </div>
                 </div>
 
-                {loading && <SkeletonTable />}
+                {/* Fixed height container to prevent CLS */}
+                <div className={styles.tableContainer}>
+                    {loading && <SkeletonTable />}
                     {error && <p className={styles.error}>{error}</p>}
                     {!loading && !error && tableData.length > 0 && (
                         <table className={styles.tableLoGan}>
@@ -250,24 +272,28 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                     <button
                         className={styles.toggleBtn}
                         onClick={toggleContent}
+                        aria-expanded={isExpanded}
                     >
                         {isExpanded ? 'Thu gọn' : 'Xem thêm'}
                     </button>
                 </div>
 
                 <button
-                    id="scrollToTopBtn"
+                    ref={scrollBtnRef}
                     className={styles.scrollToTopBtn}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                     title="Quay lại đầu trang"
+                    aria-label="Quay lại đầu trang"
                 >
                     ↑
                 </button>
 
                 <div>
                     <div className='congcuhot'>
-                        <ThongKe />
-                        <CongCuHot />
+                        <Suspense fallback={null}>
+                            <ThongKe />
+                            <CongCuHot />
+                        </Suspense>
                     </div>
                 </div>
             </div>

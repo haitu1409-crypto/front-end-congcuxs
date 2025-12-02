@@ -84,6 +84,8 @@
     background: #ffeca0;
     border-radius: 8px;
     margin-bottom: 24px;
+    contain: layout style;
+    min-height: 80px;
 }
 
 .title {
@@ -101,16 +103,23 @@
 
 /* Content block */
 .content {
-  
     border: 1px solid var(--background-color);
     border-radius: 8px;
     background-color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease;
+    contain: layout style paint;
 }
 
 .content:hover {
     transform: translateY(-1px);
+}
+
+/* Table container to prevent CLS */
+.tableContainer {
+    min-height: 200px;
+    contain: layout style;
+    will-change: contents;
 }
 
 /* Select box group */
@@ -216,6 +225,7 @@
     border-radius: 8px;
     overflow: hidden;
     table-layout: fixed;
+    contain: layout style;
 }
 
 .tableLoGan th,
@@ -310,6 +320,8 @@
     border-radius: 8px;
     background-color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    contain: layout style;
+    min-height: 150px;
 }
 
 .heading {
@@ -393,12 +405,11 @@
     font-size: 0.95rem;
 }
 
-/* Scroll to top button */
+/* Scroll to top button - CSS-based visibility to prevent layout shift */
 .scrollToTopBtn {
     position: fixed;
     bottom: 16px;
     right: 16px;
-    display: none;
     width: 46px;
     height: 46px;
     background: #ed1c25;
@@ -409,18 +420,29 @@
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
     z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8);
+    will-change: opacity, transform;
+    contain: layout style paint;
+}
+
+.scrollToTopBtn.scrollBtnVisible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
 }
 
 .scrollToTopBtn:hover {
     background: #c80505;
     opacity: 0.9;
-    transform: translateY(-3px);
+    transform: translateY(-3px) scale(1);
 }
 
 .scrollToTopBtn:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.95);
 }
 
 /* Collapsible content */

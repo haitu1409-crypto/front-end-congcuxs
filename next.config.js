@@ -94,13 +94,14 @@ const nextConfig = {
         NEXT_PUBLIC_SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'Tạo Dàn Đề',
     },
 
-    // Simplified webpack config
+    // Optimized webpack config for modern browsers
     webpack: (config, { dev, isServer }) => {
         if (dev) {
             config.devtool = 'eval-source-map';
         }
         
         // ✅ Performance: Optimize bundle splitting
+        // Note: usedExports and sideEffects removed - Next.js handles tree shaking internally
         if (!isServer) {
             config.optimization = {
                 ...config.optimization,
@@ -115,6 +116,7 @@ const nextConfig = {
                             chunks: 'all',
                             test: /node_modules/,
                             priority: 20,
+                            reuseExistingChunk: true,
                         },
                         // Common chunk for shared code
                         common: {
@@ -123,6 +125,13 @@ const nextConfig = {
                             chunks: 'all',
                             priority: 10,
                             reuseExistingChunk: true,
+                        },
+                        // Separate chunk for large libraries
+                        react: {
+                            name: 'react',
+                            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+                            chunks: 'all',
+                            priority: 30,
                         },
                     },
                 },
@@ -145,6 +154,16 @@ const nextConfig = {
             exclude: ['error', 'warn'],
         } : false,
     },
+
+    // ✅ Performance: Experimental features for better performance
+    experimental: {
+        // optimizeCss: true, // Disabled - can cause issues with critical.css
+        optimizePackageImports: ['lucide-react', 'lodash'],
+    },
+
+    // ✅ Performance: Modern browser targets (ES2020+)
+    // This tells Next.js to target modern browsers and avoid unnecessary polyfills
+    swcMinify: true,
 };
 
 module.exports = nextConfig;
