@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Script from 'next/script';
 import { Home, Target, BarChart3, Star, HelpCircle, Newspaper, Menu, X, CheckCircle, Zap, Heart, TrendingUp, Settings, Calendar, Activity, Award, Percent, ChevronDown, MessageCircle, Filter } from 'lucide-react';
 import Image from 'next/image';
 import RouterErrorBoundary, { useRouterErrorHandler } from './RouterErrorBoundary';
@@ -445,15 +446,23 @@ export default function Layout({ children, className = '' }) {
                             <p className={styles.disclaimer}>
                                 Công cụ miễn phí cho mục đích giải trí và nghiên cứu.
                             </p>
+                            {/* DMCA Badge */}
+                            <div className={styles.dmcaContainer}>
+                                <a 
+                                    href="//www.dmca.com/Protection/Status.aspx?ID=66ebf140-1580-488b-897e-a251a37c14a6" 
+                                    title="DMCA.com Protection Status" 
+                                    className="dmca-badge"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <img 
+                                        src="https://images.dmca.com/Badges/dmca_protected_25_120.png?ID=66ebf140-1580-488b-897e-a251a37c14a6" 
+                                        alt="DMCA.com Protection Status"
+                                    />
+                                </a>
+                            </div>
                             {/* ✅ SEO Keywords Footer (giống RBK strategy) */}
-                            <div style={{ 
-                                marginTop: '15px', 
-                                fontSize: '11px', 
-                                color: '#999', 
-                                textAlign: 'center',
-                                lineHeight: '1.6',
-                                opacity: 0.7
-                            }}>
+                            <div className={styles.seoKeywords}>
                                 TDDW | Tạo dàn đề Wukong | Tao dan de wukong | TDDW.Pro | WK | TDD | DDW | 
                                 Tạo dàn số TDDW | Soi cầu TDDW | Chốt số TDDW | TDDW hôm nay | 
                                 Cầu lô TDDW | Dự đoán TDDW | Thống kê TDDW | TDDW miễn phí
@@ -466,6 +475,11 @@ export default function Layout({ children, className = '' }) {
                 isOpen={isAuthModalOpen}
                 onClose={() => setIsAuthModalOpen(false)}
                 initialMode={authModalMode}
+            />
+            {/* DMCA Badge Script */}
+            <Script 
+                src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"
+                strategy="lazyOnload"
             />
         </RouterErrorBoundary>
     );

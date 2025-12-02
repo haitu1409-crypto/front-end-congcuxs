@@ -166,7 +166,7 @@ const MobileNav = ({
                         
                         {/* Telegram Link */}
                         <a
-                            href="https://t.me/+IDI1WNXglndhNTY1"
+                            href="https://t.me/+Gj1LNJITFRM0OGQ1"
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.mobileNavLink}

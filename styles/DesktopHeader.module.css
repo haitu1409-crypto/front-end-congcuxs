@@ -24,7 +24,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--spacing-4) var(--spacing-6);
+    padding: var(--spacing-2) var(--spacing-4);
     position: relative;
     z-index: 2;
     max-width: var(--container-7xl);
@@ -40,9 +40,9 @@
 .timeDisplay {
     display: flex;
     align-items: center;
-    gap: var(--spacing-3);
+    gap: var(--spacing-2);
     background: rgba(255, 255, 255, 0.15);
-    padding: var(--spacing-3) var(--spacing-4);
+    padding: var(--spacing-2) var(--spacing-3);
     border-radius: var(--border-radius-lg);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -50,13 +50,14 @@
 
 .timeIcon {
     color: rgba(255, 255, 255, 0.9);
-    font-size: 20px;
+    font-size: 18px;
+    flex-shrink: 0;
 }
 
 .timeInfo {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-1);
+    gap: 2px;
 }
 
 .currentTime {
@@ -77,14 +78,14 @@
     flex: 1;
     display: flex;
     justify-content: center;
-    padding: 0 var(--spacing-6);
+    padding: 0 var(--spacing-3);
 }
 
 .logo {
     display: flex;
     align-items: center;
     gap: var(--spacing-3);
-    padding: var(--spacing-4) var(--spacing-6);
+    padding: var(--spacing-2) var(--spacing-4);
     backdrop-filter: blur(10px);
     text-decoration: none;
     transition: all 0.3s ease;
@@ -115,7 +116,7 @@
 .logoText {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-1);
+    gap: 2px;
 }
 
 .logoTextMain {
@@ -139,15 +140,15 @@
 .statsGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-2);
+    gap: var(--spacing-1);
 }
 
 .statItem {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2);
+    gap: var(--spacing-1);
     background: rgba(255, 255, 255, 0.15);
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-1) var(--spacing-2);
     border-radius: var(--border-radius-md);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -160,13 +161,14 @@
 }
 
 .statIcon {
-    font-size: 16px;
+    font-size: 14px;
+    flex-shrink: 0;
 }
 
 .statContent {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
 .statValue {
@@ -282,14 +284,14 @@
     }
 
     .headerContainer {
-        padding: var(--spacing-4) var(--spacing-4);
+        
     }
 }
 
 /* Desktop large screens */
 @media (min-width: 1280px) {
     .headerContainer {
-        padding: var(--spacing-5) var(--spacing-6);
+        
     }
 
     .logoTextMain {
@@ -307,10 +309,8 @@
 
 /* Ultra wide screens */
 @media (min-width: 1536px) {
-   
-
     .headerContainer {
-        padding: var(--spacing-6) var(--spacing-6);
+        padding: var(--spacing-3) var(--spacing-5);
     }
 }
 

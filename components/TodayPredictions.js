@@ -367,7 +367,7 @@ const TodayPredictions = () => {
                     <div className={styles.socialLinksTitle}>Kết nối với chúng tôi</div>
                     <div className={styles.socialLinksContainer}>
                         <a
-                            href="https://t.me/+IDI1WNXglndhNTY1"
+                            href="https://t.me/+Gj1LNJITFRM0OGQ1"
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.socialLink}

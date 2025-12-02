@@ -197,7 +197,6 @@
    ============================================ */
 
 .resultsSection {
-    margin-bottom: 40px;
     /* ✅ FIX CLS: Reserve space and prevent layout shifts */
     min-height: 600px;
     contain: layout style paint;
@@ -524,8 +523,6 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
-    margin-top: 30px;
-    padding: 20px;
     background: #f8f9fa;
     border-radius: 8px;
     /* ✅ Performance: Use contain to isolate rendering */
@@ -568,7 +565,6 @@
 
 @media (max-width: 768px) {
     .pagination {
-        padding: 15px;
         gap: 8px;
     }
 
@@ -585,21 +581,23 @@
 
 @media (max-width: 480px) {
     .pagination {
-        padding: 12px;
         gap: 6px;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow-x: auto;
     }
 
     .paginationButton {
         padding: 6px 10px;
         font-size: 12px;
+        flex-shrink: 0;
     }
 
     .paginationInfo {
-        width: 100%;
         text-align: center;
-        padding: 8px;
+        padding: 8px 10px;
         font-size: 13px;
+        flex-shrink: 0;
+        white-space: nowrap;
     }
 }
 
