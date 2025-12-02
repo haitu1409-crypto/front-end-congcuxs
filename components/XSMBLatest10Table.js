@@ -36,13 +36,22 @@ const XSMBLatest10Table = ({ page = 1, limit = 10, onPaginationChange }) => {
     // Get displayed data
     const displayedData = data?.slice(0, displayedCount) || [];
 
-    // Loading state
+    // Loading state - ✅ FIX CLS: Use skeleton with fixed height
     if (loading) {
         return (
             <div className={styles.container}>
-                <div className={styles.loadingMessage}>
-                    <div className={styles.spinner}></div>
-                    <p>Đang tải dữ liệu kết quả xổ số...</p>
+                {/* ✅ Skeleton loader with fixed height to prevent CLS */}
+                <div className={styles.skeletonContainer}>
+                    {[1, 2, 3].map((idx) => (
+                        <div key={idx} className={styles.skeletonTable}>
+                            <div className={styles.skeletonHeader}></div>
+                            <div className={styles.skeletonRow}></div>
+                            <div className={styles.skeletonRow}></div>
+                            <div className={styles.skeletonRow}></div>
+                            <div className={styles.skeletonRow}></div>
+                            <div className={styles.skeletonRow}></div>
+                        </div>
+                    ))}
                 </div>
             </div>
         );

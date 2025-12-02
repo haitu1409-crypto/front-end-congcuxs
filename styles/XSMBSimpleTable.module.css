@@ -560,6 +560,57 @@
     }
 }
 
+/* ============================================
+   SKELETON LOADER - FIX CLS
+   ============================================ */
+
+.skeletonContainer {
+    /* ✅ Reserve space to prevent CLS */
+    min-height: 800px;
+    contain: layout style paint;
+    margin-bottom: 30px;
+}
+
+.skeletonTable {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+    /* ✅ Reserve space for each table */
+    min-height: 250px;
+    contain: layout style paint;
+}
+
+.skeletonHeader {
+    height: 50px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    /* ✅ Prevent layout shift */
+    contain: layout style paint;
+}
+
+.skeletonRow {
+    height: 40px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    /* ✅ Prevent layout shift */
+    contain: layout style paint;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
 .errorMessage {
     padding: 40px 20px;
     text-align: center;

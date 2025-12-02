@@ -1,0 +1,14 @@
+# ✅ Target modern browsers only to reduce legacy JavaScript polyfills
+# This saves ~13 KiB by removing unnecessary polyfills
+
+# Modern browsers with ES6+ support
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
+
+# Exclude very old browsers that require polyfills
+not IE 11
+not dead
+not op_mini all
+

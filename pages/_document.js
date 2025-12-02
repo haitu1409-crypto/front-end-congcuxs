@@ -26,12 +26,9 @@ export default function Document() {
                 <link rel="preload" href="/styles/critical.css" as="style" onLoad="this.onload=null;this.rel='stylesheet'" />
                 <noscript><link rel="stylesheet" href="/styles/critical.css" /></noscript>
 
-                {/* ===== GOOGLE ANALYTICS (gtag.js) - DEFER LOADING ===== */}
-                <script
-                    async
-                    src="https://www.googletagmanager.com/gtag/js?id=G-RLCH8J3MHR"
-                    onLoad="window.gtag=window.gtag||function(){(gtag.q=gtag.q||[]).push(arguments)};gtag('js',new Date());gtag('config',{measurement_id:'G-RLCH8J3MHR'})"
-                />
+                {/* ===== GOOGLE ANALYTICS (gtag.js) - LAZY LOAD ===== */}
+                {/* ✅ Performance: Defer GTM loading to reduce blocking time */}
+                {/* GTM will be loaded via Analytics component after page load */}
 
 
                 {/* ===== SYSTEM FONTS ONLY - No external font loading ===== */}

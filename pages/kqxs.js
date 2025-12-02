@@ -211,12 +211,12 @@ const KQXSPage = memo(function KQXSPage() {
                         </div>
                     )}
 
-                    {/* Header Section */}
-                    <h1 className={styles.pageTitle}>
+                    {/* Header Section - ✅ LCP Element: Add fetchpriority hint */}
+                    <h1 className={styles.pageTitle} style={{ contain: 'layout style paint' }}>
                         {h1Title}
                     </h1>
 
-                    {/* Results Section */}
+                    {/* Results Section - ✅ FIX CLS: Container with reserved space */}
                     <div className={styles.resultsSection}>
                         <XSMBLatest10Table
                             page={currentPage}

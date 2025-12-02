@@ -159,9 +159,9 @@ function MyApp({ Component, pageProps }) {
                 <link rel="dns-prefetch" href="//fonts.googleapis.com" />
                 <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
-                {/* ✅ Preload critical images */}
-                <link rel="preload" as="image" href="/imgs/monkey.png" />
-                <link rel="preload" as="image" href="/imgs/wukong.png" />
+                {/* ✅ Preload critical images with fetchpriority */}
+                <link rel="preload" as="image" href="/imgs/monkey.png" fetchPriority="high" />
+                <link rel="preload" as="image" href="/imgs/wukong.png" fetchPriority="low" />
 
                 {/* ✅ Search Engine Verification */}
                 {/* TODO: Thay YOUR_GOOGLE_VERIFICATION_CODE bằng code thật từ Search Console */}

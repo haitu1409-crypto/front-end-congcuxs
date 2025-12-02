@@ -173,6 +173,7 @@ export default function Layout({ children, className = '' }) {
                                         height={32}
                                         className={styles.logoImage}
                                         priority
+                                        fetchPriority="high"
                                         sizes="32px"
                                     />
                                 </div>
@@ -352,6 +353,7 @@ export default function Layout({ children, className = '' }) {
                                         height={24}
                                         style={{ display: 'inline', marginRight: '8px' }}
                                         loading="lazy"
+                                        fetchPriority="low"
                                     />
                                     Dàn Đề Wukong
                                 </h3>

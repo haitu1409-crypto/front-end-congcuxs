@@ -198,6 +198,9 @@
 
 .resultsSection {
     margin-bottom: 40px;
+    /* ✅ FIX CLS: Reserve space and prevent layout shifts */
+    min-height: 600px;
+    contain: layout style paint;
 }
 
 .regionSection {

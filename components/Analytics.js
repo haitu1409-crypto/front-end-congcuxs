@@ -11,41 +11,74 @@ const Analytics = () => {
     const router = useRouter();
 
     useEffect(() => {
-        // ✅ Google Analytics 4
-        if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_GA4_ID) {
-            // Load Google Analytics
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = `https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA4_ID}`;
-            document.head.appendChild(script);
+        // ✅ Performance: Lazy load Google Analytics after page load
+        // This reduces initial blocking time and improves LCP
+        const loadGA = () => {
+            // ✅ Google Analytics 4
+            if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_GA4_ID) {
+                // Check if already loaded
+                if (window.gtag && window.dataLayer) {
+                    return;
+                }
 
-            // Initialize GA4
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                window.dataLayer.push(arguments);
+                // Load Google Analytics with defer
+                const script = document.createElement('script');
+                script.async = true;
+                script.defer = true;
+                script.src = `https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA4_ID}`;
+                script.crossOrigin = 'anonymous';
+                
+                // Initialize GA4 before script loads
+                window.dataLayer = window.dataLayer || [];
+                function gtag() {
+                    window.dataLayer.push(arguments);
+                }
+                window.gtag = gtag;
+                gtag('js', new Date());
+                
+                // Load script
+                document.head.appendChild(script);
+                
+                // Configure after script loads
+                script.onload = () => {
+                    gtag('config', process.env.NEXT_PUBLIC_GA4_ID, {
+                        page_title: document.title,
+                        page_location: window.location.href,
+                        page_path: router.asPath,
+                    });
+                };
+
+                // Track page views on route change
+                router.events.on('routeChangeComplete', (url) => {
+                    if (window.gtag) {
+                        gtag('config', process.env.NEXT_PUBLIC_GA4_ID, {
+                            page_path: url,
+                        });
+                    }
+                });
+
+                // Custom event tracking
+                window.trackGA4Event = (action, category, label, value) => {
+                    if (window.gtag) {
+                        gtag('event', action, {
+                            event_category: category,
+                            event_label: label,
+                            value: value,
+                        });
+                    }
+                };
             }
-            gtag('js', new Date());
-            gtag('config', process.env.NEXT_PUBLIC_GA4_ID, {
-                page_title: document.title,
-                page_location: window.location.href,
-                page_path: router.asPath,
-            });
+        };
 
-            // Track page views on route change
-            router.events.on('routeChangeComplete', (url) => {
-                gtag('config', process.env.NEXT_PUBLIC_GA4_ID, {
-                    page_path: url,
-                });
+        // ✅ Load GA after page is interactive (reduces blocking)
+        if (document.readyState === 'complete') {
+            // Page already loaded, wait a bit to not block rendering
+            setTimeout(loadGA, 2000);
+        } else {
+            // Wait for page load, then defer GA loading
+            window.addEventListener('load', () => {
+                setTimeout(loadGA, 2000);
             });
-
-            // Custom event tracking
-            window.trackGA4Event = (action, category, label, value) => {
-                gtag('event', action, {
-                    event_category: category,
-                    event_label: label,
-                    value: value,
-                });
-            };
         }
 
         // ✅ Facebook Pixel
