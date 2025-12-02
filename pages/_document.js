@@ -52,6 +52,9 @@ export default function Document() {
                 <meta name="msapplication-TileColor" content="#667eea" />
                 <meta name="msapplication-TileImage" content="/icon-192.png" />
 
+                {/* ===== DMCA SITE VERIFICATION ===== */}
+                <meta name="dmca-site-verification" content="MVByQy9IdFBRRGJpWGtpZ0FPcHd2dnNxZXhLb1I3TlU5NWZvL29rZEg3ST01" />
+
                 {/* ===== APPLE MOBILE WEB APP ===== */}
                 <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
