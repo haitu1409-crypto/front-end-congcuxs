@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, lazy, Suspense, useRef } from 'react';
+import Head from 'next/head';
 import Layout from '../../components/Layout';
 import { apiMB } from '../api/kqxsMB';
 import styles from '../../styles/logan.module.css';
@@ -164,6 +165,14 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
 
     return (
         <Layout>
+            <Head>
+                {/* Preload critical CSS for LCP element */}
+                <link
+                    rel="preload"
+                    href="/styles/logan.module.css"
+                    as="style"
+                />
+            </Head>
             <StatisticsSEO 
                 pageType="lo-gan"
                 metadata={{
@@ -258,6 +267,7 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                     )}
                 </div>
 
+                {/* Reserve space immediately to prevent CLS */}
                 <div className={styles.groupContent}>
                     <h2 className={styles.heading}>TAODANDEWUKONG.PRO - Thống Kê Lô Gan Chính Xác Nhất</h2>
                     <h3 className={styles.h3}>Thống kê Lô Gan Miền Bắc là gì?</h3>
