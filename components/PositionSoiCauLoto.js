@@ -441,10 +441,10 @@ const PositionSoiCauLoto = ({
 
         try {
             // Validate selectedDays trước khi gọi API
-            if (selectedDays > 10) {
+            if (selectedDays > 7) {
                 setUpdateMessage({
                     type: 'error',
-                    text: 'Số ngày phân tích không được vượt quá 10 để tránh quá tải server. Vui lòng chọn số ngày nhỏ hơn.'
+                    text: 'Số ngày phân tích không được vượt quá 7 để tránh quá tải server. Vui lòng chọn số ngày nhỏ hơn.'
                 });
                 setIsUpdating(false);
                 return;
@@ -887,6 +887,9 @@ const PositionSoiCauLoto = ({
             setDrawHighlightMap({});
             return;
         }
+
+        // ✅ Clear highlight ngay lập tức khi date thay đổi (tránh hiển thị dữ liệu cũ)
+        setDrawHighlightMap({});
 
         let isSubscribed = true;
 
