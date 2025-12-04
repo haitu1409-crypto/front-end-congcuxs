@@ -60,6 +60,7 @@ export default function ArticleDetailPage() {
     const { slug } = router.query;
     const [article, setArticle] = useState(null);
     const [relatedArticles, setRelatedArticles] = useState([]);
+    const [mostViewedArticles, setMostViewedArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [readingProgress, setReadingProgress] = useState(0);
@@ -86,32 +87,42 @@ export default function ArticleDetailPage() {
         }
     };
 
-    const getCategoryColor = (category) => {
-        const colors = {
-            'giai-ma-giac-mo': '#8b5cf6',
-            'kinh-nghiem-choi-lo-de': '#3b82f6',
-            'thong-ke-xo-so': '#10b981',
-            'meo-vat-xo-so': '#f59e0b',
-            'tin-tuc-xo-so': '#ef4444',
-            'huong-dan-choi': '#06b6d4',
-            'phuong-phap-soi-cau': '#84cc16',
-            'dan-de-chuyen-nghiep': '#f97316'
+    // Map old categories to new categories (đồng bộ với tin-tuc.js)
+    const mapOldCategoryToNew = (category) => {
+        const mapping = {
+            'du-doan-ket-qua-xo-so': 'lien-minh-huyen-thoai',
+            'dan-de-chuyen-nghiep': 'lien-minh-huyen-thoai',
+            'thong-ke-xo-so': 'lien-minh-huyen-thoai',
+            'giai-ma-giac-mo': 'lien-quan-mobile',
+            'tin-tuc-xo-so': 'lien-quan-mobile',
+            'kinh-nghiem-choi-lo-de': 'dau-truong-chan-ly-tft',
+            'meo-vat-xo-so': 'dau-truong-chan-ly-tft',
+            'phuong-phap-soi-cau': 'trending',
+            'huong-dan-choi': 'trending'
         };
-        return colors[category] || '#6b7280';
+        return mapping[category] || category;
+    };
+
+    const getCategoryColor = (category) => {
+        const mappedCategory = mapOldCategoryToNew(category);
+        const colors = {
+            'lien-minh-huyen-thoai': '#0397ab',
+            'lien-quan-mobile': '#d32f2f',
+            'dau-truong-chan-ly-tft': '#7c3aed',
+            'trending': '#f59e0b'
+        };
+        return colors[mappedCategory] || '#6b7280';
     };
 
     const getCategoryLabel = (category) => {
+        const mappedCategory = mapOldCategoryToNew(category);
         const labels = {
-            'giai-ma-giac-mo': 'Giải Mã Giấc Mơ',
-            'kinh-nghiem-choi-lo-de': 'Kinh Nghiệm Chơi Lô Đề',
-            'thong-ke-xo-so': 'Thống Kê Xổ Số',
-            'meo-vat-xo-so': 'Mẹo Vặt Xổ Số',
-            'tin-tuc-xo-so': 'Tin Tức Xổ Số',
-            'huong-dan-choi': 'Hướng Dẫn Chơi',
-            'phuong-phap-soi-cau': 'Phương Pháp Soi Cầu',
-            'dan-de-chuyen-nghiep': 'Dàn Đề Chuyên Nghiệp'
+            'lien-minh-huyen-thoai': 'Liên Minh Huyền Thoại',
+            'lien-quan-mobile': 'Liên Quân Mobile',
+            'dau-truong-chan-ly-tft': 'Đấu Trường Chân Lý TFT',
+            'trending': 'Trending'
         };
-        return labels[category] || 'Tin Tức';
+        return labels[mappedCategory] || 'Tin Tức';
     };
 
     // Fetch article data with error handling and caching
@@ -137,6 +148,16 @@ export default function ArticleDetailPage() {
 
                 if (relatedResult.success) {
                     setRelatedArticles(relatedResult.data.articles || []);
+                }
+
+                // Fetch most viewed articles
+                const mostViewedResponse = await fetch(
+                    `${apiUrl}/api/articles?sort=views&limit=5`
+                );
+                const mostViewedResult = await mostViewedResponse.json();
+
+                if (mostViewedResult.success) {
+                    setMostViewedArticles(mostViewedResult.data.articles || []);
                 }
 
                 // Track view
@@ -454,32 +475,6 @@ export default function ArticleDetailPage() {
                                         </div>
                                     </header>
 
-                                    {/* Featured Image */}
-                                    {article.featuredImage?.url && (
-                                        <div className={styles.featuredImageWrapper}>
-                                            <Image
-                                                src={article.featuredImage.url}
-                                                alt={article.featuredImage.alt || article.title}
-                                                width={500}
-                                                height={380}
-                                                className={styles.featuredImage}
-                                                style={{
-                                                    width: '100%',
-                                                    maxWidth: '500px',
-                                                    height: 'auto'
-                                                }}
-                                                priority
-                                                quality={75}
-                                                placeholder="blur"
-                                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                                                itemProp="image"
-                                            />
-                                            {article.featuredImage.caption && (
-                                                <p className={styles.imageCaption}>{article.featuredImage.caption}</p>
-                                            )}
-                                        </div>
-                                    )}
-
                                     {/* Table of Contents */}
                                     {tableOfContents.length > 0 && (
                                         <div className={styles.articleContent}>
@@ -607,22 +602,22 @@ export default function ArticleDetailPage() {
                             {/* Sidebar */}
                             <aside className={styles.sidebar}>
                                 {/* Most Viewed Articles */}
-                                {relatedArticles.length > 0 && (
+                                {mostViewedArticles.length > 0 && (
                                     <div className={styles.sidebarBox}>
                                         <div className={styles.sidebarHeader}>
                                             📊 Xem nhiều nhất
                                         </div>
                                         <div className={styles.sidebarContent}>
                                             <div className={styles.sidebarArticleList}>
-                                                {relatedArticles.slice(0, 5).map((relatedArticle) => (
+                                                {mostViewedArticles.map((article) => (
                                                     <Link
-                                                        key={relatedArticle._id}
-                                                        href={`/tin-tuc/${relatedArticle.slug}`}
+                                                        key={article._id}
+                                                        href={`/tin-tuc/${article.slug}`}
                                                         className={styles.sidebarArticle}
                                                     >
                                                         <Image
-                                                            src={relatedArticle.featuredImage?.url || '/images/default-news.jpg'}
-                                                            alt={relatedArticle.title}
+                                                            src={article.featuredImage?.url || '/imgs/wukong.png'}
+                                                            alt={article.title}
                                                             width={80}
                                                             height={60}
                                                             className={styles.sidebarArticleImage}
@@ -630,11 +625,11 @@ export default function ArticleDetailPage() {
                                                         />
                                                         <div className={styles.sidebarArticleContent}>
                                                             <h4 className={styles.sidebarArticleTitle}>
-                                                                {relatedArticle.title}
+                                                                {article.title}
                                                             </h4>
                                                             <div className={styles.sidebarArticleMeta}>
                                                                 <Clock size={12} />
-                                                                <span>{formatDate(relatedArticle.publishedAt)}</span>
+                                                                <span>{formatDate(article.publishedAt)}</span>
                                                             </div>
                                                         </div>
                                                     </Link>
@@ -651,20 +646,17 @@ export default function ArticleDetailPage() {
                                     </div>
                                     <div className={styles.sidebarContent}>
                                         <div className={styles.categoriesList}>
-                                            <Link href="/tin-tuc?category=giai-ma-giac-mo" className={styles.categoryItem}>
-                                                Giải Mã Giấc Mơ
+                                            <Link href="/tin-tuc?category=lien-minh-huyen-thoai" className={styles.categoryItem}>
+                                                Liên Minh Huyền Thoại
                                             </Link>
-                                            <Link href="/tin-tuc?category=kinh-nghiem-choi-lo-de" className={styles.categoryItem}>
-                                                Kinh Nghiệm Chơi Lô Đề
+                                            <Link href="/tin-tuc?category=lien-quan-mobile" className={styles.categoryItem}>
+                                                Liên Quân Mobile
                                             </Link>
-                                            <Link href="/tin-tuc?category=thong-ke-xo-so" className={styles.categoryItem}>
-                                                Thống Kê Xổ Số
+                                            <Link href="/tin-tuc?category=dau-truong-chan-ly-tft" className={styles.categoryItem}>
+                                                Đấu Trường Chân Lý TFT
                                             </Link>
-                                            <Link href="/tin-tuc?category=meo-vat-xo-so" className={styles.categoryItem}>
-                                                Mẹo Vặt Xổ Số
-                                            </Link>
-                                            <Link href="/tin-tuc?category=tin-tuc-xo-so" className={styles.categoryItem}>
-                                                Tin Tức Xổ Số
+                                            <Link href="/tin-tuc?category=trending" className={styles.categoryItem}>
+                                                Trending
                                             </Link>
                                         </div>
                                     </div>

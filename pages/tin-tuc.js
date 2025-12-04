@@ -132,58 +132,58 @@ const getFallbackData = (cacheKey) => {
                 articles: [
                     {
                         _id: '1',
-                        title: 'Hướng dẫn tạo dàn số 9x-0x hiệu quả nhất 2025',
-                        excerpt: 'Cách tạo dàn số 9x-0x chuyên nghiệp với thuật toán Fisher-Yates. Bộ lọc dàn số tổng hợp thông minh, miễn phí 100%.',
-                        slug: 'huong-dan-tao-dan-de-9x-0x',
-                        category: 'huong-dan-choi',
+                        title: 'LMHT: Top 10 tướng mạnh nhất phiên bản 14.5',
+                        excerpt: 'Danh sách 10 tướng mạnh nhất meta hiện tại trong Liên Minh Huyền Thoại. Cập nhật mới nhất từ các chuyên gia.',
+                        slug: 'lmht-top-10-tuong-manh-nhat',
+                        category: 'lien-minh-huyen-thoai',
                         publishedAt: new Date().toISOString(),
                         views: 1250,
                         author: 'Admin',
                         featuredImage: {
                             url: '/imgs/wukong.png',
-                            alt: 'Hướng dẫn tạo dàn số'
+                            alt: 'Top 10 tướng mạnh nhất'
                         }
                     },
                     {
                         _id: '2',
-                        title: 'Thống kê xổ số 3 miền - Xu hướng số nóng lạnh',
-                        excerpt: 'Phân tích thống kê xổ số miền Bắc, Nam, Trung. Xu hướng số nóng lạnh, mẹo chơi hiệu quả từ chuyên gia.',
-                        slug: 'thong-ke-xo-so-3-mien',
-                        category: 'thong-ke-xo-so',
+                        title: 'Liên Quân Mobile: Hướng dẫn lên rank Cao Thủ mùa mới',
+                        excerpt: 'Chiến thuật và mẹo chơi Liên Quân Mobile hiệu quả. Cách lên rank nhanh, pick tướng đúng meta.',
+                        slug: 'lien-quan-huong-dan-len-rank',
+                        category: 'lien-quan-mobile',
                         publishedAt: new Date(Date.now() - 86400000).toISOString(),
                         views: 980,
                         author: 'Admin',
                         featuredImage: {
                             url: '/imgs/wukong.png',
-                            alt: 'Thống kê xổ số'
+                            alt: 'Hướng dẫn lên rank'
                         }
                     },
                     {
                         _id: '3',
-                        title: 'Mẹo vặt xổ số - Tăng tỷ lệ trúng thưởng',
-                        excerpt: 'Những mẹo vặt xổ số được các cao thủ chia sẻ. Cách tăng tỷ lệ trúng thưởng, kinh nghiệm chơi lô số.',
-                        slug: 'meo-vat-xo-so',
-                        category: 'meo-vat-xo-so',
+                        title: 'TFT: Meta đội hình mạnh nhất mùa 12',
+                        excerpt: 'Tổng hợp đội hình Đấu Trường Chân Lý mạnh nhất hiện tại. Hướng dẫn build đội hình chuẩn meta.',
+                        slug: 'tft-meta-doi-hinh-manh-nhat',
+                        category: 'dau-truong-chan-ly-tft',
                         publishedAt: new Date(Date.now() - 172800000).toISOString(),
                         views: 756,
                         author: 'Admin',
                         featuredImage: {
                             url: '/imgs/wukong.png',
-                            alt: 'Mẹo vặt xổ số'
+                            alt: 'Meta TFT'
                         }
                     },
                     {
                         _id: '4',
-                        title: 'Dự đoán kết quả xổ số miền Bắc ngày mai',
-                        excerpt: 'Phân tích và dự đoán kết quả xổ số miền Bắc dựa trên thuật toán AI và thống kê lịch sử. Dự đoán chính xác cao.',
-                        slug: 'du-doan-ket-qua-xo-so-mien-bac',
-                        category: 'du-doan-ket-qua-xo-so',
+                        title: 'Trending: Cộng đồng game Việt nổi sóng với giải đấu mới',
+                        excerpt: 'Tin tức game hot nhất tuần này. Giải đấu esports lớn sắp diễn ra, cập nhật tin game mới nhất.',
+                        slug: 'trending-giai-dau-moi',
+                        category: 'trending',
                         publishedAt: new Date(Date.now() - 259200000).toISOString(),
                         views: 1890,
                         author: 'Admin',
                         featuredImage: {
                             url: '/imgs/wukong.png',
-                            alt: 'Dự đoán xổ số'
+                            alt: 'Trending game'
                         }
                     }
                 ],
@@ -203,44 +203,44 @@ const getFallbackData = (cacheKey) => {
         const allFeaturedArticles = [
             {
                 _id: 'f1',
-                title: 'Công cụ tạo dàn số chuyên nghiệp - Wukong',
-                excerpt: 'Công cụ tạo dàn số và thống kê xổ số 3 miền chuyên nghiệp. Miễn phí, nhanh chóng, chính xác 100%.',
-                slug: 'cong-cu-tao-dan-de-chuyen-nghiep',
-                category: 'dan-de-chuyen-nghiep',
+                title: 'LMHT: Yasuo vs Yone - Ai mạnh hơn trong meta mới?',
+                excerpt: 'So sánh chi tiết hai anh em Yasuo và Yone trong phiên bản mới. Build trang bị tối ưu và chiến thuật chơi.',
+                slug: 'lmht-yasuo-vs-yone',
+                category: 'lien-minh-huyen-thoai',
                 publishedAt: new Date().toISOString(),
                 views: 2100,
                 author: 'Admin',
                 featuredImage: {
                     url: '/imgs/wukong.png',
-                    alt: 'Công cụ tạo dàn số'
+                    alt: 'Yasuo vs Yone'
                 }
             },
             {
                 _id: 'f2',
-                title: 'Phương pháp soi cầu xổ số hiệu quả',
-                excerpt: 'Các phương pháp soi cầu xổ số được các chuyên gia khuyên dùng. Tăng cơ hội trúng thưởng.',
-                slug: 'phuong-phap-soi-cau-xo-so',
-                category: 'phuong-phap-soi-cau',
+                title: 'Liên Quân: Top 5 xạ thủ mạnh nhất mùa 31',
+                excerpt: 'Danh sách xạ thủ đáng chơi nhất trong Liên Quân Mobile mùa mới. Cách build và lên đồ hiệu quả.',
+                slug: 'lien-quan-top-xa-thu',
+                category: 'lien-quan-mobile',
                 publishedAt: new Date(Date.now() - 43200000).toISOString(),
                 views: 1580,
                 author: 'Admin',
                 featuredImage: {
                     url: '/imgs/wukong.png',
-                    alt: 'Phương pháp soi cầu'
+                    alt: 'Top xạ thủ'
                 }
             },
             {
                 _id: 'f3',
-                title: 'Dự đoán kết quả xổ số tuần này',
-                excerpt: 'Dự đoán kết quả xổ số 3 miền dựa trên thuật toán AI và phân tích xu hướng. Dự đoán chính xác cao.',
-                slug: 'du-doan-ket-qua-xo-so-tuan-nay',
-                category: 'du-doan-ket-qua-xo-so',
+                title: 'TFT: Hướng dẫn chơi đội hình 6 Học Viện',
+                excerpt: 'Build đội hình 6 Học Viện mạnh nhất TFT mùa 12. Cách xoay hệ và pick tướng carry chính.',
+                slug: 'tft-doi-hinh-6-hoc-vien',
+                category: 'dau-truong-chan-ly-tft',
                 publishedAt: new Date(Date.now() - 86400000).toISOString(),
                 views: 1320,
                 author: 'Admin',
                 featuredImage: {
                     url: '/imgs/wukong.png',
-                    alt: 'Dự đoán xổ số'
+                    alt: '6 Học Viện'
                 }
             }
         ];
@@ -258,30 +258,44 @@ const getFallbackData = (cacheKey) => {
             data: [
                 {
                     _id: 't1',
-                    title: 'Kinh nghiệm chơi lô số từ cao thủ',
-                    excerpt: 'Chia sẻ kinh nghiệm chơi lô số từ các cao thủ. Mẹo và chiến thuật hiệu quả.',
-                    slug: 'kinh-nghiem-choi-lo-de',
-                    category: 'kinh-nghiem-choi-lo-de',
+                    title: 'LMHT: Faker lập kỷ lục mới tại World Championship',
+                    excerpt: 'Tin game hot: Faker và T1 vô địch CKTG 2024. Phân tích trận đấu và highlight đáng chú ý.',
+                    slug: 'faker-vo-dich-cktg',
+                    category: 'lien-minh-huyen-thoai',
                     publishedAt: new Date().toISOString(),
                     views: 3200,
                     author: 'Admin',
                     featuredImage: {
                         url: '/imgs/wukong.png',
-                        alt: 'Kinh nghiệm chơi lô số'
+                        alt: 'Faker vô địch'
                     }
                 },
                 {
                     _id: 't2',
-                    title: 'Giải mã giấc mơ - Số may mắn',
-                    excerpt: 'Giải mã giấc mơ để tìm số may mắn. Cách chọn số dựa trên giấc mơ.',
-                    slug: 'giai-ma-giac-mo',
-                    category: 'giai-ma-giac-mo',
+                    title: 'Liên Quân: Cập nhật tướng mới Nakroth Siêu Phàm',
+                    excerpt: 'Nakroth phiên bản mới với skill set được buff mạnh. Review chi tiết và cách chơi tối ưu.',
+                    slug: 'nakroth-sieu-pham',
+                    category: 'lien-quan-mobile',
                     publishedAt: new Date(Date.now() - 21600000).toISOString(),
                     views: 1890,
                     author: 'Admin',
                     featuredImage: {
                         url: '/imgs/wukong.png',
-                        alt: 'Giải mã giấc mơ'
+                        alt: 'Nakroth mới'
+                    }
+                },
+                {
+                    _id: 't3',
+                    title: 'TFT: Patch notes mùa 12 - Thay đổi meta lớn',
+                    excerpt: 'Cập nhật patch notes TFT mới nhất. Những thay đổi quan trọng ảnh hưởng đến meta.',
+                    slug: 'tft-patch-notes-mua-12',
+                    category: 'dau-truong-chan-ly-tft',
+                    publishedAt: new Date(Date.now() - 43200000).toISOString(),
+                    views: 1650,
+                    author: 'Admin',
+                    featuredImage: {
+                        url: '/imgs/wukong.png',
+                        alt: 'TFT Patch Notes'
                     }
                 }
             ]
@@ -292,15 +306,10 @@ const getFallbackData = (cacheKey) => {
         return {
             success: true,
             data: [
-                { key: 'du-doan-ket-qua-xo-so', count: 5 },
-                { key: 'dan-de-chuyen-nghiep', count: 7 },
-                { key: 'thong-ke-xo-so', count: 12 },
-                { key: 'giai-ma-giac-mo', count: 9 },
-                { key: 'tin-tuc-xo-so', count: 3 },
-                { key: 'kinh-nghiem-choi-lo-de', count: 10 },
-                { key: 'meo-vat-xo-so', count: 8 },
-                { key: 'phuong-phap-soi-cau', count: 6 },
-                { key: 'huong-dan-choi', count: 15 }
+                { key: 'lien-minh-huyen-thoai', count: 5 },
+                { key: 'lien-quan-mobile', count: 7 },
+                { key: 'dau-truong-chan-ly-tft', count: 12 },
+                { key: 'trending', count: 9 }
             ]
         };
     }
@@ -405,34 +414,70 @@ const OptimizedImage = React.memo(({
     );
 });
 
-const getCategoryColor = (category) => {
-    const colors = {
-        'giai-ma-giac-mo': '#8b5cf6',
-        'kinh-nghiem-choi-lo-de': '#3b82f6',
-        'thong-ke-xo-so': '#10b981',
-        'meo-vat-xo-so': '#f59e0b',
-        'tin-tuc-xo-so': '#ef4444',
-        'huong-dan-choi': '#06b6d4',
-        'phuong-phap-soi-cau': '#84cc16',
-        'dan-de-chuyen-nghiep': '#f97316',
-        'du-doan-ket-qua-xo-so': '#ec4899'
+// Map old categories (from database) to new game categories
+const mapOldCategoryToNew = (category) => {
+    const mapping = {
+        'du-doan-ket-qua-xo-so': 'lien-minh-huyen-thoai',
+        'dan-de-chuyen-nghiep': 'lien-minh-huyen-thoai',
+        'thong-ke-xo-so': 'lien-minh-huyen-thoai',
+        'giai-ma-giac-mo': 'lien-quan-mobile',
+        'tin-tuc-xo-so': 'lien-quan-mobile',
+        'kinh-nghiem-choi-lo-de': 'dau-truong-chan-ly-tft',
+        'meo-vat-xo-so': 'dau-truong-chan-ly-tft',
+        'phuong-phap-soi-cau': 'trending',
+        'huong-dan-choi': 'trending'
     };
-    return colors[category] || '#6b7280';
+    return mapping[category] || category;
+};
+
+// Group old categories into new categories
+const groupCategories = (categories) => {
+    const grouped = {};
+    
+    categories.forEach(cat => {
+        const newKey = mapOldCategoryToNew(cat.key);
+        if (grouped[newKey]) {
+            grouped[newKey].count += cat.count;
+        } else {
+            grouped[newKey] = { key: newKey, count: cat.count };
+        }
+    });
+    
+    // Return as array with desired order
+    const order = ['lien-minh-huyen-thoai', 'lien-quan-mobile', 'dau-truong-chan-ly-tft', 'trending'];
+    return order
+        .map(key => grouped[key])
+        .filter(cat => cat); // Remove undefined
+};
+
+// When user selects new category, we need to map back to old categories for API
+// Since API doesn't support new categories yet, we just pass null for now
+const mapNewCategoryForAPI = (newCategory) => {
+    // For now, return null to show all articles regardless of selected new category
+    // This allows the new category UI to work without backend changes
+    return null;
+};
+
+const getCategoryColor = (category) => {
+    const mappedCategory = mapOldCategoryToNew(category);
+    const colors = {
+        'lien-minh-huyen-thoai': '#0397ab',
+        'lien-quan-mobile': '#d32f2f',
+        'dau-truong-chan-ly-tft': '#7c3aed',
+        'trending': '#f59e0b'
+    };
+    return colors[mappedCategory] || '#6b7280';
 };
 
 const getCategoryLabel = (category) => {
+    const mappedCategory = mapOldCategoryToNew(category);
     const labels = {
-        'du-doan-ket-qua-xo-so': 'Dự Đoán Kết Quả Xổ Số',
-        'dan-de-chuyen-nghiep': 'Dàn Đề Chuyên Nghiệp',
-        'thong-ke-xo-so': 'Thống Kê Xổ Số',
-        'giai-ma-giac-mo': 'Giải Mã Giấc Mơ',
-        'tin-tuc-xo-so': 'Tin Tức Xổ Số',
-        'kinh-nghiem-choi-lo-de': 'Kinh Nghiệm Chơi Lô Đề',
-        'meo-vat-xo-so': 'Mẹo Vặt Xổ Số',
-        'phuong-phap-soi-cau': 'Phương Pháp Soi Cầu',
-        'huong-dan-choi': 'Hướng Dẫn Chơi'
+        'lien-minh-huyen-thoai': 'Liên Minh Huyền Thoại',
+        'lien-quan-mobile': 'Liên Quân Mobile',
+        'dau-truong-chan-ly-tft': 'Đấu Trường Chân Lý TFT',
+        'trending': 'Trending'
     };
-    return labels[category] || 'Tin Tức';
+    return labels[mappedCategory] || 'Tin Tức';
 };
 
 // Optimized blur placeholder for better image loading
@@ -513,37 +558,167 @@ const HeroArticle = React.memo(({ article }) => {
     );
 });
 
-// Optimized Featured Card Component
+// Optimized Featured Card Component - Sforum Style (Square with Overlay)
 const FeaturedCard = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.featuredCard}>
         <div className={styles.featuredImageContainer}>
             <OptimizedImage
                 src={article.featuredImage?.url}
                 alt={article.featuredImage?.alt || article.title}
-                width={300}
-                height={200}
+                width={500}
+                height={500}
                 className={styles.featuredImage}
                 loading={index < 2 ? "eager" : "lazy"}
                 blurDataURL={blurDataURL}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 260px"
             />
             <div className={styles.featuredOverlay}>
-                <span
-                    className={styles.featuredCategory}
-                    style={{ '--category-color': getCategoryColor(article.category) }}
-                >
-                    {getCategoryLabel(article.category)}
-                </span>
+                <h3 className={styles.featuredTitle}>{article.title}</h3>
             </div>
         </div>
-        <div className={styles.featuredContent}>
-            <h3 className={styles.featuredTitle}>{article.title}</h3>
-            <p className={styles.featuredExcerpt}>{article.excerpt}</p>
-            <div className={styles.featuredMeta}>
-                <span className={styles.featuredDate}>
-                    📅 {formatDate(article.publishedAt)}
+    </Link>
+));
+
+// Featured Articles Slider Component - Carousel/Belt Effect
+const FeaturedSlider = React.memo(({ articles, currentIndex, onNext, onPrev, onGoToSlide }) => {
+    if (!articles || articles.length === 0) return null;
+
+    const [isTransitioning, setIsTransitioning] = useState(true);
+    const trackRef = useRef(null);
+
+    // Clone articles để tạo hiệu ứng loop vô hạn (clone 3 items đầu để seamless loop)
+    const clonedArticles = [...articles, ...articles.slice(0, 3)];
+    
+    // Tính toán translateX dựa trên currentIndex
+    // Mỗi card chiếm 1/3 width của container
+    // translateX = -currentIndex * (100% / 3)
+    const translateX = -(currentIndex * (100 / 3));
+
+    // Xử lý seamless loop khi đến cuối
+    useEffect(() => {
+        if (currentIndex >= articles.length && trackRef.current && onGoToSlide) {
+            // Khi đến cuối (hiển thị cloned items), reset về đầu không có transition để seamless
+            trackRef.current.style.transition = 'none';
+            // Reset về index 0 ngay lập tức
+            setTimeout(() => {
+                if (onGoToSlide) {
+                    onGoToSlide(0);
+                }
+                // Khôi phục transition sau khi reset
+                setTimeout(() => {
+                    if (trackRef.current) {
+                        trackRef.current.style.transition = 'transform 0.5s ease-in-out';
+                    }
+                }, 50);
+            }, 500); // Đợi animation hoàn thành
+        }
+    }, [currentIndex, articles.length, onGoToSlide]);
+
+    return (
+        <div className={styles.featuredSlider}>
+            <div className={styles.featuredCarouselWrapper}>
+                <div 
+                    ref={trackRef}
+                    className={styles.featuredCarouselTrack}
+                    style={{
+                        transform: `translateX(${translateX}%)`,
+                        transition: 'transform 0.5s ease-in-out'
+                    }}
+                >
+                    {clonedArticles.map((article, index) => (
+                        <div key={`${article._id}-${index}`} className={styles.featuredCarouselItem}>
+                            <FeaturedCard 
+                                article={article} 
+                                index={index} 
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+            
+            {/* Navigation Buttons */}
+            {articles.length > 3 && (
+                <div className={styles.sliderNavigation}>
+                    <button
+                        className={styles.sliderButton}
+                        onClick={() => {
+                            const newIndex = currentIndex === 0 
+                                ? articles.length - 1
+                                : currentIndex - 1;
+                            onPrev(newIndex);
+                        }}
+                        aria-label="Bài trước"
+                    >
+                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"></path>
+                        </svg>
+                    </button>
+                    <div className={styles.sliderDots}>
+                        {articles.slice(0, Math.min(10, articles.length)).map((_, index) => (
+                            <button
+                                key={index}
+                                className={`${styles.sliderDot} ${currentIndex === index ? styles.active : ''}`}
+                                onClick={() => {
+                                    if (onGoToSlide) {
+                                        onGoToSlide(index);
+                                    }
+                                }}
+                                aria-label={`Slide ${index + 1}`}
+                            />
+                        ))}
+                    </div>
+                    <button
+                        className={styles.sliderButton}
+                        onClick={() => {
+                            const newIndex = (currentIndex + 1) % articles.length;
+                            onNext(newIndex);
+                        }}
+                        aria-label="Bài sau"
+                    >
+                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"></path>
+                        </svg>
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+});
+
+// Optimized Article Card Component - Horizontal List View (Sforum Style)
+const ArticleCard = React.memo(({ article, index }) => (
+    <Link href={`/tin-tuc/${article.slug}`} className={styles.articleListItem}>
+        <div className={styles.articleListImageContainer}>
+            <OptimizedImage
+                src={article.featuredImage?.url}
+                alt={article.featuredImage?.alt || article.title}
+                width={240}
+                height={135}
+                className={styles.articleListImage}
+                loading={index < 3 ? "eager" : "lazy"}
+                blurDataURL={blurDataURL}
+                sizes="(max-width: 500px) 140px, (max-width: 800px) 150px, (max-width: 1000px) 180px, 240px"
+            />
+        </div>
+        <div className={styles.articleListContent}>
+            <h3 className={styles.articleListTitle}>{article.title}</h3>
+            {article.excerpt && (
+                <p className={styles.articleListExcerpt}>{article.excerpt}</p>
+            )}
+            <div className={styles.articleListMeta}>
+                {article.author && (
+                    <span className={styles.articleListAuthor}>
+                        {article.author}
+                    </span>
+                )}
+                <span className={styles.articleListDate}>
+                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="12" width="12" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.5 7.25a.75.75 0 0 0-1.5 0v5.5c0 .27.144.518.378.651l3.5 2a.75.75 0 0 0 .744-1.302L12.5 12.315V7.25Z"></path>
+                        <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1ZM2.5 12a9.5 9.5 0 0 0 9.5 9.5 9.5 9.5 0 0 0 9.5-9.5A9.5 9.5 0 0 0 12 2.5 9.5 9.5 0 0 0 2.5 12Z"></path>
+                    </svg>
+                    {formatDate(article.publishedAt)}
                 </span>
-                <span className={styles.featuredViews}>
+                <span className={styles.articleListViews}>
                     👁️ {article.views || 0}
                 </span>
             </div>
@@ -551,52 +726,39 @@ const FeaturedCard = React.memo(({ article, index }) => (
     </Link>
 ));
 
-// Optimized Article Card Component - List View
-const ArticleCard = React.memo(({ article, index }) => (
-    <Link href={`/tin-tuc/${article.slug}`} className={styles.articleListItem}>
-        <span
-            className={styles.articleListCategory}
-            style={{ backgroundColor: getCategoryColor(article.category) }}
-        >
-            {getCategoryLabel(article.category)}
-        </span>
-        <div className={styles.articleListContent}>
-            <h3 className={styles.articleListTitle}>{article.title}</h3>
-            <div className={styles.articleListMeta}>
-                <span className={styles.articleListDate}>
-                    {formatDate(article.publishedAt)}
-                </span>
-                <span className={styles.articleListViews}>
-                    {article.views || 0} lượt xem
-                </span>
-            </div>
-        </div>
-    </Link>
-));
-
-// Enhanced Sidebar Item Component
+// Enhanced Sidebar Item Component - Sforum Style
 const SidebarItem = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.sidebarItem}>
-        <div className={styles.sidebarItemImage}>
+        <div className={styles.sidebarItemImageWrapper}>
             <OptimizedImage
                 src={article.featuredImage?.url}
                 alt={article.featuredImage?.alt || article.title}
-                width={60}
-                height={60}
+                width={160}
+                height={100}
                 className={styles.sidebarItemImage}
                 loading="lazy"
                 blurDataURL={blurDataURL}
-                sizes="60px"
+                sizes="(max-width: 500px) 140px, 160px"
             />
         </div>
         <div className={styles.sidebarItemContent}>
             <h4 className={styles.sidebarItemTitle}>{article.title}</h4>
-            <span className={styles.sidebarItemDate}>
-                📅 {formatDate(article.publishedAt)}
-            </span>
-            <span className={styles.sidebarItemViews}>
-                👁️ {article.views || 0}
-            </span>
+            <div className={styles.sidebarItemMeta}>
+                {article.author && (
+                    <span className={styles.sidebarItemAuthor}>
+                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 256 256" height="14" width="14" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20ZM79.57,196.57a60,60,0,0,1,96.86,0,83.72,83.72,0,0,1-96.86,0ZM100,120a28,28,0,1,1,28,28A28,28,0,0,1,100,120ZM194,179.94a83.48,83.48,0,0,0-29-23.42,52,52,0,1,0-74,0,83.48,83.48,0,0,0-29,23.42,84,84,0,1,1,131.9,0Z"></path>
+                        </svg>
+                        {article.author}
+                    </span>
+                )}
+                <span className={styles.sidebarItemDate}>
+                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 256 256" height="12" width="12" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M236,137A108.13,108.13,0,1,1,119,20,12,12,0,0,1,121,44,84.12,84.12,0,1,0,212,135,12,12,0,1,1,236,137ZM116,76v52a12,12,0,0,0,12,12h52a12,12,0,0,0,0-24H140V76a12,12,0,0,0-24,0Zm92,20a16,16,0,1,0-16-16A16,16,0,0,0,208,96ZM176,64a16,16,0,1,0-16-16A16,16,0,0,0,176,64Z"></path>
+                    </svg>
+                    {formatDate(article.publishedAt)}
+                </span>
+            </div>
         </div>
     </Link>
 ));
@@ -617,6 +779,12 @@ export default function NewsPage() {
         sortBy: '-publishedAt'
     });
 
+    // State for "Show more" functionality
+    const [visibleArticles, setVisibleArticles] = useState(6);
+
+    // State for featured articles slider
+    const [featuredSlideIndex, setFeaturedSlideIndex] = useState(0);
+
     // Ref to prevent multiple simultaneous API calls
     const isLoadingRef = useRef(false);
 
@@ -635,22 +803,35 @@ export default function NewsPage() {
             setState(prev => ({ ...prev, loading: true, error: null }));
 
             // Optimize API calls with better caching and error handling
+            // Load all articles and filter on client side since backend has old categories
+            // Map category mới sang category cũ để fetch từ API (nếu cần)
+            // Nhưng vì API đã hỗ trợ category mới, ta có thể truyền trực tiếp
+            const apiCategory = state.selectedCategory || null;
+
             const [articlesRes, featuredRes, trendingRes, categoriesRes] = await Promise.allSettled([
                 fetchArticles({
                     page: state.currentPage,
-                    category: state.selectedCategory,
+                    category: null, // Load all, filter on client
                     sort: state.sortBy,
                     search: state.searchQuery,
-                    limit: 10 // 10 articles per page
+                    limit: 50 // Load more articles for client-side filtering
                 }),
-                fetchFeaturedArticles(3, state.selectedCategory), // Featured articles from selected category
-                fetchTrendingArticles(6), // Reduce trending articles
+                fetchFeaturedArticles(10, apiCategory), // Load 10 featured articles theo category
+                fetchTrendingArticles(10), // Load more trending articles
                 fetchCategories()
             ]);
 
             // Extract articles data
-            const articles = articlesRes.status === 'fulfilled' && articlesRes.value.success
+            let articles = articlesRes.status === 'fulfilled' && articlesRes.value.success
                 ? articlesRes.value.data.articles : [];
+            
+            // Filter articles on client side based on selected new category
+            if (state.selectedCategory) {
+                articles = articles.filter(article => 
+                    mapOldCategoryToNew(article.category) === state.selectedCategory
+                );
+            }
+            
             const totalPages = articlesRes.status === 'fulfilled' && articlesRes.value.success
                 ? articlesRes.value.data.totalPages : 1;
 
@@ -678,16 +859,47 @@ export default function NewsPage() {
                 response: articlesRes.status === 'fulfilled' ? articlesRes.value : null
             });
 
+            // Lấy categories từ API (đã được group ở back-end)
+            // Hỗ trợ cả response mới (đã group) và response cũ (cần group)
+            const rawCategories = categoriesRes.status === 'fulfilled' && categoriesRes.value.success
+                ? categoriesRes.value.data : [];
+            
+            // Kiểm tra xem response đã được group chưa (có key là category mới không)
+            const isAlreadyGrouped = rawCategories.length > 0 && 
+                ['lien-minh-huyen-thoai', 'lien-quan-mobile', 'dau-truong-chan-ly-tft', 'trending']
+                    .includes(rawCategories[0].key);
+            
+            // Nếu đã được group, sử dụng trực tiếp; nếu chưa, group lại
+            const groupedCategories = isAlreadyGrouped 
+                ? rawCategories 
+                : groupCategories(rawCategories);
+
+            // Lấy 10 bài viết mới nhất có isFeatured = true
+            // API đã filter theo category và isFeatured rồi
+            let featuredArticles = featuredRes.status === 'fulfilled' && featuredRes.value.success
+                ? featuredRes.value.data : [];
+            
+            // Nếu API chưa filter đúng category mới, filter lại ở client
+            if (state.selectedCategory) {
+                featuredArticles = featuredArticles.filter(article => 
+                    mapOldCategoryToNew(article.category) === state.selectedCategory
+                );
+            }
+            
+            // Giới hạn tối đa 10 bài
+            featuredArticles = featuredArticles.slice(0, 10);
+            
+            // Reset slide index khi category thay đổi hoặc articles thay đổi
+            setFeaturedSlideIndex(0);
+
             setState(prev => ({
                 ...prev,
                 articles: articles,
                 totalPages: totalPages,
-                featuredArticles: featuredRes.status === 'fulfilled' && featuredRes.value.success
-                    ? featuredRes.value.data : [],
+                featuredArticles: featuredArticles,
                 trendingArticles: trendingRes.status === 'fulfilled' && trendingRes.value.success
-                    ? trendingRes.value.data : [],
-                categories: categoriesRes.status === 'fulfilled' && categoriesRes.value.success
-                    ? categoriesRes.value.data : [],
+                    ? trendingRes.value.data.slice(0, 6) : [],
+                categories: groupedCategories,
                 loading: false
             }));
 
@@ -726,11 +938,32 @@ export default function NewsPage() {
         return cleanup;
     }, [debouncedLoadData]);
 
+    // Reset visible articles when category changes
+    useEffect(() => {
+        setVisibleArticles(6);
+    }, [state.selectedCategory, state.searchQuery, state.sortBy]);
+
+    // Auto-play slider: chuyển mỗi 5 giây, mỗi lần 1 item từ phải sang trái (hiệu ứng băng chuyền)
+    useEffect(() => {
+        if (state.featuredArticles.length <= 3) return; // Không cần auto-play nếu <= 3 bài
+
+        const interval = setInterval(() => {
+            setFeaturedSlideIndex(prev => {
+                // Chuyển sang bài tiếp theo (tăng index lên 1) - từ phải sang trái
+                // Khi đến cuối, quay về đầu để tạo loop vô hạn
+                const nextIndex = prev >= state.featuredArticles.length - 1 ? 0 : prev + 1;
+                return nextIndex;
+            });
+        }, 5000); // 5 giây
+
+        return () => clearInterval(interval);
+    }, [state.featuredArticles.length]);
+
     // Enhanced SEO Data
     const seoData = useMemo(() => ({
-        title: 'Tin Tức Xổ Số & Lô Đề - Cập Nhật Mới Nhất 2025 | Tạo Dàn Đề',
-        description: 'Tin tức xổ số, lô số mới nhất, kinh nghiệm chơi, thống kê số nóng lạnh, mẹo vặt và hướng dẫn chuyên nghiệp từ các chuyên gia. Cập nhật 24/7.',
-        keywords: 'tin tức xổ số, lô số, thống kê xổ số, kinh nghiệm chơi, mẹo vặt xổ số, soi cầu, dàn số, xổ số miền bắc, xổ số miền nam, xổ số miền trung',
+        title: 'Tin Tức Game - LMHT, Liên Quân, TFT | Cập Nhật 24/7',
+        description: 'Tin tức game mới nhất về Liên Minh Huyền Thoại, Liên Quân Mobile, Đấu Trường Chân Lý TFT. Hướng dẫn, meta, review chuyên sâu. Cập nhật 24/7.',
+        keywords: 'tin tức game, LMHT, League of Legends, Liên Quân Mobile, TFT, Đấu Trường Chân Lý, esports, game MOBA, meta game, hướng dẫn game',
         canonical: `${siteUrl}/tin-tuc`,
         ogImage: `${siteUrl}/imgs/wukong.png`,
         ogType: 'website'
@@ -745,10 +978,10 @@ export default function NewsPage() {
         url: seoData.canonical,
         publisher: {
             '@type': 'Organization',
-            name: 'Tạo Dàn Đề - Công Cụ Xổ Số Chuyên Nghiệp',
+            name: 'S-Games - Tin Tức Game & Esports',
             logo: {
                 '@type': 'ImageObject',
-                url: `${siteUrl}/imgs/monkey.png`
+                url: `${siteUrl}/imgs/wukong.png`
             }
         },
         mainEntity: {
@@ -844,43 +1077,6 @@ export default function NewsPage() {
             <PageSpeedOptimizer />
 
             <Layout>
-                {/* Enhanced Page Header */}
-                <div className={styles.pageHeader}>
-                    <div className={styles.container}>
-                        <h1 className={styles.pageTitle}>
-                            Tin Tức Xổ Số & Lô Đề
-                        </h1>
-                        <p className={styles.pageSubtitle}>
-                            Cập nhật tin tức mới nhất, kinh nghiệm chơi và thống kê chuyên nghiệp 24/7
-                        </p>
-
-                        {/* Search and Filter Bar */}
-                        <div className={styles.searchFilterBar}>
-                            <div className={styles.searchBox}>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm kiếm bài viết..."
-                                    value={state.searchQuery}
-                                    onChange={(e) => handleSearch(e.target.value)}
-                                    className={styles.searchInput}
-                                />
-                            </div>
-                            <div className={styles.sortBox}>
-                                <select
-                                    value={state.sortBy}
-                                    onChange={(e) => handleSortChange(e.target.value)}
-                                    className={styles.sortSelect}
-                                >
-                                    <option value="-publishedAt">Mới nhất</option>
-                                    <option value="publishedAt">Cũ nhất</option>
-                                    <option value="-views">Xem nhiều</option>
-                                    <option value="-likes">Yêu thích</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 {/* Enhanced Category Navigation */}
                 <div className={styles.categoryNav}>
                     <div className={styles.container}>
@@ -928,17 +1124,25 @@ export default function NewsPage() {
                                 </div>
                             )}
 
-                            {/* Featured Articles - Optimized rendering */}
+                            {/* Featured Articles - Slider Style */}
                             {state.featuredArticles.length > 0 && (
-                                <div className={styles.articlesSection}>
+                                <div className={styles.featuredSection}>
                                     <h2 className={styles.sectionTitle}>
-                                        Bài Viết Nổi Bật
+                                        BÀI VIẾT NỔI BẬT
                                     </h2>
-                                    <div className={styles.featuredGrid}>
-                                        {state.featuredArticles.map((article, index) => (
-                                            <FeaturedCard key={article._id} article={article} index={index} />
-                                        ))}
-                                    </div>
+                                    <FeaturedSlider
+                                        articles={state.featuredArticles}
+                                        currentIndex={featuredSlideIndex}
+                                        onNext={(newIndex) => {
+                                            setFeaturedSlideIndex(newIndex);
+                                        }}
+                                        onPrev={(newIndex) => {
+                                            setFeaturedSlideIndex(newIndex);
+                                        }}
+                                        onGoToSlide={(newIndex) => {
+                                            setFeaturedSlideIndex(newIndex);
+                                        }}
+                                    />
                                 </div>
                             )}
 
@@ -955,7 +1159,7 @@ export default function NewsPage() {
                                 </h2>
                                 <div className={styles.articlesList}>
                                     {state.articles.length > 0 ? (
-                                        state.articles.map((article, index) => (
+                                        state.articles.slice(0, visibleArticles).map((article, index) => (
                                             <ArticleCard key={article._id} article={article} index={index} />
                                         ))
                                     ) : (
@@ -969,6 +1173,21 @@ export default function NewsPage() {
                                         </div>
                                     )}
                                 </div>
+
+                                {/* Show More Button */}
+                                {state.articles.length > visibleArticles && (
+                                    <div className={styles.showMoreContainer}>
+                                        <button
+                                            className={styles.showMoreButton}
+                                            onClick={() => setVisibleArticles(prev => prev + 6)}
+                                        >
+                                            <span>Xem thêm</span>
+                                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="18" width="18" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Enhanced Pagination */}
@@ -1034,67 +1253,63 @@ export default function NewsPage() {
                                 </div>
                             )}
 
-                            {/* Categories */}
-                            {state.categories.length > 0 && (
-                                <div className={styles.sidebarCard}>
-                                    <h3 className={styles.sidebarTitle}>Danh Mục</h3>
-                                    <div className={styles.sidebarList}>
-                                        {/* Tất cả button */}
-                                        <button
-                                            onClick={() => handleCategorySelect(null)}
-                                            className={`${styles.sidebarItem} ${!state.selectedCategory ? styles.active : ''}`}
-                                            style={{ '--category-color': '#6b7280' }}
-                                        >
-                                            <div className={styles.sidebarItemContent}>
-                                                <h4 className={styles.sidebarItemTitle}>
-                                                    Tất cả
-                                                </h4>
-                                                <span className={styles.sidebarItemDate}>
-                                                    {state.categories.reduce((total, cat) => total + cat.count, 0)} bài viết
-                                                </span>
-                                            </div>
-                                        </button>
-
-                                        {/* Individual categories */}
-                                        {state.categories.map((category) => (
-                                            <button
-                                                key={category.key}
-                                                onClick={() => handleCategorySelect(category.key)}
-                                                className={`${styles.sidebarItem} ${state.selectedCategory === category.key ? styles.active : ''}`}
-                                                style={{ '--category-color': getCategoryColor(category.key) }}
-                                            >
-                                                <div className={styles.sidebarItemContent}>
-                                                    <h4 className={styles.sidebarItemTitle}>
-                                                        {getCategoryLabel(category.key)}
-                                                    </h4>
-                                                    <span className={styles.sidebarItemDate}>
-                                                        {category.count} bài viết
-                                                    </span>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Quick Stats */}
+                            {/* Trending Sidebar Items */}
                             <div className={styles.sidebarCard}>
-                                <h3 className={styles.sidebarTitle}>Thống Kê</h3>
-                                <div className={styles.statsList}>
-                                    <div className={styles.statItem}>
-                                        <span className={styles.statLabel}>Tổng bài viết:</span>
-                                        <span className={styles.statValue}>{state.articles.length}</span>
-                                    </div>
-                                    <div className={styles.statItem}>
-                                        <span className={styles.statLabel}>Chuyên mục:</span>
-                                        <span className={styles.statValue}>{state.categories.length}</span>
-                                    </div>
-                                    <div className={styles.statItem}>
-                                        <span className={styles.statLabel}>Bài nổi bật:</span>
-                                        <span className={styles.statValue}>{state.featuredArticles.length}</span>
-                                    </div>
+                                <h3 className={styles.sidebarTitle}>
+                                    Trending
+                                </h3>
+                                <div className={styles.sidebarList}>
+                                    {[
+                                        {
+                                            _id: 'fixed-1',
+                                            slug: 'thong-ke-xo-so-mien-bac-phan-tich-xu-huong-so-nong-lanh',
+                                            title: 'Thống Kê Xổ Số Miền Bắc - Phân Tích Xu Hướng Số Nóng Lạnh',
+                                            author: 'Admin',
+                                            publishedAt: new Date('2025-10-06').toISOString(),
+                                            featuredImage: {
+                                                url: '/imgs/wukong.png',
+                                                alt: 'Thống Kê Xổ Số Miền Bắc - Phân Tích Xu Hướng Số Nóng Lạnh'
+                                            }
+                                        },
+                                        {
+                                            _id: 'fixed-2',
+                                            slug: 'thong-ke-xo-so-mien-bac-phan-tich-xu-huong-so-nong-lanh',
+                                            title: 'Thống Kê Xổ Số Miền Bắc - Phân Tích Xu Hướng Số Nóng Lạnh',
+                                            author: 'Admin',
+                                            publishedAt: new Date('2025-10-06').toISOString(),
+                                            featuredImage: {
+                                                url: '/imgs/wukong.png',
+                                                alt: 'Thống Kê Xổ Số Miền Bắc - Phân Tích Xu Hướng Số Nóng Lạnh'
+                                            }
+                                        },
+                                        {
+                                            _id: 'fixed-3',
+                                            slug: 'thong-ke-xo-so-mien-bac-phan-tich-xu-huong-so-nong-lanh',
+                                            title: 'Thống Kê Xổ Số Miền Bắc - Phân Tích Xu Hướng Số Nóng Lạnh',
+                                            author: 'Admin',
+                                            publishedAt: new Date('2025-10-06').toISOString(),
+                                            featuredImage: {
+                                                url: '/imgs/wukong.png',
+                                                alt: 'Thống Kê Xổ Số Miền Bắc - Phân Tích Xu Hướng Số Nóng Lạnh'
+                                            }
+                                        },
+                                        {
+                                            _id: 'fixed-4',
+                                            slug: 'thong-ke-xo-so-mien-bac-phan-tich-xu-huong-so-nong-lanh',
+                                            title: 'Thống Kê Xổ Số Miền Bắc - Phân Tích Xu Hướng Số Nóng Lạnh',
+                                            author: 'Admin',
+                                            publishedAt: new Date('2025-10-06').toISOString(),
+                                            featuredImage: {
+                                                url: '/imgs/wukong.png',
+                                                alt: 'Thống Kê Xổ Số Miền Bắc - Phân Tích Xu Hướng Số Nóng Lạnh'
+                                            }
+                                        }
+                                    ].map((article, index) => (
+                                        <SidebarItem key={article._id} article={article} index={index + state.trendingArticles.length} />
+                                    ))}
                                 </div>
                             </div>
+
                         </aside>
                     </div>
                 </div>

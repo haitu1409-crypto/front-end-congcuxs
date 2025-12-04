@@ -13,7 +13,6 @@
 /* ✅ CRITICAL: Prevent layout shift during font loading */
 h1,
 h2,
-h3,
 h4,
 h5,
 h6,
@@ -24,6 +23,18 @@ div {
   contain: layout style !important;
 }
 
+/* Exclude h3 from global styles to allow multi-line text */
+h3 {
+  font-display: swap !important;
+  contain: layout style !important;
+  /* Explicitly allow multi-line text */
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  min-height: unset !important;
+  height: auto !important;
+}
+
 /* ✅ CRITICAL: Reserve space for text elements */
 h1 {
 }
@@ -32,12 +43,7 @@ h2 {
   overflow: visible !important;
 }
 
-h3 {
-
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
+/* Removed h3 styles that were preventing multi-line text display */
 
 /* Reserve space for TodayPredictions component */
 .today-predictions-container,

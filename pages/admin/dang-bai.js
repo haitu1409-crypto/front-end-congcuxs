@@ -194,7 +194,12 @@ const ImageUpload = ({ value, onChange, error }) => {
         try {
             const result = await uploadImage(file);
             if (result.success) {
-                onChange(result.data);
+                // Đánh dấu là được set thủ công
+                onChange({
+                    ...result.data,
+                    manualSet: true,
+                    autoExtracted: false
+                });
             } else {
                 alert('Lỗi khi upload hình ảnh: ' + result.message);
             }
@@ -236,6 +241,11 @@ const ImageUpload = ({ value, onChange, error }) => {
             <label className={styles.formLabel}>Hình ảnh đại diện</label>
             {value ? (
                 <div className={styles.imagePreview}>
+                    {value.autoExtracted && (
+                        <div className={styles.autoExtractedBadge}>
+                            ✨ Tự động lấy từ nội dung
+                        </div>
+                    )}
                     <Image
                         src={value.url}
                         alt={value.alt || 'Preview'}
@@ -472,8 +482,279 @@ const MultipleImageUpload = ({ value = [], onChange, error }) => {
     );
 };
 
+// Image Upload Dialog Component for Editor
+const ImageUploadDialog = ({ isOpen, onClose, onInsertImage, uploadImage }) => {
+    const [dragOver, setDragOver] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [uploadedImages, setUploadedImages] = useState([]);
+    const [currentImageCaption, setCurrentImageCaption] = useState('');
+    const [currentImageAlt, setCurrentImageAlt] = useState('');
+    const [showCaptionForm, setShowCaptionForm] = useState(false);
+    const [pendingImage, setPendingImage] = useState(null);
+
+    const handleFileSelect = async (file) => {
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file hình ảnh');
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Kích thước file không được vượt quá 5MB');
+            return;
+        }
+
+        setUploading(true);
+        try {
+            const result = await uploadImage(file);
+            if (result.success) {
+                const imageData = result.data;
+                // Hiển thị form nhập caption
+                setPendingImage(imageData);
+                setCurrentImageAlt(imageData.alt || '');
+                setCurrentImageCaption('');
+                setShowCaptionForm(true);
+            } else {
+                alert('Lỗi khi upload hình ảnh: ' + result.message);
+            }
+        } catch (error) {
+            alert('Lỗi khi upload hình ảnh');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleSaveImageWithCaption = () => {
+        if (!pendingImage) return;
+
+        const imageData = {
+            ...pendingImage,
+            caption: currentImageCaption.trim(),
+            alt: currentImageAlt.trim() || currentImageCaption.trim() || 'Hình ảnh'
+        };
+
+        setUploadedImages(prev => [...prev, imageData]);
+        setShowCaptionForm(false);
+        setPendingImage(null);
+        setCurrentImageCaption('');
+        setCurrentImageAlt('');
+    };
+
+    const handleInsertImageWithCaption = (imageData) => {
+        onInsertImage(imageData.url, imageData.alt || '', imageData.caption || '');
+    };
+
+    const handleUpdateCaption = (index, newCaption) => {
+        setUploadedImages(prev => prev.map((img, i) => 
+            i === index ? { ...img, caption: newCaption } : img
+        ));
+    };
+
+    const handleUpdateAlt = (index, newAlt) => {
+        setUploadedImages(prev => prev.map((img, i) => 
+            i === index ? { ...img, alt: newAlt } : img
+        ));
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setDragOver(false);
+        const file = e.dataTransfer.files[0];
+        handleFileSelect(file);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setDragOver(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        setDragOver(false);
+    };
+
+    const handleFileInput = (e) => {
+        const file = e.target.files[0];
+        handleFileSelect(file);
+    };
+
+    const insertExistingImage = (imageData) => {
+        handleInsertImageWithCaption(imageData);
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className={styles.imageDialogOverlay} onClick={onClose}>
+            <div className={styles.imageDialog} onClick={(e) => e.stopPropagation()}>
+                <div className={styles.imageDialogHeader}>
+                    <h3>Chèn hình ảnh</h3>
+                    <button className={styles.imageDialogClose} onClick={onClose}>×</button>
+                </div>
+                <div className={styles.imageDialogContent}>
+                    {/* Upload Area */}
+                    {!showCaptionForm && (
+                        <div
+                            className={`${styles.imageUploadArea} ${dragOver ? styles.dragover : ''}`}
+                            onDrop={handleDrop}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                        >
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileInput}
+                                className={styles.fileUploadInput}
+                                disabled={uploading}
+                                id="editor-image-upload"
+                            />
+                            <label htmlFor="editor-image-upload" className={styles.imageUploadLabel}>
+                                {uploading ? (
+                                    <LoadingSpinner />
+                                ) : (
+                                    <>
+                                        <div className={styles.imageUploadIcon}>📷</div>
+                                        <div className={styles.imageUploadText}>
+                                            <div className={styles.imageUploadTitle}>
+                                                Tải lên hình ảnh mới
+                                            </div>
+                                            <div className={styles.imageUploadSubtitle}>
+                                                Kéo thả hoặc click để chọn file (JPG, PNG, GIF - tối đa 5MB)
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </label>
+                        </div>
+                    )}
+
+                    {/* Caption Form */}
+                    {showCaptionForm && pendingImage && (
+                        <div className={styles.captionForm}>
+                            <h4>Thông tin hình ảnh</h4>
+                            <div className={styles.imagePreviewSmall}>
+                                <Image
+                                    src={pendingImage.url}
+                                    alt="Preview"
+                                    width={200}
+                                    height={150}
+                                    style={{
+                                        width: '100%',
+                                        height: 'auto',
+                                        borderRadius: '8px'
+                                    }}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Alt Text (mô tả ảnh)</label>
+                                <input
+                                    type="text"
+                                    value={currentImageAlt}
+                                    onChange={(e) => setCurrentImageAlt(e.target.value)}
+                                    className={styles.formInput}
+                                    placeholder="Nhập mô tả ảnh cho SEO..."
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Caption (chú thích hiển thị)</label>
+                                <textarea
+                                    value={currentImageCaption}
+                                    onChange={(e) => setCurrentImageCaption(e.target.value)}
+                                    className={styles.formTextarea}
+                                    placeholder="Nhập chú thích cho hình ảnh (sẽ hiển thị dưới ảnh)..."
+                                    rows={3}
+                                />
+                            </div>
+                            <div className={styles.captionFormActions}>
+                                <button
+                                    type="button"
+                                    className={`${styles.button} ${styles.secondary}`}
+                                    onClick={() => {
+                                        setShowCaptionForm(false);
+                                        setPendingImage(null);
+                                        setCurrentImageCaption('');
+                                        setCurrentImageAlt('');
+                                    }}
+                                >
+                                    Bỏ qua
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`${styles.button} ${styles.primary}`}
+                                    onClick={handleSaveImageWithCaption}
+                                >
+                                    Lưu và thêm vào gallery
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Uploaded Images Gallery */}
+                    {uploadedImages.length > 0 && !showCaptionForm && (
+                        <div className={styles.uploadedImagesGallery}>
+                            <h4>Ảnh đã upload ({uploadedImages.length}):</h4>
+                            <div className={styles.uploadedImagesGrid}>
+                                {uploadedImages.map((image, index) => (
+                                    <div key={index} className={styles.uploadedImageCard}>
+                                        <div
+                                            className={styles.uploadedImageItem}
+                                            onClick={() => insertExistingImage(image)}
+                                        >
+                                            <Image
+                                                src={image.url}
+                                                alt={image.alt || `Image ${index + 1}`}
+                                                width={150}
+                                                height={100}
+                                                style={{
+                                                    width: '100%',
+                                                    height: 'auto',
+                                                    aspectRatio: '3/2',
+                                                    cursor: 'pointer'
+                                                }}
+                                            />
+                                            <div className={styles.uploadedImageOverlay}>
+                                                <span>Click để chèn</span>
+                                            </div>
+                                        </div>
+                                        <div className={styles.imageCardInfo}>
+                                            <div className={styles.formGroup}>
+                                                <label className={styles.formLabelSmall}>Alt Text:</label>
+                                                <input
+                                                    type="text"
+                                                    value={image.alt || ''}
+                                                    onChange={(e) => handleUpdateAlt(index, e.target.value)}
+                                                    className={styles.formInputSmall}
+                                                    placeholder="Alt text..."
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            </div>
+                                            <div className={styles.formGroup}>
+                                                <label className={styles.formLabelSmall}>Caption:</label>
+                                                <input
+                                                    type="text"
+                                                    value={image.caption || ''}
+                                                    onChange={(e) => handleUpdateCaption(index, e.target.value)}
+                                                    className={styles.formInputSmall}
+                                                    placeholder="Chú thích..."
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const RichTextEditor = ({ value, onChange, error }) => {
     const [showPreview, setShowPreview] = useState(false);
+    const [showImageDialog, setShowImageDialog] = useState(false);
 
     const insertHTML = (tag, placeholder = '') => {
         const textarea = document.querySelector(`textarea[name="content"]`);
@@ -533,6 +814,31 @@ const RichTextEditor = ({ value, onChange, error }) => {
         }, 0);
     };
 
+    const insertImage = (imageUrl, alt = '', caption = '') => {
+        const textarea = document.querySelector(`textarea[name="content"]`);
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        
+        // Tạo HTML cho ảnh với style responsive và caption
+        const imageHTML = `\n<div style="text-align: center; margin: 20px 0;">
+    <img src="${imageUrl}" alt="${alt || caption || 'Hình ảnh'}" style="max-width: 100%; height: auto; border-radius: 8px;" />
+    ${caption ? `<p style="font-size: 14px; color: #666; margin-top: 8px; font-style: italic;">${caption}</p>` : ''}
+</div>\n`;
+
+        const newValue = value.substring(0, start) + imageHTML + value.substring(end);
+        onChange(newValue);
+
+        // Focus back to textarea
+        setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(start + imageHTML.length, start + imageHTML.length);
+        }, 0);
+
+        setShowImageDialog(false);
+    };
+
     return (
         <div className={styles.formGroup}>
             <label className={styles.formLabel}>Nội dung bài viết</label>
@@ -584,6 +890,13 @@ const RichTextEditor = ({ value, onChange, error }) => {
                 <div className={styles.toolbarGroup}>
                     <button
                         type="button"
+                        onClick={() => setShowImageDialog(true)}
+                        title="Chèn hình ảnh"
+                    >
+                        🖼️
+                    </button>
+                    <button
+                        type="button"
                         onClick={() => setShowPreview(!showPreview)}
                         className={showPreview ? styles.active : ''}
                         title="Xem trước"
@@ -592,6 +905,14 @@ const RichTextEditor = ({ value, onChange, error }) => {
                     </button>
                 </div>
             </div>
+
+            {/* Image Upload Dialog */}
+            <ImageUploadDialog
+                isOpen={showImageDialog}
+                onClose={() => setShowImageDialog(false)}
+                onInsertImage={insertImage}
+                uploadImage={uploadImage}
+            />
 
             {/* Editor */}
             <div className={styles.editorContainer}>
@@ -632,7 +953,7 @@ export default function PostEditor() {
         keywords: [],
         metaDescription: '',
         author: 'Admin',
-        status: 'draft',
+        status: 'published',
         featuredImage: null,
         images: [], // Multiple images
         isFeatured: false,
@@ -671,16 +992,12 @@ export default function PostEditor() {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    // Categories
+    // Categories - Đồng bộ với back-end và front-end tin-tuc.js
     const categories = [
-        { value: 'giai-ma-giac-mo', label: 'Giải Mã Giấc Mơ' },
-        { value: 'kinh-nghiem-choi-lo-de', label: 'Kinh Nghiệm Chơi Lô Đề' },
-        { value: 'thong-ke-xo-so', label: 'Thống Kê Xổ Số' },
-        { value: 'meo-vat-xo-so', label: 'Mẹo Vặt Xổ Số' },
-        { value: 'tin-tuc-xo-so', label: 'Tin Tức Xổ Số' },
-        { value: 'huong-dan-choi', label: 'Hướng Dẫn Chơi' },
-        { value: 'phuong-phap-soi-cau', label: 'Phương Pháp Soi Cầu' },
-        { value: 'dan-de-chuyen-nghiep', label: 'Dàn Đề Chuyên Nghiệp' }
+        { value: 'lien-minh-huyen-thoai', label: 'Liên Minh Huyền Thoại' },
+        { value: 'lien-quan-mobile', label: 'Liên Quân Mobile' },
+        { value: 'dau-truong-chan-ly-tft', label: 'Đấu Trường Chân Lý TFT' },
+        { value: 'trending', label: 'Trending' }
     ];
 
     // Handlers
@@ -720,6 +1037,27 @@ export default function PostEditor() {
                 ...prev,
                 readingTime
             }));
+
+            // Tự động extract ảnh đầu tiên từ content làm featured image nếu chưa có
+            // Chỉ tự động nếu người dùng chưa set featured image thủ công
+            if (!formData.featuredImage || !formData.featuredImage.manualSet) {
+                const firstImageMatch = value.match(/<img[^>]+src=["']([^"']+)["']/i);
+                if (firstImageMatch && firstImageMatch[1]) {
+                    const imageUrl = firstImageMatch[1];
+                    // Extract alt text nếu có
+                    const altMatch = value.match(/<img[^>]+alt=["']([^"']*)["']/i);
+                    const altText = altMatch ? altMatch[1] : '';
+                    
+                    setFormData(prev => ({
+                        ...prev,
+                        featuredImage: {
+                            url: imageUrl,
+                            alt: altText || prev.title || 'Featured Image',
+                            autoExtracted: true
+                        }
+                    }));
+                }
+            }
         }
     };
 
@@ -761,8 +1099,17 @@ export default function PostEditor() {
 
         setLoading(true);
         try {
+            // Clean up featuredImage - remove internal flags
+            const cleanedFeaturedImage = formData.featuredImage ? {
+                url: formData.featuredImage.url,
+                alt: formData.featuredImage.alt || formData.title || 'Featured Image'
+            } : null;
+
             const articleData = {
                 ...formData,
+                featuredImage: cleanedFeaturedImage,
+                // Remove images array since we're using content images now
+                images: [],
                 status,
                 publishedAt: status === 'published' ? new Date().toISOString() : null,
                 slug: generateSlug(formData.title)
@@ -901,18 +1248,24 @@ export default function PostEditor() {
                                     />
 
                                     {/* Featured Image */}
-                                    <ImageUpload
-                                        value={formData.featuredImage}
-                                        onChange={(value) => handleInputChange('featuredImage', value)}
-                                        error={errors.featuredImage}
-                                    />
-
-                                    {/* Multiple Images */}
-                                    <MultipleImageUpload
-                                        value={formData.images}
-                                        onChange={(value) => handleInputChange('images', value)}
-                                        error={errors.images}
-                                    />
+                                    <div className={styles.formGroup}>
+                                        <label className={styles.formLabel}>
+                                            Hình ảnh đại diện
+                                            <span className={styles.helpText}>
+                                                (Tự động lấy từ ảnh đầu tiên trong nội dung nếu chưa có)
+                                            </span>
+                                        </label>
+                                        <ImageUpload
+                                            value={formData.featuredImage}
+                                            onChange={(value) => handleInputChange('featuredImage', value)}
+                                            error={errors.featuredImage}
+                                        />
+                                        {formData.featuredImage && (
+                                            <div className={styles.infoMessage}>
+                                                💡 Mẹo: Bạn có thể chèn ảnh vào nội dung bằng nút 🖼️ trong editor. Ảnh đầu tiên sẽ tự động được dùng làm ảnh đại diện.
+                                            </div>
+                                        )}
+                                    </div>
 
                                     {/* Tags */}
                                     <TagsInput

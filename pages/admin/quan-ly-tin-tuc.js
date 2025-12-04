@@ -30,16 +30,41 @@ export default function ManageArticles() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
+    // Mapping category cũ sang mới (đồng bộ với tin-tuc.js)
+    const mapOldCategoryToNew = (category) => {
+        const mapping = {
+            'du-doan-ket-qua-xo-so': 'lien-minh-huyen-thoai',
+            'dan-de-chuyen-nghiep': 'lien-minh-huyen-thoai',
+            'thong-ke-xo-so': 'lien-minh-huyen-thoai',
+            'giai-ma-giac-mo': 'lien-quan-mobile',
+            'tin-tuc-xo-so': 'lien-quan-mobile',
+            'kinh-nghiem-choi-lo-de': 'dau-truong-chan-ly-tft',
+            'meo-vat-xo-so': 'dau-truong-chan-ly-tft',
+            'phuong-phap-soi-cau': 'trending',
+            'huong-dan-choi': 'trending'
+        };
+        return mapping[category] || category;
+    };
+
+    // Lấy label cho category (hỗ trợ cả cũ và mới)
+    const getCategoryLabelFromValue = (value) => {
+        const mappedCategory = mapOldCategoryToNew(value);
+        const labels = {
+            'lien-minh-huyen-thoai': 'Liên Minh Huyền Thoại',
+            'lien-quan-mobile': 'Liên Quân Mobile',
+            'dau-truong-chan-ly-tft': 'Đấu Trường Chân Lý TFT',
+            'trending': 'Trending'
+        };
+        return labels[mappedCategory] || value;
+    };
+
+    // Categories cho filter - Ưu tiên category mới, nhưng vẫn hỗ trợ category cũ
     const categories = [
         { value: '', label: 'Tất cả danh mục' },
-        { value: 'giai-ma-giac-mo', label: 'Giải Mã Giấc Mơ' },
-        { value: 'kinh-nghiem-choi-lo-de', label: 'Kinh Nghiệm Chơi Lô Đề' },
-        { value: 'thong-ke-xo-so', label: 'Thống Kê Xổ Số' },
-        { value: 'meo-vat-xo-so', label: 'Mẹo Vặt Xổ Số' },
-        { value: 'tin-tuc-xo-so', label: 'Tin Tức Xổ Số' },
-        { value: 'huong-dan-choi', label: 'Hướng Dẫn Chơi' },
-        { value: 'phuong-phap-soi-cau', label: 'Phương Pháp Soi Cầu' },
-        { value: 'dan-de-chuyen-nghiep', label: 'Dàn Đề Chuyên Nghiệp' }
+        { value: 'lien-minh-huyen-thoai', label: 'Liên Minh Huyền Thoại' },
+        { value: 'lien-quan-mobile', label: 'Liên Quân Mobile' },
+        { value: 'dau-truong-chan-ly-tft', label: 'Đấu Trường Chân Lý TFT' },
+        { value: 'trending', label: 'Trending' }
     ];
 
     // Check authentication
@@ -129,8 +154,8 @@ export default function ManageArticles() {
     };
 
     const getCategoryLabel = (value) => {
-        const category = categories.find(cat => cat.value === value);
-        return category ? category.label : value;
+        // Sử dụng hàm mapping để hiển thị label đúng cho cả category cũ và mới
+        return getCategoryLabelFromValue(value);
     };
 
     const filteredArticles = articles.filter(article =>
