@@ -18,9 +18,18 @@ class LotterySocketClient {
      * Kết nối đến server
      */
     connect() {
+        // ✅ OPTIMIZED: Kiểm tra kỹ hơn để tránh duplicate connections
         if (this.socket?.connected) {
+            console.log('✅ Socket already connected, skipping new connection');
             // Nếu đã kết nối, yêu cầu dữ liệu mới nhất cho consumer mới
             this.socket.emit('lottery:get-latest');
+            return this.socket;
+        }
+
+        // ✅ OPTIMIZED: Nếu socket tồn tại nhưng chưa connected, đợi connection
+        if (this.socket && !this.socket.connected) {
+            console.log('⏳ Socket exists but not connected, waiting for connection...');
+            // Đợi connection event trước khi return
             return this.socket;
         }
 

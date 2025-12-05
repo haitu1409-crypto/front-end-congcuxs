@@ -30,9 +30,26 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
     const [animatingPrize, setAnimatingPrize] = useState(null);
     const [filterType] = useState('all');
     const [socketStatus, setSocketStatus] = useState('connecting');
+    const [randomSeed, setRandomSeed] = useState(0); // Seed để randomize số mỗi lần render
 
     const mountedRef = useRef(false);
     const animationTimeoutsRef = useRef(new Map());
+    const animationThrottleRef = useRef(null);
+    const lastAnimatingPrizeRef = useRef(null);
+    
+    // Animation queue - thứ tự xuất hiện 27 phần tử giải
+    const animationQueueRef = useRef([
+        'firstPrize_0',
+        'secondPrize_0', 'secondPrize_1',
+        'threePrizes_0', 'threePrizes_1', 'threePrizes_2', 
+        'threePrizes_3', 'threePrizes_4', 'threePrizes_5',
+        'fourPrizes_0', 'fourPrizes_1', 'fourPrizes_2', 'fourPrizes_3',
+        'fivePrizes_0', 'fivePrizes_1', 'fivePrizes_2', 
+        'fivePrizes_3', 'fivePrizes_4', 'fivePrizes_5',
+        'sixPrizes_0', 'sixPrizes_1', 'sixPrizes_2',
+        'sevenPrizes_0', 'sevenPrizes_1', 'sevenPrizes_2', 'sevenPrizes_3',
+        'specialPrize_0',
+    ]);
 
     const today = getTodayFormatted();
     const inLiveWindow = isWithinLiveWindow();
@@ -61,34 +78,106 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
         }
     }, []);
 
-    // Animation handler
-    const setAnimationWithTimeout = useCallback((prizeType) => {
-        if (animationTimeoutsRef.current.has(prizeType)) {
-            clearTimeout(animationTimeoutsRef.current.get(prizeType));
+    // ✅ OPTIMIZED: Memoize findNextAnimatingPrize function
+    const findNextAnimatingPrize = useCallback(() => {
+        if (!liveData) return null;
+        
+        const queue = animationQueueRef.current;
+        for (const prize of queue) {
+            const value = liveData[prize];
+            if (value === '...' || value === '***') {
+                return prize;
+            }
+        }
+        return null;
+    }, [liveData]);
+
+    // ✅ OPTIMIZED: Throttled useEffect để tự động tìm phần tử sắp xuất hiện
+    useEffect(() => {
+        // Clear throttle cũ
+        if (animationThrottleRef.current) {
+            clearTimeout(animationThrottleRef.current);
         }
 
-        requestAnimationFrame(() => {
-            if (mountedRef.current) {
-                setAnimatingPrize(prizeType);
+        // Throttle: 200ms (đủ mượt, không quá nhiều updates)
+        animationThrottleRef.current = setTimeout(() => {
+            if (!mountedRef.current) return;
+
+            const nextPrize = findNextAnimatingPrize();
+            
+            // ✅ Chỉ update nếu khác giá trị hiện tại (tránh re-render không cần thiết)
+            if (nextPrize !== lastAnimatingPrizeRef.current) {
+                lastAnimatingPrizeRef.current = nextPrize;
+                setAnimatingPrize(nextPrize);
             }
-        });
+        }, 200);
 
-        const timeoutId = setTimeout(() => {
-            requestAnimationFrame(() => {
-                if (mountedRef.current) {
-                    setAnimatingPrize(null);
-                }
+        return () => {
+            if (animationThrottleRef.current) {
+                clearTimeout(animationThrottleRef.current);
+                animationThrottleRef.current = null;
+            }
+        };
+    }, [liveData, findNextAnimatingPrize]); // ← Bỏ animatingPrize khỏi deps
+
+    // ✅ OPTIMIZED: Proper cleanup khi mount/unmount
+    useEffect(() => {
+        mountedRef.current = true;
+        
+        // ✅ Reset state khi mount (tránh state cũ từ cache/reload)
+        setAnimatingPrize(null);
+        lastAnimatingPrizeRef.current = null;
+        animationThrottleRef.current = null;
+
+        return () => {
+            mountedRef.current = false;
+
+            // ✅ Cleanup throttle
+            if (animationThrottleRef.current) {
+                clearTimeout(animationThrottleRef.current);
+                animationThrottleRef.current = null;
+            }
+
+            // ✅ Cleanup animation timeouts
+            animationTimeoutsRef.current.forEach((timeoutId) => {
+                clearTimeout(timeoutId);
             });
-            animationTimeoutsRef.current.delete(prizeType);
-        }, 1200);
+            animationTimeoutsRef.current.clear();
 
-        animationTimeoutsRef.current.set(prizeType, timeoutId);
-    }, []);
+            // ✅ Reset animation state
+            setAnimatingPrize(null);
+            lastAnimatingPrizeRef.current = null;
+        };
+    }, []); // ← Empty deps để cleanup khi unmount
+
+    // ✅ OPTIMIZED: Pause animation khi tab không active
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                // Tab không active → Pause animation
+                setAnimatingPrize(null);
+                lastAnimatingPrizeRef.current = null;
+            } else {
+                // Tab active lại → Resume animation
+                if (mountedRef.current) {
+                    const nextPrize = findNextAnimatingPrize();
+                    if (nextPrize !== lastAnimatingPrizeRef.current) {
+                        lastAnimatingPrizeRef.current = nextPrize;
+                        setAnimatingPrize(nextPrize);
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [findNextAnimatingPrize]);
 
     // Setup Socket.io connection
     useEffect(() => {
-        mountedRef.current = true;
-
         // Chỉ kết nối nếu trong live window hoặc là modal
         if (!inLiveWindow && !isModal) {
             console.log('🛑 Ngoài khung live, không kết nối socket');
@@ -98,9 +187,20 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
 
         console.log('🔄 Setting up lottery socket connection...');
 
-        // Connect to socket và yêu cầu dữ liệu mới nhất ngay lập tức
-        lotterySocketClient.connect();
-        lotterySocketClient.requestLatest();
+        // ✅ OPTIMIZED: Kiểm tra kỹ để tránh duplicate connections (React Strict Mode)
+        const connectionStatus = lotterySocketClient.getConnectionStatus();
+        
+        // Chỉ connect nếu:
+        // 1. Chưa có socket HOẶC
+        // 2. Có socket nhưng chưa connected
+        if (!connectionStatus.socket || !connectionStatus.connected) {
+            console.log('🔌 Connecting to socket...');
+            lotterySocketClient.connect();
+        } else {
+            // Nếu đã connected, chỉ request latest (không connect lại)
+            console.log('✅ Socket already connected, requesting latest data...');
+            lotterySocketClient.requestLatest();
+        }
 
         // Listen to events
         const handleLatest = (data) => {
@@ -122,12 +222,7 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
 
             setLiveData(prev => {
                 const updated = { ...prev, [data.prizeType]: data.prizeData, lastUpdated: data.timestamp };
-
-                // Trigger animation
-                if (data.prizeData !== '...' && data.prizeData !== '***') {
-                    setAnimationWithTimeout(data.prizeType);
-                }
-
+                // ✅ Animation sẽ được tự động set bởi useEffect (không cần setAnimationWithTimeout)
                 return updated;
             });
 
@@ -173,8 +268,6 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
             console.log('❌ Lottery socket disconnected');
         };
 
-        const animationTimeoutsSnapshot = animationTimeoutsRef.current;
-
         // Register listeners
         lotterySocketClient.on('lottery:latest', handleLatest);
         lotterySocketClient.on('lottery:prize-update', handlePrizeUpdate);
@@ -186,14 +279,6 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
 
         // Cleanup
         return () => {
-            mountedRef.current = false;
-
-            // Clear animation timeouts
-            animationTimeoutsSnapshot.forEach((timeoutId) => {
-                clearTimeout(timeoutId);
-            });
-            animationTimeoutsSnapshot.clear();
-
             // Remove listeners
             lotterySocketClient.off('lottery:latest', handleLatest);
             lotterySocketClient.off('lottery:prize-update', handlePrizeUpdate);
@@ -203,7 +288,7 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
             lotterySocketClient.off('connected', handleConnected);
             lotterySocketClient.off('disconnected', handleDisconnected);
         };
-    }, [inLiveWindow, isModal, setAnimationWithTimeout]);
+    }, [inLiveWindow, isModal]);
 
     // Convert liveData to format compatible with XSMBSimpleTable
     const convertToTableFormat = useMemo(() => {
@@ -385,7 +470,20 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
         };
     }, [liveData, today]);
 
-    // Render prize value với animation và filter - giống kqxs LiveResult
+    // ✅ Randomize số mỗi khi animating (tạo hiệu ứng số thay đổi ngẫu nhiên)
+    useEffect(() => {
+        if (animatingPrize) {
+            const interval = setInterval(() => {
+                setRandomSeed(prev => prev + 1); // Trigger re-render để random lại
+            }, 100); // Thay đổi mỗi 100ms để tạo hiệu ứng random
+            
+            return () => clearInterval(interval);
+        } else {
+            setRandomSeed(0); // Reset khi không animate
+        }
+    }, [animatingPrize]);
+
+    // ✅ OPTIMIZED: Render prize value với số ngẫu nhiên đứng yên
     const renderPrizeValue = (value, isAnimating = false, digits = 5, isMaDB = false) => {
         const className = `${styles.running_number} ${styles[`running_${digits}`]}`;
 
@@ -399,20 +497,40 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
 
         const finalClassName = isMaDB ? `${className} ${styles.maDBText}` : className;
 
-        const renderSpinnerOrPlaceholder = (status = 'loading') => (
-            <span className={finalClassName} data-status={status}>
-                {isMaDB ? <span className={styles.ellipsis}>...</span> : <span className={styles.cellSpinner}></span>}
-            </span>
-        );
-
-        if (isAnimating) {
-            return renderSpinnerOrPlaceholder('animating');
+        // ✅ OPTIMIZED: Số ngẫu nhiên đứng yên (không scroll, random mỗi lần render)
+        if (isAnimating && (value === '...' || value === '***' || !value)) {
+            // Sử dụng randomSeed để đảm bảo random mỗi lần re-render
+            const seed = randomSeed;
+            return (
+                <span className={finalClassName} data-status="animating">
+                    <span className={styles.digit_container}>
+                        {Array.from({ length: displayDigits }).map((_, i) => {
+                            // Mỗi digit hiển thị 1 số ngẫu nhiên (đứng yên, random mỗi lần render)
+                            // Sử dụng seed + index để đảm bảo mỗi digit có số khác nhau
+                            const randomNum = Math.floor(Math.random() * 10);
+                            return (
+                                <span key={`${i}-${seed}`} className={styles.digit_rolling}>
+                                    <span className={styles.digit_number}>
+                                        {randomNum}
+                                    </span>
+                                </span>
+                            );
+                        })}
+                    </span>
+                </span>
+            );
         }
 
+        // Placeholder khi chưa có số
         if (value === '...' || value === '***' || !value) {
-            return renderSpinnerOrPlaceholder('pending');
+            return (
+                <span className={finalClassName} data-status="pending">
+                    {isMaDB ? <span className={styles.ellipsis}>...</span> : <span className={styles.cellSpinner}></span>}
+                </span>
+            );
         }
 
+        // Hiển thị số thật
         const filtered = getFilteredNumber(value, filterType) || '';
         const displayValue = filtered.padStart(displayDigits, '0');
 
