@@ -20,7 +20,8 @@ import {
     Settings,
     Newspaper,
     BarChart3,
-    LogOut
+    LogOut,
+    Table
 } from 'lucide-react';
 import styles from '../../styles/AdminDashboard.module.css';
 
@@ -131,6 +132,14 @@ const dashboardCards = [
         link: '/admin/quan-ly-dudoan',
         color: '#43e97b',
         gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+    },
+    {
+        title: 'Thống Kê Dàn',
+        description: 'Xem và quản lý thống kê dàn',
+        icon: Table,
+        link: '/admin/thong-ke-dan',
+        color: '#fa8b5c',
+        gradient: 'linear-gradient(135deg, #fa8b5c 0%, #ff6b6b 100%)'
     }
 ];
 

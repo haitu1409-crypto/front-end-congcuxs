@@ -1,0 +1,704 @@
+/**
+ * Thống Kê Dàn Styles
+ * Thiết kế đơn giản cổ điển cho desktop
+ */
+
+/* Container */
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Page Header */
+.pageHeader {
+    background: #2c3e50;
+    color: white;
+    padding: 30px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.2s;
+}
+
+.backButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+/* Content Wrapper */
+.contentWrapper {
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin: 30px auto;
+}
+
+/* Add Cao Thu Section */
+.addCaoThuSection {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.addCaoThuForm {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.caoThuInput {
+    flex: 1;
+    max-width: 300px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.caoThuInput:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.addCaoThuButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #9b59b6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.addCaoThuButton:hover {
+    background: #8e44ad;
+}
+
+.addCaoThuButton:active {
+    background: #7d3c98;
+}
+
+.caoThuList {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.caoThuLabel {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+}
+
+.caoThuTags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.caoThuTag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #ecf0f1;
+    color: #2c3e50;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Table Container */
+.tableContainer {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.statsTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: white;
+}
+
+.statsTable thead {
+    background: #34495e;
+    color: white;
+}
+
+.statsTable th {
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid #2c3e50;
+    white-space: nowrap;
+}
+
+.statsTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: white;
+}
+
+.statsTable tbody tr {
+    transition: background 0.15s;
+}
+
+.statsTable tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.statsTable tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.statsTable tbody tr:nth-child(even):hover {
+    background: #f0f0f0;
+}
+
+/* Table Input */
+.tableInput {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family: inherit;
+    background: white;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.tableInput:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.tableInput[type="date"] {
+    cursor: pointer;
+}
+
+.tableInput[type="number"] {
+    text-align: right;
+}
+
+/* Table Select */
+.tableSelect {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family: inherit;
+    background: white;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.tableSelect:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+/* Button Group */
+.buttonGroup {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Add Row Button */
+.addRowButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.addRowButton:hover {
+    background: #2980b9;
+}
+
+.addRowButton:active {
+    background: #21618c;
+}
+
+/* Save Button */
+.saveButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.saveButton:hover {
+    background: #d35400;
+}
+
+.saveButton:active {
+    background: #ba4a00;
+}
+
+/* View List Button */
+.viewListButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.viewListButton:hover {
+    background: #2980b9;
+}
+
+.viewListButton:active {
+    background: #21618c;
+}
+
+.viewListButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Run Result Button */
+.runResultButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.runResultButton:hover {
+    background: #229954;
+}
+
+.runResultButton:active {
+    background: #1e8449;
+}
+
+.runResultButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dateSelectInput {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    background: white;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s;
+    cursor: pointer;
+}
+
+.dateSelectInput:focus {
+    border-color: #27ae60;
+    box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.1);
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 5px;
+    /* Giảm padding xuống mức tối thiểu */
+    border-bottom: 1px solid #ddd;
+    background: #34495e;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.modalTitle {
+    margin: 0;
+    font-size: 0.95rem;
+    /* Giảm font-size */
+    font-weight: 600;
+    line-height: 1.4;
+    color: white;
+}
+
+.modalCloseButton {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 2px;
+    /* Giảm padding */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.modalCloseButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modalBody {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.emptyResult {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.resultTableContainer {
+    overflow-x: auto;
+}
+
+.resultTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    line-height: 1.2;
+    table-layout: fixed;
+}
+
+.resultTable thead {
+    background: #34495e;
+    color: white;
+}
+
+.resultTable th {
+    padding: 6px 8px;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid #2c3e50;
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.resultTable td {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    background: white;
+    line-height: 1.3;
+    vertical-align: middle;
+}
+
+/* Thu hẹp các cột STT, Ngày, Điểm số */
+.resultTable th:nth-child(1),
+.resultTable td:nth-child(1) {
+    width: 50px;
+    text-align: center;
+}
+
+.resultTable th:nth-child(2),
+.resultTable td:nth-child(2) {
+    width: 110px;
+    white-space: nowrap;
+}
+
+.resultTable th:nth-child(3),
+.resultTable td:nth-child(3) {
+    width: 120px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resultTable th:nth-child(4),
+.resultTable td:nth-child(4) {
+    width: 80px;
+    text-align: center;
+}
+
+.resultTable th:nth-child(5),
+.resultTable td:nth-child(5) {
+    width: 180px;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resultTable th:nth-child(6),
+.resultTable td:nth-child(6) {
+    width: 100px;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resultTable tbody tr {
+    transition: background 0.15s;
+}
+
+.resultTable tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.resultTable tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.resultTable tbody tr:nth-child(even):hover {
+    background: #f0f0f0;
+}
+
+/* Loading States */
+.loadingContainer,
+.loadingState {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    color: #666;
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #3498db;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Stats Grid Modal */
+.statsButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #9b59b6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.statsButton:hover {
+    background: #8e44ad;
+}
+
+.statsButton:active {
+    background: #7d3c98;
+}
+
+.statsButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.statsGridContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 cột trên 1 dòng */
+    gap: 12px;
+    width: 100%;
+}
+
+.statsColumn {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+}
+
+.statsColumnHeader {
+    background: #34495e;
+    color: white;
+    padding: 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 12px;
+    border-radius: 4px 4px 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.statsColumnBody {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+.statsRecord {
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+    padding: 6px;
+    background: #fafafa;
+    font-size: 11px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+}
+
+.statsRecordDate {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 10px;
+    text-align: left;
+}
+
+.statsRecordResult {
+    color: #27ae60;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Desktop only - hide on mobile */
+@media (max-width: 1024px) {
+    .contentWrapper {
+        padding: 20px;
+    }
+
+    .statsTable {
+        font-size: 13px;
+    }
+
+    .statsTable th,
+    .statsTable td {
+        padding: 8px 6px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pageHeader {
+        padding: 20px 15px;
+    }
+
+    .pageTitle {
+        font-size: 1.5rem;
+    }
+
+    .contentWrapper {
+        padding: 15px;
+        margin: 20px auto;
+    }
+
+    .statsTable {
+        font-size: 12px;
+    }
+
+    .statsTable th,
+    .statsTable td {
+        padding: 6px 4px;
+    }
+
+    .tableInput {
+        font-size: 12px;
+        padding: 4px 6px;
+    }
+}
