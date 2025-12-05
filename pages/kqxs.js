@@ -82,7 +82,7 @@ const KQXSPage = memo(function KQXSPage() {
     // and can be configured with refreshInterval if needed
 
     // ✅ Cache siteUrl to avoid recalculating
-    const siteUrl = useMemo(() => 
+    const siteUrl = useMemo(() =>
         process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro',
         []
     );
@@ -100,17 +100,17 @@ const KQXSPage = memo(function KQXSPage() {
     }, []);
 
     // ✅ Memoize page titles and description
-    const pageTitle = useMemo(() => 
+    const pageTitle = useMemo(() =>
         `XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay ${today} | SXMB - KQXSMB - XSTD Nhanh Nhất 2025`,
         [today]
     );
 
-    const h1Title = useMemo(() => 
+    const h1Title = useMemo(() =>
         `XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay ${today}`,
         [today]
     );
 
-    const pageDescription = useMemo(() => 
+    const pageDescription = useMemo(() =>
         `XSMB - Kết quả xổ số miền Bắc (xsmb, sxmb, kqxsmb, xstd) hôm nay ${today} nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay. Xem XSMB 30 ngày, XSMB hôm qua, XSMB ${dayOfWeek}. Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100%!`,
         [today, dayOfWeek]
     );
@@ -207,7 +207,7 @@ const KQXSPage = memo(function KQXSPage() {
                 <div className={styles.container}>
                     {isLiveWindow && (
                         <div className={styles.liveSection}>
-                            <LiveResult />
+                            <LiveResult showChatPreview={true} />
                         </div>
                     )}
 

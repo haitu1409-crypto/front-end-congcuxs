@@ -22,7 +22,7 @@ const ChatPreview = dynamic(() => import('./Chat/ChatPreview'), {
     ssr: false
 });
 
-const LiveResult = ({ station = 'xsmb', isModal = false }) => {
+const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false }) => {
     const [liveData, setLiveData] = useState(createEmptyResult());
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -794,10 +794,12 @@ const LiveResult = ({ station = 'xsmb', isModal = false }) => {
                     </div>
                 )}
 
-                {/* Chat Preview - giống LatestXSMBResults */}
-                <div className={styles.chatPreviewWrapper}>
-                    <ChatPreview />
-                </div>
+                {/* Chat Preview - chỉ hiển thị khi showChatPreview = true */}
+                {showChatPreview && (
+                    <div className={styles.chatPreviewWrapper}>
+                        <ChatPreview />
+                    </div>
+                )}
             </div>
         </div>
     );

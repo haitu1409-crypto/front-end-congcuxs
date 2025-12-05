@@ -202,12 +202,15 @@ export default function Layout({ children, className = '' }) {
 
                                     // Handle regular links
                                     const IconComponent = link.icon;
+                                    // ✅ Check both pathname and asPath to handle rewrites/redirects
+                                    const isActive = router.pathname === link.href || 
+                                                   router.asPath === link.href ||
+                                                   (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/kqxs');
                                     return (
                                         <Link
                                             key={link.href}
                                             href={link.href}
-                                            className={`${styles.navLink} ${router.pathname === link.href ? styles.active : ''
-                                                }`}
+                                            className={`${styles.navLink} ${isActive ? styles.active : ''}`}
                                             prefetch={false} // Disable automatic prefetch
                                             title={link.description}
                                         >
@@ -308,12 +311,15 @@ export default function Layout({ children, className = '' }) {
 
                                             // Handle regular links
                                             const IconComponent = link.icon;
+                                            // ✅ Check both pathname and asPath to handle rewrites/redirects
+                                            const isActive = router.pathname === link.href || 
+                                                           router.asPath === link.href ||
+                                                           (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/kqxs');
                                             return (
                                                 <Link
                                                     key={link.href}
                                                     href={link.href}
-                                                    className={`${styles.mobileNavLink} ${router.pathname === link.href ? styles.active : ''
-                                                        }`}
+                                                    className={`${styles.mobileNavLink} ${isActive ? styles.active : ''}`}
                                                     onClick={() => setIsMenuOpen(false)}
                                                     prefetch={false} // Disable automatic prefetch
                                                 >
