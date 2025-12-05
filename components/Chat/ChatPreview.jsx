@@ -150,6 +150,8 @@ export default function ChatPreview({ className }) {
     const { isAuthenticated, token, loading: authLoading } = useAuth();
     const [roomId, setRoomId] = useState(null);
     const [error, setError] = useState(null);
+    const [publicMessages, setPublicMessages] = useState([]);
+    const [publicLoading, setPublicLoading] = useState(true);
     const {
         messages: chatMessages,
         loading: chatLoading,
@@ -157,7 +159,7 @@ export default function ChatPreview({ className }) {
         sending,
         startTyping,
         stopTyping
-    } = useChat(roomId);
+    } = useChat(isAuthenticated && roomId ? roomId : null);
     const [inputValue, setInputValue] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showGifPicker, setShowGifPicker] = useState(false);
@@ -168,19 +170,29 @@ export default function ChatPreview({ className }) {
     const prevMessageCountRef = useRef(0);
     const loadMoreHeightRef = useRef(null);
 
+    // Use public messages if not authenticated, otherwise use chatMessages from useChat
+    const messages = isAuthenticated ? chatMessages : publicMessages;
+    const loading = isAuthenticated ? chatLoading : publicLoading;
+
     const handleEmojiInsert = (emojiChar) => {
         if (!emojiChar) return;
         setInputValue((prev) => `${prev}${emojiChar}`);
     };
 
     const fetchRoomId = useCallback(async () => {
-        if (!token) return;
         try {
-            const response = await axios.get(`${API_URL}/api/chat/groupchat`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            let response;
+            if (isAuthenticated && token) {
+                // Authenticated user - use protected endpoint
+                response = await axios.get(`${API_URL}/api/chat/groupchat`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            } else {
+                // Unauthenticated user - use public endpoint
+                response = await axios.get(`${API_URL}/api/chat/groupchat/public`);
+            }
 
             const fetchedRoomId = response.data?.data?.room?.roomId;
             if (response.data.success && fetchedRoomId) {
@@ -196,16 +208,46 @@ export default function ChatPreview({ className }) {
                 setError('Không thể kết nối đến chat.');
             }
         }
-    }, [token]);
+    }, [token, isAuthenticated]);
 
     useEffect(() => {
-        if (!isAuthenticated || !token) {
-            setRoomId(null);
-            setError(null);
-            return;
-        }
         fetchRoomId();
-    }, [fetchRoomId, isAuthenticated, token]);
+    }, [fetchRoomId]);
+
+    // Fetch public messages when not authenticated
+    useEffect(() => {
+        if (!isAuthenticated && roomId) {
+            const fetchPublicMessages = async () => {
+                try {
+                    setPublicLoading(true);
+                    const response = await axios.get(`${API_URL}/api/chat/groupchat/messages/public`, {
+                        params: {
+                            limit: 50
+                        }
+                    });
+
+                    if (response.data.success) {
+                        setPublicMessages(response.data.data.messages || []);
+                        setError(null);
+                    } else {
+                        setError('Không thể tải tin nhắn');
+                    }
+                } catch (err) {
+                    console.error('Error fetching public messages:', err);
+                    setError('Không thể kết nối đến chat.');
+                } finally {
+                    setPublicLoading(false);
+                }
+            };
+
+            fetchPublicMessages();
+            // Refresh messages every 30 seconds for unauthenticated users
+            const interval = setInterval(fetchPublicMessages, 30000);
+            return () => clearInterval(interval);
+        } else if (!isAuthenticated) {
+            setPublicMessages([]);
+        }
+    }, [isAuthenticated, roomId]);
 
     useEffect(() => {
         if (!chatMessages) return;
@@ -217,21 +259,21 @@ export default function ChatPreview({ className }) {
     }, [chatMessages]);
 
     const renderedMessages = useMemo(() => {
-        if (!chatMessages || chatMessages.length === 0) return [];
-        const startIndex = Math.max(chatMessages.length - visibleCount, 0);
-        return chatMessages.slice(startIndex);
-    }, [chatMessages, visibleCount]);
+        if (!messages || messages.length === 0) return [];
+        const startIndex = Math.max(messages.length - visibleCount, 0);
+        return messages.slice(startIndex);
+    }, [messages, visibleCount]);
 
-    const hasMoreMessages = !!chatMessages && chatMessages.length > renderedMessages.length;
+    const hasMoreMessages = !!messages && messages.length > renderedMessages.length;
 
     useEffect(() => {
-        if (!chatMessages) return;
+        if (!messages) return;
 
-        if (chatMessages.length > prevMessageCountRef.current) {
+        if (messages.length > prevMessageCountRef.current) {
             setStickToBottom(true);
         }
-        prevMessageCountRef.current = chatMessages.length;
-    }, [chatMessages]);
+        prevMessageCountRef.current = messages.length;
+    }, [messages]);
 
     useEffect(() => {
         const list = messageListRef.current;
@@ -267,7 +309,8 @@ export default function ChatPreview({ className }) {
         const { value } = event.target;
         setInputValue(value);
 
-        if (!roomId) return;
+        // Chỉ xử lý typing khi đã đăng nhập và có roomId
+        if (!isAuthenticated || !roomId) return;
 
         if (value.trim()) {
             startTyping?.();
@@ -287,6 +330,14 @@ export default function ChatPreview({ className }) {
     const handleSend = async (event) => {
         event?.preventDefault();
         const trimmed = inputValue.trim();
+        
+        // Kiểm tra nếu chưa đăng nhập thì hiển thị alert
+        if (!isAuthenticated) {
+            alert('Vui lòng đăng nhập để gửi tin nhắn. Nhấn OK để chuyển đến trang đăng nhập.');
+            window.location.href = '/chat';
+            return;
+        }
+        
         if (!trimmed || sending || !roomId) {
             return;
         }
@@ -339,16 +390,7 @@ export default function ChatPreview({ className }) {
                         <Loader2 className={styles.spinner} size={20} />
                         <span>Đang kiểm tra phiên đăng nhập...</span>
                     </div>
-                ) : !isAuthenticated ? (
-                    <div className={styles.centerState}>
-                        <p className={styles.notice}>
-                            Đăng nhập để xem và tham gia trò chuyện cùng cộng đồng.
-                        </p>
-                        <Link href="/chat" className={styles.loginButton}>
-                            Đăng nhập &amp; tham gia
-                        </Link>
-                    </div>
-                ) : (chatLoading || isInitialLoading) && renderedMessages.length === 0 ? (
+                ) : (loading || isInitialLoading) && renderedMessages.length === 0 ? (
                     <div className={styles.centerState}>
                         <Loader2 className={styles.spinner} size={20} />
                         <span>Đang tải tin nhắn...</span>
@@ -382,7 +424,7 @@ export default function ChatPreview({ className }) {
                                         }
                                         setStickToBottom(false);
                                         setVisibleCount((prev) =>
-                                            Math.min(prev + 15, chatMessages ? chatMessages.length : prev + 15)
+                                            Math.min(prev + 15, messages ? messages.length : prev + 15)
                                         );
                                     }}
                                 >
@@ -429,11 +471,11 @@ export default function ChatPreview({ className }) {
                     </div>
                 )}
             </div>
-            {isAuthenticated && roomId && !error && (
+            {roomId && !error && (
                 <form className={styles.inputWrapper} onSubmit={handleSend}>
                     <textarea
                         className={styles.inputField}
-                        placeholder="Nhập tin nhắn..."
+                        placeholder={isAuthenticated ? "Nhập tin nhắn..." : "Đăng nhập để gửi tin nhắn..."}
                         value={inputValue}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
@@ -446,6 +488,11 @@ export default function ChatPreview({ className }) {
                             type="button"
                             className={styles.actionButton}
                             onClick={() => {
+                                if (!isAuthenticated) {
+                                    alert('Vui lòng đăng nhập để sử dụng tính năng này.');
+                                    window.location.href = '/chat';
+                                    return;
+                                }
                                 setShowGifPicker(false);
                                 setShowEmojiPicker((prev) => !prev);
                             }}
@@ -457,6 +504,11 @@ export default function ChatPreview({ className }) {
                             type="button"
                             className={styles.actionButton}
                             onClick={() => {
+                                if (!isAuthenticated) {
+                                    alert('Vui lòng đăng nhập để sử dụng tính năng này.');
+                                    window.location.href = '/chat';
+                                    return;
+                                }
                                 setShowEmojiPicker(false);
                                 setShowGifPicker((prev) => !prev);
                             }}
@@ -472,7 +524,7 @@ export default function ChatPreview({ className }) {
                     >
                         {sending ? 'Đang gửi...' : 'Gửi'}
                     </button>
-                    {showEmojiPicker && (
+                    {showEmojiPicker && isAuthenticated && (
                         <div className={styles.pickerPopover}>
                             <EmojiPicker
                                 isOpen={showEmojiPicker}
@@ -481,7 +533,7 @@ export default function ChatPreview({ className }) {
                             />
                         </div>
                     )}
-                    {showGifPicker && (
+                    {showGifPicker && isAuthenticated && (
                         <div className={styles.pickerPopover}>
                             <GifPicker
                                 isOpen={showGifPicker}

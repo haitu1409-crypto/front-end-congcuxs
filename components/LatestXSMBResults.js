@@ -10,6 +10,10 @@ import XSMBSimpleTable from './XSMBSimpleTable';
 import styles from '../styles/LatestXSMBResults.module.css';
 import { isWithinLiveWindow } from '../utils/lotteryUtils';
 
+const ChatPreview = dynamic(() => import('./Chat/ChatPreview'), {
+    ssr: false
+});
+
 const LiveResult = dynamic(() => import('./LiveResult'), {
     loading: () => (
         <div style={{ 
@@ -92,6 +96,11 @@ const LatestXSMBResults = () => {
                         className={styles.tableWrapper}
                     />
                 )}
+            </div>
+
+            {/* Chat Preview - Box chat ở dưới bảng kết quả */}
+            <div className={styles.chatPreviewWrapper}>
+                <ChatPreview />
             </div>
 
         </div>
