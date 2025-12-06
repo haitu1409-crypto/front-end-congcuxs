@@ -1257,7 +1257,7 @@
     }
 
     .number {
-        font-size: 0.95rem; /* ✅ Increased from 0.75rem to 0.95rem for better mobile readability */
+        font-size: 1rem; /* Increased from 0.95rem to 1rem for better mobile readability */
         padding: 1px 0;
         white-space: nowrap;
         overflow: hidden;
@@ -1265,11 +1265,11 @@
     }
 
     .number .lastTwo {
-        font-size: 0.95rem; /* ✅ Increased from 0.75rem to 0.95rem for better mobile readability */
+        font-size: 1rem; /* Increased from 0.95rem to 1rem for better mobile readability */
     }
 
     .date {
-        font-size: 0.65rem; /* ✅ Increased from 0.55rem to 0.65rem for better mobile readability */
+        font-size: 0.6rem; /* Adjusted font-size for mobile */
         margin-top: 1px;
     }
 
