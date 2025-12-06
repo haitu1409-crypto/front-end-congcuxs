@@ -339,7 +339,7 @@
 
 @media (max-width: 768px) {
     .previewCard {
-        max-height: 450px;
+        max-height: 500px;
     }
 
     .body {
@@ -354,7 +354,7 @@
 
 @media (max-width: 480px) {
     .previewCard {
-        max-height: 400px;
+        max-height: 470px;
     }
 
     .body {
