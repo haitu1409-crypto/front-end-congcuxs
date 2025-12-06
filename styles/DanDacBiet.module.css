@@ -60,7 +60,6 @@
 
 /* ===== LỌC, GHÉP DÀN ĐẶC BIỆT SECTION ===== */
 .locGhepSection {
-    margin: 2rem 0;
     padding: 0;
     background: transparent;
     /* ✅ Fix CLS: Reserve space to prevent layout shift */
@@ -1058,7 +1057,7 @@
 
     .heroSection {
         padding: 0 0.75rem;
-        margin-bottom: 1.5rem;
+        margin-top: 14px;
         border-radius: 16px;
     }
 
@@ -1294,7 +1293,7 @@
 
     .heroSection {
         padding: 0 0.5rem;
-        margin-bottom: 1rem;
+        margin-top: 14px;
     }
 
     .heroTitle {
@@ -1433,12 +1432,16 @@
 
     .heroSection {
         padding: 0 0.25rem;
-        margin-bottom: 0.75rem;
+        margin-top: 14px;
     }
 
     .heroTitle {
         font-size: 1.25rem;
        
+    }
+
+    .heroTitleMain {
+        font-size: 1.475rem; /* Reduced from 1.6rem (25.6px) to 23.6px (-2px) */
     }
 
     .heroSubtitle {

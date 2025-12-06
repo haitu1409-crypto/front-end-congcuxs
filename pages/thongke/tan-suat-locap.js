@@ -170,7 +170,7 @@ const TanSuatLoCap = ({ initialStats, initialMetadata, initialDays }) => {
                             Tần Suất Lô Cặp
                         </Link>
                         <Link className={styles.actionTK} href="/thongke/giai-dac-biet">
-                            Giải Đặc Biệt
+                            Đặc Biệt
                         </Link>
                     </div>
                 </div>

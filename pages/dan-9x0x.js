@@ -322,14 +322,11 @@ export default function Dan9x0xPage() {
 
                     {/* Main Generator Section */}
                     <main className={styles.main} id="generator" data-section="generator">
-                        <h2 className={styles.sectionTitles}>
+                        <h1 className={styles.sectionTitles}>
                             {/* <Filter size={20} style={{ display: 'inline', marginRight: '8px' }} /> */}
                             Công Cụ Tạo Dàn Đề 9X-0X Ngẫu Nhiên
-                        </h2>
+                        </h1>
                         <div className={styles.guideButtonRow}>
-                            <Link href="#guide" className={styles.guideButton}>
-                                Hướng dẫn sử dụng
-                            </Link>
                             <Link href="/loc-dan-de" className={styles.guideButton}>
                                 Chuyển tới Lọc Dàn Đề
                             </Link>
@@ -337,44 +334,6 @@ export default function Dan9x0xPage() {
                         <span className={styles.chuthich}>Các Tùy Chọn Khi Tạo Dàn: Thêm Cặp Số Mong Muốn, Loại Bỏ ĐB Đã Ra, Loại Bỏ Kép Bằng, Thêm Bộ Số, Chạm, Tổng</span>
                         <DanDeGenerator />
                     </main>
-                    {/* Guide Section */}
-                    <div id="guide" data-section="guide" className={styles.guideWrapper}>
-                        <section className={styles.guideCard} aria-labelledby="guide-card-title">
-                            <div className={styles.guideCardHeader}>
-                                <h2 id="guide-card-title">Hướng dẫn sử dụng công cụ tạo dàn 9x0x ngẫu nhiên</h2>
-                                <p>Tham khảo chi tiết các bước thiết lập để tận dụng tối đa sức mạnh của công cụ.</p>
-                            </div>
-                            <div className={styles.guideCardContent}>
-                                <p className={styles.guideHighlight}><strong>CÓ 7 TRƯỜNG HỢP SỬ DỤNG</strong></p>
-                                <ul>
-                                    <li>
-                                        <strong>TH1 (không lựa chọn gì cả):</strong> Ấn nút <em>"Tạo Dàn"</em> để tạo dàn số từ 95s - 8s.
-                                    </li>
-                                    <li>
-                                        <strong>TH2 (thêm số mong muốn):</strong> Nhập các <em>"cặp số mong muốn"</em>, sau đó ấn <em>"Tạo Dàn"</em>; các cặp số đã nhập sẽ xuất hiện từ 8s → 95s.<br />
-                                        <em className={styles.guideEmWarning}>Lưu ý:</em> 2 cặp số trùng nhau sẽ chỉ lấy 1, các cặp số cách nhau bằng khoảng trắng hoặc dấu phẩy.
-                                    </li>
-                                    <li>
-                                        <strong>TH3 (loại bỏ số mong muốn):</strong> Nhập các số đặc biệt đã ra gần đây hoặc số muốn loại bỏ, sau đó ấn <em>"Tạo Dàn"</em>; các cặp số đó sẽ không xuất hiện từ 8s - 95s.<br />
-                                        <em className={styles.guideEmWarning}>Lưu ý:</em> chỉ được phép loại bỏ tối đa 20 cặp số.
-                                    </li>
-                                    <li>
-                                        <strong>TH4 (loại bỏ kép bằng):</strong> Tích vào ô <em>"Loại bỏ kép bằng"</em>; các cặp kép bằng từ 00 - 99 sẽ không xuất hiện trong dàn 8s - 90s.<br />
-                                        <em className={styles.guideEmWarning}>Lưu ý:</em> vì loại kép bằng đã loại đi 10 cặp nên dàn chỉ còn 90s.
-                                    </li>
-                                    <li>
-                                        <strong>TH5, TH6, TH7 (chọn bộ số, chạm, tổng):</strong> Chọn các bộ số, chạm, tổng mong muốn rồi ấn <em>"Tạo Dàn"</em>; các lựa chọn này sẽ xuất hiện từ 8s - 95s.<br />
-                                        <em className={styles.guideEmWarning}>Lưu ý:</em> khi chọn nhiều bộ/chạm/tổng khiến số lượng lớn hơn 8s, 18s,... thuật toán sẽ lấy ngẫu nhiên trong tổng số đã chọn.
-                                    </li>
-                                </ul>
-                                <p className={styles.guideWarning}><strong>LƯU Ý THÊM</strong></p>
-                                <ul>
-                                    <li>Bạn có thể kết hợp nhiều "Trường Hợp" lại với nhau để cho ra dàn mong muốn.</li>
-                                    <li>Số mong muốn được thêm và số muốn loại bỏ không được trùng nhau.</li>
-                                </ul>
-                            </div>
-                        </section>
-                    </div>
 
                     {/* Hero Section moved below guide */}
                     <section className={styles.hero}>
@@ -383,9 +342,9 @@ export default function Dan9x0xPage() {
                                 <Star className={styles.heroBadgeIcon} />
                                 <span>Công cụ chuyên nghiệp</span>
                             </div>
-                            <h1 className={styles.heroTitle}>
+                            <h2 className={styles.heroTitle}>
                                 Tạo dàn đề 9x-0x | <span className={styles.heroTitleHighlight}>Lọc Dàn Đề Siêu Cấp</span>
-                            </h1>
+                            </h2>
                             <p className={styles.heroDescription}>
                                 Công cụ tạo dàn 9x0x ngẫu nhiên - Công cụ lọc dàn đề tổng hợp từ các dàn số 4X, 3X, 2X, 1X cho ra dàn số có xác suất trúng cao nhất với thuật toán lọc chuyên nghiệp. Công cụ tạo dàn và lọc dàn có hỗ trợ chọn các bộ số, chạm, tổng, loại bỏ đi kép bằng.
                             </p>

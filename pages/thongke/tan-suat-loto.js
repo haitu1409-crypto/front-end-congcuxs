@@ -150,7 +150,7 @@ const TanSuatLoto = ({ initialStats, initialMetadata, initialDays }) => {
                             Tần Suất Loto
                         </Link>
                         <Link className={styles.actionTK} href="/thongke/giai-dac-biet">
-                            Giải Đặc Biệt
+                            Đặc Biệt
                         </Link>
                     </div>
                 </div>

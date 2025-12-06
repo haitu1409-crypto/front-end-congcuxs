@@ -213,7 +213,7 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                             Lô Gan
                         </Link>
                         <Link className={styles.actionTK} href="/thongke/giai-dac-biet">
-                            Giải Đặc Biệt
+                            Đặc Biệt
                         </Link>
                     </div>
                 </div>

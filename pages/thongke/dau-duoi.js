@@ -394,14 +394,10 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
     };
 
     const getTitle = () => {
-        return (
-            <>
-                Thống kê Đầu Đuôi Loto Xổ Số <span className={styles.highlightProvince}>Miền Bắc</span>
-            </>
-        );
+        return "thống kê Đầu,Đuôi Miền Bắc";
     };
 
-    const pageTitle = `Thống kê Đầu Đuôi Loto Xổ Số Miền Bắc`;
+    const pageTitle = `thống kê Đầu,Đuôi Miền Bắc`;
     // ✅ FIX CLS: Ensure description always has valid values
     const pageDescription = `Xem thống kê Đầu Đuôi loto Xổ số Miền Bắc trong ${days} ngày. Cập nhật mới nhất ${metadata?.startDate && metadata?.endDate && metadata.startDate !== 'N/A' && metadata.endDate !== 'N/A' ? `từ ${metadata.startDate} đến ${metadata.endDate}` : 'hàng ngày'}.`;
 
@@ -422,9 +418,9 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                 <div className={styles.titleGroup}>
                     <h1 className={styles.title}>{getTitle()}</h1>
                     <div className={styles.actionBtn}>
-                        <Link className={styles.actionTK} href="/thongke/giai-dac-biet">Giải Đặc Biệt</Link>
+                        <Link className={styles.actionTK} href="/thongke/giai-dac-biet">Đặc Biệt</Link>
                         <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/dau-duoi') ? styles.active : ''}`} href="/thongke/dau-duoi">Đầu Đuôi</Link>
-                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet-tuan') ? styles.active : ''}`} href="/thongke/giai-dac-biet-tuan">Giải Đặc Biệt Tuần</Link>
+                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet-tuan') ? styles.active : ''}`} href="/thongke/giai-dac-biet-tuan">Đặc Biệt Tuần</Link>
                     </div>
                 </div>
 
@@ -472,6 +468,9 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                             {error && <p className={styles.error}>{error}</p>}
                             {!loading && !error && combinedDauDuoiStats.length > 0 && (
                                 <div>
+                                <div className="metadata">
+                                    <h2 className={styles.title2}>{getMessage()}</h2>
+                                </div>
                                 <table className={styles.tableDauDuoi}>
                                     <caption className={styles.caption}>Thống kê Đầu Đuôi Loto Miền Bắc trong {days} ngày</caption>
                                     <thead>

@@ -938,15 +938,15 @@
     /* Di chuyển buttons lên trên textareas */
     .buttonSection {
         order: -1;
-        margin-bottom: 16px;
+        margin-bottom: 0;
         margin-top: 0;
+        padding: 0;
     }
 
     /* Mobile: Stack textareas vertically */
     .textareaSection {
         grid-template-columns: 1fr;
         gap: 5px;
-        margin-bottom: 20px;
         order: 1;
     }
 
@@ -1064,13 +1064,13 @@
 
     .buttonSection {
         order: -1;
-        margin-bottom: 12px;
+        margin-bottom: 0;
         margin-top: 0;
+        padding: 0;
     }
 
     .textareaSection {
         gap: 5px;
-        margin-bottom: 15px;
         order: 1;
     }
 
@@ -1152,13 +1152,13 @@
 
     .buttonSection {
         order: -1;
-        margin-bottom: 10px;
+        margin-bottom: 0;
         margin-top: 0;
+        padding: 0;
     }
 
     .textareaSection {
         gap: 5px;
-        margin-bottom: 12px;
         order: 1;
     }
 

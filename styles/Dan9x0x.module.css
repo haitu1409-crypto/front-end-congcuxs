@@ -248,6 +248,10 @@
     cursor: pointer;
     box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-block;
+    width: auto;
+    text-align: center;
+    text-decoration: none;
 }
 
 .guideButton:hover,
@@ -283,7 +287,7 @@
     .guideButton {
         padding: 5px 10px;
         font-size: 0.75rem;
-        flex: 1 1 calc(50% - 3px);
+        width: auto;
         min-width: 0;
     }
 }
@@ -800,7 +804,7 @@
     }
 
     .sectionTitles {
-        font-size: 1rem;
+        font-size: 1.375rem; /* Increased from 1.1875rem (19px) to 22px (+3px) */
         margin-bottom: var(--spacing-2);
     }
 
@@ -956,7 +960,7 @@
     }
 
     .sectionTitles {
-        font-size: 0.6875rem;
+        font-size: 1.0625rem; /* Increased from 0.875rem (14px) to 17px (+3px) */
         margin-bottom: var(--spacing-1);
     }
 

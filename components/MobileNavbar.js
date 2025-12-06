@@ -15,9 +15,7 @@ import {
     Zap as ZapIcon,
     Hash,
     Layers,
-    TrendingUp,
-    X,
-    Menu
+    TrendingUp
 } from 'lucide-react';
 import AuthButton from './Auth/AuthButton';
 import styles from '../styles/MobileNavbar.module.css';
@@ -28,7 +26,6 @@ export default function MobileNavbar({
 }) {
     const router = useRouter();
     const [activeNavItem, setActiveNavItem] = useState('generator');
-    const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
     // Helper: Smooth scroll to section with navbar offset
     const smoothScrollToSection = useCallback((sectionId) => {
@@ -249,86 +246,26 @@ export default function MobileNavbar({
 
     const navbarItems = getNavbarItems();
 
-    // Toggle navbar
-    const toggleNavbar = useCallback(() => {
-        setIsNavbarOpen(prev => !prev);
-    }, []);
-
-    // Close navbar
-    const closeNavbar = useCallback(() => {
-        setIsNavbarOpen(false);
-    }, []);
-
-    // Close navbar when route changes
-    useEffect(() => {
-        const handleRouteChange = () => {
-            setIsNavbarOpen(false);
-        };
-
-        router.events?.on('routeChangeStart', handleRouteChange);
-        
-        return () => {
-            router.events?.off('routeChangeStart', handleRouteChange);
-        };
-    }, [router]);
-
-    // Update handleNavItemClick to close navbar after navigation
-    const handleNavItemClickWithClose = useCallback((itemId) => {
-        handleNavItemClick(itemId);
-        // Close navbar after a short delay to allow navigation
-        setTimeout(() => {
-            setIsNavbarOpen(false);
-        }, 300);
-    }, [handleNavItemClick]);
-
     return (
-        <>
-            {/* Toggle Button - Always visible */}
-            <button
-                className={styles.mobileNavbarToggle}
-                onClick={toggleNavbar}
-                aria-label={isNavbarOpen ? 'Đóng menu' : 'Mở menu'}
-            >
-                {isNavbarOpen ? (
-                    <X size={24} className={styles.mobileNavbarToggleIcon} />
-                ) : (
-                    <Menu size={24} className={styles.mobileNavbarToggleIcon} />
-                )}
-            </button>
+        <div className={styles.mobileNavbar}>
+            <div className={styles.mobileNavbarContainer}>
+                {navbarItems.map((item) => {
+                    const IconComponent = item.icon;
+                    const isActive = activeNavItem === item.id ||
+                        (item.href && router.pathname === item.href);
 
-            {/* Overlay - Only visible when navbar is open */}
-            {isNavbarOpen && (
-                <div
-                    className={styles.mobileNavbarOverlay}
-                    onClick={closeNavbar}
-                    onTouchStart={closeNavbar}
-                    aria-hidden={!isNavbarOpen}
-                    role="button"
-                    tabIndex={-1}
-                />
-            )}
-
-            {/* Mobile Navbar - Slide in/out animation */}
-            <div className={`${styles.mobileNavbar} ${isNavbarOpen ? styles.mobileNavbarOpen : ''}`}>
-                <div className={styles.mobileNavbarContainer}>
-                    {navbarItems.map((item) => {
-                        const IconComponent = item.icon;
-                        const isActive = activeNavItem === item.id ||
-                            (item.href && router.pathname === item.href);
-
-                        return (
-                            <button
-                                key={item.id}
-                                className={`${styles.mobileNavbarItem} ${isActive ? styles.active : ''}`}
-                                onClick={() => handleNavItemClickWithClose(item.id)}
-                            >
-                                <IconComponent className={styles.mobileNavbarIcon} />
-                                {item.label}
-                            </button>
-                        );
-                    })}
-                </div>
+                    return (
+                        <button
+                            key={item.id}
+                            className={`${styles.mobileNavbarItem} ${isActive ? styles.active : ''}`}
+                            onClick={() => handleNavItemClick(item.id)}
+                        >
+                            <IconComponent className={styles.mobileNavbarIcon} />
+                            {item.label}
+                        </button>
+                    );
+                })}
             </div>
-        </>
+        </div>
     );
 }

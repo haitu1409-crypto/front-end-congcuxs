@@ -3,7 +3,6 @@
  * Công cụ lọc dàn tổng hợp tách riêng khỏi trang Dàn 9x-0x
  */
 
-import Link from 'next/link';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
@@ -176,71 +175,16 @@ export default function LocDanDePage() {
                 <meta name="theme-color" content="#3b82f6" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <style dangerouslySetInnerHTML={{
-                    __html: `
-                        .hero-back-button-wrapper {
-                            display: flex;
-                            justify-content: center;
-                        }
-                        .hero-back-button {
-                            padding: 10px 22px;
-                            border-radius: 999px;
-                            border: 2px solid #2563eb;
-                            color: #2563eb;
-                            font-weight: 600;
-                            font-size: 14px;
-                            text-align: center;
-                            transition: all 0.2s ease;
-                        }
-                        .hero-back-button:hover,
-                        .hero-back-button:focus-visible {
-                            background: #2563eb;
-                            color: #fff;
-                            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
-                            outline: none;
-                        }
-                        @media (max-width: 768px) {
-                            .hero-back-button-wrapper {
-                                justify-content: center;
-                                margin-bottom: 8px;
-                            }
-                            .hero-back-button {
-                                width: 100%;
-                                max-width: 320px;
-                                padding: 8px 16px;
-                                font-size: 13px;
-                                border-width: 1.5px;
-                            }
-                        }
-                        @media (max-width: 480px) {
-                            .hero-back-button-wrapper {
-                                margin-bottom: 6px;
-                            }
-                            .hero-back-button {
-                                padding: 6px 12px;
-                                font-size: 12px;
-                                border-width: 1px;
-                                max-width: 100%;
-                            }
-                        }
-                    `
-                }} />
             </Head>
 
             <Layout>
                 <div className={styles.container}>
-                    <div className="hero-back-button-wrapper">
-                        <Link href="/dan-9x0x" className="hero-back-button">
-                            Quay lại tạo dàn 9x-0x
-                        </Link>
-                    </div>
-
                     <MobileNavbar currentPage="loc-dan-de" showCurrentPageItems={false} />
 
                     <section className={styles.main2} id="filter" data-section="filter">
-                        <h2 className={styles.sectionTitles} style={{ textAlign: 'center', marginBottom: 'var(--spacing-4)' }}>
+                        <h1 className={styles.sectionTitles} style={{ textAlign: 'center', marginBottom: '10px' }}>
                             Công Cụ Lọc Dàn Đề Tổng Hợp
-                        </h2>
+                        </h1>
                         <span className={styles.chuthich}>
                             Hãy copy dàn 9x-0x, 3X, 2X, 1X, 0X – thêm điều kiện và nhấn “Lọc Dàn” để nhận dàn tối ưu theo vốn.
                         </span>
@@ -251,7 +195,6 @@ export default function LocDanDePage() {
                         <section className={styles.guideCard} aria-labelledby="filter-guide-title">
                             <div className={styles.guideCardHeader}>
                                 <h2 id="filter-guide-title">4 bước lọc dàn đề siêu cấp</h2>
-                                <p>Áp dụng đúng quy trình để tránh xung đột số và tận dụng hết sức mạnh bộ lọc.</p>
                             </div>
                             <div className={styles.guideCardContent}>
                                 <ul>

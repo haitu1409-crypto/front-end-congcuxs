@@ -23,7 +23,7 @@
     width: 100%;
     color: #ed1c25;
     text-align: center;
-    font-weight: 600;
+    font-weight: 700;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -610,7 +610,7 @@
         padding: 4px 2px;
         font-size: 0.85rem;
         line-height: 1.2;
-        font-weight: 600;
+        font-weight: 700;
         flex: 1;
         min-width: 0;
     }
@@ -743,9 +743,9 @@
 
     .actionTK {
         padding: 2px 1px;
-        font-size: 0.85rem;
+        font-size: 1.05rem; /* Increased from 0.85rem (+3px) */
         line-height: 1.1;
-        font-weight: 600;
+        font-weight: 700;
         flex: 1;
         min-width: 0;
     }

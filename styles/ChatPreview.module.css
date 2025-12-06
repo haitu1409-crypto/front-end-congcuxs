@@ -1,6 +1,6 @@
 .previewCard {
     border: 1px solid rgba(180, 194, 211, 0.9);
-    
+
     background: #ffffff;
     display: flex;
     flex-direction: column;
@@ -339,7 +339,22 @@
 
 @media (max-width: 768px) {
     .previewCard {
-        max-height: none;
+        max-height: 450px;
+    }
+
+    .body {
+        padding: 8px;
+    }
+
+    .messageLine {
+        padding: 6px 8px;
+        font-size: 12.5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .previewCard {
+        max-height: 400px;
     }
 
     .body {

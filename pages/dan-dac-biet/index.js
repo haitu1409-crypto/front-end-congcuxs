@@ -246,9 +246,7 @@ export default function DanDacBietPage() {
                         <div className={styles.heroSection}>
                             <div className={styles.heroContent}>
                                 <h1 className={styles.heroTitle}>
-                                    <span className={styles.heroTitleMain}>
-                                        Lọc, Ghép Dàn | Lấy Nhanh Dàn | Tạo Dàn Đầu, Đuôi, Chạm, Bộ
-                                    </span>
+                                    Lọc, Ghép Dàn | Lấy Nhanh Dàn | Tạo Dàn Đầu, Đuôi, Chạm, Bộ
                                 </h1>
 
                             </div>

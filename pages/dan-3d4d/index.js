@@ -26,10 +26,6 @@ const DefinitionSnippet = dynamic(() =>
     { ssr: false, loading: () => null }
 );
 
-const TableSnippet = dynamic(() =>
-    import('../../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.TableSnippet })),
-    { ssr: false, loading: () => null }
-);
 
 // Lazy load heavy components for better PageSpeed
 const Dan3DGenerator = dynamic(() => import('../../components/DanDe/Dan3DGenerator'), {
@@ -230,20 +226,6 @@ const Dan3D4DPage = memo(function Dan3D4DPage() {
                             'Dàn 3D: 123, 456, 789 (3 chữ số)',
                             'Dàn 4D: 1234, 5678 (4 chữ số)',
                             'Tách AB-BC-CD: 12345 → 12, 23, 34, 45'
-                        ]}
-                    />
-
-                    {/* Comparison Table */}
-                    <TableSnippet
-                        title="So Sánh Dàn 3D vs Dàn 4D"
-                        headers={['Tiêu Chí', 'Dàn 3D', 'Dàn 4D']}
-                        rows={[
-                            ['Số lượng', '1,000 số (000-999)', '10,000 số (0000-9999)'],
-                            ['Tỷ lệ trúng', '1/1,000', '1/10,000'],
-                            ['Tiền thưởng', 'Trung bình', 'Rất cao'],
-                            ['Độ khó', 'Trung bình', 'Khó'],
-                            ['Phù hợp', 'Người chơi trung cấp', 'Cao thủ xổ số'],
-                            ['Chiến lược', 'Nuôi 3-5 ngày', 'Chơi đặc biệt']
                         ]}
                     />
 
