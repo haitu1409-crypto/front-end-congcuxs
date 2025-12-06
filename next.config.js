@@ -162,8 +162,8 @@ const nextConfig = {
     },
 
     // ✅ Performance: Modern browser targets (ES2020+)
-    // This tells Next.js to target modern browsers and avoid unnecessary polyfills
-    swcMinify: true,
+    // Note: swcMinify is deprecated in Next.js 15+ (enabled by default)
+    // SWC minification is now always enabled, no need to specify
     
     // ✅ Performance: Configure SWC to target modern browsers (ES2020+)
     // This reduces polyfills by ~14 KiB
