@@ -59,6 +59,7 @@
     width: 100%;
     color: #0396FF;
     text-align: center;
+    font-weight: 600;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -104,6 +105,22 @@
     box-sizing: border-box;
     display: block;
     line-height: 1.4;
+    text-transform: uppercase;
+}
+
+/* Class riêng cho h2 - nhỏ hơn h1 một chút */
+.title2 {
+    font-family: "Inter", sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #c80505;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    text-align: center;
+    line-height: 1.4;
+    contain: layout style;
+    box-sizing: border-box;
+    display: block;
 }
 
 /* ✅ FIX CLS: Table container to prevent CLS */
@@ -737,6 +754,12 @@
         margin-bottom: 4px;
     }
 
+    .title2 {
+        font-size: 1.2rem;
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
     .group_Select {
         gap: 6px;
         margin-top: 16px;
@@ -820,14 +843,21 @@
     .titleGroup {
         padding: 12px 8px;
         margin-bottom: 16px;
-        min-height: 110px !important;
+        min-height: 80px !important;
         /* ✅ FIX CLS: Reserve space on mobile */
     }
 
     .title {
-        font-size: 1rem;
+        font-size: 1.1rem;
         margin-top: 10px;
         margin-bottom: 3px;
+        line-height: 1.3;
+    }
+
+    .title2 {
+        font-size: 1rem;
+        margin-top: 8px;
+        margin-bottom: 8px;
         line-height: 1.3;
     }
 
@@ -861,16 +891,17 @@
     .actionBtn {
         display: flex;
         flex-direction: row;
-        gap: 4px;
+        gap: 3px;
         background-color: #ffffff;
         align-items: center;
         justify-content: center;
     }
 
     .actionTK {
-        padding: 6px 4px;
-        font-size: 0.75rem;
+        padding: 4px 2px;
+        font-size: 0.85rem;
         line-height: 1.2;
+        font-weight: 600;
         flex: 1;
         min-width: 0;
     }
@@ -930,15 +961,24 @@
     .titleGroup {
         padding: 10px 6px;
         margin-bottom: 12px;
-        min-height: 100px !important;
+        min-height: 80px !important;
         /* ✅ FIX CLS: Reserve space on small mobile */
     }
 
     .title {
-        font-size: 0.9rem;
+        font-size: 1.1rem;
         margin-top: 10px;
         margin-bottom: 2px;
-        line-height: 1.2;
+        line-height: 1.3;
+    }
+
+    .title2 {
+        font-size: 0.95rem;
+        margin-top: 6px;
+        margin-bottom: 6px;
+        min-height: 0px !important;
+        height: 33px !important;
+        line-height: 1.3;
     }
 
     /* ✅ FIX CLS: Ensure table container has proper min-height on small mobile */
@@ -972,16 +1012,17 @@
     .actionBtn {
         display: flex;
         flex-direction: row;
-        gap: 3px;
+        gap: 2px;
         background-color: #ffffff;
         align-items: center;
         justify-content: center;
     }
 
     .actionTK {
-        padding: 5px 3px;
-        font-size: 0.7rem;
+        padding: 4px 2px;
+        font-size: 0.8rem;
         line-height: 1.1;
+        font-weight: 600;
         flex: 1;
         min-width: 0;
     }

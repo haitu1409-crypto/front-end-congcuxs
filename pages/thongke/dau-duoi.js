@@ -529,7 +529,7 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                         {!specialLoading && !specialError && memoizedSpecialDauDuoiStats.length > 0 && (
                             <div className="mt-8">
                             <div className="metadata">
-                                <h2 className={`${styles.title} ${styles.title2}`}>{getSpecialMessage()}</h2>
+                                <h2 className={styles.title2}>{getSpecialMessage()}</h2>
                             </div>
 
                             <div className={styles.group_Select}>
@@ -609,7 +609,7 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                     {/* Bảng 3: Thống kê Đầu Loto theo ngày */}
                     <div>
                         <div className="metadata">
-                            <h2 className={styles.title}>{getDauByDateMessage()}</h2>
+                            <h2 className={styles.title2}>{getDauByDateMessage()}</h2>
                         </div>
 
                         <div className={styles.group_Select}>
@@ -702,7 +702,7 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                     {/* Bảng 4: Thống kê Đuôi Loto theo ngày */}
                     <div>
                         <div className="metadata">
-                            <h2 className={styles.title}>{getDuoiByDateMessage()}</h2>
+                            <h2 className={styles.title2}>{getDuoiByDateMessage()}</h2>
                         </div>
 
                         <div className={styles.group_Select}>

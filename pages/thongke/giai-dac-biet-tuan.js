@@ -229,7 +229,7 @@ const GiaiDacBietTheoTuan = ({ initialStats, initialMetadata, initialMonth, init
 
                 <div className={styles.content}>
                     <div className="metadata">
-                        <p className={styles.title}>Thống kê giải đặc biệt từ {metadata.startDate || ''} đến {metadata.endDate || ''}</p>
+                        <p className={styles.metadataTitle}>Thống kê giải đặc biệt từ {metadata.startDate || ''} đến {metadata.endDate || ''}</p>
                     </div>
 
                     {/* Bộ lọc: Tháng, Năm */}
