@@ -176,8 +176,14 @@ export default function SEOOptimized({
     const description = customDescription || pageConfig.description;
     const keywords = customKeywords || pageConfig.keywords;
 
-    // Fix canonical URL logic
-    const fullUrl = canonical || (pageType === 'home' ? siteUrl : `${siteUrl}/${pageType}`);
+    // Fix canonical URL logic - ensure homepage has trailing slash
+    let fullUrl = canonical || (pageType === 'home' ? siteUrl : `${siteUrl}/${pageType}`);
+    // Normalize: ensure homepage ends with /, other pages don't have trailing slash
+    if (pageType === 'home' && !fullUrl.endsWith('/')) {
+        fullUrl = fullUrl + '/';
+    } else if (pageType !== 'home' && fullUrl.endsWith('/') && fullUrl !== siteUrl + '/') {
+        fullUrl = fullUrl.replace(/\/+$/, '');
+    }
     const currentDate = new Date().toISOString();
 
     return (

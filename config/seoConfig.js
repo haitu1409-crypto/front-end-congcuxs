@@ -213,7 +213,7 @@ const SEO_CONFIG = {
         ],
         url: '/',
         image: OG_IMAGES.default,
-        canonical: SITE_URL,
+        canonical: SITE_URL + '/', // Ensure trailing slash for homepage
         type: 'website',
         priority: 1.0,
         changefreq: 'daily',
