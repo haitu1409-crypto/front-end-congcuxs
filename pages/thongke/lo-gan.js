@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo, lazy, Suspense, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, lazy, Suspense, useRef, startTransition } from 'react';
 import Head from 'next/head';
 import Layout from '../../components/Layout';
 import { apiMB } from '../api/kqxsMB';
@@ -53,6 +53,7 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const scrollBtnRef = useRef(null);
     const scrollTimeoutRef = useRef(null);
 
@@ -112,9 +113,24 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
         }));
     }, [stats]);
 
+    // ✅ FIX: Mark component as mounted after hydration
     useEffect(() => {
-        fetchLoGanStats(days);
-    }, [days, fetchLoGanStats]);
+        setIsMounted(true);
+    }, []);
+
+    // ✅ FIX: Prevent hydration error by only fetching when days changes (not on initial mount if SSR data exists)
+    useEffect(() => {
+        // Skip fetch on initial mount if we have SSR data
+        if (!isMounted) return;
+
+        // Only fetch if days changed from initial value
+        if (days !== initialDays) {
+            // Wrap in startTransition to prevent hydration error
+            startTransition(() => {
+                fetchLoGanStats(days);
+            });
+        }
+    }, [days, fetchLoGanStats, initialDays, isMounted]);
 
     // Optimized scroll handler with debounce and CSS-based visibility
     useEffect(() => {
@@ -122,12 +138,12 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
             if (scrollTimeoutRef.current) {
                 cancelAnimationFrame(scrollTimeoutRef.current);
             }
-            
+
             scrollTimeoutRef.current = requestAnimationFrame(() => {
                 const scrollTop = window.scrollY || document.documentElement.scrollTop;
                 const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
                 const scrollPercentage = (scrollTop / windowHeight) * 100;
-                
+
                 if (scrollBtnRef.current) {
                     if (scrollPercentage > 50) {
                         scrollBtnRef.current.classList.add(styles.scrollBtnVisible);
@@ -137,7 +153,7 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                 }
             });
         };
-        
+
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => {
             window.removeEventListener('scroll', handleScroll);
@@ -181,15 +197,9 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
 
     return (
         <Layout>
-            <Head>
-                {/* Preload critical CSS for LCP element */}
-                <link
-                    rel="preload"
-                    href="/styles/logan.module.css"
-                    as="style"
-                />
-            </Head>
-            <StatisticsSEO 
+            {/* ✅ REMOVED: CSS module preload - Next.js bundles CSS modules automatically */}
+            {/* Preloading CSS modules from /styles/ causes MIME type errors */}
+            <StatisticsSEO
                 pageType="lo-gan"
                 metadata={{
                     startDate: metadata.startDate,
@@ -221,12 +231,12 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                 <div className={styles.content}>
                     <div className={styles.groupSelect}>
                         <div className={styles.selectGroup}>
-                            <label className={styles.options}>Thời gian:</label>
+                            <label className={styles.options}>Biên độ gan:</label>
                             <select
                                 className={styles.selectBox}
                                 value={days}
                                 onChange={handleDaysChange}
-                                aria-label="Chọn thời gian để xem thống kê lô gan"
+                                aria-label="Chọn biên độ gan để xem thống kê lô gan"
                             >
                                 <option value={6}>6 ngày</option>
                                 <option value={7}>7 đến 14 ngày</option>
@@ -234,17 +244,7 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                                 <option value={30}>30 ngày</option>
                                 <option value={60}>60 ngày</option>
                             </select>
-                    </div>
-
-                    {/* ✅ FIX CLS: Reserve space for dateTimeContainer */}
-                    <div className={styles.dateTimeContainer}>
-                        <span className={styles.dateTime}>
-                            <span>Ngày bắt đầu:</span> <span className={styles.dateValue}>{metadata?.startDate || 'N/A'}</span>
-                        </span>
-                        <span className={styles.dateTime}>
-                            <span>Ngày kết thúc:</span> <span className={styles.dateValue}>{metadata?.endDate || 'N/A'}</span>
-                        </span>
-                    </div>
+                        </div>
                     </div>
                 </div>
 

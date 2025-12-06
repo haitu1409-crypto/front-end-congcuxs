@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import Layout from '../../components/Layout';
 import styles from '../../styles/giaidacbiet.module.css';
-import ThongKe from '../../components/ThongKe';
-import CongCuHot from '../../components/CongCuHot';
+// Removed unused imports - ThongKe and CongCuHot only render empty divs
 import { apiMB } from '../api/kqxsMB';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -451,11 +450,7 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
                 </div>
             </div>
 
-            {/* ✅ FIX CLS: Reserve space for lazy loaded components */}
-            <div className={styles.lazyComponentsContainer}>
-                <ThongKe />
-                <CongCuHot />
-            </div>
+            {/* ✅ Removed empty ThongKe and CongCuHot components - they only render empty divs */}
 
             <button
                 id="scrollToTopBtn"

@@ -542,7 +542,7 @@
 
 /* Highlight cell khi được click */
 .highlightedCell {
-    background-color: #ffab47 !important;
+    background-color: #8bc34a82 !important;
     transition: background-color 0.2s ease;
 }
 
@@ -1257,7 +1257,7 @@
     }
 
     .number {
-        font-size: 0.75rem;
+        font-size: 0.95rem; /* ✅ Increased from 0.75rem to 0.95rem for better mobile readability */
         padding: 1px 0;
         white-space: nowrap;
         overflow: hidden;
@@ -1265,11 +1265,11 @@
     }
 
     .number .lastTwo {
-        font-size: 0.75rem;
+        font-size: 0.95rem; /* ✅ Increased from 0.75rem to 0.95rem for better mobile readability */
     }
 
     .date {
-        font-size: 0.55rem;
+        font-size: 0.65rem; /* ✅ Increased from 0.55rem to 0.65rem for better mobile readability */
         margin-top: 1px;
     }
 
