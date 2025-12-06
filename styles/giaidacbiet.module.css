@@ -12,7 +12,7 @@
     font-display: swap;
 }
 
-/* Tiêu đề chính */
+/* ✅ FIX CLS: Tiêu đề chính - reserve space */
 .titleGroup {
     text-align: center;
     padding: 24px 12px;
@@ -21,6 +21,12 @@
     background: #ffeca0;
     border-radius: 8px;
     margin-bottom: 24px;
+    contain: layout style paint;
+    min-height: 140px; /* ✅ Reserve space to prevent shift */
+    height: auto;
+    box-sizing: border-box;
+    position: relative;
+    will-change: contents;
 }
 
 .caption {
@@ -96,6 +102,38 @@
     margin-bottom: 4px;
     line-height: 1.4;
     text-align: center;
+    min-height: 2.5rem; /* ✅ FIX CLS: Reserve space for title */
+    contain: layout style;
+    box-sizing: border-box;
+    display: block;
+}
+
+/* ✅ FIX CLS: Metadata container - reserve space */
+.metadata {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    min-height: 60px; /* Reserve space */
+    contain: layout style;
+    box-sizing: border-box;
+}
+
+.metadataTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: center;
+    margin: 0;
+    min-height: 1.5em; /* Reserve space */
+    contain: layout style;
+    line-height: 1.5;
+}
+
+.dateValue {
+    display: inline-block;
+    min-width: 80px; /* Reserve space for date */
+    text-align: left;
+    font-weight: 700;
+    color: #c80505;
 }
 
 /* Nội dung chính */
@@ -106,6 +144,7 @@
     background-color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease;
+    contain: layout style paint;
 }
 
 .content:hover {
@@ -316,11 +355,23 @@
     display: none;
 }
 
-/* Bảng dữ liệu */
+/* ✅ FIX CLS: Bảng dữ liệu - reserve space */
 .tableContainer {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    min-height: 500px; /* ✅ Reserve space to match table height */
+    contain: layout style;
+    position: relative;
+    box-sizing: border-box;
+    will-change: contents;
+}
+
+/* ✅ FIX CLS: Skeleton wrapper to ensure same dimensions */
+.skeletonWrapper {
+    min-height: 500px;
+    contain: layout style;
+    display: block;
 }
 
 .table {
@@ -578,13 +629,16 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Skeleton loading */
+/* ✅ FIX CLS: Skeleton loading with exact dimensions */
 .skeleton {
     background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
     height: 20px;
     border-radius: 4px;
+    min-width: 50px; /* Prevent width collapse */
+    display: inline-block;
+    contain: layout style;
 }
 
 @keyframes shimmer {
@@ -733,6 +787,14 @@
     transform: translateY(0);
 }
 
+/* ✅ FIX CLS: Lazy components container to prevent shift */
+.lazyComponentsContainer {
+    margin-top: 32px;
+    min-height: 400px; /* Reserve space for ThongKe and CongCuHot */
+    contain: layout style;
+    box-sizing: border-box;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .container {
@@ -757,10 +819,25 @@
 
     .titleGroup {
         padding: 16px 8px;
+        min-height: 120px !important; /* ✅ FIX CLS: Reserve space on tablet */
     }
 
     .title {
         font-size: 1.4rem;
+    }
+    
+    /* ✅ FIX CLS: Ensure table container has proper min-height on tablet */
+    .tableContainer {
+        min-height: 450px !important;
+    }
+    
+    .skeletonWrapper {
+        min-height: 450px !important;
+    }
+    
+    /* ✅ FIX CLS: Reserve space for metadata */
+    .metadata {
+        min-height: 55px !important;
     }
 
     .group_Select {
@@ -832,6 +909,7 @@
     .titleGroup {
         padding: 12px 8px;
         margin-bottom: 16px;
+        min-height: 110px !important; /* ✅ FIX CLS: Reserve space on mobile */
     }
 
     .title {
@@ -839,6 +917,34 @@
         margin-top: 3px;
         margin-bottom: 3px;
         line-height: 1.5;
+    }
+    
+    /* ✅ FIX CLS: Ensure table container has proper min-height on mobile */
+    .tableContainer {
+        min-height: 400px !important;
+    }
+    
+    .skeletonWrapper {
+        min-height: 400px !important;
+    }
+    
+    /* ✅ FIX CLS: Reserve space for metadata on mobile */
+    .metadata {
+        min-height: 50px !important;
+    }
+    
+    .metadataTitle {
+        min-height: 1.3em !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .dateValue {
+        min-width: 70px !important;
+    }
+    
+    /* ✅ FIX CLS: Reserve space for lazy components */
+    .lazyComponentsContainer {
+        min-height: 350px !important;
     }
 
     .actionBtn {
@@ -1032,6 +1138,7 @@
     .titleGroup {
         padding: 10px 6px;
         margin-bottom: 12px;
+        min-height: 100px !important; /* ✅ FIX CLS: Reserve space on small mobile */
     }
 
     .title {
@@ -1039,6 +1146,34 @@
         margin-top: 2px;
         margin-bottom: 2px;
         line-height: 1.5;
+    }
+    
+    /* ✅ FIX CLS: Ensure table container has proper min-height on small mobile */
+    .tableContainer {
+        min-height: 350px !important;
+    }
+    
+    .skeletonWrapper {
+        min-height: 350px !important;
+    }
+    
+    /* ✅ FIX CLS: Reserve space for metadata on small mobile */
+    .metadata {
+        min-height: 45px !important;
+    }
+    
+    .metadataTitle {
+        min-height: 1.2em !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .dateValue {
+        min-width: 60px !important;
+    }
+    
+    /* ✅ FIX CLS: Reserve space for lazy components */
+    .lazyComponentsContainer {
+        min-height: 300px !important;
     }
 
     .actionBtn {

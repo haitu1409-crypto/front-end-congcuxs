@@ -79,26 +79,44 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
     const router = useRouter();
     const [dauStats, setDauStats] = useState(initialDauStats || []);
     const [duoiStats, setDuoiStats] = useState(initialDuoiStats || []);
-    const [metadata, setMetadata] = useState(initialMetadata || {});
+    // ✅ FIX CLS: Ensure metadata always has default values to prevent shift
+    const [metadata, setMetadata] = useState(initialMetadata || {
+        startDate: 'N/A',
+        endDate: 'N/A',
+        totalDraws: 0
+    });
     const [days, setDays] = useState(initialDays || 30);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const [specialDauDuoiStats, setSpecialDauDuoiStats] = useState(initialSpecialDauDuoiStats || []);
     const [specialDays, setSpecialDays] = useState(initialDays || 30);
-    const [specialMetadata, setSpecialMetadata] = useState(initialMetadata || {});
+    // ✅ FIX CLS: Ensure specialMetadata always has default values
+    const [specialMetadata, setSpecialMetadata] = useState(initialMetadata || {
+        startDate: 'N/A',
+        endDate: 'N/A',
+        totalDraws: 0
+    });
     const [specialLoading, setSpecialLoading] = useState(false);
     const [specialError, setSpecialError] = useState(null);
 
     const [dauStatsByDate, setDauStatsByDate] = useState({});
     const [dauByDateDays, setDauByDateDays] = useState(initialDays || 30);
-    const [dauByDateMetadata, setDauByDateMetadata] = useState(initialMetadata || {});
+    // ✅ FIX CLS: Ensure dauByDateMetadata always has default values
+    const [dauByDateMetadata, setDauByDateMetadata] = useState(initialMetadata || {
+        startDate: 'N/A',
+        endDate: 'N/A'
+    });
     const [dauByDateLoading, setDauByDateLoading] = useState(false);
     const [dauByDateError, setDauByDateError] = useState(null);
 
     const [duoiStatsByDate, setDuoiStatsByDate] = useState({});
     const [duoiByDateDays, setDuoiByDateDays] = useState(initialDays || 30);
-    const [duoiByDateMetadata, setDuoiByDateMetadata] = useState(initialMetadata || {});
+    // ✅ FIX CLS: Ensure duoiByDateMetadata always has default values
+    const [duoiByDateMetadata, setDuoiByDateMetadata] = useState(initialMetadata || {
+        startDate: 'N/A',
+        endDate: 'N/A'
+    });
     const [duoiByDateLoading, setDuoiByDateLoading] = useState(false);
     const [duoiByDateError, setDuoiByDateError] = useState(null);
 
@@ -182,13 +200,24 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
             const data = await apiMB.getDauDuoiStats(days);
             setDauStats(data.dauStats || []);
             setDuoiStats(data.duoiStats || []);
-            setMetadata(data.metadata || {});
+            // ✅ FIX CLS: Ensure metadata always has default values
+            setMetadata({
+                startDate: data.metadata?.startDate || 'N/A',
+                endDate: data.metadata?.endDate || 'N/A',
+                totalDraws: data.metadata?.totalDraws || 0,
+                ...data.metadata
+            });
         } catch (err) {
             const errorMessage = err.message || 'Có lỗi xảy ra khi lấy dữ liệu.';
             setError(errorMessage);
             setDauStats([]);
             setDuoiStats([]);
-            setMetadata({});
+            // ✅ FIX CLS: Keep default metadata values even on error
+            setMetadata({
+                startDate: 'N/A',
+                endDate: 'N/A',
+                totalDraws: 0
+            });
         } finally {
             setLoading(false);
         }
@@ -200,12 +229,23 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
         try {
             const specialData = await apiMB.getDauDuoiStats(specialDays);
             setSpecialDauDuoiStats(specialData.specialDauDuoiStats || []);
-            setSpecialMetadata(specialData.metadata || {});
+            // ✅ FIX CLS: Ensure specialMetadata always has default values
+            setSpecialMetadata({
+                startDate: specialData.metadata?.startDate || 'N/A',
+                endDate: specialData.metadata?.endDate || 'N/A',
+                totalDraws: specialData.metadata?.totalDraws || 0,
+                ...specialData.metadata
+            });
         } catch (err) {
             const errorMessage = err.message || 'Có lỗi xảy ra khi lấy dữ liệu.';
             setSpecialError(errorMessage);
             setSpecialDauDuoiStats([]);
-            setSpecialMetadata({});
+            // ✅ FIX CLS: Keep default metadata values even on error
+            setSpecialMetadata({
+                startDate: 'N/A',
+                endDate: 'N/A',
+                totalDraws: 0
+            });
         } finally {
             setSpecialLoading(false);
         }
@@ -217,12 +257,21 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
         try {
             const data = await apiMB.getDauDuoiStatsByDate(dauByDateDays);
             setDauStatsByDate(data.dauStatsByDate || {});
-            setDauByDateMetadata(data.metadata || {});
+            // ✅ FIX CLS: Ensure metadata always has default values
+            setDauByDateMetadata({
+                startDate: data.metadata?.startDate || 'N/A',
+                endDate: data.metadata?.endDate || 'N/A',
+                ...data.metadata
+            });
         } catch (err) {
             const errorMessage = err.message || 'Có lỗi xảy ra khi lấy dữ liệu.';
             setDauByDateError(errorMessage);
             setDauStatsByDate({});
-            setDauByDateMetadata({});
+            // ✅ FIX CLS: Keep default metadata values even on error
+            setDauByDateMetadata({
+                startDate: 'N/A',
+                endDate: 'N/A'
+            });
         } finally {
             setDauByDateLoading(false);
         }
@@ -234,12 +283,21 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
         try {
             const data = await apiMB.getDauDuoiStatsByDate(duoiByDateDays);
             setDuoiStatsByDate(data.duoiStatsByDate || {});
-            setDuoiByDateMetadata(data.metadata || {});
+            // ✅ FIX CLS: Ensure metadata always has default values
+            setDuoiByDateMetadata({
+                startDate: data.metadata?.startDate || 'N/A',
+                endDate: data.metadata?.endDate || 'N/A',
+                ...data.metadata
+            });
         } catch (err) {
             const errorMessage = err.message || 'Có lỗi xảy ra khi lấy dữ liệu.';
             setDuoiByDateError(errorMessage);
             setDuoiStatsByDate({});
-            setDuoiByDateMetadata({});
+            // ✅ FIX CLS: Keep default metadata values even on error
+            setDuoiByDateMetadata({
+                startDate: 'N/A',
+                endDate: 'N/A'
+            });
         } finally {
             setDuoiByDateLoading(false);
         }
@@ -344,7 +402,8 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
     };
 
     const pageTitle = `Thống kê Đầu Đuôi Loto Xổ Số Miền Bắc`;
-    const pageDescription = `Xem thống kê Đầu Đuôi loto Xổ số Miền Bắc trong ${days} ngày. Cập nhật mới nhất ${metadata.startDate && metadata.endDate ? `từ ${metadata.startDate} đến ${metadata.endDate}` : 'hàng ngày'}.`;
+    // ✅ FIX CLS: Ensure description always has valid values
+    const pageDescription = `Xem thống kê Đầu Đuôi loto Xổ số Miền Bắc trong ${days} ngày. Cập nhật mới nhất ${metadata?.startDate && metadata?.endDate && metadata.startDate !== 'N/A' && metadata.endDate !== 'N/A' ? `từ ${metadata.startDate} đến ${metadata.endDate}` : 'hàng ngày'}.`;
 
     return (
         <Layout>
@@ -392,20 +451,27 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                 </select>
                             </div>
 
+                            {/* ✅ FIX CLS: Reserve space for dateTimeContainer */}
                             <div className={styles.dateTimeContainer}>
                                 <span className={styles.dateTime}>
-                                    <span>Ngày bắt đầu:</span> {metadata.startDate || 'N/A'}
+                                    <span>Ngày bắt đầu:</span> <span className={styles.dateValue}>{metadata?.startDate || 'N/A'}</span>
                                 </span>
                                 <span className={styles.dateTime}>
-                                    <span>Ngày kết thúc:</span> {metadata.endDate || 'N/A'}
+                                    <span>Ngày kết thúc:</span> <span className={styles.dateValue}>{metadata?.endDate || 'N/A'}</span>
                                 </span>
                             </div>
                         </div>
 
-                        {loading && <SkeletonTable />}
-                        {error && <p className={styles.error}>{error}</p>}
-                        {!loading && !error && combinedDauDuoiStats.length > 0 && (
-                            <div>
+                        {/* ✅ FIX CLS: Fixed height container with proper min-height */}
+                        <div className={styles.tableContainer}>
+                            {loading && (
+                                <div className={styles.skeletonWrapper}>
+                                    <SkeletonTable />
+                                </div>
+                            )}
+                            {error && <p className={styles.error}>{error}</p>}
+                            {!loading && !error && combinedDauDuoiStats.length > 0 && (
+                                <div>
                                 <table className={styles.tableDauDuoi}>
                                     <caption className={styles.caption}>Thống kê Đầu Đuôi Loto Miền Bắc trong {days} ngày</caption>
                                     <thead>
@@ -441,20 +507,27 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                         ))}
                                     </tbody>
                                 </table>
-                            </div>
-                        )}
-                        {!loading && !error && combinedDauDuoiStats.length === 0 && metadata.message && (
-                            <p className={styles.noData}>{metadata.message}</p>
-                        )}
+                                </div>
+                            )}
+                            {!loading && !error && combinedDauDuoiStats.length === 0 && metadata?.message && (
+                                <p className={styles.noData}>{metadata.message}</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 <div className={styles.content}>
                     {/* Bảng 2: Thống kê Đầu/Đuôi giải Đặc Biệt */}
-                    {specialLoading && <SkeletonSpecialTable />}
-                    {specialError && <p className={styles.error}>{specialError}</p>}
-                    {!specialLoading && !specialError && memoizedSpecialDauDuoiStats.length > 0 && (
-                        <div className="mt-8">
+                    {/* ✅ FIX CLS: Fixed height container for special table */}
+                    <div className={styles.tableContainer}>
+                        {specialLoading && (
+                            <div className={styles.skeletonWrapper}>
+                                <SkeletonSpecialTable />
+                            </div>
+                        )}
+                        {specialError && <p className={styles.error}>{specialError}</p>}
+                        {!specialLoading && !specialError && memoizedSpecialDauDuoiStats.length > 0 && (
+                            <div className="mt-8">
                             <div className="metadata">
                                 <h2 className={`${styles.title} ${styles.title2}`}>{getSpecialMessage()}</h2>
                             </div>
@@ -478,12 +551,13 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                     </select>
                                 </div>
 
+                                {/* ✅ FIX CLS: Reserve space for dateTimeContainer */}
                                 <div className={styles.dateTimeContainer}>
                                     <span className={styles.dateTime}>
-                                        <span>Ngày bắt đầu:</span> {specialMetadata.startDate || 'N/A'}
+                                        <span>Ngày bắt đầu:</span> <span className={styles.dateValue}>{specialMetadata?.startDate || 'N/A'}</span>
                                     </span>
                                     <span className={styles.dateTime}>
-                                        <span>Ngày kết thúc:</span> {specialMetadata.endDate || 'N/A'}
+                                        <span>Ngày kết thúc:</span> <span className={styles.dateValue}>{specialMetadata?.endDate || 'N/A'}</span>
                                     </span>
                                 </div>
                             </div>
@@ -523,11 +597,12 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
-                    )}
-                    {!specialLoading && !specialError && memoizedSpecialDauDuoiStats.length === 0 && specialMetadata.message && (
-                        <p className={styles.noData}>{specialMetadata.message}</p>
-                    )}
+                            </div>
+                        )}
+                        {!specialLoading && !specialError && memoizedSpecialDauDuoiStats.length === 0 && specialMetadata?.message && (
+                            <p className={styles.noData}>{specialMetadata.message}</p>
+                        )}
+                    </div>
                 </div>
 
                 <div className={styles.content}>
@@ -556,20 +631,27 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                 </select>
                             </div>
 
+                            {/* ✅ FIX CLS: Reserve space for dateTimeContainer */}
                             <div className={styles.dateTimeContainer}>
                                 <span className={styles.dateTime}>
-                                    <span>Ngày bắt đầu:</span> {dauByDateMetadata.startDate || 'N/A'}
+                                    <span>Ngày bắt đầu:</span> <span className={styles.dateValue}>{dauByDateMetadata?.startDate || 'N/A'}</span>
                                 </span>
                                 <span className={styles.dateTime}>
-                                    <span>Ngày kết thúc:</span> {dauByDateMetadata.endDate || 'N/A'}
+                                    <span>Ngày kết thúc:</span> <span className={styles.dateValue}>{dauByDateMetadata?.endDate || 'N/A'}</span>
                                 </span>
                             </div>
                         </div>
 
-                        {dauByDateLoading && <SkeletonTableByDate type="dau" />}
-                        {dauByDateError && <p className={styles.error}>{dauByDateError}</p>}
-                        {!dauByDateLoading && !dauByDateError && dauStatsByDateArray.data.length > 0 && (
-                            <div>
+                        {/* ✅ FIX CLS: Fixed height container for dau by date table */}
+                        <div className={styles.tableContainer}>
+                            {dauByDateLoading && (
+                                <div className={styles.skeletonWrapper}>
+                                    <SkeletonTableByDate type="dau" />
+                                </div>
+                            )}
+                            {dauByDateError && <p className={styles.error}>{dauByDateError}</p>}
+                            {!dauByDateLoading && !dauByDateError && dauStatsByDateArray.data.length > 0 && (
+                                <div>
                                 <table className={styles.tableDauDuoiByDate}>
                                     <caption className={styles.caption}>Thống kê Đầu Loto theo ngày Miền Bắc trong {dauByDateDays} ngày</caption>
                                     <thead>
@@ -607,11 +689,12 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                        )}
-                        {!dauByDateLoading && !dauByDateError && dauStatsByDateArray.data.length === 0 && dauByDateMetadata.message && (
-                            <p className={styles.noData}>{dauByDateMetadata.message}</p>
-                        )}
+                                </div>
+                            )}
+                            {!dauByDateLoading && !dauByDateError && dauStatsByDateArray.data.length === 0 && dauByDateMetadata?.message && (
+                                <p className={styles.noData}>{dauByDateMetadata.message}</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -641,20 +724,27 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                 </select>
                             </div>
 
+                            {/* ✅ FIX CLS: Reserve space for dateTimeContainer */}
                             <div className={styles.dateTimeContainer}>
                                 <span className={styles.dateTime}>
-                                    <span>Ngày bắt đầu:</span> {duoiByDateMetadata.startDate || 'N/A'}
+                                    <span>Ngày bắt đầu:</span> <span className={styles.dateValue}>{duoiByDateMetadata?.startDate || 'N/A'}</span>
                                 </span>
                                 <span className={styles.dateTime}>
-                                    <span>Ngày kết thúc:</span> {duoiByDateMetadata.endDate || 'N/A'}
+                                    <span>Ngày kết thúc:</span> <span className={styles.dateValue}>{duoiByDateMetadata?.endDate || 'N/A'}</span>
                                 </span>
                             </div>
                         </div>
 
-                        {duoiByDateLoading && <SkeletonTableByDate type="duoi" />}
-                        {duoiByDateError && <p className={styles.error}>{duoiByDateError}</p>}
-                        {!duoiByDateLoading && !duoiByDateError && duoiStatsByDateArray.data.length > 0 && (
-                            <div>
+                        {/* ✅ FIX CLS: Fixed height container for duoi by date table */}
+                        <div className={styles.tableContainer}>
+                            {duoiByDateLoading && (
+                                <div className={styles.skeletonWrapper}>
+                                    <SkeletonTableByDate type="duoi" />
+                                </div>
+                            )}
+                            {duoiByDateError && <p className={styles.error}>{duoiByDateError}</p>}
+                            {!duoiByDateLoading && !duoiByDateError && duoiStatsByDateArray.data.length > 0 && (
+                                <div>
                                 <table className={styles.tableDauDuoiByDate}>
                                     <caption className={styles.caption}>Thống kê Đuôi Loto theo ngày Miền Bắc trong {duoiByDateDays} ngày</caption>
                                     <thead>
@@ -692,11 +782,12 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                        )}
-                        {!duoiByDateLoading && !duoiByDateError && duoiStatsByDateArray.data.length === 0 && duoiByDateMetadata.message && (
-                            <p className={styles.noData}>{duoiByDateMetadata.message}</p>
-                        )}
+                                </div>
+                            )}
+                            {!duoiByDateLoading && !duoiByDateError && duoiStatsByDateArray.data.length === 0 && duoiByDateMetadata?.message && (
+                                <p className={styles.noData}>{duoiByDateMetadata.message}</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -739,7 +830,8 @@ const DauDuoi = ({ initialDauStats, initialDuoiStats, initialSpecialDauDuoiStats
                     ↑
                 </button>
 
-                <div>
+                {/* ✅ FIX CLS: Reserve space for lazy loaded components */}
+                <div className={styles.lazyComponentsContainer}>
                     <ThongKe />
                     <CongCuHot />
                 </div>

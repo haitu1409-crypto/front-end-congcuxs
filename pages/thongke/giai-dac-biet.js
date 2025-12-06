@@ -41,7 +41,12 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
     const [stats, setStats] = useState(initialStats || []);
     const router = useRouter();
 
-    const [metadata, setMetadata] = useState(initialMetadata || {});
+    // ✅ FIX CLS: Ensure metadata always has default values to prevent shift
+    const [metadata, setMetadata] = useState(initialMetadata || {
+        startDate: 'N/A',
+        endDate: 'N/A',
+        filterType: ''
+    });
     const [days, setDays] = useState(initialDays || 60);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -96,11 +101,22 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
         try {
             const data = await apiMB.getSpecialStats(days);
             setStats(data.statistics || []);
-            setMetadata(data.metadata || {});
+            // ✅ FIX CLS: Ensure metadata always has default values
+            setMetadata({
+                startDate: data.metadata?.startDate || 'N/A',
+                endDate: data.metadata?.endDate || 'N/A',
+                filterType: data.metadata?.filterType || '',
+                ...data.metadata
+            });
         } catch (err) {
             setError(err.message || 'Có lỗi xảy ra khi lấy dữ liệu Miền Bắc.');
             setStats([]);
-            setMetadata({});
+            // ✅ FIX CLS: Keep default metadata values even on error
+            setMetadata({
+                startDate: 'N/A',
+                endDate: 'N/A',
+                filterType: ''
+            });
         } finally {
             setLoading(false);
         }
@@ -198,7 +214,8 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
     };
 
     const pageTitle = getTitle();
-    const pageDescription = `Xem danh sách giải đặc biệt Miền Bắc trong ${metadata.filterType || ''}.`;
+    // ✅ FIX CLS: Ensure description always has valid values
+    const pageDescription = `Xem danh sách giải đặc biệt Miền Bắc trong ${metadata?.filterType || ''}.`;
 
     return (
         <Layout>
@@ -223,8 +240,9 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
                 </div>
 
                 <div className={styles.content}>
-                    <div className="metadata">
-                        <p className={styles.title}>Danh sách giải đặc biệt từ {metadata.startDate || ''} đến {metadata.endDate || ''}</p>
+                    {/* ✅ FIX CLS: Reserve space for metadata */}
+                    <div className={styles.metadata}>
+                        <p className={styles.metadataTitle}>Danh sách giải đặc biệt từ <span className={styles.dateValue}>{metadata?.startDate || 'N/A'}</span> đến <span className={styles.dateValue}>{metadata?.endDate || 'N/A'}</span></p>
                     </div>
 
                     <div className={styles.group_Select}>
@@ -321,7 +339,9 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
 
                     {loading && (
                         <div className={styles.tableContainer}>
-                            <SkeletonTableDaysOfWeek />
+                            <div className={styles.skeletonWrapper}>
+                                <SkeletonTableDaysOfWeek />
+                            </div>
                         </div>
                     )}
 
@@ -431,7 +451,8 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
                 </div>
             </div>
 
-            <div>
+            {/* ✅ FIX CLS: Reserve space for lazy loaded components */}
+            <div className={styles.lazyComponentsContainer}>
                 <ThongKe />
                 <CongCuHot />
             </div>

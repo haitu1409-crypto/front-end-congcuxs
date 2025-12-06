@@ -75,7 +75,7 @@
     background-color: #0396FF;
 }
 
-/* Main title group - LCP element, reserve space */
+/* ✅ FIX CLS: Main title group - LCP element, reserve space */
 .titleGroup {
     text-align: center;
     padding: 24px 12px;
@@ -85,11 +85,12 @@
     border-radius: 8px;
     margin-bottom: 24px;
     contain: layout style paint;
-    min-height: 100px;
+    min-height: 140px; /* ✅ Increased to prevent shift */
     height: auto;
     box-sizing: border-box;
     /* Prevent layout shift */
     will-change: contents;
+    position: relative;
 }
 
 .title {
@@ -103,6 +104,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-height: 2.5rem; /* ✅ FIX CLS: Reserve space for title */
+    contain: layout style;
+    box-sizing: border-box;
+    display: block;
+    line-height: 1.4;
 }
 
 /* Content block */
@@ -119,11 +125,20 @@
     transform: translateY(-1px);
 }
 
-/* Table container to prevent CLS */
+/* ✅ FIX CLS: Table container with proper min-height to match actual table */
 .tableContainer {
-    min-height: 200px;
+    min-height: 500px; /* Increased to match typical table height */
     contain: layout style;
     will-change: contents;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* ✅ FIX CLS: Skeleton wrapper to ensure same dimensions */
+.skeletonWrapper {
+    min-height: 500px;
+    contain: layout style;
+    display: block;
 }
 
 /* Select box group */
@@ -146,6 +161,9 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-height: 60px; /* ✅ FIX CLS: Reserve space for date container */
+    contain: layout style;
+    box-sizing: border-box;
 }
 
 .dateTime {
@@ -155,11 +173,21 @@
     font-weight: 700;
     display: block;
     white-space: nowrap;
+    min-height: 1.5em; /* ✅ FIX CLS: Reserve space */
+    contain: layout style;
+    box-sizing: border-box;
 }
 
 .dateTime span {
     color: #1f2937;
     font-weight: 500;
+}
+
+/* ✅ FIX CLS: Date value to prevent shift */
+.dateValue {
+    display: inline-block;
+    min-width: 80px; /* Reserve space for date */
+    text-align: left;
 }
 
 .selectBox {
@@ -382,13 +410,16 @@
     color: #991b1b;
 }
 
-/* Skeleton loading */
+/* ✅ FIX CLS: Skeleton loading with exact dimensions */
 .skeleton {
     background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
     height: 18px;
     border-radius: 4px;
+    min-width: 50px; /* Prevent width collapse */
+    display: inline-block;
+    contain: layout style;
 }
 
 @keyframes shimmer {
@@ -506,6 +537,20 @@
     transform: translateY(0);
 }
 
+/* ✅ FIX CLS: Lazy components container to prevent shift */
+.lazyComponentsContainer {
+    margin-top: 32px;
+    min-height: 400px; /* Reserve space for ThongKe and CongCuHot */
+    contain: layout style;
+    box-sizing: border-box;
+}
+
+.lazyComponentsPlaceholder {
+    min-height: 400px;
+    contain: layout style;
+    display: block;
+}
+
 /* Responsive design */
 @media (max-width: 1024px) {
     .container {
@@ -568,6 +613,20 @@
     .tableLoGan th,
     .tableLoGan td {
         padding: 10px 12px;
+    }
+    
+    /* ✅ FIX CLS: Ensure table container has proper min-height on tablet */
+    .tableContainer {
+        min-height: 450px !important;
+    }
+    
+    .skeletonWrapper {
+        min-height: 450px !important;
+    }
+    
+    /* ✅ FIX CLS: Reserve space for dateTimeContainer */
+    .dateTimeContainer {
+        min-height: 55px !important;
     }
 }
 
@@ -716,6 +775,28 @@
     .tableLoGan th:nth-child(4),
     .tableLoGan td:nth-child(4) {
         width: 25%;
+    }
+    
+    /* ✅ FIX CLS: Ensure table container has proper min-height on mobile */
+    .tableContainer {
+        min-height: 400px !important;
+    }
+    
+    .skeletonWrapper {
+        min-height: 400px !important;
+    }
+    
+    /* ✅ FIX CLS: Reserve space for dateTimeContainer on mobile */
+    .dateTimeContainer {
+        min-height: 50px !important;
+    }
+    
+    .dateTime {
+        min-height: 1.3em !important;
+    }
+    
+    .dateValue {
+        min-width: 70px !important;
     }
 
     .number {
@@ -875,5 +956,37 @@
     .maxGap {
         font-size: 0.9rem;
         font-weight: 500;
+    }
+    
+    /* ✅ FIX CLS: Ensure table container has proper min-height on small mobile */
+    .tableContainer {
+        min-height: 350px !important;
+    }
+    
+    .skeletonWrapper {
+        min-height: 350px !important;
+    }
+    
+    /* ✅ FIX CLS: Reserve space for dateTimeContainer on small mobile */
+    .dateTimeContainer {
+        min-height: 45px !important;
+    }
+    
+    .dateTime {
+        min-height: 1.2em !important;
+        font-size: 0.65rem !important;
+    }
+    
+    .dateValue {
+        min-width: 60px !important;
+    }
+    
+    /* ✅ FIX CLS: Reserve space for lazy components */
+    .lazyComponentsContainer {
+        min-height: 350px !important;
+    }
+    
+    .lazyComponentsPlaceholder {
+        min-height: 350px !important;
     }
 }

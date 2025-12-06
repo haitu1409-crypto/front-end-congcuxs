@@ -44,7 +44,11 @@ const DescriptionContent = lazy(() => import('./DescriptionContent'));
 const Logan = ({ initialStats, initialMetadata, initialDays }) => {
     const router = useRouter();
     const [stats, setStats] = useState(initialStats || []);
-    const [metadata, setMetadata] = useState(initialMetadata || {});
+    // ✅ FIX CLS: Ensure metadata always has default values to prevent shift
+    const [metadata, setMetadata] = useState(initialMetadata || {
+        startDate: 'N/A',
+        endDate: 'N/A'
+    });
     const [days, setDays] = useState(initialDays || 6);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -58,18 +62,29 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
         setError(null);
         try {
             const data = await apiMB.getLoGanStats(days);
-            // Đảm bảo metadata được cập nhật đúng
+            // ✅ FIX CLS: Ensure metadata always has default values
             if (data && data.metadata) {
-                setMetadata(data.metadata);
+                setMetadata({
+                    startDate: data.metadata.startDate || 'N/A',
+                    endDate: data.metadata.endDate || 'N/A',
+                    ...data.metadata
+                });
             } else {
-                setMetadata({});
+                setMetadata({
+                    startDate: 'N/A',
+                    endDate: 'N/A'
+                });
             }
             setStats(data.statistics || []);
         } catch (err) {
             const errorMessage = err.message || 'Có lỗi xảy ra khi lấy dữ liệu.';
             setError(errorMessage);
             setStats([]);
-            setMetadata({});
+            // ✅ FIX CLS: Keep default metadata values even on error
+            setMetadata({
+                startDate: 'N/A',
+                endDate: 'N/A'
+            });
         } finally {
             setLoading(false);
         }
@@ -161,7 +176,8 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
     };
 
     const pageTitle = `Lô gan miền Bắc - Thống kê Lô Gan XSMB - Lo gan MB`;
-    const pageDescription = `Xem bảng thống kê Lô Gan Miền Bắc lâu chưa về nhất. Cập nhật dữ liệu từ ${metadata.startDate} đến ${metadata.endDate || 'hàng ngày'}.`;
+    // ✅ FIX CLS: Ensure description always has valid values
+    const pageDescription = `Xem bảng thống kê Lô Gan Miền Bắc lâu chưa về nhất. Cập nhật dữ liệu từ ${metadata?.startDate || 'N/A'} đến ${metadata?.endDate || 'hàng ngày'}.`;
 
     return (
         <Layout>
@@ -220,20 +236,25 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                             </select>
                     </div>
 
+                    {/* ✅ FIX CLS: Reserve space for dateTimeContainer */}
                     <div className={styles.dateTimeContainer}>
                         <span className={styles.dateTime}>
-                            <span>Ngày bắt đầu:</span> {metadata.startDate || 'N/A'}
+                            <span>Ngày bắt đầu:</span> <span className={styles.dateValue}>{metadata?.startDate || 'N/A'}</span>
                         </span>
                         <span className={styles.dateTime}>
-                            <span>Ngày kết thúc:</span> {metadata.endDate || 'N/A'}
+                            <span>Ngày kết thúc:</span> <span className={styles.dateValue}>{metadata?.endDate || 'N/A'}</span>
                         </span>
                     </div>
                     </div>
                 </div>
 
-                {/* Fixed height container to prevent CLS */}
+                {/* ✅ FIX CLS: Fixed height container with proper min-height */}
                 <div className={styles.tableContainer}>
-                    {loading && <SkeletonTable />}
+                    {loading && (
+                        <div className={styles.skeletonWrapper}>
+                            <SkeletonTable />
+                        </div>
+                    )}
                     {error && <p className={styles.error}>{error}</p>}
                     {!loading && !error && tableData.length > 0 && (
                         <table className={styles.tableLoGan}>
@@ -298,9 +319,10 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                     ↑
                 </button>
 
-                <div>
+                {/* ✅ FIX CLS: Reserve space for lazy loaded components */}
+                <div className={styles.lazyComponentsContainer}>
                     <div className='congcuhot'>
-                        <Suspense fallback={null}>
+                        <Suspense fallback={<div className={styles.lazyComponentsPlaceholder}></div>}>
                             <ThongKe />
                             <CongCuHot />
                         </Suspense>
