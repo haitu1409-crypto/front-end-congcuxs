@@ -129,7 +129,7 @@ const TanSuatLoto = ({ initialStats, initialMetadata, initialDays }) => {
 
     return (
         <Layout>
-            <StatisticsSEO 
+            <StatisticsSEO
                 pageType="tan-suat-loto"
                 metadata={metadata}
                 faq={statisticsFAQs['tan-suat-loto']}
@@ -141,7 +141,7 @@ const TanSuatLoto = ({ initialStats, initialMetadata, initialDays }) => {
                     <h1 className={styles.title}>{pageTitle}</h1>
                     <div className={styles.actionBtn}>
                         <Link className={styles.actionTK} href="/thongke/dau-duoi">
-                            Thống Kê Đầu Đuôi
+                            Đầu Đuôi
                         </Link>
                         <Link
                             className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/tan-suat-loto') ? styles.active : ''}`}
@@ -150,7 +150,7 @@ const TanSuatLoto = ({ initialStats, initialMetadata, initialDays }) => {
                             Tần Suất Loto
                         </Link>
                         <Link className={styles.actionTK} href="/thongke/giai-dac-biet">
-                            Thống Kê Giải Đặc Biệt
+                            Giải Đặc Biệt
                         </Link>
                     </div>
                 </div>

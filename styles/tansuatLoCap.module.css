@@ -772,15 +772,15 @@
     .actionBtn {
         display: flex;
         flex-direction: row;
-        gap: 2px;
+        gap: 1px;
         background-color: #ffffff;
         align-items: center;
         justify-content: center;
     }
 
     .actionTK {
-        padding: 4px 2px;
-        font-size: 0.8rem;
+        padding: 2px 1px;
+        font-size: 0.85rem;
         line-height: 1.1;
         font-weight: 600;
         flex: 1;

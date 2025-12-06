@@ -232,8 +232,8 @@ const GiaiDacBiet = ({ initialStats, initialMetadata, initialDays }) => {
                 <div className={styles.titleGroup}>
                     <h1 className={styles.title}>{pageTitle}</h1>
                     <div className={styles.actionBtn}>
-                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet') ? styles.active : ''}`} href="giai-dac-biet">Thống Kê Giải Đặc Biệt </Link>
-                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/dau-duoi') ? styles.active : ''}`} href="dau-duoi">Thống Kê Đầu Đuôi </Link>
+                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet') ? styles.active : ''}`} href="giai-dac-biet">Giải Đặc Biệt </Link>
+                        <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/dau-duoi') ? styles.active : ''}`} href="dau-duoi">Đầu Đuôi </Link>
                         <Link className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/giai-dac-biet-tuan') ? styles.active : ''}`} href="giai-dac-biet-tuan">Giải Đặc Biệt Tuần </Link>
                     </div>
                 </div>

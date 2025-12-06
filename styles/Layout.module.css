@@ -973,6 +973,25 @@
     background: var(--color-gray-200);
 }
 
+.mobileDropdownHeader.active {
+    background: var(--gradient-primary);
+    color: var(--color-white);
+    font-weight: var(--font-semibold);
+    box-shadow: var(--shadow-md);
+}
+
+.mobileDropdownHeader.active .mobileNavLinkLabel {
+    color: var(--color-white);
+}
+
+.mobileDropdownHeader.active .mobileNavIcon {
+    color: var(--color-white);
+}
+
+.mobileDropdownHeader.active .mobileDropdownIcon {
+    color: var(--color-white);
+}
+
 .mobileDropdownIcon {
     margin-left: auto;
     transition: transform var(--transition-base);
@@ -993,7 +1012,7 @@
     align-items: center;
     gap: var(--spacing-3);
     padding: var(--spacing-3) var(--spacing-4);
-    font-size: var(--text-sm);
+    font-size: 1rem; /* Increased from var(--text-sm) (14px) to 16px (+2px) */
     font-weight: var(--font-medium);
     color: var(--color-gray-700);
     background: var(--color-gray-50);

@@ -268,11 +268,15 @@ export default function Layout({ children, className = '' }) {
                                             if (link.isDropdown) {
                                                 const IconComponent = link.icon;
                                                 const isOpen = openDropdown === link.label;
+                                                // Check if any submenu item is active
+                                                const hasActiveSubItem = link.submenu.some(subItem => 
+                                                    router.pathname === subItem.href || router.asPath === subItem.href
+                                                );
                                                 return (
                                                     <div key={`mobile-dropdown-${index}`}>
                                                         <div className={styles.mobileDropdownWrapper}>
                                                             <div 
-                                                                className={styles.mobileDropdownHeader}
+                                                                className={`${styles.mobileDropdownHeader} ${hasActiveSubItem ? styles.active : ''}`}
                                                                 onClick={() => setOpenDropdown(isOpen ? null : link.label)}
                                                             >
                                                             <div className={styles.mobileNavLinkContent}>
@@ -287,11 +291,12 @@ export default function Layout({ children, className = '' }) {
                                                             <div className={styles.mobileDropdownSubmenu}>
                                                                 {link.submenu.map((subItem, subIndex) => {
                                                                     const SubIconComponent = subItem.icon;
+                                                                    const isSubItemActive = router.pathname === subItem.href || router.asPath === subItem.href;
                                                                     return (
                                                                         <Link
                                                                             key={subIndex}
                                                                             href={subItem.href}
-                                                                            className={`${styles.mobileNavSubLink} ${router.pathname === subItem.href ? styles.active : ''}`}
+                                                                            className={`${styles.mobileNavSubLink} ${isSubItemActive ? styles.active : ''}`}
                                                                             onClick={() => {
                                                                                 setIsMenuOpen(false);
                                                                                 setOpenDropdown(null);

@@ -164,17 +164,7 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
     }, []);
 
     const getTitle = () => {
-        const daysText = days === 6 ? 'Dưới 7 ngày' :
-            days === 7 ? 'Từ 7 đến 14 ngày' :
-                days === 14 ? 'Từ 14 đến 28 ngày' :
-                    days === 30 ? 'Trong 30 ngày' : 'Trong 60 ngày';
-        return (
-            <>
-                Thống kê Lô Gan Xổ Số{' '}
-                <span className={styles.highlightProvince}>Miền Bắc</span>{' '}
-                <span className={styles.highlightDraws}>{daysText}</span>
-            </>
-        );
+        return 'Thống kê Lô Gan Miền Bắc';
     };
 
     const getMessage = () => {
@@ -214,16 +204,16 @@ const Logan = ({ initialStats, initialMetadata, initialDays }) => {
                     <h1 className={styles.title}>{getTitle()}</h1>
                     <div className={styles.actionBtn}>
                         <Link className={styles.actionTK} href="/thongke/dau-duoi">
-                            Thống Kê Đầu Đuôi
+                            Đầu Đuôi
                         </Link>
                         <Link
                             className={`${styles.actionTK} ${router.pathname.startsWith('/thongke/lo-gan') ? styles.active : ''}`}
                             href="/thongke/lo-gan"
                         >
-                            Thống Kê Lô Gan
+                            Lô Gan
                         </Link>
                         <Link className={styles.actionTK} href="/thongke/giai-dac-biet">
-                            Thống Kê Giải Đặc Biệt
+                            Giải Đặc Biệt
                         </Link>
                     </div>
                 </div>
