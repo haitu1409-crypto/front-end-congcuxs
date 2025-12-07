@@ -9,7 +9,8 @@ const SITE_URL_BASE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodande
 const SITE_URL = SITE_URL_BASE + '/';
 
 function generateSiteMap(articles) {
-    const lastmod = new Date().toISOString().split('T')[0];
+    // Use ISO 8601 format with timezone for consistent lastmod
+    const lastmod = new Date().toISOString();
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -180,20 +181,23 @@ function generateSiteMap(articles) {
     
     <!-- Article Pages -->
     ${articles.map(article => {
+        if (!article.slug) return ''; // Skip articles without slug
+        
         const publishDate = new Date(article.publishedAt || article.createdAt);
+        const updateDate = new Date(article.updatedAt || article.createdAt);
         const isRecent = Date.now() - publishDate.getTime() < 2 * 24 * 60 * 60 * 1000; // 2 days
 
         return `
     <url>
         <loc>${SITE_URL_BASE}/tin-tuc/${article.slug}</loc>
-        <lastmod>${new Date(article.updatedAt || article.createdAt).toISOString()}</lastmod>
+        <lastmod>${updateDate.toISOString()}</lastmod>
         <changefreq>${isRecent ? 'daily' : 'weekly'}</changefreq>
         <priority>${isRecent ? '0.9' : '0.7'}</priority>
         ${article.featuredImage?.url ? `
         <image:image>
-            <image:loc>${article.featuredImage.url}</image:loc>
-            <image:title>${escapeXml(article.title)}</image:title>
-            <image:caption>${escapeXml(article.excerpt || article.title)}</image:caption>
+            <image:loc>${escapeXml(article.featuredImage.url)}</image:loc>
+            <image:title>${escapeXml(article.title || '')}</image:title>
+            <image:caption>${escapeXml(article.excerpt || article.title || '')}</image:caption>
         </image:image>` : ''}
         ${isRecent ? `
         <news:news>
@@ -202,7 +206,7 @@ function generateSiteMap(articles) {
                 <news:language>vi</news:language>
             </news:publication>
             <news:publication_date>${publishDate.toISOString()}</news:publication_date>
-            <news:title>${escapeXml(article.title)}</news:title>
+            <news:title>${escapeXml(article.title || '')}</news:title>
         </news:news>` : ''}
     </url>`;
     }).join('')}
@@ -224,9 +228,10 @@ function escapeXml(unsafe) {
 }
 
 export async function getServerSideProps({ res }) {
-    // Always set headers first
-    res.setHeader('Content-Type', 'text/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate');
+    // Always set headers first - Important for Google to properly parse sitemap
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
     
     try {
         // Fetch articles with timeout
@@ -264,9 +269,11 @@ export async function getServerSideProps({ res }) {
         console.error('[Sitemap] Generation error:', error);
 
         // Return comprehensive sitemap on error (without articles)
-        const lastmod = new Date().toISOString().split('T')[0];
+        const lastmod = new Date().toISOString();
         const minimalSitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     <url>
         <loc>${SITE_URL_BASE}/</loc>
         <changefreq>daily</changefreq>
