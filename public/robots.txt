@@ -29,3 +29,4 @@ Host: https://www.taodandewukong.pro
 
 # Sitemaps
 Sitemap: https://www.taodandewukong.pro/sitemap.xml
+Sitemap: https://www.taodandewukong.pro/news-sitemap.xml
