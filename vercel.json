@@ -95,19 +95,19 @@
   ],
   "redirects": [
     {
-      "source": "/home",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/sitemap.xml",
+      "source": "/(.*)",
       "has": [
         {
           "type": "host",
           "value": "taodandewukong.pro"
         }
       ],
-      "destination": "https://www.taodandewukong.pro/sitemap.xml",
+      "destination": "https://www.taodandewukong.pro/$1",
+      "permanent": true
+    },
+    {
+      "source": "/home",
+      "destination": "/",
       "permanent": true
     },
     {
