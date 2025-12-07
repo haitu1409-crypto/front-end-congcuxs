@@ -101,17 +101,17 @@ const KQXSPage = memo(function KQXSPage() {
 
     // ✅ Memoize page titles and description
     const pageTitle = useMemo(() =>
-        `XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay ${today} | SXMB - KQXSMB - XSTD Nhanh Nhất 2025`,
+        `XSMB - Kết Quả Xổ Số Miền Bắc Đài Truyền Thống Hôm Nay ${today} | SXMB - KQXSMB - XSTD Nhanh Nhất 2025`,
         [today]
     );
 
     const h1Title = useMemo(() =>
-        `XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay ${today}`,
+        `XSMB - Kết Quả Xổ Số Miền Bắc Đài Truyền Thống Hôm Nay ${today}`,
         [today]
     );
 
     const pageDescription = useMemo(() =>
-        `XSMB - Kết quả xổ số miền Bắc (xsmb, sxmb, kqxsmb, xstd) hôm nay ${today} nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay. Xem XSMB 30 ngày, XSMB hôm qua, XSMB ${dayOfWeek}. Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100%!`,
+        `XSMB - Kết quả xổ số miền Bắc đài truyền thống (xsmb, sxmb, kqxsmb, xstd) hôm nay ${today} nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay số 53E Hàng Bài, Hoàn Kiếm, Hà Nội. Xem XSMB 30 ngày, XSMB hôm qua, XSMB ${dayOfWeek}. Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100%!`,
         [today, dayOfWeek]
     );
 
@@ -199,7 +199,7 @@ const KQXSPage = memo(function KQXSPage() {
                 description={pageDescription}
                 keywords={seoConfig.keywords.join(', ')}
                 canonical={`${seoConfig.canonical}`}
-                ogImage={seoConfig.image}
+                ogImage={`${siteUrl}/imgs/xsmb.png`}
                 structuredData={structuredData}
             />
 

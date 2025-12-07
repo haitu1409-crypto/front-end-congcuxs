@@ -23,6 +23,7 @@ const OG_IMAGES = {
     dan3d4d: `${SITE_URL}/imgs/dan3d4d (1).png`,
     danDacBiet: `${SITE_URL}/imgs/dandacbiet (1).png`,
     thongKe: `${SITE_URL}/imgs/thongke (1).png`,
+    xsmb: `${SITE_URL}/imgs/xsmb.png`,
 };
 
 /**
@@ -1127,8 +1128,8 @@ const SEO_CONFIG = {
      * ENHANCED: Tối ưu với keywords variations, time-based, competitive
      */
     'kqxs': {
-        title: 'XSMB - Kết Quả Xổ Số Miền Bắc Hôm Nay | SXMB - KQXSMB - XSTD Nhanh Nhất 2025',
-        description: 'XSMB - Kết quả xổ số miền Bắc (xsmb, sxmb, kqxsmb, xstd) hôm nay nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay. Xem XSMB 30 ngày, XSMB hôm qua, XSMB theo thứ. Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100%!',
+        title: 'XSMB - Kết Quả Xổ Số Miền Bắc Đài Truyền Thống Hôm Nay | SXMB - KQXSMB - XSTD Nhanh Nhất 2025',
+        description: 'XSMB - Kết quả xổ số miền Bắc đài truyền thống (xsmb, sxmb, kqxsmb, xstd) hôm nay nhanh nhất, chính xác nhất. Tường thuật trực tiếp lúc 18h15 từ trường quay số 53E Hàng Bài, Hoàn Kiếm, Hà Nội. Xem XSMB 30 ngày, XSMB hôm qua, XSMB theo thứ. Tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn. Miễn phí 100%!',
         keywords: [
             // ✅ PRIMARY KEYWORDS - Từ khóa chính volume cao
             'xsmb', 'XSMB', 'xs mb', 'xổ số mb',
@@ -1257,7 +1258,7 @@ const SEO_CONFIG = {
             'xem xsmb miễn phí', 'xem xsmb mien phi'
         ],
         url: '/ket-qua-xo-so-mien-bac',
-        image: OG_IMAGES.default,
+        image: OG_IMAGES.xsmb,
         canonical: `${SITE_URL}/ket-qua-xo-so-mien-bac`,
         type: 'website',
         priority: 0.95,
