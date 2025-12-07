@@ -39,6 +39,7 @@ const EnhancedSEOHead = memo(function EnhancedSEOHead({
                 customTitle={finalTitle}
                 customDescription={finalDescription}
                 customKeywords={finalKeywords}
+                canonical={finalCanonical}
                 canonicalUrl={finalCanonical}
                 ogImage={ogImage}
                 breadcrumbs={breadcrumbs}

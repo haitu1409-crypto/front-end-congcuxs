@@ -195,6 +195,7 @@ const KQXSPage = memo(function KQXSPage() {
     return (
         <>
             <EnhancedSEOHead
+                pageType="kqxs"
                 title={pageTitle}
                 description={pageDescription}
                 keywords={seoConfig.keywords.join(', ')}

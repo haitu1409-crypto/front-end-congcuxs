@@ -64,6 +64,14 @@ const PAGE_IMAGES = {
         telegram: '/imgs/thongke (1).png',
         tiktok: '/imgs/thongke (1).png'
     },
+    'kqxs': {
+        og: '/imgs/xsmb.png',
+        twitter: '/imgs/xsmb.png',
+        facebook: '/imgs/xsmb.png',
+        zalo: '/imgs/xsmb.png',
+        telegram: '/imgs/xsmb.png',
+        tiktok: '/imgs/xsmb.png'
+    },
     'content': {
         og: '/imgs/wukong.png',
         twitter: '/imgs/wukong.png',
@@ -155,6 +163,8 @@ export default function SEOOptimized({
     customDescription = '',
     customKeywords = '',
     canonical = '',
+    canonicalUrl = '',
+    ogImage = '',
     noindex = false,
     structuredData = null,
     breadcrumbs = null,
@@ -176,8 +186,8 @@ export default function SEOOptimized({
     const description = customDescription || pageConfig.description;
     const keywords = customKeywords || pageConfig.keywords;
 
-    // Fix canonical URL logic - ensure homepage has trailing slash
-    let fullUrl = canonical || (pageType === 'home' ? siteUrl : `${siteUrl}/${pageType}`);
+    // Fix canonical URL logic - ưu tiên canonicalUrl prop, sau đó canonical, cuối cùng tính từ pageType
+    let fullUrl = canonicalUrl || canonical || (pageType === 'home' ? siteUrl : `${siteUrl}/${pageType}`);
     // Normalize: ensure homepage ends with /, other pages don't have trailing slash
     if (pageType === 'home' && !fullUrl.endsWith('/')) {
         fullUrl = fullUrl + '/';
@@ -185,6 +195,18 @@ export default function SEOOptimized({
         fullUrl = fullUrl.replace(/\/+$/, '');
     }
     const currentDate = new Date().toISOString();
+
+    // Determine og:image - ưu tiên ogImage prop, sau đó PAGE_IMAGES
+    let ogImageUrl = '';
+    if (ogImage) {
+        // If ogImage is a full URL, use it directly; otherwise prepend siteUrl
+        ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage.startsWith('/') ? ogImage : '/' + ogImage}`;
+    } else {
+        ogImageUrl = pageImages.og ? `${siteUrl}${pageImages.og}` : `${siteUrl}${pageImages.facebook}`;
+    }
+
+    // Facebook App ID from environment variable
+    const fbAppId = process.env.NEXT_PUBLIC_FB_APP_ID || '';
 
     return (
         <Head>
@@ -221,8 +243,8 @@ export default function SEOOptimized({
             {/* ===== OPEN GRAPH - FACEBOOK & TELEGRAM ===== */}
             <meta property="og:title" content={title} />
             <meta property="og:description" content={description} />
-            <meta property="og:image" content={pageImages.og ? `${siteUrl}${pageImages.og}` : pageImages.facebook} />
-            <meta property="og:image:secure_url" content={pageImages.og ? `${siteUrl}${pageImages.og}` : pageImages.facebook} />
+            <meta property="og:image" content={ogImageUrl} />
+            <meta property="og:image:secure_url" content={ogImageUrl} />
             <meta property="og:image:width" content="1200" />
             <meta property="og:image:height" content="630" />
             <meta property="og:image:alt" content={title} />
@@ -232,6 +254,7 @@ export default function SEOOptimized({
             <meta property="og:site_name" content={siteName} />
             <meta property="og:locale" content="vi_VN" />
             <meta property="og:updated_time" content={currentDate} />
+            {fbAppId && <meta property="fb:app_id" content={fbAppId} />}
 
             {/* Article specific OG tags */}
             {articleData && (
@@ -248,14 +271,14 @@ export default function SEOOptimized({
 
             {/* ===== ADDITIONAL META FOR TELEGRAM ===== */}
             <meta name="description" content={description} />
-            <meta name="image" content={`${siteUrl}${pageImages.facebook}`} />
-            <link rel="image_src" href={`${siteUrl}${pageImages.facebook}`} />
+            <meta name="image" content={ogImageUrl} />
+            <link rel="image_src" href={ogImageUrl} />
 
             {/* ===== TWITTER CARDS ===== */}
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={title} />
             <meta name="twitter:description" content={description} />
-            <meta name="twitter:image" content={pageImages.og ? `${siteUrl}${pageImages.og}` : pageImages.twitter} />
+            <meta name="twitter:image" content={ogImageUrl} />
             <meta name="twitter:image:alt" content={title} />
             <meta name="twitter:site" content="@taodandewukong" />
             <meta name="twitter:creator" content="@taodandewukong" />
@@ -263,12 +286,12 @@ export default function SEOOptimized({
             {/* ===== ZALO ===== */}
             <meta property="zalo:title" content={title} />
             <meta property="zalo:description" content={description} />
-            <meta property="zalo:image" content={`${siteUrl}${pageImages.zalo}`} />
+            <meta property="zalo:image" content={ogImageUrl} />
 
             {/* ===== TELEGRAM ===== */}
             <meta property="telegram:title" content={title} />
             <meta property="telegram:description" content={description} />
-            <meta property="telegram:image" content={`${siteUrl}${pageImages.telegram}`} />
+            <meta property="telegram:image" content={ogImageUrl} />
             <meta property="telegram:image:width" content="1200" />
             <meta property="telegram:image:height" content="630" />
             <meta property="telegram:image:alt" content={title} />
@@ -283,7 +306,7 @@ export default function SEOOptimized({
             {/* ===== TIKTOK ===== */}
             <meta property="tiktok:title" content={title} />
             <meta property="tiktok:description" content={description} />
-            <meta property="tiktok:image" content={`${siteUrl}${pageImages.tiktok}`} />
+            <meta property="tiktok:image" content={ogImageUrl} />
 
             {/* ===== MOBILE OPTIMIZATION ===== */}
             <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
@@ -349,12 +372,12 @@ export default function SEOOptimized({
                             name: siteName,
                             logo: {
                                 '@type': 'ImageObject',
-                                url: `${siteUrl}${pageImages.og}`,
+                                url: ogImageUrl,
                             },
                         },
                         image: {
                             '@type': 'ImageObject',
-                            url: `${siteUrl}${pageImages.og}`,
+                            url: ogImageUrl,
                             width: 1200,
                             height: 630,
                         },
@@ -398,7 +421,7 @@ export default function SEOOptimized({
                         '@type': 'Organization',
                         name: siteName,
                         url: siteUrl,
-                        logo: `${siteUrl}${pageImages.og}`,
+                        logo: ogImageUrl,
                         description: 'Bộ công cụ tạo dàn số chuyên nghiệp: 2D, 3D, 4D, Đặc Biệt. Miễn phí, nhanh chóng, chính xác.',
                         sameAs: [
                             'https://www.facebook.com/taodandewukong',
