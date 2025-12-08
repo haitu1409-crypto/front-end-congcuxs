@@ -215,20 +215,18 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
 
         console.log('🔄 Setting up lottery socket connection...');
 
+        // ✅ Reference counting: Tăng reference khi component mount
+        lotterySocketClient.incrementRef();
+
         // ✅ OPTIMIZED: Kiểm tra kỹ để tránh duplicate connections (React Strict Mode)
         const connectionStatus = lotterySocketClient.getConnectionStatus();
         
-        // Chỉ connect nếu:
-        // 1. Chưa có socket HOẶC
-        // 2. Có socket nhưng chưa connected
-        if (!connectionStatus.socket || !connectionStatus.connected) {
-            console.log('🔌 Connecting to socket...');
-            lotterySocketClient.connect();
-        } else {
-            // Nếu đã connected, chỉ request latest (không connect lại)
+        // Nếu đã connected, request latest data
+        if (connectionStatus.socket && connectionStatus.connected) {
             console.log('✅ Socket already connected, requesting latest data...');
             lotterySocketClient.requestLatest();
         }
+        // incrementRef() sẽ tự động connect nếu chưa connected
 
         // Listen to events
         const handleLatest = (data) => {
@@ -332,6 +330,10 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
             lotterySocketClient.off('lottery:error', handleError);
             lotterySocketClient.off('connected', handleConnected);
             lotterySocketClient.off('disconnected', handleDisconnected);
+            
+            // ✅ Reference counting: Giảm reference khi component unmount
+            // Tự động disconnect nếu không còn component nào sử dụng
+            lotterySocketClient.decrementRef();
         };
     }, [inLiveWindow, isModal]);
 

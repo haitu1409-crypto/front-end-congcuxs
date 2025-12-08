@@ -12,6 +12,8 @@ class LotterySocketClient {
         this.listeners = new Map();
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 10;
+        // ✅ Reference counting để tự động disconnect khi không còn component nào sử dụng
+        this.referenceCount = 0;
     }
 
     /**
@@ -158,7 +160,49 @@ class LotterySocketClient {
             this.socket.disconnect();
             this.socket = null;
             this.isConnected = false;
+            this.referenceCount = 0; // Reset reference count khi disconnect thủ công
         }
+    }
+
+    /**
+     * Tăng reference count (khi component mount)
+     * Tự động connect nếu chưa connected
+     */
+    incrementRef() {
+        this.referenceCount++;
+        console.log(`📊 Lottery socket reference count: ${this.referenceCount}`);
+        
+        // Nếu chưa connected và có reference, tự động connect
+        if (!this.isConnected && !this.socket) {
+            this.connect();
+        } else if (this.socket && !this.isConnected) {
+            // Socket tồn tại nhưng chưa connected, đợi connection
+            console.log('⏳ Socket exists but not connected, waiting...');
+        }
+    }
+
+    /**
+     * Giảm reference count (khi component unmount)
+     * Tự động disconnect nếu reference count = 0
+     */
+    decrementRef() {
+        if (this.referenceCount > 0) {
+            this.referenceCount--;
+            console.log(`📊 Lottery socket reference count: ${this.referenceCount}`);
+        }
+        
+        // Nếu không còn component nào sử dụng, tự động disconnect
+        if (this.referenceCount === 0 && this.socket) {
+            console.log('🔌 No components using lottery socket, disconnecting...');
+            this.disconnect();
+        }
+    }
+
+    /**
+     * Lấy reference count hiện tại
+     */
+    getReferenceCount() {
+        return this.referenceCount;
     }
 
     /**
