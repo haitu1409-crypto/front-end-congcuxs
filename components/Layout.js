@@ -469,6 +469,10 @@ export default function Layout({ children, className = '' }) {
                                     <img 
                                         src="https://images.dmca.com/Badges/dmca_protected_25_120.png?ID=66ebf140-1580-488b-897e-a251a37c14a6" 
                                         alt="DMCA.com Protection Status"
+                                        width="120"
+                                        height="25"
+                                        loading="lazy"
+                                        style={{ display: 'block', maxWidth: '100%', height: 'auto' }}
                                     />
                                 </a>
                             </div>

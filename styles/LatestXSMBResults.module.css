@@ -59,8 +59,9 @@
 }
 
 .content {
-  
-
+    /* ✅ Fix CLS: Reserve space for content to prevent layout shift */
+    min-height: 600px;
+    contain: layout style;
 }
 
 .tableWrapper {

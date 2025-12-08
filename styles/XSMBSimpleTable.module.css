@@ -17,6 +17,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-display: swap;
+    /* ✅ Fix CLS: Reserve space for container */
+    min-height: 600px;
+    contain: layout style;
 }
 
 /* Flex layout for horizontal alignment */
@@ -24,6 +27,9 @@
     display: flex;
     gap: 10px;
     align-items: flex-start;
+    /* ✅ Fix CLS: Reserve minimum space to prevent layout shift */
+    min-height: 600px;
+    contain: layout style;
 }
 
 .mainTableContainer {
@@ -536,6 +542,9 @@
     border: 1px solid #cccccc;
     border-radius: 4px;
     margin: 20px;
+    /* ✅ Fix CLS: Reserve space to prevent layout shift */
+    min-height: 800px;
+    contain: layout style paint;
 }
 
 .spinner {
@@ -693,6 +702,15 @@
         margin: 0;
         width: 100%;
         max-width: 100%;
+    }
+
+    /* ✅ Fix CLS on mobile: Reserve space for horizontal layout */
+    .horizontalLayout {
+        min-height: 700px;
+    }
+
+    .loadingMessage {
+        min-height: 700px;
     }
 
     /* Ensure font-weight works on mobile devices */

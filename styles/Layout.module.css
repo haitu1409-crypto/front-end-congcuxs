@@ -783,6 +783,10 @@
     height: auto;
     max-width: 90px;
     transition: opacity 0.2s ease;
+    /* ✅ Fix CLS: Reserve space for DMCA image */
+    width: 120px;
+    height: 25px;
+    contain: layout style;
 }
 
 .dmcaContainer a:hover img {
@@ -797,6 +801,8 @@
     
     .dmcaContainer img {
         max-width: 100px;
+        width: 120px;
+        height: 25px;
     }
 }
 

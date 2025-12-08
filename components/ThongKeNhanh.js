@@ -416,7 +416,10 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 		background: '#FFFFFF',
 		margin: '0',
 		fontSize: '13px',
-		lineHeight: 1.5
+		lineHeight: 1.5,
+		/* ✅ Fix CLS: Reserve space for ThongKeNhanh */
+		minHeight: '300px',
+		contain: 'layout style'
 	}), []);
 
 	const headerStyle = useMemo(() => ({
