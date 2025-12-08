@@ -17,6 +17,14 @@
     transition: all var(--transition-base);
     border-radius: var(--border-radius-md);
     white-space: nowrap;
+    text-decoration: none;
+}
+
+/* When dropdownToggle is a Link */
+a.dropdownToggle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
 }
 
 .dropdownToggle:hover {

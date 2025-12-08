@@ -15,7 +15,7 @@ export default function ChatQRPage() {
 
     useEffect(() => {
         // Get chat URL
-        const productionUrl = 'https://www.taodandewukong.pro';
+        const productionUrl = 'https://taodandewukong.pro';
         const url = typeof window !== 'undefined' 
             ? (process.env.NODE_ENV === 'production' 
                 ? `${productionUrl}/chat` 
@@ -33,7 +33,7 @@ export default function ChatQRPage() {
     // Open Graph meta data
     const ogTitle = 'Group Chat Chốt Dàn 3 Miền Wukong';
     const ogDescription = 'Tham gia Group Chat để chia sẻ và thảo luận về dàn đề chốt số 3 miền cùng cộng đồng Wukong';
-    const shareUrl = chatUrl || 'https://www.taodandewukong.pro/chat';
+    const shareUrl = chatUrl || 'https://taodandewukong.pro/chat';
 
     return (
         <>
@@ -46,7 +46,7 @@ export default function ChatQRPage() {
                 <meta property="og:url" content={shareUrl} />
                 <meta property="og:title" content={ogTitle} />
                 <meta property="og:description" content={ogDescription} />
-                <meta property="og:image" content={qrImageUrl || 'https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=https://www.taodandewukong.pro/chat'} />
+                <meta property="og:image" content={qrImageUrl || 'https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=https://taodandewukong.pro/chat'} />
                 <meta property="og:image:width" content="512" />
                 <meta property="og:image:height" content="512" />
                 <meta property="og:image:alt" content="QR Code - Group Chat Chốt Dàn 3 Miền Wukong" />
@@ -56,7 +56,7 @@ export default function ChatQRPage() {
                 <meta name="twitter:url" content={shareUrl} />
                 <meta name="twitter:title" content={ogTitle} />
                 <meta name="twitter:description" content={ogDescription} />
-                <meta name="twitter:image" content={qrImageUrl || 'https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=https://www.taodandewukong.pro/chat'} />
+                <meta name="twitter:image" content={qrImageUrl || 'https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=https://taodandewukong.pro/chat'} />
                 
                 {/* Redirect to chat page after 1 second */}
                 <meta httpEquiv="refresh" content="1;url=/chat" />

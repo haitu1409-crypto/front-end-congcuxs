@@ -39,7 +39,7 @@ const SEOOptimizedXSMB = ({
             "@type": "LotteryGame",
             "name": "Xổ Số Miền Bắc",
             "description": "Kết quả xổ số miền Bắc chính thức",
-            "url": canonicalUrl || `https://www.taodandewukong.pro/ket-qua-xo-so-mien-bac/${date}`,
+            "url": canonicalUrl || `https://taodandewukong.pro/ket-qua-xo-so-mien-bac/${date}`,
             "datePublished": data.drawDate || new Date().toISOString(),
             "publisher": {
                 "@type": "Organization",
@@ -82,7 +82,7 @@ const SEOOptimizedXSMB = ({
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Kết quả xổ số",
-                "item": "https://www.taodandewukong.pro/ket-qua-xo-so-mien-bac"
+                "item": "https://taodandewukong.pro/ket-qua-xo-so-mien-bac"
             },
             {
                 "@type": "ListItem",

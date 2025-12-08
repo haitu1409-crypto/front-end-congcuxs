@@ -27,7 +27,7 @@ export function normalizeSiteUrl(url) {
  * @param {string} fallback - Fallback URL nếu không có env variable
  * @returns {string} - Normalized site URL
  */
-export function getSiteUrl(fallback = 'https://www.taodandewukong.pro') {
+export function getSiteUrl(fallback = 'https://taodandewukong.pro') {
     const url = process.env.NEXT_PUBLIC_SITE_URL || fallback;
     return normalizeSiteUrl(url);
 }
@@ -48,6 +48,7 @@ export function buildUrl(baseUrl, path) {
     const normalizedPath = path.startsWith('/') ? path : `/${path}`;
     return `${normalizedBase}${normalizedPath}`;
 }
+
 
 
 

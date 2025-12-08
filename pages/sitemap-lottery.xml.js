@@ -9,7 +9,7 @@ const SitemapLottery = () => {
 
 export const getServerSideProps = async ({ res }) => {
     // Normalize baseUrl to remove trailing slash
-const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro').replace(/\/+$/, '');
+const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro').replace(/\/+$/, '');
     const currentDate = new Date();
 
     // Generate dates for the last 30 days

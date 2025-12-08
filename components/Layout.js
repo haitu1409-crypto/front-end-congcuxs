@@ -139,9 +139,21 @@ export default function Layout({ children, className = '' }) {
         ]
     };
 
+    // Kết Quả Xổ Số submenu items
+    const ketQuaXoSoMenu = {
+        label: 'Kết Quả Xổ Số',
+        icon: Calendar,
+        description: 'Xem kết quả xổ số 3 miền mới nhất',
+        href: '/ket-qua-xo-so-mien-bac', // Click vào item chính vẫn mở XSMB
+        submenu: [
+            { href: '/ket-qua-xo-so-mien-bac', label: 'Xổ Số Miền Bắc', icon: Calendar },
+            { href: '/kqxs-xsmn', label: 'Xổ Số Miền Nam', icon: Calendar }
+        ]
+    };
+
     const navLinks = [
         { href: '/', label: 'Trang chủ', icon: Home, description: 'Trang chủ chính' },
-        { href: '/ket-qua-xo-so-mien-bac', label: 'Kết Quả Xổ Số', icon: Calendar, description: 'Xem kết quả xổ số 3 miền mới nhất' },
+        { isDropdown: true, ...ketQuaXoSoMenu },
         { isDropdown: true, ...congCuXoSoMenu },
         { isDropdown: true, ...soiCauMenu },
         { isDropdown: true, ...thongKeMenu },
@@ -193,7 +205,7 @@ export default function Layout({ children, className = '' }) {
                                             <DropdownMenu
                                                 key={`dropdown-${index}`}
                                                 items={[
-                                                    { label: link.label, icon: link.icon },
+                                                    { label: link.label, icon: link.icon, href: link.href },
                                                     ...link.submenu
                                                 ]}
                                             />
@@ -268,30 +280,77 @@ export default function Layout({ children, className = '' }) {
                                             if (link.isDropdown) {
                                                 const IconComponent = link.icon;
                                                 const isOpen = openDropdown === link.label;
-                                                // Check if any submenu item is active
-                                                const hasActiveSubItem = link.submenu.some(subItem => 
-                                                    router.pathname === subItem.href || router.asPath === subItem.href
+                                                // Check if any submenu item is active or parent href is active
+                                                const hasActiveSubItem = link.submenu.some(subItem => {
+                                                    if (!subItem.href) return false;
+                                                    // Special handling for XSMB/XSMN routes
+                                                    if (subItem.href === '/ket-qua-xo-so-mien-bac') {
+                                                        return router.pathname === '/kqxs' || router.pathname === subItem.href || router.asPath === subItem.href;
+                                                    }
+                                                    if (subItem.href === '/kqxs-xsmn') {
+                                                        return router.pathname === '/kqxs-xsmn' || router.asPath === subItem.href;
+                                                    }
+                                                    return router.pathname === subItem.href || router.asPath === subItem.href;
+                                                });
+                                                const isParentActive = link.href && (
+                                                    router.pathname === link.href || 
+                                                    router.asPath === link.href ||
+                                                    (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/kqxs')
                                                 );
                                                 return (
                                                     <div key={`mobile-dropdown-${index}`}>
                                                         <div className={styles.mobileDropdownWrapper}>
-                                                            <div 
-                                                                className={`${styles.mobileDropdownHeader} ${hasActiveSubItem ? styles.active : ''}`}
-                                                                onClick={() => setOpenDropdown(isOpen ? null : link.label)}
-                                                            >
-                                                            <div className={styles.mobileNavLinkContent}>
-                                                                <div className={styles.mobileNavLinkHeader}>
-                                                                    <IconComponent size={20} className={styles.mobileNavIcon} />
-                                                                    <span className={styles.mobileNavLinkLabel}>{link.label}</span>
-                                                                        <ChevronDown size={16} className={`${styles.mobileDropdownIcon} ${isOpen ? styles.rotate : ''}`} />
+                                                            {link.href ? (
+                                                                <Link
+                                                                    href={link.href}
+                                                                    className={`${styles.mobileDropdownHeader} ${hasActiveSubItem || isParentActive ? styles.active : ''}`}
+                                                                    onClick={(e) => {
+                                                                        // If clicking on chevron, toggle dropdown instead
+                                                                        if (e.target.closest(`.${styles.mobileDropdownIcon}`) || e.target.closest('svg')) {
+                                                                            e.preventDefault();
+                                                                            setOpenDropdown(isOpen ? null : link.label);
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <div className={styles.mobileNavLinkContent}>
+                                                                        <div className={styles.mobileNavLinkHeader}>
+                                                                            <IconComponent size={20} className={styles.mobileNavIcon} />
+                                                                            <span className={styles.mobileNavLinkLabel}>{link.label}</span>
+                                                                            <ChevronDown size={16} className={`${styles.mobileDropdownIcon} ${isOpen ? styles.rotate : ''}`} onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                setOpenDropdown(isOpen ? null : link.label);
+                                                                            }} />
+                                                                        </div>
+                                                                    </div>
+                                                                </Link>
+                                                            ) : (
+                                                                <div 
+                                                                    className={`${styles.mobileDropdownHeader} ${hasActiveSubItem ? styles.active : ''}`}
+                                                                    onClick={() => setOpenDropdown(isOpen ? null : link.label)}
+                                                                >
+                                                                    <div className={styles.mobileNavLinkContent}>
+                                                                        <div className={styles.mobileNavLinkHeader}>
+                                                                            <IconComponent size={20} className={styles.mobileNavIcon} />
+                                                                            <span className={styles.mobileNavLinkLabel}>{link.label}</span>
+                                                                            <ChevronDown size={16} className={`${styles.mobileDropdownIcon} ${isOpen ? styles.rotate : ''}`} />
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            </div>
+                                                            )}
                                                             {isOpen && (
                                                             <div className={styles.mobileDropdownSubmenu}>
                                                                 {link.submenu.map((subItem, subIndex) => {
                                                                     const SubIconComponent = subItem.icon;
-                                                                    const isSubItemActive = router.pathname === subItem.href || router.asPath === subItem.href;
+                                                                    // Special handling for XSMB/XSMN routes
+                                                                    let isSubItemActive = false;
+                                                                    if (subItem.href === '/ket-qua-xo-so-mien-bac') {
+                                                                        isSubItemActive = router.pathname === '/kqxs' || router.pathname === subItem.href || router.asPath === subItem.href;
+                                                                    } else if (subItem.href === '/kqxs-xsmn') {
+                                                                        isSubItemActive = router.pathname === '/kqxs-xsmn' || router.asPath === subItem.href;
+                                                                    } else {
+                                                                        isSubItemActive = router.pathname === subItem.href || router.asPath === subItem.href;
+                                                                    }
                                                                     return (
                                                                         <Link
                                                                             key={subIndex}

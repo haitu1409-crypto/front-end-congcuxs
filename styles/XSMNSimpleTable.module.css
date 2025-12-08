@@ -1,0 +1,706 @@
+/**
+ * XSMN Table Styles - Match với kqxs project
+ * Thiết kế giống dự án kqxs với header, filter, và statistics tables
+ */
+
+.containerKQ {
+    width: 100%;
+    max-width: 1200px;
+    min-width: 660px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+/* Flex layout for horizontal alignment */
+.horizontalLayout {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    min-height: 600px;
+    contain: layout style;
+}
+
+.mainTableContainer {
+    width: auto;
+    margin: 0 auto;
+    flex: 1;
+}
+
+.sideTablesContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-shrink: 0;
+    width: auto;
+    justify-content: center;
+}
+
+.kqxs {
+    width: 100%;
+    border: 1px solid #e80000;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    padding: 15px 0 10px 0;
+    background-color: #ffeca0;
+}
+
+.headerTop {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.kqxs__title {
+    color: #000;
+    white-space: pre-wrap;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.kqxs__action {
+    display: flex;
+    justify-content: center;
+    padding: 5px 0;
+}
+
+.kqxs__actionLink {
+    text-transform: uppercase;
+    font-size: 18px;
+    margin: 0 10px;
+    font-weight: 500;
+    text-decoration: underline;
+    color: #2d3483;
+    transition: color 0.3s ease;
+}
+
+.kqxs__actionLink.dayOfWeek {
+    text-transform: none;
+}
+
+.kqxs__actionLink:hover {
+    color: red;
+}
+
+.tableXS {
+    border-collapse: collapse;
+    text-align: center;
+    width: auto;
+    max-width: 100%;
+    table-layout: auto;
+    margin: 0 auto;
+}
+
+.tableXS th,
+.tableXS td {
+    border: 1px solid #ccc;
+    font-weight: 700;
+}
+
+.tableXS th {
+    background-color: #007bff21;
+    font-size: 18px;
+    padding: 8px 0;
+    font-weight: 600;
+    color: #2d3483;
+}
+
+.stationName {
+    word-break: break-word;
+    font-size: 14px;
+    padding: 6px 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tableXS th:first-child {
+    width: 30px;
+    min-width: 30px;
+    background-color: #f0f0f0;
+}
+
+.tableXS th:not(:first-child),
+.tableXS td:not(.tdTitle) {
+    width: 100px;
+    max-width: 100px;
+    min-width: 80px;
+    padding: 5px 3px;
+}
+
+.tableXS td.tdTitle {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    font-size: 15px;
+    color: #000;
+    padding: 3px 2px;
+}
+
+.tableXS td.tdTitle.highlight {
+    color: red;
+    font-size: 15px;
+}
+
+.tableXS td.rowXS {
+    transition: background-color 0.2s ease;
+    padding: 0 !important;
+}
+
+.tableXS td.rowXS:hover {
+    background-color: #fff4c3;
+}
+
+.tableXS tr:nth-child(odd):not(:first-child) {
+    background-color: #cccccc29;
+}
+
+.prizeNumber {
+    display: block;
+    font-weight: 700;
+    font-size: 18px;
+    text-align: center;
+    line-height: 1.4;
+    padding: 0;
+}
+
+.prizeNumber.highlight {
+    color: red;
+}
+
+.prizeNumber.gdb {
+    font-size: 18px;
+}
+
+.prizeNumber.g3 {
+    font-size: 18px;
+    color: #000;
+}
+
+.tdTitle.g3 {
+    color: #000;
+}
+
+.action {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.filter__options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 60px;
+    width: 500px;
+    height: 50px;
+    border-radius: 6px;
+    margin: 0 auto;
+    background-color: #fff;
+    transition: box-shadow 0.3s ease;
+}
+
+.filter__options:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.optionInput input {
+    display: none;
+}
+
+.optionInput label {
+    display: flex;
+    align-items: center;
+    position: relative;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-color, #2d3483);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.optionInput label:hover {
+    color: #d32f2f;
+}
+
+.optionInput label::before {
+    content: '';
+    position: absolute;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    left: -30px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+}
+
+.optionInput input[type='radio']:checked + label::before {
+    border: 2px solid #000;
+}
+
+.optionInput input[type='radio']:checked + label::after {
+    content: '';
+    position: absolute;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    top: 1.5px;
+    left: -25.2px;
+    border-radius: 50%;
+    background-color: var(--primary-color, #2d3483);
+}
+
+/* ============================================
+   LOTO ĐẦU TABLE (dau)
+   ============================================ */
+
+.dau {
+    border-collapse: collapse;
+    margin: 0;
+    background: #ffffff;
+    table-layout: fixed;
+    width: auto;
+    max-width: 280px;
+    min-width: 260px;
+    align-self: flex-start;
+}
+
+.dau th,
+.dau td {
+    border: 1px solid orange;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 4px 3px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dauDigitCol {
+    width: 20px !important;
+    max-width: 20px !important;
+    min-width: 20px !important;
+    padding: 2px 1px !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    background-color: #FFE4B5 !important;
+    color: #333333 !important;
+    border: 1px solid orange !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dauDataCol {
+    width: 260px !important;
+    max-width: 260px !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    text-align: left !important;
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid orange !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    font-weight: 600 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-synthesis: weight;
+}
+
+.dau th {
+    background: #FFE4B5 !important;
+    color: #333333 !important;
+    font-weight: 700 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dau th:not(:first-child) {
+    font-size: 14px !important;
+    padding: 3px 2px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* Màu sắc cho loto đầu */
+.dau_0, .dau_1, .dau_2, .dau_3, .dau_4,
+.dau_5, .dau_6, .dau_7, .dau_8, .dau_9 {
+    background: #ffffff !important;
+}
+
+/* ============================================
+   LOTO ĐUÔI TABLE (dit)
+   ============================================ */
+
+.dit {
+    border-collapse: collapse;
+    margin: 0;
+    background: #ffffff;
+    table-layout: fixed;
+    width: auto;
+    max-width: 280px;
+    min-width: 260px;
+    align-self: flex-start;
+}
+
+.dit th,
+.dit td {
+    border: 1px solid purple;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 4px 3px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.ditDigitCol {
+    width: 20px !important;
+    max-width: 20px !important;
+    min-width: 20px !important;
+    padding: 2px 1px !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    background-color: #E6E6FA !important;
+    color: #333333 !important;
+    border: 1px solid purple !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.ditDataCol {
+    width: 260px !important;
+    max-width: 260px !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    text-align: left !important;
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid purple !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    font-weight: 600 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-synthesis: weight;
+}
+
+.dit th {
+    background: #E6E6FA !important;
+    color: #333333 !important;
+    font-weight: 700 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dit th:not(:first-child) {
+    font-size: 14px !important;
+    padding: 3px 2px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* Màu sắc cho loto đuôi */
+.dit_0, .dit_1, .dit_2, .dit_3, .dit_4,
+.dit_5, .dit_6, .dit_7, .dit_8, .dit_9 {
+    background: #ffffff !important;
+}
+
+.highlightPrize {
+    color: red;
+    font-weight: 700;
+}
+
+/* Skeleton loader */
+.skeletonContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.skeletonTable {
+    background: #f0f0f0;
+    border-radius: 4px;
+    padding: 20px;
+    min-height: 400px;
+}
+
+.skeletonHeader {
+    height: 40px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.skeletonRow {
+    height: 30px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.errorMessage {
+    padding: 40px 20px;
+    text-align: center;
+    color: #666666;
+    font-size: 14px;
+    background: #f9f9f9;
+    border: 1px solid #ff6b6b;
+    border-radius: 4px;
+    margin: 20px;
+}
+
+.errorMessage h3 {
+    margin: 0 0 10px 0;
+    color: #d32f2f;
+}
+
+.loadMoreContainer {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.loadMoreButton {
+    padding: 12px 24px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.loadMoreButton:hover {
+    background: #0056b3;
+}
+
+.allLoadedMessage {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .horizontalLayout {
+        gap: 15px;
+    }
+
+    .mainTableContainer {
+        width: 100%;
+    }
+
+    .sideTablesContainer {
+        flex-direction: row;
+        gap: 15px;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .containerKQ {
+        min-width: 320px;
+        font-size: 12px;
+    }
+
+    .horizontalLayout {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .mainTableContainer {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0;
+        padding: 0;
+        display: block;
+    }
+
+    .sideTablesContainer {
+        display: flex !important;
+        flex-direction: row;
+        justify-content: flex-start !important;
+        align-items: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        gap: 10px;
+    }
+
+    .dau,
+    .dit {
+        flex: 1 1 calc(50% - 5px);
+        width: auto;
+        min-width: calc(50% - 5px);
+        max-width: calc(50% - 5px);
+        table-layout: auto !important;
+    }
+
+    .dauDigitCol,
+    .ditDigitCol {
+        width: auto !important;
+        min-width: 30px !important;
+        max-width: 40px !important;
+        padding: 4px 3px !important;
+    }
+
+    .dauDataCol,
+    .ditDataCol {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding: 0 !important;
+    }
+
+    .kqxs {
+        border-radius: 3px;
+        border: 1px solid #e80000;
+    }
+
+    .kqxs__title {
+        font-size: 18px;
+        width: 100%;
+        font-weight: 700;
+    }
+
+    .header {
+        padding: 15px 0 10px 0;
+        background-color: #ffeca0;
+    }
+
+    .tableXS th:first-child {
+        width: 25px;
+        min-width: 25px;
+        background-color: #f0f0f0;
+    }
+
+    .tableXS td.tdTitle {
+        width: 25px !important;
+        min-width: 25px !important;
+        font-size: 12px !important;
+        padding: 3px 1px !important;
+    }
+
+    .tableXS td.tdTitle.highlight {
+        color: red;
+        font-size: 12px !important;
+    }
+
+    .tableXS th {
+        padding: 6px;
+        line-height: 20px;
+        font-weight: 700;
+    }
+
+    .tableXS {
+        width: 100%;
+        table-layout: auto;
+    }
+
+    .tableXS th:not(:first-child),
+    .tableXS td:not(.tdTitle) {
+        font-size: 14px;
+        width: 90px !important;
+        max-width: 90px !important;
+        min-width: 70px !important;
+        padding: 4px 2px;
+    }
+
+    .stationName {
+        font-size: 12px;
+        padding: 5px 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .prizeNumber {
+        font-size: 18px;
+        margin: 4px 0;
+    }
+
+    .prizeNumber.gdb {
+        font-size: 21px;
+    }
+
+    .action {
+        margin-left: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px 0;
+    }
+
+    .filter__options {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+        padding: 8px 10px 8px 30px;
+        gap: 50px;
+        border-radius: 6px;
+        background-color: #fff;
+        margin: 0 auto;
+    }
+
+    .optionInput input[type='radio']:checked + label::after {
+        content: '';
+        position: absolute;
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        top: 0px;
+        left: -25.5px;
+        border-radius: 50%;
+        background-color: var(--primary-color, #2d3483);
+    }
+
+    .optionInput label {
+        font-size: 14px;
+    }
+
+    .TKe_contentTitle .title,
+    .TKe_contentTitle .desc,
+    .TKe_contentTitle .dayOfWeek {
+        font-size: 16px;
+    }
+
+    .tableKey th,
+    .tableKey td {
+        padding: 8px 4px;
+        font-size: 18px;
+        font-weight: 700;
+    }
+}

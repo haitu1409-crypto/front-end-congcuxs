@@ -68,6 +68,10 @@ const nextConfig = {
                 source: '/ket-qua-xo-so-mien-bac',
                 destination: '/kqxs',
             },
+            {
+                source: '/ket-qua-xo-so-mien-nam',
+                destination: '/kqxs-xsmn',
+            },
         ];
     },
 

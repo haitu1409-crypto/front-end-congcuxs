@@ -1,7 +1,7 @@
 /** @type {import('next-sitemap').IConfig} */
 // Normalize siteUrl to remove trailing slash to avoid double slashes in URLs
 const getSiteUrl = () => {
-    const url = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro';
+    const url = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
     return url.replace(/\/+$/, '');
 };
 

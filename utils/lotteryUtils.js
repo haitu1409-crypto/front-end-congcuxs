@@ -20,16 +20,16 @@ export const getVietnamTime = () => {
 };
 
 /**
- * Kiểm tra có đang trong khung giờ live không
+ * Kiểm tra có đang trong khung giờ live không (cho XSMB)
  * Logic: 
  * - 18:10: LiveResult xuất hiện với bảng rỗng (loading)
  * - 18:14: Scraper khởi động và cào kết quả
- * - 18:33: Kết thúc live window (hoặc khi kết quả đầy đủ)
+ * - 18:35: Kết thúc live window (hoặc khi kết quả đầy đủ)
  * 
  * Có thể config qua env variables (tùy chọn):
  * - NEXT_PUBLIC_LIVE_WINDOW_HOUR (mặc định: 18)
  * - NEXT_PUBLIC_LIVE_WINDOW_START_MINUTE (mặc định: 10)
- * - NEXT_PUBLIC_LIVE_WINDOW_END_MINUTE (mặc định: 33)
+ * - NEXT_PUBLIC_LIVE_WINDOW_END_MINUTE (mặc định: 35)
  */
 export const isWithinLiveWindow = () => {
     const vietTime = getVietnamTime();
@@ -39,9 +39,35 @@ export const isWithinLiveWindow = () => {
     // Đọc từ env hoặc dùng giá trị mặc định
     const liveHour = parseInt(process.env.NEXT_PUBLIC_LIVE_WINDOW_HOUR) || 18;
     const startMinute = parseInt(process.env.NEXT_PUBLIC_LIVE_WINDOW_START_MINUTE) || 10;
-    const endMinute = parseInt(process.env.NEXT_PUBLIC_LIVE_WINDOW_END_MINUTE) || 33;
+    const endMinute = parseInt(process.env.NEXT_PUBLIC_LIVE_WINDOW_END_MINUTE) || 35;
 
-    // Live window: 18:10 - 18:33 (hoặc đến khi kết quả đầy đủ)
+    // Live window: 18:10 - 18:35 (hoặc đến khi kết quả đầy đủ)
+    return hours === liveHour && minutes >= startMinute && minutes <= endMinute;
+};
+
+/**
+ * Kiểm tra có đang trong khung giờ live không (cho XSMN)
+ * Logic: 
+ * - 16:10: LiveResult xuất hiện với bảng rỗng (loading)
+ * - 16:14: Scraper khởi động và cào kết quả
+ * - 16:40: Kết thúc live window (hoặc khi kết quả đầy đủ)
+ * 
+ * Có thể config qua env variables (tùy chọn):
+ * - NEXT_PUBLIC_LIVE_WINDOW_HOUR_MN (mặc định: 16)
+ * - NEXT_PUBLIC_LIVE_WINDOW_START_MINUTE_MN (mặc định: 10)
+ * - NEXT_PUBLIC_LIVE_WINDOW_END_MINUTE_MN (mặc định: 40)
+ */
+export const isWithinLiveWindowXSMN = () => {
+    const vietTime = getVietnamTime();
+    const hours = vietTime.getHours();
+    const minutes = vietTime.getMinutes();
+
+    // Đọc từ env hoặc dùng giá trị mặc định
+    const liveHour = parseInt(process.env.NEXT_PUBLIC_LIVE_WINDOW_HOUR_MN) || 16;
+    const startMinute = parseInt(process.env.NEXT_PUBLIC_LIVE_WINDOW_START_MINUTE_MN) || 10;
+    const endMinute = parseInt(process.env.NEXT_PUBLIC_LIVE_WINDOW_END_MINUTE_MN) || 40;
+
+    // Live window: 16:10 - 16:40 (hoặc đến khi kết quả đầy đủ)
     return hours === liveHour && minutes >= startMinute && minutes <= endMinute;
 };
 

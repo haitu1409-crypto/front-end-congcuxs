@@ -7,7 +7,7 @@
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-const SITE_URL_BASE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro').replace(/\/+$/, '');
+const SITE_URL_BASE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro').replace(/\/+$/, '');
 
 function escapeXml(unsafe) {
     if (!unsafe) return '';
@@ -115,6 +115,7 @@ export default function NewsSitemap() {
     // getServerSideProps will handle the response
     return null;
 }
+
 
 
 

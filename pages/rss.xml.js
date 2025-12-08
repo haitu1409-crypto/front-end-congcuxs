@@ -5,7 +5,7 @@
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 // Normalize SITE_URL - remove trailing slash to avoid double slashes
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.taodandewukong.pro').replace(/\/+$/, '');
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro').replace(/\/+$/, '');
 const SITE_NAME = 'Tạo Dàn Đề Wukong - Tin Tức Xổ Số';
 const SITE_DESCRIPTION = 'Tin tức xổ số, lô đề, thống kê và kinh nghiệm chơi mới nhất 24/7';
 

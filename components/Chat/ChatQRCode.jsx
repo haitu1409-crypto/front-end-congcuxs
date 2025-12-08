@@ -11,7 +11,7 @@ export default function ChatQRCode({ isOpen, onClose }) {
     const [copied, setCopied] = useState(false);
     
     // Use production URL for QR code (so users can scan from anywhere)
-    const productionUrl = 'https://www.taodandewukong.pro';
+    const productionUrl = 'https://taodandewukong.pro';
     const chatUrl = typeof window !== 'undefined' 
         ? (process.env.NODE_ENV === 'production' 
             ? `${productionUrl}/chat` 

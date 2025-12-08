@@ -75,7 +75,7 @@ const PrivacyPolicyPage = () => {
                 </p>
                 <ul>
                     <li>Email: <a href="mailto:contact@taodandewukong.pro">contact@taodandewukong.pro</a></li>
-                    <li>Trang web: <a href="https://www.taodandewukong.pro">https://www.taodandewukong.pro</a></li>
+                    <li>Trang web: <a href="https://taodandewukong.pro">https://taodandewukong.pro</a></li>
                 </ul>
 
                 <p style={{ marginTop: '32px', fontStyle: 'italic' }}>

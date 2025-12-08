@@ -366,16 +366,16 @@ export default function ChatPage() {
     // Get chat URL for sharing
     const chatUrl = typeof window !== 'undefined' 
         ? (process.env.NODE_ENV === 'production' 
-            ? 'https://www.taodandewukong.pro/chat' 
+            ? 'https://taodandewukong.pro/chat' 
             : `${window.location.origin}/chat`)
-        : 'https://www.taodandewukong.pro/chat';
+        : 'https://taodandewukong.pro/chat';
 
     const defaultOrigin = typeof window !== 'undefined'
         ? window.location.origin
-        : 'https://www.taodandewukong.pro';
+        : 'https://taodandewukong.pro';
 
     const ogImage = process.env.NODE_ENV === 'production'
-        ? 'https://www.taodandewukong.pro/imgs/monkey.png'
+        ? 'https://taodandewukong.pro/imgs/monkey.png'
         : `${defaultOrigin}/imgs/monkey.png`;
     
     const ogTitle = 'Group Chat Chốt Dàn 3 Miền Wukong';
