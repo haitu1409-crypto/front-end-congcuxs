@@ -55,10 +55,6 @@
     font-weight: 600;
     margin-bottom: 7px;
     box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
-    /* ✅ Mobile Performance: Fixed height to prevent CLS */
-    min-height: 24px;
-    height: 24px;
-    contain: layout style paint;
 }
 
 .heroBadgeIcon {
@@ -78,10 +74,6 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 4px;
     align-items: stretch;
-    /* ✅ Mobile Performance: Fixed min-height to prevent CLS */
-    min-height: 90px;
-    contain: layout style paint;
-    content-visibility: auto;
 }
 
 @media (min-width: 480px) {
@@ -428,10 +420,6 @@
     background: var(--color-white);
     border-radius: var(--border-radius-lg);
     border: 1px solid var(--color-gray-200);
-    /* ✅ Mobile Performance: Fixed min-height to prevent CLS */
-    min-height: 170px;
-    contain: layout style paint;
-    content-visibility: auto;
 }
 
 @media (min-width: 768px) {
@@ -717,10 +705,6 @@
 /* ===== FEATURES SECTION - COMPACT ===== */
 .features {
     margin: var(--spacing-8) 0 0;
-    /* ✅ Mobile Performance: Fixed min-height to prevent CLS */
-    min-height: 200px;
-    contain: layout style paint;
-    content-visibility: auto;
 }
 
 @media (max-width: 767px) {
@@ -733,10 +717,6 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-4);
-    /* ✅ Mobile Performance: Fixed min-height to prevent CLS */
-    min-height: 180px;
-    contain: layout style paint;
-    content-visibility: auto;
 }
 
 @media (max-width: 767px) {
@@ -1301,9 +1281,6 @@
     max-width: 100%;
     padding: 10px;
     gap: 13px;
-    /* ✅ Mobile Performance: Prevent CLS with contain */
-    contain: layout style paint;
-    content-visibility: auto;
 }
 
 .leftColumn {
@@ -1311,9 +1288,6 @@
     flex-direction: column;
     min-width: 0;
     /* Prevent grid overflow */
-    /* ✅ Mobile Performance: Prevent CLS with contain */
-    contain: layout style paint;
-    content-visibility: auto;
 }
 
 .rightColumn {
@@ -1326,9 +1300,6 @@
     width: 100%;
     max-width: 100%;
     overflow: hidden;
-    /* ✅ Mobile Performance: Prevent CLS with contain */
-    contain: layout style paint;
-    content-visibility: auto;
 }
 
 .sidebarContent {
@@ -1362,17 +1333,11 @@
 /* Mobile Only Today Predictions - Hiển thị trên mobile, ẩn trên desktop */
 .mobileOnlyTodayPredictions {
     display: none;
-    /* ✅ Mobile Performance: Prevent CLS */
-    contain: layout style paint;
-    min-height: 400px;
 }
 
 /* Desktop Only Today Predictions - Hiển thị trên desktop, ẩn trên mobile */
 .desktopOnlyTodayPredictions {
     display: block;
-    /* ✅ Mobile Performance: Prevent CLS */
-    contain: layout style paint;
-    min-height: 400px;
 }
 
 /* ===== RESPONSIVE LAYOUT ===== */

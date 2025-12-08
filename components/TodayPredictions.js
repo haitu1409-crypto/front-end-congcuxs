@@ -151,14 +151,10 @@ const TodayPredictions = () => {
         }
     }, [getFallbackData]);
 
-    // ✅ Mobile Performance: Defer prediction loading to reduce initial blocking
     useEffect(() => {
         if (!hasFetched) {
-            // Defer by one frame to allow critical content to render first
-            requestAnimationFrame(() => {
-                setHasFetched(true);
-                fetchTodayPrediction();
-            });
+            setHasFetched(true);
+            fetchTodayPrediction();
         }
     }, [hasFetched, fetchTodayPrediction]);
 

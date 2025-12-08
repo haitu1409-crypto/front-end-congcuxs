@@ -101,14 +101,12 @@ const nextConfig = {
         }
         
         // ✅ Performance: Optimize bundle splitting
-        // Note: Next.js handles tree shaking automatically, don't override usedExports/sideEffects
+        // Note: usedExports and sideEffects removed - Next.js handles tree shaking internally
         if (!isServer) {
             config.optimization = {
                 ...config.optimization,
                 splitChunks: {
                     chunks: 'all',
-                    maxInitialRequests: 25,
-                    minSize: 20000,
                     cacheGroups: {
                         default: false,
                         vendors: false,
@@ -119,7 +117,6 @@ const nextConfig = {
                             test: /node_modules/,
                             priority: 20,
                             reuseExistingChunk: true,
-                            enforce: true,
                         },
                         // Common chunk for shared code
                         common: {
@@ -135,15 +132,6 @@ const nextConfig = {
                             test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
                             chunks: 'all',
                             priority: 30,
-                            enforce: true,
-                        },
-                        // ✅ Mobile Performance: Separate lucide-react icons
-                        lucide: {
-                            name: 'lucide',
-                            test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
-                            chunks: 'all',
-                            priority: 25,
-                            reuseExistingChunk: true,
                         },
                     },
                 },
@@ -171,13 +159,7 @@ const nextConfig = {
     experimental: {
         // optimizeCss: true, // Disabled - can cause issues with critical.css
         optimizePackageImports: ['lucide-react', 'lodash'],
-        // ✅ Mobile Performance: Optimize server components
-        serverComponentsExternalPackages: ['axios'],
     },
-    
-    // ✅ Mobile Performance: Target modern browsers only (ES2020+)
-    // This reduces polyfills by ~14 KiB
-    swcMinify: true, // Already default in Next.js 15, but explicit for clarity
 
     // ✅ Performance: Modern browser targets (ES2020+)
     // Note: swcMinify is deprecated in Next.js 15+ (enabled by default)

@@ -89,9 +89,7 @@ export default function DesktopHeader() {
                                 height={32}
                                 className={styles.logoImage}
                                 priority
-                                fetchPriority="high"
                                 sizes="32px"
-                                loading="eager"
                             />
                         </div>
                         <span className={styles.logoText}>

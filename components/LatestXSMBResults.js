@@ -17,16 +17,14 @@ const ChatPreview = dynamic(() => import('./Chat/ChatPreview'), {
 const LiveResult = dynamic(() => import('./LiveResult'), {
     loading: () => (
         <div style={{ 
-            minHeight: '400px',
-            height: '400px',
+            minHeight: '400px', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
             background: '#fff',
             borderRadius: '8px',
             margin: '20px 0',
-            contain: 'layout style paint',
-            contentVisibility: 'auto'
+            contain: 'layout style' 
         }}>
             <div style={{ textAlign: 'center' }}>
                 <div style={{ 
@@ -89,16 +87,14 @@ const LatestXSMBResults = () => {
                 {isLiveWindow ? (
                     <LiveResult />
                 ) : (
-                    <div style={{ minHeight: '450px', contain: 'layout style paint' }}>
-                        <XSMBSimpleTable
-                            date="latest"
-                            autoFetch={true}
-                            showLoto={true}
-                            showLoading={true}
-                            showError={true}
-                            className={styles.tableWrapper}
-                        />
-                    </div>
+                    <XSMBSimpleTable
+                        date="latest"
+                        autoFetch={true}
+                        showLoto={true}
+                        showLoading={true}
+                        showError={true}
+                        className={styles.tableWrapper}
+                    />
                 )}
             </div>
 

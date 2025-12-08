@@ -234,21 +234,11 @@ export default function SEOOptimized({
             <link rel="dns-prefetch" href="//www.google-analytics.com" />
             <link rel="dns-prefetch" href="//fonts.gstatic.com" />
             <link rel="dns-prefetch" href="//api.taodandewukong.pro" />
-            <link rel="dns-prefetch" href="//api1.taodandewukong.pro" />
 
             {/* ===== PRECONNECT FOR CRITICAL RESOURCES ===== */}
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
             <link rel="preconnect" href="https://api.taodandewukong.pro" />
-            <link rel="preconnect" href="https://api1.taodandewukong.pro" />
-
-            {/* ===== PRELOAD CRITICAL RESOURCES FOR MOBILE PERFORMANCE ===== */}
-            {configPageType === 'home' && (
-                <>
-                    <link rel="preload" href={`${siteUrl}/imgs/monkey.png`} as="image" fetchPriority="high" />
-                    <link rel="preload" href={`${siteUrl}/imgs/wukong.png`} as="image" fetchPriority="high" />
-                </>
-            )}
 
             {/* ===== OPEN GRAPH - FACEBOOK & TELEGRAM ===== */}
             <meta property="og:title" content={title} />

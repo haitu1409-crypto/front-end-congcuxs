@@ -43,28 +43,14 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 		}
 	}, []);
 
-	// ✅ Mobile Performance: Detect mobile viewport with debounce to reduce reflows
+	// Detect mobile viewport to optimize layout
 	const [isMobile, setIsMobile] = useState(false);
 	useEffect(() => {
-		// Use requestAnimationFrame to batch DOM reads
-		const check = () => {
-			requestAnimationFrame(() => {
-				setIsMobile(typeof window !== 'undefined' && window.innerWidth <= 480);
-			});
-		};
+		const check = () => setIsMobile(typeof window !== 'undefined' && window.innerWidth <= 480);
 		check();
 		if (typeof window !== 'undefined') {
-			// Debounce resize events to reduce forced reflows
-			let resizeTimeout;
-			const handleResize = () => {
-				clearTimeout(resizeTimeout);
-				resizeTimeout = setTimeout(check, 150);
-			};
-			window.addEventListener('resize', handleResize, { passive: true });
-			return () => {
-				window.removeEventListener('resize', handleResize);
-				clearTimeout(resizeTimeout);
-			};
+			window.addEventListener('resize', check, { passive: true });
+			return () => window.removeEventListener('resize', check);
 		}
 	}, []);
 
@@ -384,22 +370,13 @@ const ThongKeNhanh = React.memo(function ThongKeNhanh() {
 		}
 	}, []);
 
-	// ✅ Mobile Performance: Load data immediately but defer heavy computations
-	// ThongKeNhanh is critical content, so load it immediately
 	useEffect(() => {
 		fetchData();
 	}, [fetchData]);
 
 	useEffect(() => {
-		// ✅ Mobile Performance: Load special data after initial data is loaded
-		// This reduces initial blocking time
-		if (!loading && loGanTop.length > 0) {
-			// Defer loading by one frame to reduce blocking
-			requestAnimationFrame(() => {
-				fetchSpecialDauDuoiBoxData();
-			});
-		}
-	}, [loading, loGanTop.length, fetchSpecialDauDuoiBoxData]);
+		fetchSpecialDauDuoiBoxData();
+	}, [fetchSpecialDauDuoiBoxData]);
 
 	// Cập nhật dữ liệu: gọi PUT rồi refetch
 	const handleUpdateAll = useCallback(async () => {
