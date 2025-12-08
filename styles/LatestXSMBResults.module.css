@@ -3,10 +3,7 @@
  * Thiết kế cho component hiển thị kết quả xổ số mới nhất ở trang chủ
  */
 
-.container {
-
-   
-}
+.container {}
 
 .header {
     display: flex;
@@ -20,7 +17,7 @@
     font-size: 18px;
     font-weight: var(--font-bold);
     color: var(--color-gray-900);
-    background:red;
+    background: red;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -60,7 +57,7 @@
 
 .content {
     /* ✅ Fix CLS: Reserve space for content to prevent layout shift */
-    min-height: 600px;
+    min-height: 440px;
     contain: layout style;
 }
 
@@ -90,10 +87,7 @@
 /* ===== RESPONSIVE DESIGN ===== */
 
 @media (max-width: 768px) {
-    .container {
-      
-       
-    }
+    .container {}
 
     .title {
         font-size: var(--text-xl);
@@ -103,24 +97,17 @@
         font-size: var(--text-sm);
     }
 
-    .content {
-        
-    }
+    .content {}
 }
 
 @media (max-width: 480px) {
-    .container {
-       
-      
-    }
+    .container {}
 
     .title {
         font-size: var(--text-lg);
     }
 
-    .content {
-        
-    }
+    .content {}
 }
 
 /* ===== ANIMATIONS ===== */
@@ -166,8 +153,3 @@
         border: 1px solid #000;
     }
 }
-
-
-
-
-

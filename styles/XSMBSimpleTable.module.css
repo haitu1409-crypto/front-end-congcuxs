@@ -18,7 +18,7 @@
     -moz-osx-font-smoothing: grayscale;
     font-display: swap;
     /* ✅ Fix CLS: Reserve space for container */
-    min-height: 600px;
+    min-height: 440px;
     contain: layout style;
 }
 
