@@ -10,8 +10,10 @@ import XSMBSimpleTable from './XSMBSimpleTable';
 import styles from '../styles/LatestXSMBResults.module.css';
 import { isWithinLiveWindow } from '../utils/lotteryUtils';
 
+// ✅ Performance: Defer ChatPreview loading - only load when visible
 const ChatPreview = dynamic(() => import('./Chat/ChatPreview'), {
-    ssr: false
+    ssr: false,
+    loading: () => <div style={{ minHeight: '200px', contain: 'layout style paint' }}></div>
 });
 
 const LiveResult = dynamic(() => import('./LiveResult'), {

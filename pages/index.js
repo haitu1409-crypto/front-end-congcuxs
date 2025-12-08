@@ -12,21 +12,22 @@ import styles from '../styles/Home.module.css';
 import EnhancedSEOHead from '../components/EnhancedSEOHead';
 import { getPageSEO } from '../config/seoConfig';
 import { getAllKeywordsForPage } from '../config/keywordVariations';
-// ✅ Optimized: Import all icons at once (better than 10 dynamic imports)
-import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, Sparkles, Calendar, Activity, TrendingUp, Award, Percent } from 'lucide-react';
+// ✅ Optimized: Import only icons used in initial render (reduce bundle size)
+import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, Sparkles } from 'lucide-react';
 
 // ✅ Lazy load LatestXSMBResults to avoid hydration mismatch
+// ✅ Performance: Load only when needed (not immediately)
 const LatestXSMBResults = dynamic(() => import('../components/LatestXSMBResults'), {
     loading: () => (
         <div style={{ 
-            minHeight: '400px', 
+            minHeight: '800px', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
             background: '#fff',
             borderRadius: '8px',
             margin: '20px 0',
-            contain: 'layout style' 
+            contain: 'layout style paint' 
         }}>
             <div style={{ textAlign: 'center' }}>
                 <div style={{ 
@@ -71,9 +72,10 @@ const TableSnippet = dynamic(() =>
     { ssr: false, loading: () => <div style={{ minHeight: '300px', contain: 'layout style' }}></div> }
 );
 
+// ✅ Performance: Defer ThongKeNhanh loading until after initial render
 const ThongKeNhanh = dynamic(() => import('../components/ThongKeNhanh'), {
     ssr: false,
-    loading: () => <div style={{ minHeight: '140px', background: '#fff', border: '1px solid #C4D2E3', margin: '10px 0', contain: 'layout style' }}></div>
+    loading: () => <div style={{ minHeight: '300px', background: '#fff', border: '1px solid #C4D2E3', margin: '10px 0', contain: 'layout style paint' }}></div>
 });
 
 // ✅ Memoized Homepage component for better performance

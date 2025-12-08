@@ -145,7 +145,7 @@ const Message = memo(function Message({ message, isOwn, showAvatar, formatTime, 
                 return match;
             }
             const safeLabel = escapeHtml(gif.label || gif.id || 'GIF');
-            return `<span class="${styles.gifWrapper}" data-gif-id="${gif.id}"><img src="${gifUrl}" alt="${safeLabel}" loading="lazy" decoding="async" class="${styles.gifImage}" /></span>`;
+            return `<span class="${styles.gifWrapper}" data-gif-id="${gif.id}"><img src="${gifUrl}" alt="${safeLabel}" loading="lazy" decoding="async" width="240" height="70" class="${styles.gifImage}" /></span>`;
         });
 
         // Now escape remaining HTML content

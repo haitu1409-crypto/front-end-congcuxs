@@ -76,7 +76,7 @@ const renderMessageContent = (message) => {
             return match;
         }
         const safeLabel = escapeHtml(gif.label || gif.id || 'GIF');
-        return `<span class="${styles.gifWrapper}" data-gif-id="${gif.id}"><img src="${gifUrl}" alt="${safeLabel}" loading="lazy" decoding="async" class="${styles.gifImage}" /></span>`;
+        return `<span class="${styles.gifWrapper}" data-gif-id="${gif.id}"><img src="${gifUrl}" alt="${safeLabel}" loading="lazy" decoding="async" width="64" height="64" class="${styles.gifImage}" /></span>`;
     });
 
     const parts = content.split(/(<[^>]+>)/);
