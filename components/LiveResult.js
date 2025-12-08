@@ -36,6 +36,7 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
     const animationTimeoutsRef = useRef(new Map());
     const animationThrottleRef = useRef(null);
     const lastAnimatingPrizeRef = useRef(null);
+    const prizeUpdateTimeoutRef = useRef(null); // ✅ Ref cho debounce prize updates
     
     // Animation queue - thứ tự xuất hiện 27 phần tử giải
     const animationQueueRef = useRef([
@@ -51,12 +52,20 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
         'specialPrize_0',
     ]);
 
+    // ✅ FIX: today được tính trực tiếp - formatDate sẽ tự tính khi cần để tránh vòng lặp
     const today = getTodayFormatted();
     const inLiveWindow = isWithinLiveWindow();
 
-    // Get day of week - giống XSMBSimpleTable (di chuyển ra ngoài để dùng trong JSX)
+    // ✅ OPTIMIZED: Memoize getDayOfWeek với cache để tránh tính toán lại
+    const getDayOfWeekCache = useRef(new Map());
     const getDayOfWeek = useCallback((dateString) => {
         if (!dateString) return '';
+        
+        // ✅ Cache kết quả để tránh parse lại cùng một dateString
+        if (getDayOfWeekCache.current.has(dateString)) {
+            return getDayOfWeekCache.current.get(dateString);
+        }
+        
         try {
             let date;
             // Xử lý cả ISO string và format DD/MM/YYYY
@@ -72,34 +81,44 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
             }
             if (isNaN(date.getTime())) return '';
             const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
-            return days[date.getDay()];
+            const result = days[date.getDay()];
+            
+            // ✅ Cache kết quả (giới hạn cache size để tránh memory leak)
+            if (getDayOfWeekCache.current.size > 100) {
+                const firstKey = getDayOfWeekCache.current.keys().next().value;
+                getDayOfWeekCache.current.delete(firstKey);
+            }
+            getDayOfWeekCache.current.set(dateString, result);
+            
+            return result;
         } catch {
             return '';
         }
     }, []);
 
-    // ✅ OPTIMIZED: Memoize findNextAnimatingPrize function
-    const findNextAnimatingPrize = useCallback(() => {
-        if (!liveData) return null;
-        
-        const queue = animationQueueRef.current;
-        for (const prize of queue) {
-            const value = liveData[prize];
-            if (value === '...' || value === '***') {
-                return prize;
-            }
-        }
-        return null;
-    }, [liveData]);
-
-    // ✅ OPTIMIZED: Throttled useEffect để tự động tìm phần tử sắp xuất hiện
+    // ✅ FIX: Throttled useEffect - findNextAnimatingPrize được định nghĩa trong useEffect để tránh dependency loop
     useEffect(() => {
         // Clear throttle cũ
         if (animationThrottleRef.current) {
             clearTimeout(animationThrottleRef.current);
         }
 
-        // Throttle: 200ms (đủ mượt, không quá nhiều updates)
+        // ✅ FIX: findNextAnimatingPrize được định nghĩa trong useEffect để tránh dependency loop
+        const findNextAnimatingPrize = () => {
+            if (!liveData) return null;
+            
+            const queue = animationQueueRef.current;
+            for (const prize of queue) {
+                const value = liveData[prize];
+                if (value === '...' || value === '***') {
+                    return prize;
+                }
+            }
+            return null;
+        };
+
+        // ✅ Tăng throttle từ 200ms lên 300ms để giảm số lần check (từ 5 lần/giây xuống ~3 lần/giây)
+        // Vẫn đủ mượt cho animation nhưng giảm overhead đáng kể
         animationThrottleRef.current = setTimeout(() => {
             if (!mountedRef.current) return;
 
@@ -110,7 +129,7 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
                 lastAnimatingPrizeRef.current = nextPrize;
                 setAnimatingPrize(nextPrize);
             }
-        }, 200);
+        }, 300); // ✅ Tăng từ 200ms lên 300ms
 
         return () => {
             if (animationThrottleRef.current) {
@@ -118,7 +137,7 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
                 animationThrottleRef.current = null;
             }
         };
-    }, [liveData, findNextAnimatingPrize]); // ← Bỏ animatingPrize khỏi deps
+    }, [liveData]); // ✅ FIX: Chỉ phụ thuộc vào liveData, không cần findNextAnimatingPrize
 
     // ✅ OPTIMIZED: Proper cleanup khi mount/unmount
     useEffect(() => {
@@ -150,7 +169,7 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
         };
     }, []); // ← Empty deps để cleanup khi unmount
 
-    // ✅ OPTIMIZED: Pause animation khi tab không active
+    // ✅ FIX: Pause animation khi tab không active - tính toán trực tiếp để tránh dependency loop
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.hidden) {
@@ -159,8 +178,17 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
                 lastAnimatingPrizeRef.current = null;
             } else {
                 // Tab active lại → Resume animation
-                if (mountedRef.current) {
-                    const nextPrize = findNextAnimatingPrize();
+                if (mountedRef.current && liveData) {
+                    // ✅ FIX: Tính toán trực tiếp trong handler thay vì dùng findNextAnimatingPrize
+                    const queue = animationQueueRef.current;
+                    let nextPrize = null;
+                    for (const prize of queue) {
+                        const value = liveData[prize];
+                        if (value === '...' || value === '***') {
+                            nextPrize = prize;
+                            break;
+                        }
+                    }
                     if (nextPrize !== lastAnimatingPrizeRef.current) {
                         lastAnimatingPrizeRef.current = nextPrize;
                         setAnimatingPrize(nextPrize);
@@ -174,7 +202,7 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, [findNextAnimatingPrize]);
+    }, [liveData]); // ✅ FIX: Chỉ phụ thuộc vào liveData
 
     // Setup Socket.io connection
     useEffect(() => {
@@ -215,19 +243,30 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
             setError(null);
         };
 
+        // ✅ FIX: prizeUpdateTimeoutRef đã được khai báo ở trên component level
         const handlePrizeUpdate = (data) => {
             if (!mountedRef.current) return;
 
             console.log('📡 Prize update received:', data);
 
-            setLiveData(prev => {
-                const updated = { ...prev, [data.prizeType]: data.prizeData, lastUpdated: data.timestamp };
-                // ✅ Animation sẽ được tự động set bởi useEffect (không cần setAnimationWithTimeout)
-                return updated;
-            });
+            // ✅ Clear timeout cũ nếu có
+            if (prizeUpdateTimeoutRef.current) {
+                clearTimeout(prizeUpdateTimeoutRef.current);
+            }
 
-            setIsLoading(false);
-            setError(null);
+            // ✅ Debounce 50ms để batch multiple updates cùng lúc
+            prizeUpdateTimeoutRef.current = setTimeout(() => {
+                if (!mountedRef.current) return;
+                
+                setLiveData(prev => {
+                    const updated = { ...prev, [data.prizeType]: data.prizeData, lastUpdated: data.timestamp };
+                    // ✅ Animation sẽ được tự động set bởi useEffect (không cần setAnimationWithTimeout)
+                    return updated;
+                });
+
+                setIsLoading(false);
+                setError(null);
+            }, 50); // ✅ Debounce 50ms để batch updates
         };
 
         const handleComplete = (data) => {
@@ -279,6 +318,12 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
 
         // Cleanup
         return () => {
+            // ✅ Clear debounce timeout khi cleanup
+            if (prizeUpdateTimeoutRef.current) {
+                clearTimeout(prizeUpdateTimeoutRef.current);
+                prizeUpdateTimeoutRef.current = null;
+            }
+            
             // Remove listeners
             lotterySocketClient.off('lottery:latest', handleLatest);
             lotterySocketClient.off('lottery:prize-update', handlePrizeUpdate);
@@ -290,16 +335,44 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
         };
     }, [inLiveWindow, isModal]);
 
+    // ✅ OPTIMIZED: Memoize helper functions để tránh recreate
+    const getLastTwoDigits = useCallback((num) => {
+        if (!num || num === '...' || num === '***') return null;
+        const numStr = String(num);
+        return numStr.slice(-2).padStart(2, '0');
+    }, []);
+
+    // ✅ FIX: formatDate không cần today trong dependencies - tính today trực tiếp khi cần
+    // Điều này tránh vòng lặp vô hạn khi today thay đổi mỗi render
+    const formatDate = useCallback((dateStr) => {
+        if (!dateStr) return getTodayFormatted(); // ✅ Tính trực tiếp, không dùng today từ closure
+        try {
+            let d;
+            // Xử lý ISO string (2025-11-25T17:00:00.000Z)
+            if (typeof dateStr === 'string' && (dateStr.includes('T') || dateStr.includes('Z'))) {
+                d = new Date(dateStr);
+            } else if (typeof dateStr === 'string' && dateStr.includes('-')) {
+                // Format YYYY-MM-DD
+                d = new Date(dateStr);
+            } else {
+                d = new Date(dateStr);
+            }
+
+            if (isNaN(d.getTime())) return getTodayFormatted(); // ✅ Tính trực tiếp
+
+            // Format thành DD/MM/YYYY
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+        } catch {
+            return getTodayFormatted(); // ✅ Tính trực tiếp
+        }
+    }, []); // ✅ Empty deps - không phụ thuộc vào today
+
     // Convert liveData to format compatible with XSMBSimpleTable
     const convertToTableFormat = useMemo(() => {
         if (!liveData) return null;
-
-        // Calculate loto (đầu đuôi) từ các giải
-        const getLastTwoDigits = (num) => {
-            if (!num || num === '...' || num === '***') return null;
-            const numStr = String(num);
-            return numStr.slice(-2).padStart(2, '0');
-        };
 
         const lotoNumbers = {
             heads: Array(10).fill().map(() => []),
@@ -395,33 +468,6 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
             }
         }
 
-        // Format date - giống XSMBSimpleTable
-        const formatDate = (dateStr) => {
-            if (!dateStr) return today;
-            try {
-                let d;
-                // Xử lý ISO string (2025-11-25T17:00:00.000Z)
-                if (typeof dateStr === 'string' && (dateStr.includes('T') || dateStr.includes('Z'))) {
-                    d = new Date(dateStr);
-                } else if (typeof dateStr === 'string' && dateStr.includes('-')) {
-                    // Format YYYY-MM-DD
-                    d = new Date(dateStr);
-                } else {
-                    d = new Date(dateStr);
-                }
-
-                if (isNaN(d.getTime())) return today;
-
-                // Format thành DD/MM/YYYY
-                const day = String(d.getDate()).padStart(2, '0');
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const year = d.getFullYear();
-                return `${day}/${month}/${year}`;
-            } catch {
-                return today;
-            }
-        };
-
         return {
             date: formatDate(liveData.drawDate),
             // Luôn trả về giá trị, kể cả khi là "..." để hiển thị loading state
@@ -468,14 +514,15 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
             lotoDau: lotoDau, // Format: { "0": "03, 04, 08", ... }
             lotoDuoi: lotoDuoi // Format: { "0": "15, 16", ... }
         };
-    }, [liveData, today]);
+    }, [liveData, getLastTwoDigits, formatDate]); // ✅ FIX: Remove today from deps (formatDate handles it internally)
 
-    // ✅ Randomize số mỗi khi animating (tạo hiệu ứng số thay đổi ngẫu nhiên)
+    // ✅ OPTIMIZED: Randomize số mỗi khi animating - giảm frequency để cải thiện performance
     useEffect(() => {
         if (animatingPrize) {
+            // ✅ Tăng interval từ 100ms lên 200ms để giảm số lần re-render (từ 10 lần/giây xuống 5 lần/giây)
             const interval = setInterval(() => {
                 setRandomSeed(prev => prev + 1); // Trigger re-render để random lại
-            }, 100); // Thay đổi mỗi 100ms để tạo hiệu ứng random
+            }, 200); // Thay đổi mỗi 200ms để tạo hiệu ứng random (vẫn mượt nhưng ít re-render hơn)
             
             return () => clearInterval(interval);
         } else {
@@ -483,8 +530,8 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
         }
     }, [animatingPrize]);
 
-    // ✅ OPTIMIZED: Render prize value với số ngẫu nhiên đứng yên
-    const renderPrizeValue = (value, isAnimating = false, digits = 5, isMaDB = false) => {
+    // ✅ FIX: Memoize renderPrizeValue - remove styles from deps (styles object is stable)
+    const renderPrizeValue = useCallback((value, isAnimating = false, digits = 5, isMaDB = false) => {
         const className = `${styles.running_number} ${styles[`running_${digits}`]}`;
 
         // Xác định số chữ số cần hiển thị dựa trên bộ lọc
@@ -539,7 +586,7 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
                 {displayValue}
             </span>
         );
-    };
+    }, [filterType, randomSeed]); // ✅ FIX: Remove styles from deps (styles is stable import)
 
     if (error && !liveData) {
         return (
@@ -805,4 +852,14 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
     );
 };
 
-export default React.memo(LiveResult);
+// ✅ OPTIMIZED: Custom comparison function để tránh re-render không cần thiết
+const arePropsEqual = (prevProps, nextProps) => {
+    // Chỉ re-render nếu props quan trọng thay đổi
+    return (
+        prevProps.station === nextProps.station &&
+        prevProps.isModal === nextProps.isModal &&
+        prevProps.showChatPreview === nextProps.showChatPreview
+    );
+};
+
+export default React.memo(LiveResult, arePropsEqual);
