@@ -17,6 +17,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-display: swap;
+    /* ✅ Mobile Performance: Fixed min-height to prevent CLS */
+    min-height: 450px;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 /* Flex layout for horizontal alignment */
@@ -536,6 +540,15 @@
     border: 1px solid #cccccc;
     border-radius: 4px;
     margin: 20px;
+    /* ✅ Mobile Performance: Fixed height to prevent CLS */
+    min-height: 450px;
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 .spinner {
@@ -618,6 +631,15 @@
     border: 1px solid #ff6b6b;
     border-radius: 4px;
     margin: 20px;
+    /* ✅ Mobile Performance: Fixed height to prevent CLS */
+    min-height: 200px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 .errorMessage h3 {

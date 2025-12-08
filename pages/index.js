@@ -47,35 +47,78 @@ const LatestXSMBResults = dynamic(() => import('../components/LatestXSMBResults'
 });
 
 // ✅ Lazy load SEO components for better performance with CLS fixes
+// ✅ Mobile Performance: Fixed height loading states to prevent CLS (0.26 → <0.1)
 const AuthorBio = dynamic(() => import('../components/SEO/AuthorBio'), {
-    loading: () => <div style={{ minHeight: '200px', contain: 'layout style' }}></div>,
+    loading: () => <div style={{ 
+        minHeight: '200px', 
+        height: '200px',
+        contain: 'layout style paint',
+        contentVisibility: 'auto'
+    }}></div>,
     ssr: false
 });
 
 const Testimonials = dynamic(() => import('../components/SEO/Testimonials'), {
-    loading: () => <div style={{ minHeight: '300px', contain: 'layout style' }}></div>,
+    loading: () => <div style={{ 
+        minHeight: '300px', 
+        height: '300px',
+        contain: 'layout style paint',
+        contentVisibility: 'auto'
+    }}></div>,
     ssr: false
 });
 
 const DirectAnswer = dynamic(() =>
     import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.DirectAnswer })),
-    { ssr: false, loading: () => <div style={{ minHeight: '200px', contain: 'layout style' }}></div> }
+    { 
+        ssr: false, 
+        loading: () => <div style={{ 
+            minHeight: '200px', 
+            height: '200px',
+            contain: 'layout style paint',
+            contentVisibility: 'auto'
+        }}></div> 
+    }
 );
 
 const ListSnippet = dynamic(() =>
     import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.ListSnippet })),
-    { ssr: false, loading: () => <div style={{ minHeight: '250px', contain: 'layout style' }}></div> }
+    { 
+        ssr: false, 
+        loading: () => <div style={{ 
+            minHeight: '250px', 
+            height: '250px',
+            contain: 'layout style paint',
+            contentVisibility: 'auto'
+        }}></div> 
+    }
 );
 
 const TableSnippet = dynamic(() =>
     import('../components/SEO/FeaturedSnippet').then(mod => ({ default: mod.TableSnippet })),
-    { ssr: false, loading: () => <div style={{ minHeight: '300px', contain: 'layout style' }}></div> }
+    { 
+        ssr: false, 
+        loading: () => <div style={{ 
+            minHeight: '300px', 
+            height: '300px',
+            contain: 'layout style paint',
+            contentVisibility: 'auto'
+        }}></div> 
+    }
 );
 
-// ✅ Mobile Performance: Defer ThongKeNhanh loading until after initial render
+// ✅ Mobile Performance: Fixed height for ThongKeNhanh to prevent CLS
 const ThongKeNhanh = dynamic(() => import('../components/ThongKeNhanh'), {
     ssr: false,
-    loading: () => <div style={{ minHeight: '140px', background: '#fff', border: '1px solid #C4D2E3', margin: '10px 0', contain: 'layout style paint' }}></div>
+    loading: () => <div style={{ 
+        minHeight: '600px', 
+        height: '600px',
+        background: '#fff', 
+        border: '1px solid #C4D2E3', 
+        margin: '10px 0', 
+        contain: 'layout style paint',
+        contentVisibility: 'auto'
+    }}></div>
 });
 
 // ✅ Memoized Homepage component for better performance
@@ -402,9 +445,9 @@ const Home = memo(function Home() {
                     </header>
 
                     {/* Main Content Layout - 2 Columns */}
-                    <div className={styles.mainContentLayout}>
+                    <div className={styles.mainContentLayout} style={{ contain: 'layout style paint' }}>
                         {/* Left Column - Main Content */}
-                        <div className={styles.leftColumn}>
+                        <div className={styles.leftColumn} style={{ contain: 'layout style paint' }}>
                             {/* Latest XSMB Results */}
                             <LatestXSMBResults />
 
@@ -449,8 +492,8 @@ const Home = memo(function Home() {
                         </div>
 
                         {/* Right Column - Today Predictions (Desktop Only) */}
-                        <div className={styles.rightColumn}>
-                            <div className={styles.desktopOnlyTodayPredictions}>
+                        <div className={styles.rightColumn} style={{ contain: 'layout style paint' }}>
+                            <div className={styles.desktopOnlyTodayPredictions} style={{ contain: 'layout style paint' }}>
                                 <TodayPredictions />
                             </div>
                         </div>

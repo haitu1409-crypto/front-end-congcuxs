@@ -4,8 +4,11 @@
  */
 
 .container {
-
-   
+    /* ✅ Mobile Performance: Fixed height to prevent CLS */
+    min-height: 500px;
+    height: auto;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 .header {
@@ -14,6 +17,10 @@
     align-items: center;
     gap: var(--spacing-2);
     text-align: center;
+    /* ✅ Mobile Performance: Fixed height to prevent CLS */
+    min-height: 50px;
+    height: 50px;
+    contain: layout style paint;
 }
 
 .title {
@@ -25,6 +32,11 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin: 0;
+    /* ✅ Mobile Performance: Fixed height to prevent CLS */
+    min-height: 24px;
+    height: 24px;
+    line-height: 24px;
+    contain: layout style paint;
 }
 
 .refreshButton {
@@ -59,8 +71,10 @@
 }
 
 .content {
-  
-
+    /* ✅ Mobile Performance: Fixed min-height to prevent CLS */
+    min-height: 450px;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 .tableWrapper {
@@ -70,6 +84,10 @@
 
 .chatPreviewWrapper {
     margin-top: 16px;
+    /* ✅ Mobile Performance: Fixed min-height to prevent CLS */
+    min-height: 200px;
+    contain: layout style paint;
+    content-visibility: auto;
 }
 
 .footer {
