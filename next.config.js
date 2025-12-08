@@ -101,8 +101,7 @@ const nextConfig = {
         }
         
         // ✅ Performance: Optimize bundle splitting
-        // Note: Next.js automatically handles tree shaking (usedExports/sideEffects)
-        // Don't manually set these as they conflict with Next.js's cacheUnaffected optimization
+        // Note: usedExports and sideEffects removed - Next.js handles tree shaking internally
         if (!isServer) {
             config.optimization = {
                 ...config.optimization,
@@ -160,8 +159,6 @@ const nextConfig = {
     experimental: {
         // optimizeCss: true, // Disabled - can cause issues with critical.css
         optimizePackageImports: ['lucide-react', 'lodash'],
-        // ✅ Performance: Optimize server components
-        serverComponentsExternalPackages: [],
     },
 
     // ✅ Performance: Modern browser targets (ES2020+)
