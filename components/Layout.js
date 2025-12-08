@@ -176,6 +176,7 @@ export default function Layout({ children, className = '' }) {
                                         priority
                                         fetchPriority="high"
                                         sizes="32px"
+                                        loading="eager"
                                     />
                                 </div>
                                 <span className={styles.logoText}>

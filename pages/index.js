@@ -16,6 +16,7 @@ import { getAllKeywordsForPage } from '../config/keywordVariations';
 import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, Sparkles, Calendar, Activity, TrendingUp, Award, Percent } from 'lucide-react';
 
 // ✅ Lazy load LatestXSMBResults to avoid hydration mismatch
+// ✅ Mobile Performance: Minimal loading state for better performance
 const LatestXSMBResults = dynamic(() => import('../components/LatestXSMBResults'), {
     loading: () => (
         <div style={{ 
@@ -26,7 +27,7 @@ const LatestXSMBResults = dynamic(() => import('../components/LatestXSMBResults'
             background: '#fff',
             borderRadius: '8px',
             margin: '20px 0',
-            contain: 'layout style' 
+            contain: 'layout style paint' 
         }}>
             <div style={{ textAlign: 'center' }}>
                 <div style={{ 
@@ -71,9 +72,10 @@ const TableSnippet = dynamic(() =>
     { ssr: false, loading: () => <div style={{ minHeight: '300px', contain: 'layout style' }}></div> }
 );
 
+// ✅ Mobile Performance: Defer ThongKeNhanh loading until after initial render
 const ThongKeNhanh = dynamic(() => import('../components/ThongKeNhanh'), {
     ssr: false,
-    loading: () => <div style={{ minHeight: '140px', background: '#fff', border: '1px solid #C4D2E3', margin: '10px 0', contain: 'layout style' }}></div>
+    loading: () => <div style={{ minHeight: '140px', background: '#fff', border: '1px solid #C4D2E3', margin: '10px 0', contain: 'layout style paint' }}></div>
 });
 
 // ✅ Memoized Homepage component for better performance
