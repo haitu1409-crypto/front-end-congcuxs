@@ -39,7 +39,6 @@
 
 .kqxs {
     width: 100%;
-    border: 1px solid #e80000;
     border-radius: 8px;
     text-align: center;
     margin-bottom: 30px;
@@ -47,7 +46,7 @@
 }
 
 .header {
-    padding: 15px 0 10px 0;
+    padding: 10px 0 5px 0;
     background-color: #ffeca0;
 }
 
@@ -55,7 +54,6 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    margin-bottom: 10px;
 }
 
 .kqxs__title {
@@ -63,12 +61,12 @@
     white-space: pre-wrap;
     font-size: 22px;
     font-weight: 600;
+    margin: 0;
 }
 
 .kqxs__action {
     display: flex;
     justify-content: center;
-    padding: 5px 0;
 }
 
 .kqxs__actionLink {
@@ -266,6 +264,7 @@
     margin: 0;
     background: #ffffff;
     table-layout: fixed;
+    text-align: center;
     width: auto;
     max-width: 280px;
     min-width: 260px;
@@ -304,7 +303,7 @@
     width: 260px !important;
     max-width: 260px !important;
     padding: 0 !important;
-    font-size: 16px !important;
+    font-size: 12px !important;
     text-align: left !important;
     background-color: #ffffff !important;
     color: #333333 !important;
@@ -328,9 +327,10 @@
 
 .dau th:not(:first-child) {
     font-size: 14px !important;
-    padding: 3px 2px !important;
+    padding: 1px 2px !important;
     white-space: nowrap;
     overflow: hidden;
+    text-align: center !important;
     text-overflow: ellipsis;
     max-width: 200px;
 }
@@ -369,11 +369,11 @@
 }
 
 .ditDigitCol {
-    width: 20px !important;
+    /* width: 20px !important;
     max-width: 20px !important;
-    min-width: 20px !important;
+    min-width: 20px !important; */
     padding: 2px 1px !important;
-    font-size: 16px !important;
+    font-size: 13px !important;
     text-align: center !important;
     background-color: #E6E6FA !important;
     color: #333333 !important;
@@ -385,10 +385,10 @@
 }
 
 .ditDataCol {
-    width: 260px !important;
+    /* width: 260px !important; */
     max-width: 260px !important;
     padding: 0 !important;
-    font-size: 16px !important;
+    font-size: 12px !important;
     text-align: left !important;
     background-color: #ffffff !important;
     color: #333333 !important;
@@ -412,6 +412,7 @@
 
 .dit th:not(:first-child) {
     font-size: 14px !important;
+    text-align: center !important;
     padding: 3px 2px !important;
     white-space: nowrap;
     overflow: hidden;
@@ -577,7 +578,6 @@
 
     .dauDataCol,
     .ditDataCol {
-        width: auto !important;
         min-width: 0 !important;
         max-width: none !important;
         padding: 0 !important;
@@ -595,7 +595,7 @@
     }
 
     .header {
-        padding: 15px 0 10px 0;
+        padding: 10px 0 5px 0;
         background-color: #ffeca0;
     }
 
@@ -608,13 +608,15 @@
     .tableXS td.tdTitle {
         width: 25px !important;
         min-width: 25px !important;
-        font-size: 12px !important;
+        font-size: 17px !important;
         padding: 3px 1px !important;
+        text-align: center;
     }
 
     .tableXS td.tdTitle.highlight {
         color: red;
-        font-size: 12px !important;
+        font-size: 17px !important;
+        text-align: center;
     }
 
     .tableXS th {
@@ -630,10 +632,11 @@
 
     .tableXS th:not(:first-child),
     .tableXS td:not(.tdTitle) {
-        font-size: 14px;
+        font-size: 18px;
         width: 90px !important;
         max-width: 90px !important;
         min-width: 70px !important;
+        text-align: center;
         padding: 4px 2px;
     }
 
@@ -646,8 +649,8 @@
     }
 
     .prizeNumber {
-        font-size: 18px;
-        margin: 4px 0;
+        font-size: 20px;
+        margin: 1px 0;
     }
 
     .prizeNumber.gdb {
