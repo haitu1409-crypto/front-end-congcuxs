@@ -150,6 +150,13 @@ function generateSiteMap(articles) {
     </url>
     
     <url>
+        <loc>${SITE_URL_BASE}/thongke/giai-dac-biet-nam</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.79</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
         <loc>${SITE_URL_BASE}/thongke/tan-suat-loto</loc>
         <changefreq>daily</changefreq>
         <priority>0.88</priority>
@@ -374,6 +381,12 @@ export async function getServerSideProps({ res }) {
         <loc>${SITE_URL_BASE}/thongke/giai-dac-biet-tuan</loc>
         <changefreq>daily</changefreq>
         <priority>0.78</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    <url>
+        <loc>${SITE_URL_BASE}/thongke/giai-dac-biet-nam</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.79</priority>
         <lastmod>${lastmod}</lastmod>
     </url>
     <url>

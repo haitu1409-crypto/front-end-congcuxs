@@ -1,0 +1,1245 @@
+/**
+ * CSS cho page Thống Kê Giải Đặc Biệt - Hiển Thị Dạng Tháng
+ * Bảng lưới 12 cột (Tháng 1-12) x 31 dòng (Ngày 1-31)
+ * Bao gồm tất cả các class cần thiết từ giaidacbiet.module.css và soiCauBacCau.module.css
+ */
+
+/* Tổng thể container */
+.container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    padding: 16px;
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-display: swap;
+}
+
+/* ✅ FIX CLS: Tiêu đề chính - reserve space */
+.titleGroup {
+    text-align: center;
+    padding: 24px 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    background: #ffeca0;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    contain: layout style paint;
+    min-height: 140px;
+    height: auto;
+    box-sizing: border-box;
+    position: relative;
+    will-change: contents;
+}
+
+.caption {
+    font-style: italic;
+    text-align: center;
+    padding: 8px 0;
+    color: #000000a1;
+}
+
+/* Nút Điều hướng */
+.actionBtn {
+    display: flex;
+    background-color: #ffffff;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionTK {
+    line-height: 20px;
+    border: 1px solid #0396FF;
+    padding: 10px;
+    width: 100%;
+    color: #0396FF;
+    text-align: center;
+    font-weight: 700;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.actionTK:hover {
+    background-color: #0396FF;
+    color: #ffffff;
+}
+
+.active {
+    color: #ffffff;
+    background-color: #0396FF;
+}
+
+.title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #c80505;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    line-height: 1.4;
+    text-align: center;
+    min-height: 2.5rem;
+    contain: layout style;
+    box-sizing: border-box;
+    display: block;
+    text-transform: uppercase;
+}
+
+/* ✅ FIX CLS: Metadata container - reserve space */
+.metadata {
+    padding: 0;
+    margin: 0;
+    min-height: 0;
+    contain: layout style;
+    box-sizing: border-box;
+}
+
+.metadataTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: center;
+    margin: 0;
+    margin-top: 10px;
+    min-height: 0;
+    contain: layout style;
+    line-height: 1.5;
+}
+
+.dateValue {
+    display: inline-block;
+    min-width: 0;
+    text-align: left;
+    font-weight: 700;
+    color: #c80505;
+}
+
+/* Nội dung chính */
+.content {
+    margin-top: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+    contain: layout style paint;
+}
+
+.content:hover {
+    transform: translateY(-1px);
+}
+
+/* Nhóm chọn tỉnh và thời gian */
+.group_Select {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.selectGroup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.timeButton {
+    padding: 8px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #1f2937;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.timeButton:hover {
+    border-color: #c80505;
+    background-color: #fff5f5;
+    color: #c80505;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(200, 5, 5, 0.1);
+}
+
+.timeButton.active {
+    background-color: #c80505;
+    color: #ffffff;
+    border-color: #c80505;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 6px rgba(200, 5, 5, 0.3);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.timeButton.active:hover {
+    background-color: #991b1b;
+    border-color: #991b1b;
+    transform: translateY(-1px);
+}
+
+.options {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* Toggle Buttons */
+.toggleButtons {
+    display: flex;
+    margin-top: 10px;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.toggleItem {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.toggleItem input[type="checkbox"] {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 38px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: #e5e7eb;
+    position: relative;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: content-box !important;
+    line-height: normal !important;
+}
+
+.toggleItem input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    top: 2px;
+    left: 2px;
+    transition: left 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.toggleItem input[type="checkbox"]:checked {
+    background-color: #c80505;
+}
+
+.toggleItem input[type="checkbox"]:checked::before {
+    left: 20px;
+    box-shadow: 0 2px 4px rgba(200, 5, 5, 0.3);
+}
+
+.toggleItem input[type="checkbox"]:hover {
+    background-color: #d1d5db;
+}
+
+.toggleItem input[type="checkbox"]:checked:hover {
+    background-color: #991b1b;
+}
+
+.toggleItem label {
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: #374151;
+    user-select: none;
+    margin-left: 8px;
+    font-weight: 500;
+}
+
+/* ✅ FIX CLS: Bảng dữ liệu - reserve space */
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-height: 500px;
+    contain: layout style;
+    position: relative;
+    box-sizing: border-box;
+    will-change: contents;
+}
+
+/* Container cho bảng tháng - cho phép scroll ngang */
+.monthTableContainer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+/* ✅ FIX CLS: Skeleton wrapper to ensure same dimensions */
+.skeletonWrapper {
+    min-height: 500px;
+    contain: layout style;
+    display: block;
+}
+
+.table {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+    margin-top: 12px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Month Mode - Căn trên cho dữ liệu theo tháng với lưới grid */
+.table.monthMode {
+    border-collapse: collapse !important;
+}
+
+.monthMode td,
+.table.monthMode td {
+    border: 1px solid #d1d5db !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    box-sizing: border-box !important;
+    line-height: normal !important;
+}
+
+/* Khi không có date, td cần căn giữa theo chiều dọc */
+.monthMode td:has(.entry:not(:has(.date))),
+.monthMode td:has(.statItem:not(:has(.date))) {
+    vertical-align: middle !important;
+}
+
+.monthMode th,
+.table.monthMode th {
+    border: 1px solid #d1d5db !important;
+    padding: 0 !important;
+}
+
+.monthMode .entry {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
+
+/* Đảm bảo số vẫn căn giữa trong month mode (kể cả khi tắt toggle ngày) */
+.monthMode .statItem {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Khi không có date, statItem cần căn giữa theo chiều dọc */
+.monthMode .statItem:has(.number:only-child),
+.monthMode .statItem:not(:has(.date)) {
+    justify-content: center !important;
+}
+
+.monthMode .statItem .number {
+    text-align: center !important;
+    width: 100% !important;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+.monthMode .statItem>div:not(.number):not(.date) {
+    text-align: center !important;
+    width: 100% !important;
+}
+
+/* Đảm bảo entry căn giữa khi chỉ có số */
+.monthMode .entry:has(.statItem:not(:has(.date))) {
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.monthMode .entry:has(.statItem .number:only-child) {
+    align-items: center !important;
+    justify-content: center !important;
+    height: auto !important;
+}
+
+/* Override hover effect cho page thống kê tháng */
+.table tr:hover {
+    background-color: inherit !important;
+}
+
+.table tr:nth-child(odd):hover {
+    background-color: #e5e7eb63 !important;
+}
+
+.table th,
+.table td {
+    border: 1px solid #e5e7eb;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    vertical-align: middle;
+}
+
+/* Override text-align cho bảng tháng */
+.table.monthMode td {
+    text-align: left !important;        /* Reset về trái cho ô tháng */
+    vertical-align: top !important;     /* Căn trên mặc định */
+    position: static !important;        /* Loại bỏ position: relative */
+    height: auto !important;            /* Đảm bảo height tự động */
+    min-height: 0 !important;          /* Không có min-height */
+    max-height: none !important;       /* Không giới hạn max-height */
+    line-height: normal !important;    /* Line-height mặc định */
+}
+
+/* Placeholder cho ô rỗng - đảm bảo chiều cao tối thiểu đồng đều */
+.emptyCellPlaceholder {
+    min-height: 0 !important;
+    height: auto !important;
+    width: 100%;
+    display: block;
+}
+
+.clickableCell {
+    cursor: pointer;
+}
+
+.highlightedCell {
+    background-color: #fff7d6 !important;
+    box-shadow: inset 0 0 0 2px #facc15;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table th {
+    background: #ed1c25;
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.table tr:nth-child(odd) {
+    background-color: #e5e7eb63;
+}
+
+.table tr:hover {
+    background-color: #e0f2fe;
+}
+
+/* Số giải đặc biệt */
+.number {
+    color: #1f2937;
+    font-weight: 700 !important;
+    font-size: 1.5rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
+
+/* Last two digits */
+.number .lastTwo {
+    color: var(--lastTwoColor, #c80505);
+    font-weight: 700;
+    font-size: inherit;
+}
+
+/* Ngày và tỉnh */
+.date {
+    color: #4b5563;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Mỗi mục trong cột (khi hiển thị 3 cột) */
+.entry {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.entry:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+/* Stat item (mỗi kết quả trong ô) */
+.statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 5px;
+    margin-bottom: 6px;
+}
+
+.statItem:last-child {
+    margin-bottom: 0;
+}
+
+/* Toggle info styles (Tổng, Đầu, Đuôi, Chẵn lẻ, Bộ) */
+.statItem>div:not(.number):not(.date) {
+    font-size: 0.85rem;
+    font-weight: 700 !important;
+    color: #c80505;
+    line-height: 1.2;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ✅ FIX CLS: Skeleton loading with exact dimensions */
+.skeleton {
+    background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    height: 20px;
+    border-radius: 4px;
+    min-width: 50px;
+    display: inline-block;
+    contain: layout style;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Thông báo lỗi và không có dữ liệu */
+.error {
+    color: #c80505;
+    text-align: center;
+    margin: 16px 0;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.noData {
+    text-align: center;
+    color: #4b5563;
+    margin: 16px 0;
+    font-style: italic;
+    font-size: 1rem;
+}
+
+/* Phần nội dung mô tả */
+.Group_Content {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.heading {
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #c80505;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.h3 {
+    padding: 8px 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    color: #1f2937;
+}
+
+.strong {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.desc {
+    padding: 4px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4b5563;
+}
+
+.action {
+    color: #c80505;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.action:hover {
+    color: #991b1b;
+}
+
+/* Style cho nút "Quay lại đầu trang" */
+.scrollToTopBtn {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    display: none;
+    width: 48px;
+    height: 48px;
+    background: #ed1c25;
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+}
+
+.scrollToTopBtn:hover {
+    background: #c80505;
+    opacity: 0.9;
+    transform: translateY(-3px);
+}
+
+.scrollToTopBtn:active {
+    transform: translateY(0);
+}
+
+/* Style cho chức năng thu gọn/xem thêm */
+.contentWrapper {
+    transition: max-height 0.5s ease-in-out, opacity 0.3s ease;
+    overflow: hidden;
+}
+
+.contentWrapper.collapsed {
+    max-height: 280px;
+    opacity: 0.8;
+}
+
+.contentWrapper.expanded {
+    max-height: none;
+    opacity: 1;
+}
+
+.toggleBtn {
+    display: block;
+    margin: 16px auto;
+    padding: 12px 24px;
+    background: #ed1c25;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.toggleBtn:hover {
+    background: #c80505;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.toggleBtn:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .container {
+        padding: 12px;
+    }
+
+    .actionBtn {
+        display: flex;
+        flex-direction: row;
+        gap: 6px;
+        background-color: #ffffff;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .actionTK {
+        padding: 8px 6px;
+        font-size: 0.85rem;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .titleGroup {
+        padding: 16px 8px;
+        min-height: 120px !important;
+    }
+
+    .title {
+        font-size: 1.4rem;
+    }
+    
+    .tableContainer {
+        min-height: 450px !important;
+    }
+    
+    .skeletonWrapper {
+        min-height: 450px !important;
+    }
+    
+    .metadata {
+        min-height: 0 !important;
+    }
+
+    .group_Select {
+        flex-direction: row;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .selectGroup {
+        display: flex;
+        width: 100%;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .buttonGroup {
+        gap: 6px;
+    }
+
+    .timeButton {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+
+    .options {
+        font-size: 0.95rem;
+    }
+
+    .table {
+        font-size: 0.95rem;
+    }
+
+    .number {
+        font-size: 1rem;
+    }
+
+    .number .lastTwo {
+        font-size: 1rem;
+    }
+
+    .date {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        min-width: 100%;
+        padding: 8px;
+    }
+
+    .titleGroup {
+        padding: 12px 8px;
+        margin-bottom: 16px;
+        min-height: 110px !important;
+    }
+
+    .title {
+        font-size: 1.1rem;
+        margin-top: 3px;
+        margin-bottom: 3px;
+        line-height: 1.3;
+    }
+    
+    .tableContainer {
+        min-height: 400px !important;
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    /* Bảng tháng container - cho phép scroll ngang */
+    .tableContainer.monthTableContainer {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .skeletonWrapper {
+        min-height: 400px !important;
+    }
+    
+    .metadata {
+        min-height: 0 !important;
+    }
+    
+    .metadataTitle {
+        min-height: 0 !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .dateValue {
+        min-width: 0 !important;
+    }
+
+    .actionBtn {
+        display: flex;
+        flex-direction: row;
+        gap: 3px;
+        background-color: #ffffff;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .actionTK {
+        padding: 4px 2px;
+        font-size: 0.85rem;
+        line-height: 1.2;
+        font-weight: 700;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .group_Select {
+        flex-direction: row;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .selectGroup {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .buttonGroup {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .timeButton {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        flex: 1;
+        min-width: calc(25% - 6px);
+    }
+
+    .options {
+        font-size: 0.9rem;
+    }
+
+    /* Bảng tháng (12 cột) - cho phép scroll ngang */
+    .monthTableContainer {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        font-size: 0.75rem;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    /* Bảng tháng - không dùng table-layout: fixed, cho phép tự động điều chỉnh */
+    .table.monthMode {
+        display: block; /* Giống tableDauDuoiByDate - cho phép scroll ngang dễ dàng */
+        table-layout: auto;
+        min-width: 720px; /* 12 cột x 60px = 720px tối thiểu để có scroll ngang */
+        width: max-content;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    /* Giữ nguyên cấu trúc table khi dùng display: block */
+    .table.monthMode thead,
+    .table.monthMode tbody {
+        display: table;
+        width: 100%;
+    }
+
+    .table.monthMode tr {
+        display: table-row;
+    }
+
+    .table th,
+    .table td {
+        padding: 2px 1px;
+        width: calc(100% / 7);
+        min-width: 0;
+        word-wrap: break-word;
+    }
+
+    /* Bảng tháng - đặt min-width để text không xuống dòng */
+    .table.monthMode th,
+    .table.monthMode td {
+        min-width: 60px;
+        width: auto;
+        white-space: nowrap;
+        word-wrap: normal;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+    }
+
+    .table th:first-child,
+    .table td:first-child {
+        width: calc(100% / 7);
+        font-size: 0.75rem;
+    }
+
+    .number {
+        font-size: 0.85rem;
+        padding: 2px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .number .lastTwo {
+        font-size: 0.85rem;
+    }
+
+    .date {
+        font-size: 0.65rem;
+        margin-top: 2px;
+    }
+
+    .statItem {
+        padding: 0;
+        gap: 1px;
+        margin-bottom: 2px;
+    }
+
+    .statItem>div:not(.number):not(.date) {
+        font-size: 0.7rem;
+        font-weight: 700 !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .entry {
+        margin-bottom: 2px;
+        padding: 0;
+        gap: 1px;
+    }
+
+    .toggleButtons {
+        margin-top: 10px;
+        gap: 6px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
+    }
+
+    .toggleItem {
+        gap: 3px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .toggleItem label {
+        font-size: 0.75rem;
+    }
+
+    .toggleItem input[type="checkbox"] {
+        width: 34px;
+        height: 18px;
+    }
+
+    .toggleItem input[type="checkbox"]::before {
+        width: 14px;
+        height: 14px;
+        left: 2px;
+        top: 2px;
+    }
+
+    .toggleItem input[type="checkbox"]:checked::before {
+        left: 18px;
+    }
+
+    .scrollToTopBtn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.2rem;
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .toggleBtn {
+        margin: 10px auto;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        border-radius: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 6px;
+    }
+
+    .titleGroup {
+        padding: 10px 6px;
+        margin-bottom: 12px;
+        min-height: 100px !important;
+    }
+
+    .title {
+        font-size: 1.1rem;
+        margin-top: 2px;
+        margin-bottom: 2px;
+        line-height: 1.3;
+    }
+    
+    .tableContainer {
+        min-height: 350px !important;
+        overflow-x: hidden;
+    }
+
+    /* Bảng tháng container - cho phép scroll ngang */
+    .tableContainer.monthTableContainer {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .skeletonWrapper {
+        min-height: 350px !important;
+    }
+    
+    .metadata {
+        min-height: 0 !important;
+    }
+    
+    .metadataTitle {
+        min-height: 0 !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .dateValue {
+        min-width: 0 !important;
+    }
+
+    .actionBtn {
+        display: flex;
+        flex-direction: row;
+        gap: 1px;
+        background-color: #ffffff;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .actionTK {
+        padding: 2px 1px;
+        font-size: 1.05rem;
+        line-height: 1.1;
+        font-weight: 700;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .group_Select {
+        flex-direction: row;
+        gap: 6px;
+        justify-content: center;
+    }
+
+    .selectGroup {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .buttonGroup {
+        width: 100%;
+        gap: 4px;
+    }
+
+    .timeButton {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+        flex: 1;
+        min-width: calc(25% - 4px);
+    }
+
+    /* Bảng tháng (12 cột) - cho phép scroll ngang */
+    .monthTableContainer {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        font-size: 0.65rem;
+        width: auto;
+        table-layout: fixed;
+    }
+
+    /* Bảng tháng - không dùng table-layout: fixed, cho phép tự động điều chỉnh */
+    .table.monthMode {
+        display: block; /* Giống tableDauDuoiByDate - cho phép scroll ngang dễ dàng */
+        table-layout: auto;
+        min-width: 600px; /* 12 cột x 50px = 600px tối thiểu để có scroll ngang */
+        width: max-content;
+        font-size: 0.7rem;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    /* Giữ nguyên cấu trúc table khi dùng display: block */
+    .table.monthMode thead,
+    .table.monthMode tbody {
+        display: table;
+        width: 100%;
+    }
+
+    .table.monthMode tr {
+        display: table-row;
+    }
+
+    .table th,
+    .table td {
+        padding: 1px 0;
+        min-width: 0;
+        width: calc(100% / 7);
+    }
+
+    /* Bảng tháng - đặt min-width để text không xuống dòng */
+    .table.monthMode th,
+    .table.monthMode td {
+        min-width: 50px;
+        width: auto;
+        white-space: nowrap;
+        word-wrap: normal;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+    }
+
+    .table th {
+        font-size: 0.65rem;
+        padding: 3px 5px;
+    }
+
+    .table th:first-child,
+    .table td:first-child {
+        width: calc(100% / 7);
+        font-size: 0.65rem;
+    }
+
+    .number {
+        font-size: 1rem;
+        padding: 1px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .number .lastTwo {
+        font-size: 1rem;
+    }
+
+    .date {
+        font-size: 0.6rem;
+        margin-top: 1px;
+    }
+
+    .statItem {
+        padding: 0;
+        gap: 0;
+        margin-bottom: 1px;
+    }
+
+    .statItem>div:not(.number):not(.date) {
+        font-size: 0.65rem;
+        font-weight: 700 !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .entry {
+        margin-bottom: 1px;
+        padding: 0;
+        gap: 0;
+    }
+
+    .toggleButtons {
+        margin-top: 10px;
+        gap: 4px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
+    }
+
+    .toggleItem {
+        gap: 2px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .toggleItem label {
+        font-size: 0.7rem;
+        margin-left: 4px;
+    }
+
+    .toggleItem input[type="checkbox"] {
+        width: 32px;
+        height: 16px;
+    }
+
+    .toggleItem input[type="checkbox"]::before {
+        width: 12px;
+        height: 12px;
+        left: 2px;
+        top: 2px;
+    }
+
+    .toggleItem input[type="checkbox"]:checked::before {
+        left: 18px;
+    }
+
+    .scrollToTopBtn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        bottom: 16px;
+        right: 16px;
+    }
+
+    .toggleBtn {
+        margin: 8px auto;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        border-radius: 4px;
+    }
+}

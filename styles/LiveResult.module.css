@@ -502,7 +502,8 @@
 
 .digit_container {
     display: inline-flex;
-    gap: 2px; /* Khoảng cách giữa các số */
+    gap: 2px;
+    /* Khoảng cách giữa các số */
     align-items: center;
 }
 
@@ -531,9 +532,12 @@
 
 /* Animation để các số random thay đổi */
 @keyframes randomFade {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.8;
     }
@@ -718,8 +722,8 @@
     .dau,
     .dit {
         flex-shrink: 0;
-        min-width: 180px;
-        width: 180px !important;
+        min-width: 170px;
+        width: 170px !important;
         /* Set width cố định cho từng bảng */
     }
 

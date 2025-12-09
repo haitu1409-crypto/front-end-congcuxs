@@ -13,6 +13,7 @@ export default function DropdownMenu({ items }) {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const hoverTimeoutRef = useRef(null);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -24,6 +25,15 @@ export default function DropdownMenu({ items }) {
 
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (hoverTimeoutRef.current) {
+                clearTimeout(hoverTimeoutRef.current);
+            }
+        };
     }, []);
 
     // Close dropdown on route change
@@ -104,8 +114,29 @@ export default function DropdownMenu({ items }) {
         (parentItem.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/kqxs')
     );
 
+    const handleMouseEnter = () => {
+        // Clear any pending close timeout
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current);
+            hoverTimeoutRef.current = null;
+        }
+        setIsOpen(true);
+    };
+
+    const handleMouseLeave = () => {
+        // Add small delay to allow moving to submenu
+        hoverTimeoutRef.current = setTimeout(() => {
+            setIsOpen(false);
+        }, 200);
+    };
+
     return (
-        <div className={styles.dropdown} ref={dropdownRef}>
+        <div
+            className={styles.dropdown}
+            ref={dropdownRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
             {hasParentHref ? (
                 <Link
                     href={parentItem.href}

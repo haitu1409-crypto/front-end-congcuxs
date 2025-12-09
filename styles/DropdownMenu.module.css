@@ -28,8 +28,8 @@ a.dropdownToggle {
 }
 
 .dropdownToggle:hover {
-    background: var(--color-gray-100);
-    color: var(--color-gray-900);
+    background: var(--color-gray-100) !important;
+    color: var(--color-gray-900) !important;
     opacity: 1;
 }
 
@@ -82,7 +82,7 @@ a.dropdownToggle {
     align-items: center;
     gap: 10px;
     padding: 10px 16px;
-    color: var(--text-color);
+    color: var(--color-gray-700);
     text-decoration: none;
     font-size: 0.95rem;
     transition: all 0.2s ease;
@@ -94,8 +94,8 @@ a.dropdownToggle {
 }
 
 .dropdownMenuItem:hover {
-    background: rgba(237, 28, 37, 0.05);
-    color: var(--primary-color);
+    background: rgba(237, 28, 37, 0.05) !important;
+    color: #ed1c25 !important;
 }
 
 .dropdownMenuItem.active {

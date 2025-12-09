@@ -107,6 +107,7 @@ export default function Layout({ children, className = '' }) {
             { href: '/thongke/lo-gan', label: 'Lô Gan', icon: TrendingUp },
             { href: '/thongke/giai-dac-biet', label: 'Giải Đặc Biệt', icon: Award },
             { href: '/thongke/giai-dac-biet-tuan', label: 'Giải Đặc Biệt Tuần', icon: Calendar },
+            { href: '/thongke/giai-dac-biet-nam', label: 'Giải Đặc Biệt Năm', icon: Calendar },
             { href: '/thongke/dau-duoi', label: 'Đầu Đuôi', icon: Percent },
             { href: '/thongke/tan-suat-loto', label: 'Tần Suất Lô Tô', icon: BarChart3 },
             { href: '/thongke/tan-suat-locap', label: 'Tần Suất Lô Cặp', icon: Target }
@@ -292,7 +293,8 @@ export default function Layout({ children, className = '' }) {
                                                     }
                                                     return router.pathname === subItem.href || router.asPath === subItem.href;
                                                 });
-                                                const isParentActive = link.href && (
+                                                // Only mark parent as active if we're on the parent page itself, not on a submenu page
+                                                const isParentActive = link.href && !hasActiveSubItem && (
                                                     router.pathname === link.href || 
                                                     router.asPath === link.href ||
                                                     (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/kqxs')
@@ -303,7 +305,7 @@ export default function Layout({ children, className = '' }) {
                                                             {link.href ? (
                                                                 <Link
                                                                     href={link.href}
-                                                                    className={`${styles.mobileDropdownHeader} ${hasActiveSubItem || isParentActive ? styles.active : ''}`}
+                                                                    className={`${styles.mobileDropdownHeader} ${styles.mobileNavLink} ${hasActiveSubItem || isParentActive ? styles.active : ''}`}
                                                                     onClick={(e) => {
                                                                         // If clicking on chevron, toggle dropdown instead
                                                                         if (e.target.closest(`.${styles.mobileDropdownIcon}`) || e.target.closest('svg')) {
@@ -326,7 +328,7 @@ export default function Layout({ children, className = '' }) {
                                                                 </Link>
                                                             ) : (
                                                                 <div 
-                                                                    className={`${styles.mobileDropdownHeader} ${hasActiveSubItem ? styles.active : ''}`}
+                                                                    className={`${styles.mobileDropdownHeader} ${styles.mobileNavLink} ${hasActiveSubItem ? styles.active : ''}`}
                                                                     onClick={() => setOpenDropdown(isOpen ? null : link.label)}
                                                                 >
                                                                     <div className={styles.mobileNavLinkContent}>
