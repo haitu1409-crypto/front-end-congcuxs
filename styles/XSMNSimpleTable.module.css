@@ -163,7 +163,7 @@
 .prizeNumber {
     display: block;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 21px;
     text-align: center;
     line-height: 1.4;
     padding: 0;
@@ -174,11 +174,11 @@
 }
 
 .prizeNumber.gdb {
-    font-size: 18px;
+    font-size: 21px;
 }
 
 .prizeNumber.g3 {
-    font-size: 18px;
+    font-size: 21px;
     color: #000;
 }
 
@@ -303,7 +303,7 @@
     width: 260px !important;
     max-width: 260px !important;
     padding: 0 !important;
-    font-size: 12px !important;
+    font-size: 18px !important;
     text-align: left !important;
     background-color: #ffffff !important;
     color: #333333 !important;
@@ -369,11 +369,12 @@
 }
 
 .ditDigitCol {
-    /* width: 20px !important;
+    /* Giữ cùng kích thước với cột đầu để canh thẳng tiêu đề */
+    width: 20px !important;
     max-width: 20px !important;
-    min-width: 20px !important; */
+    min-width: 20px !important;
     padding: 2px 1px !important;
-    font-size: 13px !important;
+    font-size: 16px !important;
     text-align: center !important;
     background-color: #E6E6FA !important;
     color: #333333 !important;
@@ -388,7 +389,7 @@
     /* width: 260px !important; */
     max-width: 260px !important;
     padding: 0 !important;
-    font-size: 12px !important;
+    font-size: 18px !important;
     text-align: left !important;
     background-color: #ffffff !important;
     color: #333333 !important;
@@ -547,11 +548,11 @@
 
     .sideTablesContainer {
         display: flex !important;
-        flex-direction: row;
+        flex-direction: column; /* Mobile: xếp dọc để mỗi bảng nằm riêng một dòng */
         justify-content: flex-start !important;
-        align-items: flex-start;
+        align-items: stretch;
         flex-wrap: nowrap;
-        overflow-x: auto;
+        overflow-x: hidden;
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
@@ -561,19 +562,22 @@
 
     .dau,
     .dit {
-        flex: 1 1 calc(50% - 5px);
-        width: auto;
-        min-width: calc(50% - 5px);
-        max-width: calc(50% - 5px);
+        /* Mobile: mỗi bảng chiếm 1 dòng riêng thay vì chia 2 cột */
+        flex: 1 1 100%;
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
         table-layout: auto !important;
     }
 
     .dauDigitCol,
     .ditDigitCol {
-        width: auto !important;
-        min-width: 30px !important;
-        max-width: 40px !important;
+        /* Mobile: cố định cùng độ rộng để tiêu đề đầu/đuôi thẳng hàng */
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
         padding: 4px 3px !important;
+        text-align: center !important;
     }
 
     .dauDataCol,
@@ -585,7 +589,6 @@
 
     .kqxs {
         border-radius: 3px;
-        border: 1px solid #e80000;
     }
 
     .kqxs__title {
@@ -632,7 +635,7 @@
 
     .tableXS th:not(:first-child),
     .tableXS td:not(.tdTitle) {
-        font-size: 18px;
+        font-size: 15px;
         width: 90px !important;
         max-width: 90px !important;
         min-width: 70px !important;

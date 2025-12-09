@@ -16,7 +16,120 @@ import {
 import styles from '../styles/LiveResultXSMN.module.css';
 
 const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = false }) => {
-    const [liveData, setLiveData] = useState([]);
+    const today = getTodayFormatted();
+    const inLiveWindow = isWithinLiveWindowXSMN();
+    
+    // Tỉnh theo ngày trong tuần
+    const provincesByDay = useMemo(() => ({
+        0: [
+            { tinh: 'tien-giang', tentinh: 'Tiền Giang' },
+            { tinh: 'kien-giang', tentinh: 'Kiên Giang' },
+            { tinh: 'da-lat', tentinh: 'Đà Lạt' },
+        ],
+        1: [
+            { tinh: 'tphcm', tentinh: 'TP.HCM' },
+            { tinh: 'dong-thap', tentinh: 'Đồng Tháp' },
+            { tinh: 'ca-mau', tentinh: 'Cà Mau' },
+        ],
+        2: [
+            { tinh: 'ben-tre', tentinh: 'Bến Tre' },
+            { tinh: 'vung-tau', tentinh: 'Vũng Tàu' },
+            { tinh: 'bac-lieu', tentinh: 'Bạc Liêu' },
+        ],
+        3: [
+            { tinh: 'dong-nai', tentinh: 'Đồng Nai' },
+            { tinh: 'can-tho', tentinh: 'Cần Thơ' },
+            { tinh: 'soc-trang', tentinh: 'Sóc Trăng' },
+        ],
+        4: [
+            { tinh: 'tay-ninh', tentinh: 'Tây Ninh' },
+            { tinh: 'an-giang', tentinh: 'An Giang' },
+            { tinh: 'binh-thuan', tentinh: 'Bình Thuận' },
+        ],
+        5: [
+            { tinh: 'vinh-long', tentinh: 'Vĩnh Long' },
+            { tinh: 'binh-duong', tentinh: 'Bình Dương' },
+            { tinh: 'tra-vinh', tentinh: 'Trà Vinh' },
+        ],
+        6: [
+            { tinh: 'tphcm', tentinh: 'TP.HCM' },
+            { tinh: 'long-an', tentinh: 'Long An' },
+            { tinh: 'binh-phuoc', tentinh: 'Bình Phước' },
+            { tinh: 'hau-giang', tentinh: 'Hậu Giang' },
+        ],
+    }), []);
+
+    // Tạo empty result cho các tỉnh
+    const emptyResult = useMemo(() => {
+        const targetDate = new Date(today.split('-').reverse().join('-'));
+        const dayOfWeekIndex = targetDate.getDay();
+        const provinces = provincesByDay[dayOfWeekIndex] || provincesByDay[6];
+
+        return provinces.map(province => ({
+            drawDate: today,
+            station: station,
+            dayOfWeek: targetDate.toLocaleString('vi-VN', { weekday: 'long' }),
+            tentinh: province.tentinh,
+            tinh: province.tinh,
+            year: new Date().getFullYear(),
+            month: new Date().getMonth() + 1,
+            eightPrizes_0: '...',
+            sevenPrizes_0: '...',
+            sixPrizes_0: '...',
+            sixPrizes_1: '...',
+            sixPrizes_2: '...',
+            fivePrizes_0: '...',
+            fourPrizes_0: '...',
+            fourPrizes_1: '...',
+            fourPrizes_2: '...',
+            fourPrizes_3: '...',
+            fourPrizes_4: '...',
+            fourPrizes_5: '...',
+            fourPrizes_6: '...',
+            threePrizes_0: '...',
+            threePrizes_1: '...',
+            secondPrize_0: '...',
+            firstPrize_0: '...',
+            specialPrize_0: '...',
+            lastUpdated: 0,
+        }));
+    }, [today, station, provincesByDay]);
+
+    // ✅ FIX: Khởi tạo với emptyResult ngay từ đầu (giống XSMB) để hiển thị bảng rỗng khi chờ kết quả
+    const [liveData, setLiveData] = useState(() => {
+        const targetDate = new Date(today.split('-').reverse().join('-'));
+        const dayOfWeekIndex = targetDate.getDay();
+        const provinces = provincesByDay[dayOfWeekIndex] || provincesByDay[6];
+
+        return provinces.map(province => ({
+            drawDate: today,
+            station: station,
+            dayOfWeek: targetDate.toLocaleString('vi-VN', { weekday: 'long' }),
+            tentinh: province.tentinh,
+            tinh: province.tinh,
+            year: new Date().getFullYear(),
+            month: new Date().getMonth() + 1,
+            eightPrizes_0: '...',
+            sevenPrizes_0: '...',
+            sixPrizes_0: '...',
+            sixPrizes_1: '...',
+            sixPrizes_2: '...',
+            fivePrizes_0: '...',
+            fourPrizes_0: '...',
+            fourPrizes_1: '...',
+            fourPrizes_2: '...',
+            fourPrizes_3: '...',
+            fourPrizes_4: '...',
+            fourPrizes_5: '...',
+            fourPrizes_6: '...',
+            threePrizes_0: '...',
+            threePrizes_1: '...',
+            secondPrize_0: '...',
+            firstPrize_0: '...',
+            specialPrize_0: '...',
+            lastUpdated: 0,
+        }));
+    });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isComplete, setIsComplete] = useState(false);
@@ -75,84 +188,6 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
         animationTimeoutsRef.current.set(key, timeoutId);
     }, []);
 
-    // Tỉnh theo ngày trong tuần
-    const provincesByDay = useMemo(() => ({
-        0: [
-            { tinh: 'tien-giang', tentinh: 'Tiền Giang' },
-            { tinh: 'kien-giang', tentinh: 'Kiên Giang' },
-            { tinh: 'da-lat', tentinh: 'Đà Lạt' },
-        ],
-        1: [
-            { tinh: 'tphcm', tentinh: 'TP.HCM' },
-            { tinh: 'dong-thap', tentinh: 'Đồng Tháp' },
-            { tinh: 'ca-mau', tentinh: 'Cà Mau' },
-        ],
-        2: [
-            { tinh: 'ben-tre', tentinh: 'Bến Tre' },
-            { tinh: 'vung-tau', tentinh: 'Vũng Tàu' },
-            { tinh: 'bac-lieu', tentinh: 'Bạc Liêu' },
-        ],
-        3: [
-            { tinh: 'dong-nai', tentinh: 'Đồng Nai' },
-            { tinh: 'can-tho', tentinh: 'Cần Thơ' },
-            { tinh: 'soc-trang', tentinh: 'Sóc Trăng' },
-        ],
-        4: [
-            { tinh: 'tay-ninh', tentinh: 'Tây Ninh' },
-            { tinh: 'an-giang', tentinh: 'An Giang' },
-            { tinh: 'binh-thuan', tentinh: 'Bình Thuận' },
-        ],
-        5: [
-            { tinh: 'vinh-long', tentinh: 'Vĩnh Long' },
-            { tinh: 'binh-duong', tentinh: 'Bình Dương' },
-            { tinh: 'tra-vinh', tentinh: 'Trà Vinh' },
-        ],
-        6: [
-            { tinh: 'tphcm', tentinh: 'TP.HCM' },
-            { tinh: 'long-an', tentinh: 'Long An' },
-            { tinh: 'binh-phuoc', tentinh: 'Bình Phước' },
-            { tinh: 'hau-giang', tentinh: 'Hậu Giang' },
-        ],
-    }), []);
-
-    const today = getTodayFormatted();
-    const inLiveWindow = isWithinLiveWindowXSMN();
-
-    // Tạo empty result cho các tỉnh
-    const emptyResult = useMemo(() => {
-        const targetDate = new Date(today.split('-').reverse().join('-'));
-        const dayOfWeekIndex = targetDate.getDay();
-        const provinces = provincesByDay[dayOfWeekIndex] || provincesByDay[6];
-
-        return provinces.map(province => ({
-            drawDate: today,
-            station: station,
-            dayOfWeek: targetDate.toLocaleString('vi-VN', { weekday: 'long' }),
-            tentinh: province.tentinh,
-            tinh: province.tinh,
-            year: new Date().getFullYear(),
-            month: new Date().getMonth() + 1,
-            eightPrizes_0: '...',
-            sevenPrizes_0: '...',
-            sixPrizes_0: '...',
-            sixPrizes_1: '...',
-            sixPrizes_2: '...',
-            fivePrizes_0: '...',
-            fourPrizes_0: '...',
-            fourPrizes_1: '...',
-            fourPrizes_2: '...',
-            fourPrizes_3: '...',
-            fourPrizes_4: '...',
-            fourPrizes_5: '...',
-            fourPrizes_6: '...',
-            threePrizes_0: '...',
-            threePrizes_1: '...',
-            secondPrize_0: '...',
-            firstPrize_0: '...',
-            specialPrize_0: '...',
-            lastUpdated: 0,
-        }));
-    }, [today, station, provincesByDay]);
 
     // Animation queue
     const animationQueue = [
@@ -203,6 +238,7 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
     }, []);
 
     // Fallback fetch latest via REST khi không có dữ liệu (trường hợp socket chưa trả về)
+    // ✅ FIX: Filter theo ngày hiện tại giống XSMB để đảm bảo chỉ lấy dữ liệu hôm nay
     useEffect(() => {
         if (liveData && liveData.length > 0) return;
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -215,16 +251,31 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
                 const json = await resp.json();
                 if (!json || !json.data || !Array.isArray(json.data)) return;
                 if (aborted) return;
-                // Lấy nhóm ngày mới nhất (limit=1) -> data có thể chứa nhiều bản ghi cùng ngày
-                setLiveData(json.data);
-                setIsLoading(false);
-                setError(null);
+                
+                // ✅ FIX: Filter chỉ lấy dữ liệu của ngày hiện tại (giống XSMB)
+                const todayStr = today; // Format: DD-MM-YYYY
+                const todayDate = new Date(todayStr.split('-').reverse().join('-'));
+                todayDate.setHours(0, 0, 0, 0);
+                
+                const todayData = json.data.filter(item => {
+                    if (!item.drawDate) return false;
+                    const itemDate = new Date(item.drawDate);
+                    itemDate.setHours(0, 0, 0, 0);
+                    return itemDate.getTime() === todayDate.getTime();
+                });
+                
+                // Chỉ set nếu có dữ liệu của ngày hôm nay
+                if (todayData.length > 0) {
+                    setLiveData(todayData);
+                    setIsLoading(false);
+                    setError(null);
+                }
             } catch (err) {
                 // ignore
             }
         })();
         return () => { aborted = true; };
-    }, [liveData]);
+    }, [liveData, today]);
 
     // Lưu cache khi có dữ liệu mới
     useEffect(() => {
@@ -515,36 +566,43 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
         return { heads, tails };
     }, []);
 
+    // Helper parse date để tránh đảo ngày-tháng khi input dạng DD-MM-YYYY / DD/MM/YYYY
+    const parseDateInput = (dateInput) => {
+        if (!dateInput) return null;
+        if (dateInput instanceof Date) return dateInput;
+
+        if (typeof dateInput === 'string') {
+            // DD-MM-YYYY hoặc DD/MM/YYYY
+            if (/^\d{2}[-/]\d{2}[-/]\d{4}$/.test(dateInput)) {
+                const [d, m, y] = dateInput.split(/[-/]/).map(Number);
+                const parsed = new Date(y, m - 1, d);
+                if (!isNaN(parsed.getTime())) return parsed;
+            }
+            // ISO hoặc format khác để Date tự xử lý
+            const iso = new Date(dateInput);
+            if (!isNaN(iso.getTime())) return iso;
+            return null;
+        }
+
+        return null;
+    };
+
     // Function to format date
     const formatDate = (dateInput) => {
-        if (!dateInput) return '';
-        try {
-            const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
-            if (isNaN(date.getTime())) {
-                return '';
-            }
-            const day = date.getDate().toString().padStart(2, '0');
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        } catch (error) {
-            return '';
-        }
+        const date = parseDateInput(dateInput);
+        if (!date) return '';
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     };
 
     // Function to get day of week
     const getDayOfWeek = (dateInput) => {
-        if (!dateInput) return '';
-        try {
-            const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
-            if (isNaN(date.getTime())) {
-                return '';
-            }
-            const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
-            return days[date.getDay()];
-        } catch (error) {
-            return '';
-        }
+        const date = parseDateInput(dateInput);
+        if (!date) return '';
+        const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+        return days[date.getDay()];
     };
 
     // ✅ FIX: Render prize value với animation mới giống XSMB - riêng cho từng tỉnh
@@ -607,7 +665,8 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
         );
     }, [animatingPrizes, filterType, randomSeed]);
 
-    if (error && !liveData.length) {
+    // ✅ FIX: Giống XSMB - check error nhưng vẫn hiển thị bảng rỗng (vì liveData luôn có emptyResult)
+    if (error && (!liveData || liveData.length === 0)) {
         return (
             <div className={styles.container}>
                 <div className={styles.errorMessage}>
@@ -618,7 +677,8 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
         );
     }
 
-    const displayData = liveData.length > 0 ? liveData : emptyResult;
+    // ✅ FIX: Giờ liveData luôn có emptyResult từ đầu, không cần fallback nữa
+    const displayData = liveData;
     const dayOfWeek = displayData[0]?.dayOfWeek || '';
     const formattedDate = formatDate(displayData[0]?.drawDate || today);
     const dayOfWeekFormatted = getDayOfWeek(displayData[0]?.drawDate || today);

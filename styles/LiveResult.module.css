@@ -816,6 +816,7 @@
 
     .liveBadge {
         animation: none;
+        padding: 1px 5px;
     }
 
     .liveDot {

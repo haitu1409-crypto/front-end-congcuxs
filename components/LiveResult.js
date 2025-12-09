@@ -210,6 +210,8 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
         if (!inLiveWindow && !isModal) {
             console.log('🛑 Ngoài khung live, không kết nối socket');
             setIsLoading(false);
+            // ✅ FIX: Giống XSMN - vẫn giữ emptyResult để hiển thị bảng rỗng
+            setError(null);
             return;
         }
 
@@ -590,6 +592,7 @@ const LiveResult = ({ station = 'xsmb', isModal = false, showChatPreview = false
         );
     }, [filterType, randomSeed]); // ✅ FIX: Remove styles from deps (styles is stable import)
 
+    // ✅ FIX: Giờ liveData luôn có emptyResult từ đầu, nên check error nhưng vẫn hiển thị bảng
     if (error && !liveData) {
         return (
             <div className={styles.container}>

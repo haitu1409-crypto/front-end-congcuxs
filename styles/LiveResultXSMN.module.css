@@ -57,7 +57,6 @@
 .headerTop {
     justify-content: space-evenly;
     align-items: center;
-    margin-bottom: 10px;
 }
 
 .kqxs__title {
@@ -65,12 +64,12 @@
     white-space: pre-wrap;
     font-size: 22px;
     font-weight: 600;
+    margin-bottom: 5px;
 }
 
 .kqxs__action {
     display: flex;
     justify-content: center;
-    padding: 5px 0;
 }
 
 .kqxs__actionLink {
@@ -135,18 +134,24 @@
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.8;
     }
 }
 
 @keyframes blink {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.3;
     }
@@ -239,7 +244,7 @@
 .prizeNumber {
     display: block;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 21px;
     text-align: center;
     line-height: 1.4;
     padding: 0;
@@ -270,17 +275,17 @@
     min-width: 108px;
 }
 
-.running_5 {
-}
+.running_5 {}
 
-.running_6 {
-}
+.running_6 {}
 
 .running_number.highlight {
     color: red;
 }
 
-.span1, .span3, .span4 {
+.span1,
+.span3,
+.span4 {
     display: inline-block;
     margin: 0 2px;
 }
@@ -421,7 +426,7 @@
     width: 260px !important;
     max-width: 260px !important;
     padding: 0 !important;
-    font-size: 16px !important;
+    font-size: 18px !important;
     text-align: left !important;
     background-color: #ffffff !important;
     color: #333333 !important;
@@ -445,16 +450,25 @@
 
 .dau th:not(:first-child) {
     font-size: 14px !important;
-    padding: 3px 2px !important;
+    padding: 1px 2px !important;
     white-space: nowrap;
     overflow: hidden;
+    text-align: center !important;
     text-overflow: ellipsis;
     max-width: 200px;
 }
 
 /* Màu sắc cho loto đầu */
-.dau_0, .dau_1, .dau_2, .dau_3, .dau_4,
-.dau_5, .dau_6, .dau_7, .dau_8, .dau_9 {
+.dau_0,
+.dau_1,
+.dau_2,
+.dau_3,
+.dau_4,
+.dau_5,
+.dau_6,
+.dau_7,
+.dau_8,
+.dau_9 {
     background: #ffffff !important;
 }
 
@@ -486,6 +500,7 @@
 }
 
 .ditDigitCol {
+    /* Giữ cùng kích thước với cột đầu để canh thẳng tiêu đề */
     width: 20px !important;
     max-width: 20px !important;
     min-width: 20px !important;
@@ -502,10 +517,10 @@
 }
 
 .ditDataCol {
-    width: 260px !important;
+    /* width: 260px !important; */
     max-width: 260px !important;
     padding: 0 !important;
-    font-size: 16px !important;
+    font-size: 18px !important;
     text-align: left !important;
     background-color: #ffffff !important;
     color: #333333 !important;
@@ -537,8 +552,16 @@
 }
 
 /* Màu sắc cho loto đuôi */
-.dit_0, .dit_1, .dit_2, .dit_3, .dit_4,
-.dit_5, .dit_6, .dit_7, .dit_8, .dit_9 {
+.dit_0,
+.dit_1,
+.dit_2,
+.dit_3,
+.dit_4,
+.dit_5,
+.dit_6,
+.dit_7,
+.dit_8,
+.dit_9 {
     background: #ffffff !important;
 }
 
@@ -579,6 +602,10 @@
         margin: 0;
     }
 
+    .liveBadge {
+        padding: 1px 5px;
+    }
+
     .mainTableContainer {
         width: 100% !important;
         max-width: 100% !important;
@@ -589,11 +616,12 @@
 
     .sideTablesContainer {
         display: flex !important;
-        flex-direction: row;
+        flex-direction: column;
+        /* Mobile: xếp dọc để mỗi bảng nằm riêng một dòng */
         justify-content: flex-start !important;
-        align-items: flex-start;
+        align-items: stretch;
         flex-wrap: nowrap;
-        overflow-x: auto;
+        overflow-x: hidden;
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
@@ -603,19 +631,22 @@
 
     .dau,
     .dit {
-        flex: 1 1 calc(50% - 5px);
-        width: auto;
-        min-width: calc(50% - 5px);
-        max-width: calc(50% - 5px);
+        /* Mobile: mỗi bảng chiếm 1 dòng riêng thay vì chia 2 cột */
+        flex: 1 1 100%;
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
         table-layout: auto !important;
     }
 
     .dauDigitCol,
     .ditDigitCol {
-        width: auto !important;
-        min-width: 30px !important;
-        max-width: 40px !important;
+        /* Mobile: cố định cùng độ rộng để tiêu đề đầu/đuôi thẳng hàng */
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
         padding: 4px 3px !important;
+        text-align: center !important;
     }
 
     .dauDataCol,
@@ -628,17 +659,17 @@
 
     .kqxs {
         border-radius: 3px;
-        border: 1px solid #e80000;
     }
 
     .kqxs__title {
         font-size: 18px;
         width: 100%;
         font-weight: 700;
+        margin-bottom: 5px;
     }
 
     .header {
-        padding: 15px 0 10px 0;
+        padding: 10px 0 5px 0;
         background-color: #ffeca0;
     }
 
@@ -651,13 +682,15 @@
     .tableXS td.tdTitle {
         width: 25px !important;
         min-width: 25px !important;
-        font-size: 12px !important;
+        font-size: 17px !important;
         padding: 3px 1px !important;
+        text-align: center;
     }
 
     .tableXS td.tdTitle.highlight {
         color: red;
-        font-size: 12px !important;
+        font-size: 17px !important;
+        text-align: center;
     }
 
     .tableXS th {
@@ -673,10 +706,11 @@
 
     .tableXS th:not(:first-child),
     .tableXS td:not(.tdTitle) {
-        font-size: 14px;
+        font-size: 15px;
         width: 90px !important;
         max-width: 90px !important;
         min-width: 70px !important;
+        text-align: center;
         padding: 4px 2px;
     }
 
@@ -690,7 +724,7 @@
 
     .prizeNumber {
         font-size: 18px;
-        margin: 4px 0;
+        margin: 1px 0;
     }
 
     .running_number {
@@ -709,4 +743,3 @@
         font-size: 14px;
     }
 }
-
