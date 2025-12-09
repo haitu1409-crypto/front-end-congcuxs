@@ -113,6 +113,12 @@ class XSMNSocketClient {
             this.notifyListeners('xsmn:latest', data);
         });
 
+        // Latest cho tất cả tỉnh (server emit khi không truyền specificTinh)
+        this.socket.on('xsmn:latest-all', (data) => {
+            console.log('📡 Received latest-all XSMN result:', data);
+            this.notifyListeners('xsmn:latest-all', data);
+        });
+
         this.socket.on('xsmn:prize-update', (data) => {
             console.log('📡 Received XSMN prize update:', data);
             this.notifyListeners('xsmn:prize-update', data);

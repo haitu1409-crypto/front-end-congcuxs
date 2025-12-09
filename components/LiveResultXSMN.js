@@ -30,6 +30,19 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
     const animationTimeoutsRef = useRef(new Map());
     const prizeUpdateTimeoutRef = useRef(null);
 
+    // Chuẩn hóa dữ liệu socket (array, object map hoặc object đơn)
+    const normalizeToArray = useCallback((incoming) => {
+        if (!incoming) return [];
+        if (Array.isArray(incoming)) return incoming;
+        if (typeof incoming === 'object') {
+            if (incoming.tinh) {
+                return [incoming];
+            }
+            return Object.values(incoming);
+        }
+        return [];
+    }, []);
+
     // Quản lý animation timeout cho từng tỉnh / prizeType
     const setAnimationWithTimeout = useCallback((tinh, prizeType) => {
         const key = `${tinh}-${prizeType}`;
@@ -286,11 +299,12 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
         // Listen to events
         const handleLatest = (data) => {
             if (!mountedRef.current) return;
-            if (data && Array.isArray(data)) {
-                setLiveData(data);
-                setIsComplete(data.every(item => item.isComplete));
-            } else if (data) {
-                // Single province update
+            const normalized = normalizeToArray(data);
+            if (normalized.length > 0) {
+                setLiveData(normalized);
+                setIsComplete(normalized.every(item => item.isComplete));
+            } else if (data && data.tinh) {
+                // Single province update dạng object
                 setLiveData(prev => {
                     const updated = prev.map(item => 
                         item.tinh === data.tinh ? { ...item, ...data } : item
@@ -301,6 +315,18 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
             }
             setIsLoading(false);
             setError(null);
+        };
+
+        // Server emit khi không truyền specificTinh (map theo tỉnh)
+        const handleLatestAll = (data) => {
+            if (!mountedRef.current) return;
+            const normalized = normalizeToArray(data);
+            if (normalized.length > 0) {
+                setLiveData(normalized);
+                setIsComplete(normalized.every(item => item.isComplete));
+                setIsLoading(false);
+                setError(null);
+            }
         };
 
         const handlePrizeUpdate = (data) => {
@@ -354,10 +380,11 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
 
         const handleFullUpdate = (data) => {
             if (!mountedRef.current) return;
-            if (data && Array.isArray(data)) {
-                setLiveData(data);
-                setIsComplete(data.every(item => item.isComplete));
-            } else if (data) {
+            const normalized = normalizeToArray(data);
+            if (normalized.length > 0) {
+                setLiveData(normalized);
+                setIsComplete(normalized.every(item => item.isComplete));
+            } else if (data && data.tinh) {
                 setLiveData(prev => {
                     const updated = prev.map(item => 
                         item.tinh === data.tinh ? { ...item, ...data } : item
@@ -396,6 +423,7 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
 
         // Register listeners
         xsmnSocketClient.on('xsmn:latest', handleLatest);
+        xsmnSocketClient.on('xsmn:latest-all', handleLatestAll);
         xsmnSocketClient.on('xsmn:prize-update', handlePrizeUpdate);
         xsmnSocketClient.on('xsmn:complete', handleComplete);
         xsmnSocketClient.on('xsmn:full-update', handleFullUpdate);
@@ -417,6 +445,7 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
             animationTimeoutsRef.current.clear();
             
             xsmnSocketClient.off('xsmn:latest', handleLatest);
+            xsmnSocketClient.off('xsmn:latest-all', handleLatestAll);
             xsmnSocketClient.off('xsmn:prize-update', handlePrizeUpdate);
             xsmnSocketClient.off('xsmn:complete', handleComplete);
             xsmnSocketClient.off('xsmn:full-update', handleFullUpdate);
