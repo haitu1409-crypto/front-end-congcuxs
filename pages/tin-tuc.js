@@ -414,6 +414,20 @@ const OptimizedImage = React.memo(({
     );
 });
 
+// Category Label Component - Small badge for image corners
+const CategoryLabel = React.memo(({ category }) => {
+    if (!category) return null;
+    
+    return (
+        <span
+            className={styles.categoryLabel}
+            style={{ backgroundColor: getCategoryColor(category) }}
+        >
+            {getCategoryLabel(category)}
+        </span>
+    );
+});
+
 // Map old categories (from database) to new game categories
 const mapOldCategoryToNew = (category) => {
     const mapping = {
@@ -525,6 +539,7 @@ const HeroArticle = React.memo(({ article }) => {
     return (
         <Link href={`/tin-tuc/${article.slug}`} className={styles.heroPost}>
             <div className={styles.heroImageContainer}>
+                <CategoryLabel category={article.category} />
                 <OptimizedImage
                     src={article.featuredImage?.url}
                     alt={article.featuredImage?.alt || article.title}
@@ -562,6 +577,7 @@ const HeroArticle = React.memo(({ article }) => {
 const FeaturedCard = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.featuredCard}>
         <div className={styles.featuredImageContainer}>
+            <CategoryLabel category={article.category} />
             <OptimizedImage
                 src={article.featuredImage?.url}
                 alt={article.featuredImage?.alt || article.title}
@@ -584,15 +600,31 @@ const FeaturedSlider = React.memo(({ articles, currentIndex, onNext, onPrev, onG
     if (!articles || articles.length === 0) return null;
 
     const [isTransitioning, setIsTransitioning] = useState(true);
+    const [slidesPerView, setSlidesPerView] = useState(
+        typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 3
+    );
     const trackRef = useRef(null);
 
     // Clone articles để tạo hiệu ứng loop vô hạn (clone 3 items đầu để seamless loop)
     const clonedArticles = [...articles, ...articles.slice(0, 3)];
     
     // Tính toán translateX dựa trên currentIndex
-    // Mỗi card chiếm 1/3 width của container
-    // translateX = -currentIndex * (100% / 3)
-    const translateX = -(currentIndex * (100 / 3));
+    // Mỗi card chiếm 1/slidesPerView width của container
+    // translateX = -currentIndex * (100% / slidesPerView)
+    const translateX = -(currentIndex * (100 / slidesPerView));
+
+    // Update slidesPerView on resize to ensure 1 item per view on mobile
+    useEffect(() => {
+        const updateSlidesPerView = () => {
+            if (typeof window === 'undefined') return;
+            const isMobile = window.innerWidth <= 768;
+            setSlidesPerView(isMobile ? 1 : 3);
+        };
+
+        updateSlidesPerView();
+        window.addEventListener('resize', updateSlidesPerView);
+        return () => window.removeEventListener('resize', updateSlidesPerView);
+    }, []);
 
     // Xử lý seamless loop khi đến cuối
     useEffect(() => {
@@ -689,6 +721,7 @@ const FeaturedSlider = React.memo(({ articles, currentIndex, onNext, onPrev, onG
 const ArticleCard = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.articleListItem}>
         <div className={styles.articleListImageContainer}>
+            <CategoryLabel category={article.category} />
             <OptimizedImage
                 src={article.featuredImage?.url}
                 alt={article.featuredImage?.alt || article.title}
@@ -730,6 +763,7 @@ const ArticleCard = React.memo(({ article, index }) => (
 const SidebarItem = React.memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.sidebarItem}>
         <div className={styles.sidebarItemImageWrapper}>
+            <CategoryLabel category={article.category} />
             <OptimizedImage
                 src={article.featuredImage?.url}
                 alt={article.featuredImage?.alt || article.title}
@@ -763,6 +797,84 @@ const SidebarItem = React.memo(({ article, index }) => (
     </Link>
 ));
 
+// Category Grid Section (tabs with up to 9 items)
+const CategoryGrid = React.memo(({ articles, activeCategory, onChangeCategory }) => {
+    const [maxItems, setMaxItems] = useState(
+        typeof window !== 'undefined' && window.innerWidth <= 480 ? 3 : 6
+    );
+
+    // Update max items by viewport: mobile shows 3, others 6
+    useEffect(() => {
+        const handler = () => {
+            if (typeof window === 'undefined') return;
+            setMaxItems(window.innerWidth <= 480 ? 3 : 6);
+        };
+        handler();
+        window.addEventListener('resize', handler);
+        return () => window.removeEventListener('resize', handler);
+    }, []);
+
+    const categories = [
+        { key: 'lien-minh-huyen-thoai', label: getCategoryLabel('lien-minh-huyen-thoai') },
+        { key: 'lien-quan-mobile', label: getCategoryLabel('lien-quan-mobile') },
+        { key: 'dau-truong-chan-ly-tft', label: getCategoryLabel('dau-truong-chan-ly-tft') }
+    ];
+
+    const filtered = useMemo(() => {
+        const mapped = articles.filter(a => mapOldCategoryToNew(a.category) === activeCategory);
+        return mapped.slice(0, maxItems); // mobile 3 items, others 6
+    }, [articles, activeCategory, maxItems]);
+
+    if (articles.length === 0) return null;
+
+    return (
+        <div className={styles.categoryGridSection}>
+            <div className={styles.categoryGridHeader}>
+                <h2 className={styles.sectionTitle}>BÀI VIẾT THEO DANH MỤC</h2>
+                <div className={styles.categoryGridTabs}>
+                    {categories.map(cat => (
+                        <button
+                            key={cat.key}
+                            className={`${styles.categoryGridButton} ${activeCategory === cat.key ? styles.active : ''}`}
+                            style={{ '--category-color': getCategoryColor(cat.key) }}
+                            onClick={() => onChangeCategory(cat.key)}
+                        >
+                            {cat.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className={styles.categoryGridList}>
+                {filtered.map(article => (
+                    <Link href={`/tin-tuc/${article.slug}`} key={article._id} className={styles.categoryGridCard}>
+                        <div className={styles.categoryGridImageWrapper}>
+                            <CategoryLabel category={article.category} />
+                            <OptimizedImage
+                                src={article.featuredImage?.url}
+                                alt={article.featuredImage?.alt || article.title}
+                                width={320}
+                                height={180}
+                                className={styles.categoryGridImage}
+                                loading="lazy"
+                                blurDataURL={blurDataURL}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 300px"
+                            />
+                        </div>
+                        <div className={styles.categoryGridContent}>
+                            <h3 className={styles.categoryGridTitle}>{article.title}</h3>
+                            <div className={styles.categoryGridMeta}>
+                                <span className={styles.categoryGridDate}>{formatDate(article.publishedAt)}</span>
+                                <span className={styles.categoryGridViews}>👁️ {article.views || 0}</span>
+                            </div>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </div>
+    );
+});
+
 // Main Component
 export default function NewsPage() {
     const [state, setState] = useState({
@@ -776,7 +888,8 @@ export default function NewsPage() {
         loading: true,
         error: null,
         searchQuery: '',
-        sortBy: '-publishedAt'
+        sortBy: '-publishedAt',
+        categoryGrid: 'lien-minh-huyen-thoai'
     });
 
     // State for "Show more" functionality
@@ -1145,6 +1258,13 @@ export default function NewsPage() {
                                     />
                                 </div>
                             )}
+
+                            {/* Category Grid Tabs (up to 9 items) */}
+                            <CategoryGrid
+                                articles={state.articles}
+                                activeCategory={state.categoryGrid}
+                                onChangeCategory={(cat) => setState(prev => ({ ...prev, categoryGrid: cat }))}
+                            />
 
                             {/* Articles List - Show all articles when "Tất cả" is selected, or filtered articles for specific category */}
                             <div className={styles.articlesSection}>

@@ -111,7 +111,6 @@ const BRAND_KEYWORDS = {
     withDomain: [
         'taodandewukong pro',
         'taodandewukong.pro',
-        'www.taodandewukong.pro',
         'web tạo dàn đề wukong',
         'website tao dan de wukong',
         // ✅ SHORT ABBREVIATIONS với domain
