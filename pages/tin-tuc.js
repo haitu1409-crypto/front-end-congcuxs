@@ -3,7 +3,7 @@
  * Enhanced UI with better image rendering and user experience
  */
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -11,6 +11,7 @@ import Layout from '../components/Layout';
 import SEOOptimized from '../components/SEOOptimized';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import WebVitalsOptimizer from '../components/WebVitalsOptimizer';
+import LoadingSpinner from '../components/LoadingSpinner';
 import styles from '../styles/NewsClassic.module.css';
 
 // API functions with caching and error handling
@@ -21,6 +22,30 @@ const cache = new Map();
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes for better caching
 const MAX_CACHE_SIZE = 200; // Limit cache size
 
+// Intersection Observer for lazy loading images
+const imageObserverOptions = {
+    root: null,
+    rootMargin: '50px',
+    threshold: 0.01
+};
+
+// Create shared Intersection Observer instance
+let imageObserver = null;
+if (typeof window !== 'undefined') {
+    imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    imageObserver.unobserve(img);
+                }
+            }
+        });
+    }, imageObserverOptions);
+}
+
 const fetchWithCache = async (url, cacheKey, retries = 3) => {
     const now = Date.now();
     const cached = cache.get(cacheKey);
@@ -28,6 +53,10 @@ const fetchWithCache = async (url, cacheKey, retries = 3) => {
     if (cached && (now - cached.timestamp) < CACHE_DURATION) {
         return cached.data;
     }
+
+    // Create AbortController for better timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
@@ -37,8 +66,10 @@ const fetchWithCache = async (url, cacheKey, retries = 3) => {
                     'Accept': 'application/json',
                 },
                 // Add timeout to prevent hanging requests
-                signal: AbortSignal.timeout(10000) // 10 seconds timeout
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 if (response.status === 429) {
@@ -59,6 +90,18 @@ const fetchWithCache = async (url, cacheKey, retries = 3) => {
             cache.set(cacheKey, { data, timestamp: now });
             return data;
         } catch (error) {
+            clearTimeout(timeoutId);
+
+            // Don't retry on abort (timeout)
+            if (error.name === 'AbortError') {
+                console.error(`Request timeout for ${cacheKey}`);
+                if (cached) {
+                    console.warn('Using cached data due to timeout');
+                    return cached.data;
+                }
+                return getFallbackData(cacheKey);
+            }
+
             console.error(`Fetch error (attempt ${attempt}/${retries}):`, error);
 
             // If this is the last attempt, return cached data or fallback data
@@ -358,8 +401,8 @@ const handleImageError = (e, fallbackSrc = '/imgs/wukong.png') => {
     }
 };
 
-// Enhanced Image Component with better error handling
-const OptimizedImage = React.memo(({
+// Enhanced Image Component with better error handling and performance
+const OptimizedImage = memo(({
     src,
     alt,
     width,
@@ -373,11 +416,12 @@ const OptimizedImage = React.memo(({
     sizes,
     ...props
 }) => {
-    const [imageSrc, setImageSrc] = useState(getImageUrl(src));
+    const [imageSrc, setImageSrc] = useState(() => getImageUrl(src));
     const [hasError, setHasError] = useState(false);
+    const imgRef = useRef(null);
 
     const handleError = useCallback((e) => {
-        if (!hasError) {
+        if (!hasError && e.target.src !== '/imgs/wukong.png') {
             setHasError(true);
             setImageSrc('/imgs/wukong.png');
         }
@@ -385,9 +429,11 @@ const OptimizedImage = React.memo(({
 
     // Reset error state when src changes
     useEffect(() => {
-        setHasError(false);
-        setImageSrc(getImageUrl(src));
-    }, [src]);
+        if (src !== imageSrc && !hasError) {
+            setHasError(false);
+            setImageSrc(getImageUrl(src));
+        }
+    }, [src, imageSrc, hasError]);
 
     // Only use blur placeholder if blurDataURL is provided
     const finalPlaceholder = blurDataURL ? placeholder : 'empty';
@@ -397,8 +443,9 @@ const OptimizedImage = React.memo(({
 
     return (
         <Image
+            ref={imgRef}
             src={imageSrc}
-            alt={alt}
+            alt={alt || ''}
             width={width}
             height={height}
             className={className}
@@ -409,24 +456,38 @@ const OptimizedImage = React.memo(({
             blurDataURL={blurDataURL}
             sizes={sizes}
             onError={handleError}
+            unoptimized={false}
             {...props}
         />
     );
+}, (prevProps, nextProps) => {
+    // Custom comparison for memo
+    return prevProps.src === nextProps.src &&
+        prevProps.alt === nextProps.alt &&
+        prevProps.className === nextProps.className &&
+        prevProps.priority === nextProps.priority;
 });
 
+OptimizedImage.displayName = 'OptimizedImage';
+
 // Category Label Component - Small badge for image corners
-const CategoryLabel = React.memo(({ category }) => {
+const CategoryLabel = memo(({ category }) => {
     if (!category) return null;
-    
+
+    const color = useMemo(() => getCategoryColor(category), [category]);
+    const label = useMemo(() => getCategoryLabel(category), [category]);
+
     return (
         <span
             className={styles.categoryLabel}
-            style={{ backgroundColor: getCategoryColor(category) }}
+            style={{ backgroundColor: color }}
         >
-            {getCategoryLabel(category)}
+            {label}
         </span>
     );
-});
+}, (prevProps, nextProps) => prevProps.category === nextProps.category);
+
+CategoryLabel.displayName = 'CategoryLabel';
 
 // Map old categories (from database) to new game categories
 const mapOldCategoryToNew = (category) => {
@@ -447,7 +508,7 @@ const mapOldCategoryToNew = (category) => {
 // Group old categories into new categories
 const groupCategories = (categories) => {
     const grouped = {};
-    
+
     categories.forEach(cat => {
         const newKey = mapOldCategoryToNew(cat.key);
         if (grouped[newKey]) {
@@ -456,7 +517,7 @@ const groupCategories = (categories) => {
             grouped[newKey] = { key: newKey, count: cat.count };
         }
     });
-    
+
     // Return as array with desired order
     const order = ['lien-minh-huyen-thoai', 'lien-quan-mobile', 'dau-truong-chan-ly-tft', 'trending'];
     return order
@@ -502,39 +563,35 @@ const IMAGE_QUALITY = 75;
 const IMAGE_PLACEHOLDER = 'blur';
 const IMAGE_LOADING_STRATEGY = 'lazy';
 
-// Enhanced Loading Components
-const LoadingSkeleton = React.memo(() => (
-    <div className={styles.loading}>
-        <div className={styles.skeletonHero}></div>
-        <div className={styles.skeletonFeatured}>
-            {[...Array(4)].map((_, i) => (
-                <div key={i} className={styles.skeletonCard}></div>
-            ))}
-        </div>
-        <div className={styles.skeletonArticles}>
-            {[...Array(6)].map((_, i) => (
-                <div key={i} className={styles.skeletonCard}></div>
-            ))}
-        </div>
-    </div>
-));
 
-const ErrorMessage = React.memo(({ message, onRetry }) => (
-    <div className={styles.error}>
-        <div className={styles.errorIcon}>⚠️</div>
-        <h3>Không thể tải dữ liệu</h3>
-        <p>{message}</p>
-        {onRetry && (
-            <button onClick={onRetry} className={styles.retryButton}>
-                🔄 Thử lại
-            </button>
-        )}
-    </div>
-));
+const ErrorMessage = memo(({ message, onRetry }) => {
+    const handleRetry = useCallback(() => {
+        if (onRetry) onRetry();
+    }, [onRetry]);
+
+    return (
+        <div className={styles.error}>
+            <div className={styles.errorIcon}>⚠️</div>
+            <h3>Không thể tải dữ liệu</h3>
+            <p>{message}</p>
+            {onRetry && (
+                <button onClick={handleRetry} className={styles.retryButton}>
+                    🔄 Thử lại
+                </button>
+            )}
+        </div>
+    );
+});
+
+ErrorMessage.displayName = 'ErrorMessage';
 
 // Optimized Hero Article Component - Horizontal Layout
-const HeroArticle = React.memo(({ article }) => {
+const HeroArticle = memo(({ article }) => {
     if (!article) return null;
+
+    const categoryColor = useMemo(() => getCategoryColor(article.category), [article.category]);
+    const categoryLabel = useMemo(() => getCategoryLabel(article.category), [article.category]);
+    const formattedDate = useMemo(() => formatDate(article.publishedAt), [article.publishedAt]);
 
     return (
         <Link href={`/tin-tuc/${article.slug}`} className={styles.heroPost}>
@@ -554,15 +611,15 @@ const HeroArticle = React.memo(({ article }) => {
             <div className={styles.heroContent}>
                 <span
                     className={styles.heroCategory}
-                    style={{ backgroundColor: getCategoryColor(article.category) }}
+                    style={{ backgroundColor: categoryColor }}
                 >
-                    {getCategoryLabel(article.category)}
+                    {categoryLabel}
                 </span>
                 <h1 className={styles.heroTitle}>{article.title}</h1>
                 <p className={styles.heroExcerpt}>{article.excerpt}</p>
                 <div className={styles.heroMeta}>
                     <span className={styles.heroDate}>
-                        {formatDate(article.publishedAt)}
+                        {formattedDate}
                     </span>
                     <span className={styles.heroViews}>
                         {article.views || 0} lượt xem
@@ -571,10 +628,15 @@ const HeroArticle = React.memo(({ article }) => {
             </div>
         </Link>
     );
+}, (prevProps, nextProps) => {
+    return prevProps.article?._id === nextProps.article?._id &&
+        prevProps.article?.views === nextProps.article?.views;
 });
 
+HeroArticle.displayName = 'HeroArticle';
+
 // Optimized Featured Card Component - Sforum Style (Square with Overlay)
-const FeaturedCard = React.memo(({ article, index }) => (
+const FeaturedCard = memo(({ article, index }) => (
     <Link href={`/tin-tuc/${article.slug}`} className={styles.featuredCard}>
         <div className={styles.featuredImageContainer}>
             <CategoryLabel category={article.category} />
@@ -593,38 +655,54 @@ const FeaturedCard = React.memo(({ article, index }) => (
             </div>
         </div>
     </Link>
-));
+), (prevProps, nextProps) => {
+    return prevProps.article?._id === nextProps.article?._id &&
+        prevProps.index === nextProps.index;
+});
+
+FeaturedCard.displayName = 'FeaturedCard';
 
 // Featured Articles Slider Component - Carousel/Belt Effect
-const FeaturedSlider = React.memo(({ articles, currentIndex, onNext, onPrev, onGoToSlide }) => {
+const FeaturedSlider = memo(({ articles, currentIndex, onNext, onPrev, onGoToSlide }) => {
     if (!articles || articles.length === 0) return null;
 
-    const [isTransitioning, setIsTransitioning] = useState(true);
     const [slidesPerView, setSlidesPerView] = useState(
         typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 3
     );
     const trackRef = useRef(null);
+    const resizeTimeoutRef = useRef(null);
 
     // Clone articles để tạo hiệu ứng loop vô hạn (clone 3 items đầu để seamless loop)
-    const clonedArticles = [...articles, ...articles.slice(0, 3)];
-    
-    // Tính toán translateX dựa trên currentIndex
-    // Mỗi card chiếm 1/slidesPerView width của container
-    // translateX = -currentIndex * (100% / slidesPerView)
-    const translateX = -(currentIndex * (100 / slidesPerView));
+    const clonedArticles = useMemo(() => [...articles, ...articles.slice(0, 3)], [articles]);
 
-    // Update slidesPerView on resize to ensure 1 item per view on mobile
+    // Tính toán translateX dựa trên currentIndex
+    const translateX = useMemo(() => -(currentIndex * (100 / slidesPerView)), [currentIndex, slidesPerView]);
+
+    // Throttled resize handler
+    const updateSlidesPerView = useCallback(() => {
+        if (typeof window === 'undefined') return;
+        const isMobile = window.innerWidth <= 768;
+        setSlidesPerView(isMobile ? 1 : 3);
+    }, []);
+
+    // Update slidesPerView on resize with throttling
     useEffect(() => {
-        const updateSlidesPerView = () => {
-            if (typeof window === 'undefined') return;
-            const isMobile = window.innerWidth <= 768;
-            setSlidesPerView(isMobile ? 1 : 3);
+        const handleResize = () => {
+            if (resizeTimeoutRef.current) {
+                clearTimeout(resizeTimeoutRef.current);
+            }
+            resizeTimeoutRef.current = setTimeout(updateSlidesPerView, 150);
         };
 
         updateSlidesPerView();
-        window.addEventListener('resize', updateSlidesPerView);
-        return () => window.removeEventListener('resize', updateSlidesPerView);
-    }, []);
+        window.addEventListener('resize', handleResize, { passive: true });
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            if (resizeTimeoutRef.current) {
+                clearTimeout(resizeTimeoutRef.current);
+            }
+        };
+    }, [updateSlidesPerView]);
 
     // Xử lý seamless loop khi đến cuối
     useEffect(() => {
@@ -632,7 +710,7 @@ const FeaturedSlider = React.memo(({ articles, currentIndex, onNext, onPrev, onG
             // Khi đến cuối (hiển thị cloned items), reset về đầu không có transition để seamless
             trackRef.current.style.transition = 'none';
             // Reset về index 0 ngay lập tức
-            setTimeout(() => {
+            const timeoutId = setTimeout(() => {
                 if (onGoToSlide) {
                     onGoToSlide(0);
                 }
@@ -643,13 +721,33 @@ const FeaturedSlider = React.memo(({ articles, currentIndex, onNext, onPrev, onG
                     }
                 }, 50);
             }, 500); // Đợi animation hoàn thành
+
+            return () => clearTimeout(timeoutId);
         }
     }, [currentIndex, articles.length, onGoToSlide]);
+
+    const handlePrev = useCallback(() => {
+        const newIndex = currentIndex === 0
+            ? articles.length - 1
+            : currentIndex - 1;
+        onPrev(newIndex);
+    }, [currentIndex, articles.length, onPrev]);
+
+    const handleNext = useCallback(() => {
+        const newIndex = (currentIndex + 1) % articles.length;
+        onNext(newIndex);
+    }, [currentIndex, articles.length, onNext]);
+
+    const handleGoToSlide = useCallback((index) => {
+        if (onGoToSlide) {
+            onGoToSlide(index);
+        }
+    }, [onGoToSlide]);
 
     return (
         <div className={styles.featuredSlider}>
             <div className={styles.featuredCarouselWrapper}>
-                <div 
+                <div
                     ref={trackRef}
                     className={styles.featuredCarouselTrack}
                     style={{
@@ -659,26 +757,21 @@ const FeaturedSlider = React.memo(({ articles, currentIndex, onNext, onPrev, onG
                 >
                     {clonedArticles.map((article, index) => (
                         <div key={`${article._id}-${index}`} className={styles.featuredCarouselItem}>
-                            <FeaturedCard 
-                                article={article} 
-                                index={index} 
+                            <FeaturedCard
+                                article={article}
+                                index={index}
                             />
                         </div>
                     ))}
                 </div>
             </div>
-            
+
             {/* Navigation Buttons */}
             {articles.length > 3 && (
                 <div className={styles.sliderNavigation}>
                     <button
                         className={styles.sliderButton}
-                        onClick={() => {
-                            const newIndex = currentIndex === 0 
-                                ? articles.length - 1
-                                : currentIndex - 1;
-                            onPrev(newIndex);
-                        }}
+                        onClick={handlePrev}
                         aria-label="Bài trước"
                     >
                         <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
@@ -690,21 +783,14 @@ const FeaturedSlider = React.memo(({ articles, currentIndex, onNext, onPrev, onG
                             <button
                                 key={index}
                                 className={`${styles.sliderDot} ${currentIndex === index ? styles.active : ''}`}
-                                onClick={() => {
-                                    if (onGoToSlide) {
-                                        onGoToSlide(index);
-                                    }
-                                }}
+                                onClick={() => handleGoToSlide(index)}
                                 aria-label={`Slide ${index + 1}`}
                             />
                         ))}
                     </div>
                     <button
                         className={styles.sliderButton}
-                        onClick={() => {
-                            const newIndex = (currentIndex + 1) % articles.length;
-                            onNext(newIndex);
-                        }}
+                        onClick={handleNext}
                         aria-label="Bài sau"
                     >
                         <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
@@ -715,115 +801,158 @@ const FeaturedSlider = React.memo(({ articles, currentIndex, onNext, onPrev, onG
             )}
         </div>
     );
+}, (prevProps, nextProps) => {
+    return prevProps.currentIndex === nextProps.currentIndex &&
+        prevProps.articles?.length === nextProps.articles?.length &&
+        prevProps.articles?.[0]?._id === nextProps.articles?.[0]?._id;
 });
 
+FeaturedSlider.displayName = 'FeaturedSlider';
+
 // Optimized Article Card Component - Horizontal List View (Sforum Style)
-const ArticleCard = React.memo(({ article, index }) => (
-    <Link href={`/tin-tuc/${article.slug}`} className={styles.articleListItem}>
-        <div className={styles.articleListImageContainer}>
-            <CategoryLabel category={article.category} />
-            <OptimizedImage
-                src={article.featuredImage?.url}
-                alt={article.featuredImage?.alt || article.title}
-                width={240}
-                height={135}
-                className={styles.articleListImage}
-                loading={index < 3 ? "eager" : "lazy"}
-                blurDataURL={blurDataURL}
-                sizes="(max-width: 500px) 140px, (max-width: 800px) 150px, (max-width: 1000px) 180px, 240px"
-            />
-        </div>
-        <div className={styles.articleListContent}>
-            <h3 className={styles.articleListTitle}>{article.title}</h3>
-            {article.excerpt && (
-                <p className={styles.articleListExcerpt}>{article.excerpt}</p>
-            )}
-            <div className={styles.articleListMeta}>
-                {article.author && (
-                    <span className={styles.articleListAuthor}>
-                        {article.author}
-                    </span>
-                )}
-                <span className={styles.articleListDate}>
-                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="12" width="12" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12.5 7.25a.75.75 0 0 0-1.5 0v5.5c0 .27.144.518.378.651l3.5 2a.75.75 0 0 0 .744-1.302L12.5 12.315V7.25Z"></path>
-                        <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1ZM2.5 12a9.5 9.5 0 0 0 9.5 9.5 9.5 9.5 0 0 0 9.5-9.5A9.5 9.5 0 0 0 12 2.5 9.5 9.5 0 0 0 2.5 12Z"></path>
-                    </svg>
-                    {formatDate(article.publishedAt)}
-                </span>
-                <span className={styles.articleListViews}>
-                    👁️ {article.views || 0}
-                </span>
+const ArticleCard = memo(({ article, index }) => {
+    const formattedDate = useMemo(() => formatDate(article.publishedAt), [article.publishedAt]);
+
+    return (
+        <Link href={`/tin-tuc/${article.slug}`} className={styles.articleListItem}>
+            <div className={styles.articleListImageContainer}>
+                <CategoryLabel category={article.category} />
+                <OptimizedImage
+                    src={article.featuredImage?.url}
+                    alt={article.featuredImage?.alt || article.title}
+                    width={240}
+                    height={135}
+                    className={styles.articleListImage}
+                    loading={index < 3 ? "eager" : "lazy"}
+                    blurDataURL={blurDataURL}
+                    sizes="(max-width: 500px) 140px, (max-width: 800px) 150px, (max-width: 1000px) 180px, 240px"
+                />
             </div>
-        </div>
-    </Link>
-));
+            <div className={styles.articleListContent}>
+                <h3 className={styles.articleListTitle}>{article.title}</h3>
+                {article.excerpt && (
+                    <p className={styles.articleListExcerpt}>{article.excerpt}</p>
+                )}
+                <div className={styles.articleListMeta}>
+                    {article.author && (
+                        <span className={styles.articleListAuthor}>
+                            {article.author}
+                        </span>
+                    )}
+                    <span className={styles.articleListDate}>
+                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="12" width="12" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12.5 7.25a.75.75 0 0 0-1.5 0v5.5c0 .27.144.518.378.651l3.5 2a.75.75 0 0 0 .744-1.302L12.5 12.315V7.25Z"></path>
+                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1ZM2.5 12a9.5 9.5 0 0 0 9.5 9.5 9.5 9.5 0 0 0 9.5-9.5A9.5 9.5 0 0 0 12 2.5 9.5 9.5 0 0 0 2.5 12Z"></path>
+                        </svg>
+                        {formattedDate}
+                    </span>
+                    <span className={styles.articleListViews}>
+                        👁️ {article.views || 0}
+                    </span>
+                </div>
+            </div>
+        </Link>
+    );
+}, (prevProps, nextProps) => {
+    return prevProps.article?._id === nextProps.article?._id &&
+        prevProps.article?.views === nextProps.article?.views &&
+        prevProps.index === nextProps.index;
+});
+
+ArticleCard.displayName = 'ArticleCard';
 
 // Enhanced Sidebar Item Component - Sforum Style
-const SidebarItem = React.memo(({ article, index }) => (
-    <Link href={`/tin-tuc/${article.slug}`} className={styles.sidebarItem}>
-        <div className={styles.sidebarItemImageWrapper}>
-            <CategoryLabel category={article.category} />
-            <OptimizedImage
-                src={article.featuredImage?.url}
-                alt={article.featuredImage?.alt || article.title}
-                width={160}
-                height={100}
-                className={styles.sidebarItemImage}
-                loading="lazy"
-                blurDataURL={blurDataURL}
-                sizes="(max-width: 500px) 140px, 160px"
-            />
-        </div>
-        <div className={styles.sidebarItemContent}>
-            <h4 className={styles.sidebarItemTitle}>{article.title}</h4>
-            <div className={styles.sidebarItemMeta}>
-                {article.author && (
-                    <span className={styles.sidebarItemAuthor}>
-                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 256 256" height="14" width="14" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20ZM79.57,196.57a60,60,0,0,1,96.86,0,83.72,83.72,0,0,1-96.86,0ZM100,120a28,28,0,1,1,28,28A28,28,0,0,1,100,120ZM194,179.94a83.48,83.48,0,0,0-29-23.42,52,52,0,1,0-74,0,83.48,83.48,0,0,0-29,23.42,84,84,0,1,1,131.9,0Z"></path>
-                        </svg>
-                        {article.author}
-                    </span>
-                )}
-                <span className={styles.sidebarItemDate}>
-                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 256 256" height="12" width="12" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M236,137A108.13,108.13,0,1,1,119,20,12,12,0,0,1,121,44,84.12,84.12,0,1,0,212,135,12,12,0,1,1,236,137ZM116,76v52a12,12,0,0,0,12,12h52a12,12,0,0,0,0-24H140V76a12,12,0,0,0-24,0Zm92,20a16,16,0,1,0-16-16A16,16,0,0,0,208,96ZM176,64a16,16,0,1,0-16-16A16,16,0,0,0,176,64Z"></path>
-                    </svg>
-                    {formatDate(article.publishedAt)}
-                </span>
+const SidebarItem = memo(({ article, index }) => {
+    const formattedDate = useMemo(() => formatDate(article.publishedAt), [article.publishedAt]);
+
+    return (
+        <Link href={`/tin-tuc/${article.slug}`} className={styles.sidebarItem}>
+            <div className={styles.sidebarItemImageWrapper}>
+                <CategoryLabel category={article.category} />
+                <OptimizedImage
+                    src={article.featuredImage?.url}
+                    alt={article.featuredImage?.alt || article.title}
+                    width={160}
+                    height={100}
+                    className={styles.sidebarItemImage}
+                    loading="lazy"
+                    blurDataURL={blurDataURL}
+                    sizes="(max-width: 500px) 140px, 160px"
+                />
             </div>
-        </div>
-    </Link>
-));
+            <div className={styles.sidebarItemContent}>
+                <h4 className={styles.sidebarItemTitle}>{article.title}</h4>
+                <div className={styles.sidebarItemMeta}>
+                    {article.author && (
+                        <span className={styles.sidebarItemAuthor}>
+                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 256 256" height="14" width="14" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20ZM79.57,196.57a60,60,0,0,1,96.86,0,83.72,83.72,0,0,1-96.86,0ZM100,120a28,28,0,1,1,28,28A28,28,0,0,1,100,120ZM194,179.94a83.48,83.48,0,0,0-29-23.42,52,52,0,1,0-74,0,83.48,83.48,0,0,0-29,23.42,84,84,0,1,1,131.9,0Z"></path>
+                            </svg>
+                            {article.author}
+                        </span>
+                    )}
+                    <span className={styles.sidebarItemDate}>
+                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 256 256" height="12" width="12" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M236,137A108.13,108.13,0,1,1,119,20,12,12,0,0,1,121,44,84.12,84.12,0,1,0,212,135,12,12,0,1,1,236,137ZM116,76v52a12,12,0,0,0,12,12h52a12,12,0,0,0,0-24H140V76a12,12,0,0,0-24,0Zm92,20a16,16,0,1,0-16-16A16,16,0,0,0,208,96ZM176,64a16,16,0,1,0-16-16A16,16,0,0,0,176,64Z"></path>
+                        </svg>
+                        {formattedDate}
+                    </span>
+                </div>
+            </div>
+        </Link>
+    );
+}, (prevProps, nextProps) => {
+    return prevProps.article?._id === nextProps.article?._id &&
+        prevProps.index === nextProps.index;
+});
+
+SidebarItem.displayName = 'SidebarItem';
 
 // Category Grid Section (tabs with up to 9 items)
-const CategoryGrid = React.memo(({ articles, activeCategory, onChangeCategory }) => {
+const CategoryGrid = memo(({ articles, activeCategory, onChangeCategory }) => {
     const [maxItems, setMaxItems] = useState(
         typeof window !== 'undefined' && window.innerWidth <= 480 ? 3 : 6
     );
+    const resizeTimeoutRef = useRef(null);
+
+    // Throttled resize handler
+    const updateMaxItems = useCallback(() => {
+        if (typeof window === 'undefined') return;
+        setMaxItems(window.innerWidth <= 480 ? 3 : 6);
+    }, []);
 
     // Update max items by viewport: mobile shows 3, others 6
     useEffect(() => {
         const handler = () => {
-            if (typeof window === 'undefined') return;
-            setMaxItems(window.innerWidth <= 480 ? 3 : 6);
+            if (resizeTimeoutRef.current) {
+                clearTimeout(resizeTimeoutRef.current);
+            }
+            resizeTimeoutRef.current = setTimeout(updateMaxItems, 150);
         };
-        handler();
-        window.addEventListener('resize', handler);
-        return () => window.removeEventListener('resize', handler);
-    }, []);
+        updateMaxItems();
+        window.addEventListener('resize', handler, { passive: true });
+        return () => {
+            window.removeEventListener('resize', handler);
+            if (resizeTimeoutRef.current) {
+                clearTimeout(resizeTimeoutRef.current);
+            }
+        };
+    }, [updateMaxItems]);
 
-    const categories = [
+    const categories = useMemo(() => [
         { key: 'lien-minh-huyen-thoai', label: getCategoryLabel('lien-minh-huyen-thoai') },
         { key: 'lien-quan-mobile', label: getCategoryLabel('lien-quan-mobile') },
         { key: 'dau-truong-chan-ly-tft', label: getCategoryLabel('dau-truong-chan-ly-tft') }
-    ];
+    ], []);
 
     const filtered = useMemo(() => {
         const mapped = articles.filter(a => mapOldCategoryToNew(a.category) === activeCategory);
         return mapped.slice(0, maxItems); // mobile 3 items, others 6
     }, [articles, activeCategory, maxItems]);
+
+    const handleCategoryChange = useCallback((cat) => {
+        onChangeCategory(cat);
+    }, [onChangeCategory]);
 
     if (articles.length === 0) return null;
 
@@ -837,7 +966,7 @@ const CategoryGrid = React.memo(({ articles, activeCategory, onChangeCategory })
                             key={cat.key}
                             className={`${styles.categoryGridButton} ${activeCategory === cat.key ? styles.active : ''}`}
                             style={{ '--category-color': getCategoryColor(cat.key) }}
-                            onClick={() => onChangeCategory(cat.key)}
+                            onClick={() => handleCategoryChange(cat.key)}
                         >
                             {cat.label}
                         </button>
@@ -873,7 +1002,12 @@ const CategoryGrid = React.memo(({ articles, activeCategory, onChangeCategory })
             </div>
         </div>
     );
+}, (prevProps, nextProps) => {
+    return prevProps.activeCategory === nextProps.activeCategory &&
+        prevProps.articles?.length === nextProps.articles?.length;
 });
+
+CategoryGrid.displayName = 'CategoryGrid';
 
 // Main Component
 export default function NewsPage() {
@@ -937,14 +1071,14 @@ export default function NewsPage() {
             // Extract articles data
             let articles = articlesRes.status === 'fulfilled' && articlesRes.value.success
                 ? articlesRes.value.data.articles : [];
-            
+
             // Filter articles on client side based on selected new category
             if (state.selectedCategory) {
-                articles = articles.filter(article => 
+                articles = articles.filter(article =>
                     mapOldCategoryToNew(article.category) === state.selectedCategory
                 );
             }
-            
+
             const totalPages = articlesRes.status === 'fulfilled' && articlesRes.value.success
                 ? articlesRes.value.data.totalPages : 1;
 
@@ -976,32 +1110,32 @@ export default function NewsPage() {
             // Hỗ trợ cả response mới (đã group) và response cũ (cần group)
             const rawCategories = categoriesRes.status === 'fulfilled' && categoriesRes.value.success
                 ? categoriesRes.value.data : [];
-            
+
             // Kiểm tra xem response đã được group chưa (có key là category mới không)
-            const isAlreadyGrouped = rawCategories.length > 0 && 
+            const isAlreadyGrouped = rawCategories.length > 0 &&
                 ['lien-minh-huyen-thoai', 'lien-quan-mobile', 'dau-truong-chan-ly-tft', 'trending']
                     .includes(rawCategories[0].key);
-            
+
             // Nếu đã được group, sử dụng trực tiếp; nếu chưa, group lại
-            const groupedCategories = isAlreadyGrouped 
-                ? rawCategories 
+            const groupedCategories = isAlreadyGrouped
+                ? rawCategories
                 : groupCategories(rawCategories);
 
             // Lấy 10 bài viết mới nhất có isFeatured = true
             // API đã filter theo category và isFeatured rồi
             let featuredArticles = featuredRes.status === 'fulfilled' && featuredRes.value.success
                 ? featuredRes.value.data : [];
-            
+
             // Nếu API chưa filter đúng category mới, filter lại ở client
             if (state.selectedCategory) {
-                featuredArticles = featuredArticles.filter(article => 
+                featuredArticles = featuredArticles.filter(article =>
                     mapOldCategoryToNew(article.category) === state.selectedCategory
                 );
             }
-            
+
             // Giới hạn tối đa 10 bài
             featuredArticles = featuredArticles.slice(0, 10);
-            
+
             // Reset slide index khi category thay đổi hoặc articles thay đổi
             setFeaturedSlideIndex(0);
 
@@ -1037,18 +1171,26 @@ export default function NewsPage() {
     }, [state.currentPage, state.selectedCategory, state.sortBy, state.searchQuery]);
 
     // Debounced data loading to prevent too many API calls
+    const debounceTimeoutRef = useRef(null);
+
     const debouncedLoadData = useCallback(() => {
-        const timeoutId = setTimeout(() => {
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+
+        debounceTimeoutRef.current = setTimeout(() => {
             loadData();
         }, 300); // 300ms debounce
-
-        return () => clearTimeout(timeoutId);
     }, [loadData]);
 
     // Effects
     useEffect(() => {
-        const cleanup = debouncedLoadData();
-        return cleanup;
+        debouncedLoadData();
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+        };
     }, [debouncedLoadData]);
 
     // Reset visible articles when category changes
@@ -1072,15 +1214,23 @@ export default function NewsPage() {
         return () => clearInterval(interval);
     }, [state.featuredArticles.length]);
 
-    // Enhanced SEO Data
-    const seoData = useMemo(() => ({
-        title: 'Tin Tức Game - LMHT, Liên Quân, TFT | Cập Nhật 24/7',
-        description: 'Tin tức game mới nhất về Liên Minh Huyền Thoại, Liên Quân Mobile, Đấu Trường Chân Lý TFT. Hướng dẫn, meta, review chuyên sâu. Cập nhật 24/7.',
-        keywords: 'tin tức game, LMHT, League of Legends, Liên Quân Mobile, TFT, Đấu Trường Chân Lý, esports, game MOBA, meta game, hướng dẫn game',
-        canonical: `${siteUrl}/tin-tuc`,
-        ogImage: `${siteUrl}/imgs/wukong.png`,
-        ogType: 'website'
-    }), [siteUrl]);
+    // Memoize visible articles to prevent unnecessary re-renders
+    const visibleArticlesList = useMemo(() => {
+        return state.articles.slice(0, visibleArticles);
+    }, [state.articles, visibleArticles]);
+
+    // Enhanced SEO Data - Optimized for social sharing preview
+    const seoData = useMemo(() => {
+        const ogImageUrl = `${siteUrl}/imgs/wukong.png`;
+        return {
+            title: 'Tin Tức Game - LMHT, Liên Quân, TFT | Cập Nhật 24/7',
+            description: 'Tin tức game mới nhất về Liên Minh Huyền Thoại, Liên Quân Mobile, Đấu Trường Chân Lý TFT. Hướng dẫn, meta, review chuyên sâu. Cập nhật 24/7.',
+            keywords: 'tin tức game, LMHT, League of Legends, Liên Quân Mobile, TFT, Đấu Trường Chân Lý, esports, game MOBA, meta game, hướng dẫn game',
+            canonical: `${siteUrl}/tin-tuc`,
+            ogImage: ogImageUrl,
+            ogType: 'website'
+        };
+    }, [siteUrl]);
 
     // Enhanced structured data
     const structuredData = {
@@ -1155,11 +1305,27 @@ export default function NewsPage() {
         }));
     }, []);
 
-    // Loading state
+    const handleShowMore = useCallback(() => {
+        setVisibleArticles(prev => prev + 6);
+    }, []);
+
+    // Loading state - YouTube style spinner
     if (state.loading) {
         return (
             <Layout>
-                <LoadingSkeleton />
+                <div style={{
+                    minHeight: '60vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '80px 24px'
+                }}>
+                    <LoadingSpinner
+                        size="large"
+                        message="Đang tải tin tức..."
+                        showMessage={true}
+                    />
+                </div>
             </Layout>
         );
     }
@@ -1279,7 +1445,7 @@ export default function NewsPage() {
                                 </h2>
                                 <div className={styles.articlesList}>
                                     {state.articles.length > 0 ? (
-                                        state.articles.slice(0, visibleArticles).map((article, index) => (
+                                        visibleArticlesList.map((article, index) => (
                                             <ArticleCard key={article._id} article={article} index={index} />
                                         ))
                                     ) : (
@@ -1299,7 +1465,7 @@ export default function NewsPage() {
                                     <div className={styles.showMoreContainer}>
                                         <button
                                             className={styles.showMoreButton}
-                                            onClick={() => setVisibleArticles(prev => prev + 6)}
+                                            onClick={handleShowMore}
                                         >
                                             <span>Xem thêm</span>
                                             <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="18" width="18" xmlns="http://www.w3.org/2000/svg">

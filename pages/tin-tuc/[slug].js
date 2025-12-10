@@ -213,31 +213,43 @@ export default function ArticleDetailPage() {
         return headings;
     }, [article?.content]);
 
-    // Enhanced structured data for rich snippets
+            // Enhanced structured data for rich snippets - SEO optimized
     const structuredData = useMemo(() => {
         if (!article) return null;
 
         const readingTime = Math.max(1, Math.ceil((article.content?.length || 0) / 1000));
-        const wordCount = article.content?.length || 0;
+        const wordCount = article.content?.split(/\s+/).length || 0;
+        const imageUrl = article.featuredImage?.url 
+            ? (article.featuredImage.url.startsWith('http') ? article.featuredImage.url : `${siteUrl}${article.featuredImage.url}`)
+            : `${siteUrl}/imgs/wukong.png`;
 
         return {
             '@context': 'https://schema.org',
             '@type': 'Article',
             headline: article.title,
-            description: article.metaDescription || article.excerpt,
-            image: article.featuredImage?.url ? [article.featuredImage.url] : [],
+            description: article.metaDescription || article.excerpt || article.title,
+            image: {
+                '@type': 'ImageObject',
+                url: imageUrl,
+                width: 1200,
+                height: 630,
+                alt: article.featuredImage?.alt || article.title
+            },
             datePublished: article.publishedAt,
             dateModified: article.updatedAt || article.publishedAt,
             author: {
                 '@type': 'Person',
-                name: article.author || 'Admin'
+                name: article.author || 'Admin',
+                url: siteUrl
             },
             publisher: {
                 '@type': 'Organization',
-                name: 'Tạo Dàn Đề - Công Cụ Xổ Số Chuyên Nghiệp',
+                name: 'S-Games - Tin Tức Game & Esports',
                 logo: {
                     '@type': 'ImageObject',
-                    url: `${siteUrl}/logo.png`
+                    url: `${siteUrl}/imgs/wukong.png`,
+                    width: 512,
+                    height: 512
                 }
             },
             mainEntityOfPage: {
@@ -253,40 +265,60 @@ export default function ArticleDetailPage() {
                 {
                     '@type': 'InteractionCounter',
                     interactionType: 'https://schema.org/ShareAction',
-                    userInteractionCount: Math.floor((article.views || 0) * 0.1)
-                },
-                {
-                    '@type': 'InteractionCounter',
-                    interactionType: 'https://schema.org/CommentAction',
-                    userInteractionCount: Math.floor((article.views || 0) * 0.05)
+                    userInteractionCount: article.shares || Math.floor((article.views || 0) * 0.1)
                 }
             ],
             wordCount: wordCount,
             timeRequired: `PT${readingTime}M`,
             articleSection: getCategoryLabel(article.category),
-            keywords: article.keywords?.join(', ') || 'tin tức xổ số, lô số, thống kê xổ số'
+            keywords: article.keywords?.join(', ') || article.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT',
+            inLanguage: 'vi-VN',
+            // Add category URL for better internal linking
+            about: {
+                '@type': 'Thing',
+                name: getCategoryLabel(article.category),
+                url: `${siteUrl}/tin-tuc?category=${article.category}`
+            }
         };
     }, [article, siteUrl]);
 
-    // Enhanced SEO data
+    // Enhanced SEO data with validation
     const seoData = useMemo(() => {
         if (!article) return null;
 
         const readingTime = Math.max(1, Math.ceil((article.content?.length || 0) / 1000));
+        
+        // Optimize meta description length (150-160 chars for best SEO)
+        const rawDescription = article.metaDescription || article.excerpt || `Đọc bài viết "${article.title}" về xổ số và lô số. ${article.excerpt}`;
+        const optimizedDescription = rawDescription.length > 160 
+            ? rawDescription.substring(0, 157) + '...' 
+            : rawDescription;
+
+        // Ensure ogImage is absolute URL for proper social sharing preview
+        let ogImageUrl = `${siteUrl}/imgs/wukong.png`;
+        if (article.featuredImage?.url) {
+            if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
+                ogImageUrl = article.featuredImage.url;
+            } else if (article.featuredImage.url.startsWith('/')) {
+                ogImageUrl = `${siteUrl}${article.featuredImage.url}`;
+            } else {
+                ogImageUrl = `${siteUrl}/${article.featuredImage.url}`;
+            }
+        }
 
         return {
-            title: `${article.title} | Tin Tức Xổ Số & Lô Đề`,
-            description: article.metaDescription || article.excerpt || `Đọc bài viết "${article.title}" về xổ số và lô số. ${article.excerpt}`,
-            keywords: article.keywords?.join(', ') || 'xổ số, lô số, tin tức, kinh nghiệm chơi',
+            title: `${article.title} | Tin Tức Game - LMHT, Liên Quân, TFT`,
+            description: optimizedDescription,
+            keywords: article.keywords?.join(', ') || article.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT, esports',
             canonical: `${siteUrl}/tin-tuc/${article.slug}`,
-            ogImage: article.featuredImage?.url || `${siteUrl}/images/og-news.jpg`,
+            ogImage: ogImageUrl,
             ogType: 'article',
             articleData: {
                 publishedTime: article.publishedAt,
-                modifiedTime: article.updatedAt,
-                author: article.author,
+                modifiedTime: article.updatedAt || article.publishedAt,
+                author: article.author || 'Admin',
                 section: getCategoryLabel(article.category),
-                tags: article.tags,
+                tags: article.tags || [],
                 readingTime: readingTime,
                 wordCount: article.content?.length || 0
             }
@@ -375,16 +407,17 @@ export default function ArticleDetailPage() {
             {/* Enhanced SEO with JSON-LD Schema */}
             <ArticleSEO
                 title={article.title}
-                description={article.summary || article.metaDescription}
-                author={article.author?.name || 'Tạo Dàn Đề Wukong'}
-                publishedTime={article.createdAt}
-                modifiedTime={article.updatedAt}
-                image={article.featuredImage?.url}
+                description={seoData?.description || article.metaDescription || article.excerpt}
+                author={article.author || 'Admin'}
+                publishedTime={article.publishedAt}
+                modifiedTime={article.updatedAt || article.publishedAt}
+                image={seoData?.ogImage || `${siteUrl}/imgs/wukong.png`}
                 url={`${siteUrl}/tin-tuc/${article.slug}`}
                 keywords={article.keywords || article.tags || []}
                 category={getCategoryLabel(article.category)}
                 tags={article.tags || []}
                 readingTime={`${Math.ceil((article.content?.length || 0) / 1000)} phút đọc`}
+                canonical={`${siteUrl}/tin-tuc/${article.slug}`}
             />
             <SEOOptimized
                 pageType="article"

@@ -20,7 +20,19 @@ const ArticleSEO = ({
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001';
     const fullUrl = url || siteUrl;
     const canonicalUrl = canonical || fullUrl;
-    const imageUrl = image?.startsWith('http') ? image : `${siteUrl}${image}`;
+    // Ensure image URL is absolute and properly formatted
+    let imageUrl = '';
+    if (image) {
+        if (image.startsWith('http://') || image.startsWith('https://')) {
+            imageUrl = image;
+        } else if (image.startsWith('/')) {
+            imageUrl = `${siteUrl}${image}`;
+        } else {
+            imageUrl = `${siteUrl}/${image}`;
+        }
+    } else {
+        imageUrl = `${siteUrl}/imgs/wukong.png`;
+    }
     
     // Format dates for schema
     const formattedPublishedTime = publishedTime ? new Date(publishedTime).toISOString() : new Date().toISOString();
@@ -115,9 +127,11 @@ const ArticleSEO = ({
             <meta property="og:title" content={title} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={imageUrl} />
+            <meta property="og:image:secure_url" content={imageUrl.replace('http://', 'https://')} />
             <meta property="og:image:width" content="1200" />
             <meta property="og:image:height" content="630" />
             <meta property="og:image:alt" content={title} />
+            <meta property="og:image:type" content="image/png" />
             <meta property="og:site_name" content={siteName} />
             <meta property="og:locale" content={locale} />
             <meta property="article:published_time" content={formattedPublishedTime} />
