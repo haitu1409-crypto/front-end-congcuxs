@@ -15,7 +15,8 @@ Disallow: /static/
 Disallow: /auth/
 # Disallow internal/development pages
 Disallow: /*.json$
-Disallow: /*?*
+# Allow query parameters for public pages (tin-tuc filters, search, etc.)
+# Removed Disallow: /*?* to allow indexing of filtered pages
 
 # Googlebot - No special restrictions needed
 User-agent: Googlebot
