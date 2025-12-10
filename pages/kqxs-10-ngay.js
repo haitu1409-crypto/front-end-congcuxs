@@ -27,9 +27,15 @@ export default function KQXS10NgayPage() {
                 <title>10 Kết Quả XSMB Mới Nhất - Dàn Đề Wukong</title>
                 <meta name="description" content="Xem 10 kết quả xổ số miền Bắc mới nhất. Cập nhật trực tiếp, chính xác 100%." />
                 <meta name="keywords" content="kết quả xổ số, xsmb, 10 kết quả mới nhất, xổ số miền bắc" />
+                <meta name="robots" content="index, follow" />
+                <meta name="googlebot" content="index, follow" />
+                <meta name="bingbot" content="index, follow" />
+                <meta name="coccocbot" content="index, follow" />
+                <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}/kqxs-10-ngay`} />
                 <meta property="og:title" content="10 Kết Quả XSMB Mới Nhất - Dàn Đề Wukong" />
                 <meta property="og:description" content="Xem 10 kết quả xổ số miền Bắc mới nhất. Cập nhật trực tiếp, chính xác 100%." />
                 <meta property="og:type" content="website" />
+                <meta property="og:url" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro'}/kqxs-10-ngay`} />
             </Head>
 
             <Layout>

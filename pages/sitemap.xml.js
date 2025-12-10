@@ -225,6 +225,21 @@ function generateSiteMap(articles) {
         <lastmod>${lastmod}</lastmod>
     </url>
     
+    <!-- Additional Pages -->
+    <url>
+        <loc>${SITE_URL_BASE}/kqxs-10-ngay</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL_BASE}/seo-soi-cau-vi-tri</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
     <!-- Article Pages -->
     ${articles.map(article => {
         if (!article.slug) return ''; // Skip articles without slug
@@ -483,6 +498,49 @@ export async function getServerSideProps({ res }) {
         <loc>${SITE_URL_BASE}/privacy-policy</loc>
         <changefreq>monthly</changefreq>
         <priority>0.30</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Additional Pages -->
+    <url>
+        <loc>${SITE_URL_BASE}/kqxs-10-ngay</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL_BASE}/seo-soi-cau-vi-tri</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL_BASE}/kqxs-mn</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL_BASE}/kqxs-xsmn</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL_BASE}/soi-cau-bac-cau</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL_BASE}/thongke/giai-dac-biet-thang</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
         <lastmod>${lastmod}</lastmod>
     </url>
 </urlset>`;
