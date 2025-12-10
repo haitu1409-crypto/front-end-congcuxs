@@ -199,7 +199,7 @@ const KQXSPage = memo(function KQXSPage() {
                 title={pageTitle}
                 description={pageDescription}
                 keywords={seoConfig.keywords.join(', ')}
-                canonical={`${seoConfig.canonical}`}
+                canonical={`${siteUrl}/ket-qua-xo-so-mien-bac`}
                 ogImage={`${siteUrl}/imgs/xsmb.png`}
                 structuredData={structuredData}
             />
@@ -254,6 +254,34 @@ const KQXSPage = memo(function KQXSPage() {
                         </button>
                     </div>
 
+                    {/* ✅ SEO: Thêm paragraph content để Google có đủ text để index */}
+                    <div style={{ 
+                        marginBottom: '30px', 
+                        padding: '20px', 
+                        backgroundColor: '#f8f9fa', 
+                        borderRadius: '8px',
+                        lineHeight: '1.8',
+                        fontSize: '16px',
+                        color: '#333'
+                    }}>
+                        <h2 style={{ fontSize: '24px', marginBottom: '15px', color: '#1a1a1a' }}>
+                            Kết Quả Xổ Số Miền Bắc - XSMB Hôm Nay
+                        </h2>
+                        <p style={{ marginBottom: '15px' }}>
+                            <strong>Kết quả xổ số miền Bắc (XSMB)</strong> được cập nhật hàng ngày lúc <strong>18h15</strong> từ trường quay số 53E Hàng Bài, Hoàn Kiếm, Hà Nội. 
+                            Trang <strong>ket-qua-xo-so-mien-bac</strong> của Dàn Đề Wukong cung cấp kết quả XSMB chính xác, nhanh nhất, tốt hơn xosodaiphat, xoso.com.vn, xskt.com.vn.
+                        </p>
+                        <p style={{ marginBottom: '15px' }}>
+                            Bạn có thể <strong>tra cứu kết quả xổ số miền Bắc</strong> theo ngày, xem <strong>XSMB 30 ngày</strong>, <strong>XSMB hôm qua</strong>, hoặc <strong>XSMB theo từng thứ trong tuần</strong>. 
+                            Kết quả được sắp xếp từ mới nhất đến cũ nhất, mỗi trang hiển thị 10 kết quả để dễ dàng theo dõi.
+                        </p>
+                        <p>
+                            <strong>Xổ số miền Bắc</strong> có 7 giải thưởng: <strong>Giải Đặc biệt</strong> (1 giải), <strong>Giải Nhất</strong> (1 giải), 
+                            <strong>Giải Nhì</strong> (2 giải), <strong>Giải Ba</strong> (6 giải), <strong>Giải Tư</strong> (4 giải), 
+                            <strong>Giải Năm</strong> (6 giải), <strong>Giải Sáu</strong> (3 giải), <strong>Giải Bảy</strong> (4 giải).
+                        </p>
+                    </div>
+
                     {/* Info Section - Enhanced với SEO Keywords */}
                     <div className={styles.infoSection}>
                         <div className={styles.infoCard}>
@@ -287,6 +315,60 @@ const KQXSPage = memo(function KQXSPage() {
                                 <li>✅ <strong>Phân trang thông minh:</strong> Dễ dàng xem XSMB 30 ngày, XSMB hôm qua, XSMB theo từng ngày</li>
                                 <li>✅ <strong>Miễn phí 100%:</strong> Không cần đăng ký, không có quảng cáo popup như một số trang đối thủ</li>
                                 <li>✅ <strong>Responsive:</strong> Xem XSMB trên mọi thiết bị: mobile, tablet, desktop</li>
+                            </ul>
+                        </div>
+
+                        {/* ✅ SEO: Thêm internal links để Google crawl tốt hơn */}
+                        <div className={styles.infoCard} style={{ marginTop: '20px' }}>
+                            <h3>Trang Liên Quan</h3>
+                            <ul style={{ listStyle: 'none', padding: 0 }}>
+                                <li style={{ marginBottom: '10px' }}>
+                                    <a href="/soi-cau-mien-bac-ai" style={{ color: '#007bff', textDecoration: 'none', fontSize: '16px' }}>
+                                        🔮 Soi Cầu Miền Bắc AI - Dự Đoán XSMB Chính Xác
+                                    </a>
+                                </li>
+                                <li style={{ marginBottom: '10px' }}>
+                                    <a href="/thong-ke" style={{ color: '#007bff', textDecoration: 'none', fontSize: '16px' }}>
+                                        📊 Thống Kê Xổ Số 3 Miền - Phân Tích Xu Hướng
+                                    </a>
+                                </li>
+                                <li style={{ marginBottom: '10px' }}>
+                                    <a href="/dan-9x0x" style={{ color: '#007bff', textDecoration: 'none', fontSize: '16px' }}>
+                                        🎯 Tạo Dàn Đề 9x-0x - Công Cụ Tạo Dàn Số Chuyên Nghiệp
+                                    </a>
+                                </li>
+                                <li style={{ marginBottom: '10px' }}>
+                                    <a href="/tin-tuc" style={{ color: '#007bff', textDecoration: 'none', fontSize: '16px' }}>
+                                        📰 Tin Tức Xổ Số - Cập Nhật Mới Nhất
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* ✅ SEO: Thêm internal links để Google crawl tốt hơn */}
+                        <div className={styles.infoCard} style={{ marginTop: '20px' }}>
+                            <h3>Trang Liên Quan</h3>
+                            <ul style={{ listStyle: 'none', padding: 0 }}>
+                                <li style={{ marginBottom: '10px' }}>
+                                    <a href="/soi-cau-mien-bac-ai" style={{ color: '#007bff', textDecoration: 'none', fontSize: '16px' }}>
+                                        🔮 Soi Cầu Miền Bắc AI - Dự Đoán XSMB Chính Xác
+                                    </a>
+                                </li>
+                                <li style={{ marginBottom: '10px' }}>
+                                    <a href="/thong-ke" style={{ color: '#007bff', textDecoration: 'none', fontSize: '16px' }}>
+                                        📊 Thống Kê Xổ Số 3 Miền - Phân Tích Xu Hướng
+                                    </a>
+                                </li>
+                                <li style={{ marginBottom: '10px' }}>
+                                    <a href="/dan-9x0x" style={{ color: '#007bff', textDecoration: 'none', fontSize: '16px' }}>
+                                        🎯 Tạo Dàn Đề 9x-0x - Công Cụ Tạo Dàn Số Chuyên Nghiệp
+                                    </a>
+                                </li>
+                                <li style={{ marginBottom: '10px' }}>
+                                    <a href="/tin-tuc" style={{ color: '#007bff', textDecoration: 'none', fontSize: '16px' }}>
+                                        📰 Tin Tức Xổ Số - Cập Nhật Mới Nhất
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>

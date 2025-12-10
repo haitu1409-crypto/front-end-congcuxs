@@ -186,10 +186,49 @@ function generateSiteMap(articles) {
         <lastmod>${lastmod}</lastmod>
     </url>
     
+    <!-- Additional KQXS Pages -->
+    <url>
+        <loc>${SITE_URL_BASE}/kqxs-mn</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL_BASE}/kqxs-xsmn</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Additional Soi Cau Pages -->
+    <url>
+        <loc>${SITE_URL_BASE}/soi-cau-bac-cau</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Additional Thong Ke Pages -->
+    <url>
+        <loc>${SITE_URL_BASE}/thongke/giai-dac-biet-thang</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Privacy Policy -->
+    <url>
+        <loc>${SITE_URL_BASE}/privacy-policy</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.30</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
     <!-- Article Pages -->
     ${articles.map(article => {
         if (!article.slug) return ''; // Skip articles without slug
-        
+
         const publishDate = new Date(article.publishedAt || article.createdAt);
         const updateDate = new Date(article.updatedAt || article.createdAt);
         const isRecent = Date.now() - publishDate.getTime() < 2 * 24 * 60 * 60 * 1000; // 2 days
@@ -239,12 +278,12 @@ export async function getServerSideProps({ res }) {
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    
+
     try {
         // Fetch articles with timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-        
+
         let articles = [];
         try {
             const response = await fetch(`${API_URL}/api/articles?limit=1000&sort=-publishedAt`, {
@@ -253,7 +292,7 @@ export async function getServerSideProps({ res }) {
                     'Accept': 'application/json',
                 }
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 articles = data.success && data.data?.articles ? data.data.articles : [];
@@ -405,6 +444,45 @@ export async function getServerSideProps({ res }) {
         <loc>${SITE_URL_BASE}/tin-tuc</loc>
         <changefreq>hourly</changefreq>
         <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Additional KQXS Pages -->
+    <url>
+        <loc>${SITE_URL_BASE}/kqxs-mn</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${SITE_URL_BASE}/kqxs-xsmn</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Additional Soi Cau Pages -->
+    <url>
+        <loc>${SITE_URL_BASE}/soi-cau-bac-cau</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Additional Thong Ke Pages -->
+    <url>
+        <loc>${SITE_URL_BASE}/thongke/giai-dac-biet-thang</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <lastmod>${lastmod}</lastmod>
+    </url>
+    
+    <!-- Privacy Policy -->
+    <url>
+        <loc>${SITE_URL_BASE}/privacy-policy</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.30</priority>
         <lastmod>${lastmod}</lastmod>
     </url>
 </urlset>`;
