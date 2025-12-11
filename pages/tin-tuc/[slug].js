@@ -3,7 +3,7 @@
  * High performance with rich snippets and accessibility
  */
 
-import { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -339,6 +339,7 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
     const { slug } = router.query;
     const [article, setArticle] = useState(initialArticle);
     const [relatedArticles, setRelatedArticles] = useState([]);
+    // Simple: just initialize empty arrays, fetch once on mount
     const [mostViewedArticles, setMostViewedArticles] = useState([]);
     const [trendingArticles, setTrendingArticles] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -409,6 +410,16 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
         return labels[mappedCategory] || 'Tin Tức';
     }, [mapOldCategoryToNew]);
 
+    // Helper function to shuffle array (Fisher-Yates algorithm)
+    const shuffleArray = useCallback((array) => {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }, []);
+
     // Fetch article data with error handling, caching, and request deduplication
     const fetchArticle = useCallback(async () => {
         if (!slug || initialArticle) {
@@ -418,8 +429,13 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                 setLoading(false);
                 // Fetch related articles, most viewed, and trending in background
                 if (initialArticle.category && initialArticle._id) {
+                    // Get mapped category (new category) for filtering
+                    const currentArticleCategory = mapOldCategoryToNew(initialArticle.category);
+                    
                     Promise.allSettled([
-                        fetch(`${apiUrl}/api/articles?category=${initialArticle.category}&limit=5&exclude=${initialArticle._id}`, {
+                        // Fetch recent articles (200 should be enough to get 20 articles of same category)
+                        // Then filter by mapped category on client-side and take max 20 newest
+                        fetch(`${apiUrl}/api/articles?limit=200&sort=-publishedAt`, {
                             headers: { 'Cache-Control': 'max-age=600' }
                         }).then(res => res.json()).catch(() => ({ success: false })),
                         fetch(`${apiUrl}/api/articles?sort=views&limit=5`, {
@@ -429,12 +445,84 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                             headers: { 'Cache-Control': 'max-age=600' }
                         }).then(res => res.json()).catch(() => ({ success: false }))
                     ]).then(([relatedRes, mostViewedRes, trendingRes]) => {
+                        console.log('📰 Related articles fetch result:', {
+                            status: relatedRes.status,
+                            success: relatedRes.status === 'fulfilled' ? relatedRes.value?.success : null,
+                            data: relatedRes.status === 'fulfilled' ? relatedRes.value?.data : null
+                        });
+                        
                         if (relatedRes.status === 'fulfilled' && relatedRes.value.success) {
-                            const relatedData = relatedRes.value.data.articles || [];
-                            console.log('📰 Related articles loaded (SSR):', relatedData.length);
+                            let relatedData = relatedRes.value.data?.articles || [];
+                            console.log('📰 Raw articles fetched:', {
+                                total: relatedData.length,
+                                currentArticleCategory: initialArticle.category,
+                                mappedCategory: currentArticleCategory,
+                                articles: relatedData.slice(0, 5).map(a => ({ 
+                                    id: String(a._id), 
+                                    title: a.title, 
+                                    category: a.category,
+                                    mappedCategory: mapOldCategoryToNew(a.category)
+                                }))
+                            });
+                            
+                            // Filter by mapped category (new category) - so all articles with same mapped category are included
+                            const beforeCategoryFilter = relatedData.length;
+                            relatedData = relatedData.filter(article => {
+                                const articleMappedCategory = mapOldCategoryToNew(article.category);
+                                return articleMappedCategory === currentArticleCategory;
+                            });
+                            console.log('📰 After category filter:', {
+                                before: beforeCategoryFilter,
+                                after: relatedData.length,
+                                currentArticleCategory: initialArticle.category,
+                                mappedCategory: currentArticleCategory
+                            });
+                            
+                            // Filter out current article - convert both to string for reliable comparison
+                            const currentArticleId = String(initialArticle._id);
+                            const beforeExclude = relatedData.length;
+                            relatedData = relatedData.filter(article => String(article._id) !== currentArticleId);
+                            console.log('📰 After exclude current:', {
+                                before: beforeExclude,
+                                after: relatedData.length,
+                                currentArticleId: currentArticleId
+                            });
+                            
+                            // Sort by publishedAt (newest first) - articles are already sorted by API but ensure it
+                            relatedData.sort((a, b) => {
+                                const dateA = new Date(a.publishedAt || 0);
+                                const dateB = new Date(b.publishedAt || 0);
+                                return dateB - dateA; // Newest first
+                            });
+                            
+                            // Take maximum 20 newest articles
+                            relatedData = relatedData.slice(0, 20);
+                            
+                            // Shuffle array to get random articles from the 20 newest
+                            relatedData = shuffleArray(relatedData);
+                            
+                            // Take first 4 random articles to display
+                            relatedData = relatedData.slice(0, 4);
+                            
+                            console.log('📰 Related articles final result:', {
+                                totalFetched: relatedRes.value.data?.articles?.length || 0,
+                                afterCategoryFilter: beforeExclude,
+                                afterExcludeCurrent: relatedData.length,
+                                max20Newest: Math.min(20, relatedData.length),
+                                finalDisplayed: relatedData.length,
+                                currentCategory: initialArticle.category,
+                                mappedCategory: currentArticleCategory,
+                                currentArticleId: String(initialArticle._id),
+                                finalArticles: relatedData.map(a => ({ id: String(a._id), title: a.title, category: a.category, publishedAt: a.publishedAt }))
+                            });
                             setRelatedArticles(relatedData);
                         } else {
-                            console.warn('⚠️ Failed to load related articles (SSR):', relatedRes.status === 'rejected' ? relatedRes.reason : relatedRes.value);
+                            console.error('⚠️ Failed to load related articles (SSR):', {
+                                status: relatedRes.status,
+                                reason: relatedRes.status === 'rejected' ? relatedRes.reason : null,
+                                value: relatedRes.status === 'fulfilled' ? relatedRes.value : null
+                            });
+                            setRelatedArticles([]);
                         }
                         if (mostViewedRes.status === 'fulfilled' && mostViewedRes.value.success) {
                             const mostViewedData = mostViewedRes.value.data.articles || [];
@@ -472,9 +560,14 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                 setArticle(articleData);
                 setViewCount(articleData.views || 0);
 
+                // Get mapped category (new category) for filtering
+                const currentArticleCategory = mapOldCategoryToNew(articleData.category);
+
                 // Now fetch related articles, most viewed, and trending in parallel
                 const [relatedRes, mostViewedRes, trendingRes] = await Promise.allSettled([
-                    fetch(`${apiUrl}/api/articles?category=${articleData.category}&limit=5&exclude=${articleData._id}`, {
+                    // Fetch recent articles (200 should be enough to get 20 articles of same category)
+                    // Then filter by mapped category on client-side and take max 20 newest
+                    fetch(`${apiUrl}/api/articles?limit=200&sort=-publishedAt`, {
                         headers: { 'Cache-Control': 'max-age=600' }
                     }).then(res => res.json()).catch(() => ({ success: false })),
                     fetch(`${apiUrl}/api/articles?sort=views&limit=5`, {
@@ -486,12 +579,84 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                 ]);
 
                 // Process related articles
+                console.log('📰 Related articles fetch result (client):', {
+                    status: relatedRes.status,
+                    success: relatedRes.status === 'fulfilled' ? relatedRes.value?.success : null,
+                    data: relatedRes.status === 'fulfilled' ? relatedRes.value?.data : null
+                });
+                
                 if (relatedRes.status === 'fulfilled' && relatedRes.value.success) {
-                    const relatedData = relatedRes.value.data.articles || [];
-                    console.log('📰 Related articles loaded:', relatedData.length);
+                    let relatedData = relatedRes.value.data?.articles || [];
+                    console.log('📰 Raw articles fetched (client):', {
+                        total: relatedData.length,
+                        currentArticleCategory: articleData.category,
+                        mappedCategory: currentArticleCategory,
+                        articles: relatedData.slice(0, 5).map(a => ({ 
+                            id: String(a._id), 
+                            title: a.title, 
+                            category: a.category,
+                            mappedCategory: mapOldCategoryToNew(a.category)
+                        }))
+                    });
+                    
+                    // Filter by mapped category (new category) - so all articles with same mapped category are included
+                    const beforeCategoryFilter = relatedData.length;
+                    relatedData = relatedData.filter(article => {
+                        const articleMappedCategory = mapOldCategoryToNew(article.category);
+                        return articleMappedCategory === currentArticleCategory;
+                    });
+                    console.log('📰 After category filter (client):', {
+                        before: beforeCategoryFilter,
+                        after: relatedData.length,
+                        currentArticleCategory: articleData.category,
+                        mappedCategory: currentArticleCategory
+                    });
+                    
+                    // Filter out current article - convert both to string for reliable comparison
+                    const currentArticleId = String(articleData._id);
+                    const beforeExclude = relatedData.length;
+                    relatedData = relatedData.filter(article => String(article._id) !== currentArticleId);
+                    console.log('📰 After exclude current (client):', {
+                        before: beforeExclude,
+                        after: relatedData.length,
+                        currentArticleId: currentArticleId
+                    });
+                    
+                    // Sort by publishedAt (newest first) - articles are already sorted by API but ensure it
+                    relatedData.sort((a, b) => {
+                        const dateA = new Date(a.publishedAt || 0);
+                        const dateB = new Date(b.publishedAt || 0);
+                        return dateB - dateA; // Newest first
+                    });
+                    
+                    // Take maximum 20 newest articles
+                    relatedData = relatedData.slice(0, 20);
+                    
+                    // Shuffle array to get random articles from the 20 newest
+                    relatedData = shuffleArray(relatedData);
+                    
+                    // Take first 4 random articles to display
+                    relatedData = relatedData.slice(0, 4);
+                    
+                    console.log('📰 Related articles final result (client):', {
+                        totalFetched: relatedRes.value.data?.articles?.length || 0,
+                        afterCategoryFilter: beforeExclude,
+                        afterExcludeCurrent: relatedData.length,
+                        max20Newest: Math.min(20, relatedData.length),
+                        finalDisplayed: relatedData.length,
+                        currentCategory: articleData.category,
+                        mappedCategory: currentArticleCategory,
+                        currentArticleId: String(articleData._id),
+                        finalArticles: relatedData.map(a => ({ id: String(a._id), title: a.title, category: a.category, publishedAt: a.publishedAt }))
+                    });
                     setRelatedArticles(relatedData);
                 } else {
-                    console.warn('⚠️ Failed to load related articles:', relatedRes.status === 'rejected' ? relatedRes.reason : relatedRes.value);
+                    console.error('⚠️ Failed to load related articles (client):', {
+                        status: relatedRes.status,
+                        reason: relatedRes.status === 'rejected' ? relatedRes.reason : null,
+                        value: relatedRes.status === 'fulfilled' ? relatedRes.value : null
+                    });
+                    setRelatedArticles([]);
                 }
 
                 // Process most viewed articles
@@ -526,7 +691,7 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
         } finally {
             setLoading(false);
         }
-    }, [slug, apiUrl, initialArticle]);
+    }, [slug, apiUrl, initialArticle, shuffleArray, mapOldCategoryToNew]);
 
     // Table of Contents generation and content processing
     // Use state to track if we're on client to avoid hydration mismatch
@@ -573,16 +738,246 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
         };
     }, [article?.content, initialArticle?.content, isClient]);
 
+    // Load sidebar articles from sessionStorage when slug changes (route change)
+    // This runs FIRST before any other effects to ensure data is available immediately
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        
+        // Load from sessionStorage immediately when slug changes
+        // This ensures data is available immediately, avoiding "Đang tải..." flash
+        const loadFromCache = () => {
+            try {
+                const cachedMostViewed = sessionStorage.getItem('mostViewedArticles');
+                const cachedTrending = sessionStorage.getItem('trendingArticles');
+                
+                if (cachedMostViewed) {
+                    const parsed = JSON.parse(cachedMostViewed);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        // Always update to ensure data is fresh
+                        console.log('📦 Loading most viewed articles from cache on route change:', parsed.length);
+                        setMostViewedArticles(parsed);
+                    }
+                }
+                
+                if (cachedTrending) {
+                    const parsed = JSON.parse(cachedTrending);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        // Always update to ensure data is fresh
+                        console.log('📦 Loading trending articles from cache on route change:', parsed.length);
+                        setTrendingArticles(parsed);
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ Error loading from sessionStorage on route change:', error);
+            }
+        };
+        
+        // Load immediately
+        loadFromCache();
+    }, [slug]); // Only depend on slug
+
+    // Reset and fetch article when slug changes
+    useEffect(() => {
+        if (!router.isReady || !slug) return;
+        
+        // Check if slug matches initialArticle
+        if (initialArticle && initialArticle.slug === slug) {
+            // Use initialArticle if slug matches
+            setArticle(initialArticle);
+            setViewCount(initialArticle.views || 0);
+            setLoading(false);
+            setError(null);
+        } else if (slug) {
+            // Fetch new article if slug doesn't match or no initialArticle
+            console.log('🔄 Slug changed, fetching new article:', slug);
+            setLoading(true);
+            setError(null);
+            setArticle(null);
+            
+            fetch(`${apiUrl}/api/articles/${slug}`, {
+                headers: { 'Cache-Control': 'max-age=300' }
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success && result.data) {
+                    setArticle(result.data);
+                    setViewCount(result.data.views || 0);
+                    setLoading(false);
+                } else {
+                    setError('Không tìm thấy bài viết');
+                    setLoading(false);
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching article:', err);
+                setError('Lỗi kết nối. Vui lòng thử lại sau.');
+                setLoading(false);
+            });
+        }
+    }, [slug, router.isReady, initialArticle, apiUrl]);
+
+    // Simple: Fetch most viewed and trending articles when needed
+    // Fetch when slug changes if we don't have data (similar to related articles)
+    useEffect(() => {
+        // Only fetch if we don't have data yet
+        if (mostViewedArticles.length > 0) {
+            return; // Already have data, don't fetch again
+        }
+
+        const fetchSidebarArticles = async () => {
+            try {
+                console.log('🔄 Fetching most viewed and trending articles...');
+                
+                const [mostViewedRes, trendingRes] = await Promise.allSettled([
+                    fetch(`${apiUrl}/api/articles?sort=views&limit=5`, {
+                        headers: { 'Cache-Control': 'max-age=600' }
+                    }).then(res => res.json()).catch(() => ({ success: false })),
+                    fetch(`${apiUrl}/api/articles?category=trending&limit=6`, {
+                        headers: { 'Cache-Control': 'max-age=600' }
+                    }).then(res => res.json()).catch(() => ({ success: false }))
+                ]);
+
+                if (mostViewedRes.status === 'fulfilled' && mostViewedRes.value.success) {
+                    const mostViewedData = mostViewedRes.value.data?.articles || [];
+                    if (mostViewedData.length > 0) {
+                        console.log('👁️ Most viewed articles loaded:', mostViewedData.length);
+                        setMostViewedArticles(mostViewedData);
+                    }
+                }
+
+                if (trendingRes.status === 'fulfilled' && trendingRes.value.success) {
+                    const trendingData = trendingRes.value.data?.articles || [];
+                    if (trendingData.length > 0) {
+                        console.log('🔥 Trending articles loaded:', trendingData.length);
+                        setTrendingArticles(trendingData);
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error fetching sidebar articles:', error);
+            }
+        };
+
+        fetchSidebarArticles();
+    }, [apiUrl, slug, mostViewedArticles.length]); // Fetch when slug changes if we don't have data
+
+    // Fetch related articles when article is available
+    useEffect(() => {
+        const currentArticle = article || initialArticle;
+        if (!currentArticle || !currentArticle._id || !currentArticle.category) {
+            return;
+        }
+        
+        // Only fetch if slug matches current article
+        if (currentArticle.slug !== slug) {
+            return;
+        }
+
+        const fetchRelatedArticles = async () => {
+            try {
+                const currentArticleCategory = mapOldCategoryToNew(currentArticle.category);
+                console.log('🔄 Fetching related articles for:', {
+                    articleId: String(currentArticle._id),
+                    category: currentArticle.category,
+                    mappedCategory: currentArticleCategory
+                });
+
+                const response = await fetch(`${apiUrl}/api/articles?limit=200&sort=-publishedAt`, {
+                    headers: { 'Cache-Control': 'max-age=600' }
+                });
+                const result = await response.json();
+
+                if (result.success && result.data?.articles) {
+                    let relatedData = result.data.articles || [];
+                    console.log('📰 Raw articles fetched:', {
+                        total: relatedData.length,
+                        currentArticleCategory: currentArticle.category,
+                        mappedCategory: currentArticleCategory
+                    });
+
+                    // Filter by mapped category
+                    relatedData = relatedData.filter(article => {
+                        const articleMappedCategory = mapOldCategoryToNew(article.category);
+                        return articleMappedCategory === currentArticleCategory;
+                    });
+                    console.log('📰 After category filter:', {
+                        count: relatedData.length,
+                        mappedCategory: currentArticleCategory
+                    });
+
+                    // Filter out current article
+                    const currentArticleId = String(currentArticle._id);
+                    relatedData = relatedData.filter(article => String(article._id) !== currentArticleId);
+                    console.log('📰 After exclude current:', {
+                        count: relatedData.length,
+                        currentArticleId: currentArticleId
+                    });
+
+                    // Sort by publishedAt (newest first)
+                    relatedData.sort((a, b) => {
+                        const dateA = new Date(a.publishedAt || 0);
+                        const dateB = new Date(b.publishedAt || 0);
+                        return dateB - dateA;
+                    });
+
+                    // Take maximum 20 newest articles
+                    relatedData = relatedData.slice(0, 20);
+
+                    // Shuffle array to get random articles
+                    relatedData = shuffleArray(relatedData);
+
+                    // Take first 4 random articles to display
+                    relatedData = relatedData.slice(0, 4);
+
+                    console.log('📰 Related articles final result:', {
+                        finalCount: relatedData.length,
+                        articles: relatedData.map(a => ({ id: String(a._id), title: a.title, category: a.category }))
+                    });
+                    setRelatedArticles(relatedData);
+                } else {
+                    console.error('❌ Failed to fetch related articles:', result);
+                    setRelatedArticles([]);
+                }
+            } catch (error) {
+                console.error('❌ Error fetching related articles:', error);
+                setRelatedArticles([]);
+            }
+        };
+
+        fetchRelatedArticles();
+    }, [article, initialArticle, apiUrl, mapOldCategoryToNew, shuffleArray, slug]);
+
+    // Reset state when slug changes (navigation to different article)
+    useEffect(() => {
+        if (slug && router.isReady) {
+            // Reset all states when navigating to a new article
+            setArticle(null);
+            setRelatedArticles([]);
+            setMostViewedArticles([]);
+            setTrendingArticles([]);
+            setLoading(true);
+            setError(null);
+            setReadingProgress(0);
+            setShowTOC(false);
+            setActiveHeading('');
+            setIsLiked(false);
+            setViewCount(0);
+        }
+    }, [slug, router.isReady]);
+
     // Effects
     useEffect(() => {
-        // If we have initial data, just set loading to false
-        if (initialArticle) {
+        if (!router.isReady) return; // Wait for router to be ready
+        
+        // If we have initial data and slug matches, use it
+        if (initialArticle && initialArticle.slug === slug) {
             setLoading(false);
             setViewCount(initialArticle.views || 0);
-        } else {
-        fetchArticle();
+            setArticle(initialArticle);
+        } else if (slug) {
+            // Fetch article if slug doesn't match initialArticle or no initialArticle
+            fetchArticle();
         }
-    }, [fetchArticle, initialArticle]);
+    }, [fetchArticle, initialArticle, slug, router.isReady]);
 
     // Ensure headings have IDs after content is rendered
     useEffect(() => {
@@ -813,7 +1208,10 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
         if (!currentArticle) return [];
         
         // Normalize siteUrl - remove trailing slash for consistency
-        const normalizedSiteUrl = siteUrl.replace(/\/+$/, '');
+        // Use consistent normalization for both server and client
+        const normalizedSiteUrl = typeof window !== 'undefined' 
+            ? (siteUrl || window.location.origin).replace(/\/+$/, '')
+            : siteUrl.replace(/\/+$/, '');
         
         return [
             { name: 'Trang chủ', url: normalizedSiteUrl },
@@ -821,7 +1219,7 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
             { name: getCategoryLabel(currentArticle.category), url: `${normalizedSiteUrl}/tin-tuc?category=${currentArticle.category}` },
             { name: currentArticle.title || 'Bài viết', url: `${normalizedSiteUrl}/tin-tuc/${currentArticle.slug}` }
         ];
-    }, [article, initialArticle, siteUrl]);
+    }, [article, initialArticle, siteUrl, getCategoryLabel]);
 
     // Social sharing functions
     const shareToFacebook = () => {
@@ -1049,7 +1447,10 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                                         {index === breadcrumbs.length - 1 ? (
                                             <span className={styles.breadcrumbCurrent}>{crumb.name}</span>
                                         ) : (
-                                            <Link href={crumb.url} className={styles.breadcrumbLink}>
+                                            <Link 
+                                                href={crumb.url.replace(/\/+$/, '') || '/'} 
+                                                className={styles.breadcrumbLink}
+                                            >
                                                 {crumb.name}
                                             </Link>
                                         )}
@@ -1354,7 +1755,7 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                                             </div>
                                         ) : (
                                             <div className={styles.emptyState}>
-                                                <p>Đang tải...</p>
+                                                <p>Chưa có bài viết</p>
                                             </div>
                                         )}
                                     </div>

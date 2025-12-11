@@ -11,7 +11,6 @@ import Layout from '../components/Layout';
 import SEOOptimized from '../components/SEOOptimized';
 import PageSpeedOptimizer from '../components/PageSpeedOptimizer';
 import WebVitalsOptimizer from '../components/WebVitalsOptimizer';
-import LoadingSpinner from '../components/LoadingSpinner';
 import styles from '../styles/NewsClassic.module.css';
 
 // API functions with caching and error handling
@@ -1268,7 +1267,7 @@ export default function NewsPage() {
         selectedCategory: null,
         currentPage: 1,
         totalPages: 1,
-        loading: true,
+        loading: false,
         error: null,
         searchQuery: '',
         sortBy: '-publishedAt',
@@ -1296,7 +1295,7 @@ export default function NewsPage() {
 
         try {
             isLoadingRef.current = true;
-            setState(prev => ({ ...prev, loading: true, error: null }));
+            setState(prev => ({ ...prev, loading: false, error: null }));
 
             // Optimize API calls with better caching and error handling
             // Load all articles and filter on client side since backend has old categories
@@ -1529,7 +1528,7 @@ export default function NewsPage() {
             ...prev,
             selectedCategory: category,
             currentPage: 1,
-            loading: true // Show loading immediately
+            loading: false // No loading spinner
         }));
     }, []);
 
@@ -1558,26 +1557,7 @@ export default function NewsPage() {
         setVisibleArticles(prev => prev + 6);
     }, []);
 
-    // Loading state - YouTube style spinner
-    if (state.loading) {
-        return (
-            <Layout>
-                <div style={{
-                    minHeight: '60vh',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '80px 24px'
-                }}>
-                    <LoadingSpinner
-                        size="large"
-                        message="Đang tải tin tức..."
-                        showMessage={true}
-                    />
-                </div>
-            </Layout>
-        );
-    }
+    // Loading state removed - page loads without spinner
 
     // Error state
     if (state.error) {
