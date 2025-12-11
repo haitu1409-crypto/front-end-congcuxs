@@ -54,14 +54,14 @@ const SocialShare = dynamic(() => Promise.resolve(() => <div className={styles.l
     ssr: false
 });
 
-export default function ArticleDetailPage() {
+export default function ArticleDetailPage({ initialArticle, seoData: initialSeoData }) {
     const router = useRouter();
     const { slug } = router.query;
-    const [article, setArticle] = useState(null);
+    const [article, setArticle] = useState(initialArticle || null);
     const [relatedArticles, setRelatedArticles] = useState([]);
     const [mostViewedArticles, setMostViewedArticles] = useState([]);
     const [trendingArticles, setTrendingArticles] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!initialArticle);
     const [error, setError] = useState(null);
     const [readingProgress, setReadingProgress] = useState(0);
     const [showTOC, setShowTOC] = useState(false);
@@ -213,8 +213,11 @@ export default function ArticleDetailPage() {
 
     // Effects
     useEffect(() => {
-        fetchArticle();
-    }, [fetchArticle]);
+        // Only fetch if we don't have initial data
+        if (!initialArticle) {
+            fetchArticle();
+        }
+    }, [fetchArticle, initialArticle]);
 
     // Ensure headings have IDs after content is rendered
     useEffect(() => {
@@ -491,20 +494,22 @@ export default function ArticleDetailPage() {
     return (
         <>
             {/* Enhanced SEO with JSON-LD Schema */}
-            <ArticleSEO
-                title={article.title}
-                description={seoData?.description || article.metaDescription || article.excerpt || article.title}
-                author={article.author || 'Admin'}
-                publishedTime={article.publishedAt}
-                modifiedTime={article.updatedAt || article.publishedAt}
-                image={seoData?.ogImage || `${siteUrl}/imgs/wukong.png`}
-                url={`${siteUrl}/tin-tuc/${article.slug}`}
-                keywords={article.keywords || article.tags || []}
-                category={getCategoryLabel(article.category)}
-                tags={article.tags || []}
-                readingTime={`${Math.ceil((article.content?.length || 0) / 1000)} phút đọc`}
-                canonical={`${siteUrl}/tin-tuc/${article.slug}`}
-            />
+            {article && (
+                <ArticleSEO
+                    title={article.title}
+                    description={initialSeoData?.description || seoData?.description || article.metaDescription || article.excerpt || article.title}
+                    author={article.author || 'Admin'}
+                    publishedTime={article.publishedAt}
+                    modifiedTime={article.updatedAt || article.publishedAt}
+                    image={initialSeoData?.image || seoData?.ogImage || `${siteUrl}/imgs/wukong.png`}
+                    url={`${siteUrl}/tin-tuc/${article.slug}`}
+                    keywords={article.keywords || article.tags || []}
+                    category={getCategoryLabel(article.category)}
+                    tags={article.tags || []}
+                    readingTime={`${Math.ceil((article.content?.length || 0) / 1000)} phút đọc`}
+                    canonical={`${siteUrl}/tin-tuc/${article.slug}`}
+                />
+            )}
             <PageSpeedOptimizer />
 
             {/* Reading Progress Bar */}
@@ -873,4 +878,79 @@ export default function ArticleDetailPage() {
             </Layout>
         </>
     );
+}
+
+// Server-side data fetching for SEO
+export async function getServerSideProps(context) {
+    const { slug } = context.params;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:5000';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
+
+    try {
+        // Use absolute URL for fetch in Node.js
+        const fetchUrl = `${apiUrl}/api/articles/${slug}`;
+        const response = await fetch(fetchUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; Next.js SSR)',
+            },
+        });
+        
+        if (!response.ok) {
+            return { notFound: true };
+        }
+        
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            const article = result.data;
+            
+            // Prepare SEO data
+            let description = article.metaDescription || article.excerpt;
+            if (!description && article.content) {
+                // Remove HTML tags for description
+                description = article.content.replace(/<[^>]*>/g, '').substring(0, 160).trim();
+            }
+            if (!description) {
+                description = article.title;
+            }
+
+            // Prepare image URL
+            let imageUrl = `${siteUrl}/imgs/wukong.png`;
+            if (article.featuredImage?.url) {
+                if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
+                    imageUrl = article.featuredImage.url;
+                } else if (article.featuredImage.url.startsWith('/')) {
+                    imageUrl = `${siteUrl}${article.featuredImage.url}`;
+                } else {
+                    imageUrl = `${siteUrl}/${article.featuredImage.url}`;
+                }
+            }
+
+            return {
+                props: {
+                    initialArticle: article,
+                    seoData: {
+                        title: article.title,
+                        description: description,
+                        image: imageUrl,
+                        url: `${siteUrl}/tin-tuc/${slug}`,
+                        publishedTime: article.publishedAt,
+                        modifiedTime: article.updatedAt || article.publishedAt,
+                        author: article.author || 'Admin',
+                        category: article.category,
+                        tags: article.tags || []
+                    }
+                }
+            };
+        } else {
+            return {
+                notFound: true
+            };
+        }
+    } catch (error) {
+        console.error('Error fetching article:', error);
+        return {
+            notFound: true
+        };
+    }
 }
