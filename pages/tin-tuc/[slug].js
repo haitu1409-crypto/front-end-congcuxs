@@ -223,12 +223,39 @@ const SocialShare = dynamic(() => Promise.resolve(() => <div className={styles.l
 // Server-side data fetching for SEO
 export async function getServerSideProps(context) {
     const { slug } = context.params;
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:5000';
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
 
     try {
-        // Fetch article data on server
-        const response = await fetch(`${apiUrl}/api/articles/${slug}`);
+        // Fetch article data on server with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+        let response;
+        try {
+            response = await fetch(`${apiUrl}/api/articles/${slug}`, {
+                signal: controller.signal,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            clearTimeout(timeoutId);
+        } catch (fetchError) {
+            clearTimeout(timeoutId);
+            console.error('Fetch error in getServerSideProps:', fetchError);
+            // Return not found if fetch fails
+            return {
+                notFound: true
+            };
+        }
+
+        if (!response.ok) {
+            console.error(`API returned ${response.status} for article ${slug}`);
+            return {
+                notFound: true
+            };
+        }
+
         const result = await response.json();
 
         if (result.success && result.data) {
@@ -271,11 +298,21 @@ export async function getServerSideProps(context) {
                         modifiedTime: article.updatedAt || article.publishedAt,
                         author: article.author || 'Admin',
                         category: article.category,
-                        tags: article.tags || []
+                        tags: article.tags || [],
+                        articleData: {
+                            publishedTime: article.publishedAt,
+                            modifiedTime: article.updatedAt || article.publishedAt,
+                            author: article.author || 'Admin',
+                            section: article.category,
+                            tags: article.tags || [],
+                            readingTime: Math.ceil((article.content?.length || 0) / 1000),
+                            wordCount: article.content?.length || 0
+                        }
                     }
                 }
             };
         } else {
+            console.error('Article not found or invalid response:', result);
             return {
                 notFound: true
             };
@@ -726,24 +763,34 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
         }
     };
 
-    // Loading state
-    if (loading) {
+    // Get current article (from SSR or client-side)
+    const currentArticle = article || initialArticle;
+    const currentSeoData = seoData || initialSeoData;
+
+    // Loading state - but still render SEO if we have initial data
+    if (loading && !initialArticle) {
         return (
-            <Layout>
-                <div className={styles.pageWrapper}>
-                    <div className={styles.container}>
-                        <div className={styles.loading}>
-                            <div className={styles.loadingSpinner}></div>
-                            <p className={styles.loadingText}>Đang tải bài viết...</p>
+            <>
+                <SEOOptimized
+                    pageType="article"
+                    title="Đang tải..."
+                    description="Đang tải bài viết..."
+                />
+                <Layout>
+                    <div className={styles.pageWrapper}>
+                        <div className={styles.container}>
+                            <div className={styles.loading}>
+                                <div className={styles.loadingSpinner}></div>
+                                <p className={styles.loadingText}>Đang tải bài viết...</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </Layout>
+                </Layout>
+            </>
         );
     }
 
     // Error state
-    const currentArticle = article || initialArticle;
     if (error || !currentArticle) {
         return (
             <Layout>
@@ -763,40 +810,65 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
         );
     }
 
+    // Prepare SEO data for rendering
+    const finalTitle = currentSeoData?.title || (currentArticle ? `${currentArticle.title} | Tin Tức Game - LMHT, Liên Quân, TFT` : 'Tin Tức Game');
+    const finalDescription = currentSeoData?.description || (currentArticle ? (currentArticle.metaDescription || currentArticle.excerpt || currentArticle.title) : 'Tin tức game mới nhất');
+    const finalOgImage = currentSeoData?.image || (currentArticle?.featuredImage?.url ? 
+        (currentArticle.featuredImage.url.startsWith('http') ? currentArticle.featuredImage.url : `${siteUrl}${currentArticle.featuredImage.url.startsWith('/') ? currentArticle.featuredImage.url : '/' + currentArticle.featuredImage.url}`)
+        : `${siteUrl}/imgs/wukong.png`);
+    const finalCanonical = currentSeoData?.url || (currentArticle ? `${siteUrl}/tin-tuc/${currentArticle.slug}` : siteUrl);
+
     return (
         <>
-            {/* Enhanced SEO with JSON-LD Schema */}
+            {/* Enhanced SEO with JSON-LD Schema - Render FIRST to ensure priority */}
             {currentArticle && (
                 <>
+                    <Head>
+                        {/* Force override og:title and og:description */}
+                        <meta property="og:title" content={currentArticle.title} key="og-title" />
+                        <meta property="og:description" content={finalDescription} key="og-description" />
+                        <meta property="og:image" content={finalOgImage} key="og-image" />
+                        <meta property="og:image:secure_url" content={finalOgImage} key="og-image-secure" />
+                        <meta property="og:image:width" content="1200" key="og-image-width" />
+                        <meta property="og:image:height" content="630" key="og-image-height" />
+                        <meta property="og:image:alt" content={currentArticle.title} key="og-image-alt" />
+                        <meta property="og:url" content={finalCanonical} key="og-url" />
+                        <meta property="og:type" content="article" key="og-type" />
+                        <meta property="article:published_time" content={currentArticle.publishedAt} key="article-published" />
+                        <meta property="article:modified_time" content={currentArticle.updatedAt || currentArticle.publishedAt} key="article-modified" />
+                        <meta property="article:author" content={currentArticle.author || 'Admin'} key="article-author" />
+                        <meta property="article:section" content={getCategoryLabel(currentArticle.category)} key="article-section" />
+                        {currentArticle.tags?.map((tag, index) => (
+                            <meta key={`article-tag-${index}`} property="article:tag" content={tag} />
+                        ))}
+                        <title key="title">{finalTitle}</title>
+                        <meta name="description" content={finalDescription} key="description" />
+                    </Head>
                     <ArticleSEO
                         title={currentArticle.title}
-                        description={seoData?.description || currentArticle.metaDescription || currentArticle.excerpt || currentArticle.title}
+                        description={finalDescription}
                         author={currentArticle.author || 'Admin'}
                         publishedTime={currentArticle.publishedAt}
                         modifiedTime={currentArticle.updatedAt || currentArticle.publishedAt}
-                        image={seoData?.ogImage || (currentArticle.featuredImage?.url ? 
-                            (currentArticle.featuredImage.url.startsWith('http') ? currentArticle.featuredImage.url : `${siteUrl}${currentArticle.featuredImage.url.startsWith('/') ? currentArticle.featuredImage.url : '/' + currentArticle.featuredImage.url}`)
-                            : `${siteUrl}/imgs/wukong.png`)}
-                        url={`${siteUrl}/tin-tuc/${currentArticle.slug}`}
+                        image={finalOgImage}
+                        url={finalCanonical}
                         keywords={currentArticle.keywords || currentArticle.tags || []}
                         category={getCategoryLabel(currentArticle.category)}
                         tags={currentArticle.tags || []}
                         readingTime={`${Math.ceil((currentArticle.content?.length || 0) / 1000)} phút đọc`}
-                        canonical={`${siteUrl}/tin-tuc/${currentArticle.slug}`}
+                        canonical={finalCanonical}
                     />
                     <SEOOptimized
                         pageType="article"
-                        title={seoData?.title || `${currentArticle.title} | Tin Tức Game - LMHT, Liên Quân, TFT`}
-                        description={seoData?.description || currentArticle.metaDescription || currentArticle.excerpt || currentArticle.title}
-                        keywords={seoData?.keywords || currentArticle.keywords?.join(', ') || currentArticle.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT, esports'}
-                        canonical={seoData?.canonical || `${siteUrl}/tin-tuc/${currentArticle.slug}`}
-                        ogImage={seoData?.ogImage || (currentArticle.featuredImage?.url ? 
-                            (currentArticle.featuredImage.url.startsWith('http') ? currentArticle.featuredImage.url : `${siteUrl}${currentArticle.featuredImage.url.startsWith('/') ? currentArticle.featuredImage.url : '/' + currentArticle.featuredImage.url}`)
-                            : `${siteUrl}/imgs/wukong.png`)}
+                        title={finalTitle}
+                        description={finalDescription}
+                        keywords={currentArticle.keywords?.join(', ') || currentArticle.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT, esports'}
+                        canonical={finalCanonical}
+                        ogImage={finalOgImage}
                         ogType="article"
                         breadcrumbs={breadcrumbs}
                         structuredData={structuredData}
-                        articleData={seoData?.articleData || {
+                        articleData={currentSeoData?.articleData || {
                             publishedTime: currentArticle.publishedAt,
                             modifiedTime: currentArticle.updatedAt || currentArticle.publishedAt,
                             author: currentArticle.author || 'Admin',
