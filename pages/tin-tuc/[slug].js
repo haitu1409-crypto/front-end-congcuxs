@@ -187,14 +187,75 @@ const getOptimizedImageUrl = (imageUrl, width, height) => {
         return '/imgs/wukong.png';
     }
     
-    // If it's Cloudinary, optimize it
-    if (imageUrl.includes('cloudinary.com')) {
-        const optimized = optimizeCloudinaryUrl(imageUrl, { width, height, quality: 'auto', crop: 'limit' });
-        return optimized || imageUrl; // Return original if optimization failed
+    // Convert to string and trim
+    let urlString = String(imageUrl).trim();
+    if (!urlString) {
+        return '/imgs/wukong.png';
     }
     
-    // For non-Cloudinary URLs, return as is
-    return imageUrl;
+    // Fix malformed URLs where apiUrl was incorrectly prepended to absolute URLs
+    // Example: "http://localhost:5000https://res.cloudinary.com/..." 
+    // or "http://api1.taodandewukong.prohttps://res.cloudinary.com/..."
+    const malformedPattern = /^(https?:\/\/[^\/]+)(https?:\/\/.+)$/;
+    const malformedMatch = urlString.match(malformedPattern);
+    if (malformedMatch) {
+        // Extract the correct absolute URL (the second part)
+        urlString = malformedMatch[2];
+        console.warn('Fixed malformed URL:', imageUrl, '->', urlString);
+    }
+    
+    // If it's already a relative path starting with /, return as is
+    if (urlString.startsWith('/') && !urlString.startsWith('//')) {
+        return urlString;
+    }
+    
+    // Check if it's already an absolute URL (starts with http:// or https://)
+    // This must be checked BEFORE any other processing to avoid concatenation issues
+    if (urlString.startsWith('http://') || urlString.startsWith('https://')) {
+        // Fix incorrect domain: replace api.taodandewukong.pro with api1.taodandewukong.pro
+        if (urlString.includes('api.taodandewukong.pro') && !urlString.includes('api1.taodandewukong.pro')) {
+            urlString = urlString.replace(/api\.taodandewukong\.pro/g, 'api1.taodandewukong.pro');
+        }
+        
+        // If it's Cloudinary, optimize it
+        if (urlString.includes('cloudinary.com') || urlString.includes('res.cloudinary.com')) {
+            const optimized = optimizeCloudinaryUrl(urlString, { width, height, quality: 'auto', crop: 'limit' });
+            return optimized || urlString; // Return original if optimization failed
+        }
+        // For other absolute URLs, return as is
+        return urlString;
+    }
+    
+    // Handle protocol-relative URLs (//example.com/path)
+    if (urlString.startsWith('//')) {
+        const urlWithProtocol = `https:${urlString}`;
+        if (urlWithProtocol.includes('cloudinary.com') || urlWithProtocol.includes('res.cloudinary.com')) {
+            const optimized = optimizeCloudinaryUrl(urlWithProtocol, { width, height, quality: 'auto', crop: 'limit' });
+            return optimized || urlWithProtocol;
+        }
+        return urlWithProtocol;
+    }
+    
+    // If it's Cloudinary URL but missing protocol, add it
+    if (urlString.includes('cloudinary.com') || urlString.includes('res.cloudinary.com')) {
+        const cloudinaryUrl = urlString.startsWith('/') ? `https://res.cloudinary.com${urlString}` : `https://${urlString}`;
+        const optimized = optimizeCloudinaryUrl(cloudinaryUrl, { width, height, quality: 'auto', crop: 'limit' });
+        return optimized || cloudinaryUrl;
+    }
+    
+    // Try to parse as URL to check if it's valid
+    try {
+        const url = new URL(urlString);
+        return urlString;
+    } catch {
+        // If it's not a valid URL, treat as relative path
+        if (urlString && !urlString.startsWith('/')) {
+            return `/${urlString}`;
+        }
+        // Last resort: return fallback
+        console.warn('Invalid image URL:', imageUrl);
+        return '/imgs/wukong.png';
+    }
 };
 // ✅ Removed duplicate CSS import to reduce bundle size
 // import '../../styles/XoSoMienBac.module.css';

@@ -142,14 +142,70 @@ const uploadImage = async (file) => {
     const result = await response.json();
 
     // Convert relative URL to full URL for Next.js Image component
+    // Only prepend apiUrl if the URL is relative (starts with /)
     if (result.success && result.data.url) {
-        result.data.url = `${apiUrl}${result.data.url}`;
+        let imageUrl = result.data.url;
+        
+        // Fix malformed URLs where apiUrl was incorrectly prepended to absolute URLs
+        // Example: "http://localhost:5000https://res.cloudinary.com/..."
+        const malformedPattern = /^(https?:\/\/[^\/]+)(https?:\/\/.+)$/;
+        const malformedMatch = imageUrl.match(malformedPattern);
+        if (malformedMatch) {
+            // Extract the correct absolute URL (the second part)
+            imageUrl = malformedMatch[2];
+            console.warn('Fixed malformed URL in uploadImage:', result.data.url, '->', imageUrl);
+        }
+        
+        // Only prepend apiUrl if URL is relative (starts with /) and not already absolute
+        if (imageUrl.startsWith('/') && !imageUrl.startsWith('//')) {
+            // Relative path - prepend apiUrl
+            result.data.url = `${apiUrl}${imageUrl}`;
+        } else if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+            // Already absolute URL - use as is
+            result.data.url = imageUrl;
+        } else if (imageUrl.startsWith('//')) {
+            // Protocol-relative URL - add https:
+            result.data.url = `https:${imageUrl}`;
+        } else {
+            // Unknown format - try to use as relative path
+            result.data.url = `${apiUrl}/${imageUrl}`;
+        }
     }
 
     return result;
 };
 
 // Utility functions
+const validateImageUrl = (url) => {
+    if (!url || url === 'null' || url === 'undefined' || url === '') {
+        return null;
+    }
+    
+    let urlString = String(url).trim();
+    if (!urlString) {
+        return null;
+    }
+    
+    // Fix malformed URLs where apiUrl was incorrectly prepended to absolute URLs
+    const malformedPattern = /^(https?:\/\/[^\/]+)(https?:\/\/.+)$/;
+    const malformedMatch = urlString.match(malformedPattern);
+    if (malformedMatch) {
+        urlString = malformedMatch[2];
+        console.warn('Fixed malformed URL:', url, '->', urlString);
+    }
+    
+    // Validate URL format
+    try {
+        // Try to create URL object to validate
+        const urlObj = new URL(urlString.startsWith('//') ? `https:${urlString}` : urlString);
+        return urlObj.href;
+    } catch {
+        // If URL is invalid, return null to use fallback
+        console.warn('Invalid image URL:', urlString);
+        return null;
+    }
+};
+
 const generateSlug = (title) => {
     return title
         .toLowerCase()
@@ -246,18 +302,25 @@ const ImageUpload = ({ value, onChange, error }) => {
                             ✨ Tự động lấy từ nội dung
                         </div>
                     )}
-                    <Image
-                        src={value.url}
-                        alt={value.alt || 'Preview'}
-                        width={400}
-                        height={200}
-                        style={{
-                            width: '100%',
-                            height: 'auto',
-                            objectFit: 'cover',
-                            aspectRatio: '2/1'
-                        }}
-                    />
+                    {validateImageUrl(value.url) ? (
+                        <Image
+                            src={validateImageUrl(value.url)}
+                            alt={value.alt || 'Preview'}
+                            width={400}
+                            height={200}
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                objectFit: 'cover',
+                                aspectRatio: '2/1'
+                            }}
+                            unoptimized={validateImageUrl(value.url)?.includes('cloudinary.com')}
+                        />
+                    ) : (
+                        <div className={styles.imagePlaceholder}>
+                            <span>URL hình ảnh không hợp lệ</span>
+                        </div>
+                    )}
                     <div className={styles.imagePreviewActions}>
                         <button
                             type="button"
@@ -454,17 +517,24 @@ const MultipleImageUpload = ({ value = [], onChange, error }) => {
                 <div className={styles.imagesGrid}>
                     {value.map((image, index) => (
                         <div key={index} className={styles.imagePreview}>
-                            <Image
-                                src={image.url}
-                                alt={image.alt || `Image ${index + 1}`}
-                                width={150}
-                                height={100}
-                                style={{
-                                    width: '100%',
-                                    height: 'auto',
-                                    aspectRatio: '3/2'
-                                }}
-                            />
+                            {validateImageUrl(image.url) ? (
+                                <Image
+                                    src={validateImageUrl(image.url)}
+                                    alt={image.alt || `Image ${index + 1}`}
+                                    width={150}
+                                    height={100}
+                                    style={{
+                                        width: '100%',
+                                        height: 'auto',
+                                        aspectRatio: '3/2'
+                                    }}
+                                    unoptimized={validateImageUrl(image.url)?.includes('cloudinary.com')}
+                                />
+                            ) : (
+                                <div className={styles.imagePlaceholder}>
+                                    <span>URL không hợp lệ</span>
+                                </div>
+                            )}
                             <button
                                 type="button"
                                 className={styles.imagePreviewButton}
@@ -634,17 +704,24 @@ const ImageUploadDialog = ({ isOpen, onClose, onInsertImage, uploadImage }) => {
                         <div className={styles.captionForm}>
                             <h4>Thông tin hình ảnh</h4>
                             <div className={styles.imagePreviewSmall}>
-                                <Image
-                                    src={pendingImage.url}
-                                    alt="Preview"
-                                    width={200}
-                                    height={150}
-                                    style={{
-                                        width: '100%',
-                                        height: 'auto',
-                                        borderRadius: '8px'
-                                    }}
-                                />
+                                {validateImageUrl(pendingImage.url) ? (
+                                    <Image
+                                        src={validateImageUrl(pendingImage.url)}
+                                        alt="Preview"
+                                        width={200}
+                                        height={150}
+                                        style={{
+                                            width: '100%',
+                                            height: 'auto',
+                                            borderRadius: '8px'
+                                        }}
+                                        unoptimized={validateImageUrl(pendingImage.url)?.includes('cloudinary.com')}
+                                    />
+                                ) : (
+                                    <div className={styles.imagePlaceholder}>
+                                        <span>URL không hợp lệ</span>
+                                    </div>
+                                )}
                             </div>
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>Alt Text (mô tả ảnh)</label>
@@ -701,18 +778,25 @@ const ImageUploadDialog = ({ isOpen, onClose, onInsertImage, uploadImage }) => {
                                             className={styles.uploadedImageItem}
                                             onClick={() => insertExistingImage(image)}
                                         >
-                                            <Image
-                                                src={image.url}
-                                                alt={image.alt || `Image ${index + 1}`}
-                                                width={150}
-                                                height={100}
-                                                style={{
-                                                    width: '100%',
-                                                    height: 'auto',
-                                                    aspectRatio: '3/2',
-                                                    cursor: 'pointer'
-                                                }}
-                                            />
+                                            {validateImageUrl(image.url) ? (
+                                                <Image
+                                                    src={validateImageUrl(image.url)}
+                                                    alt={image.alt || `Image ${index + 1}`}
+                                                    width={150}
+                                                    height={100}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: 'auto',
+                                                        aspectRatio: '3/2',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                    unoptimized={validateImageUrl(image.url)?.includes('cloudinary.com')}
+                                                />
+                                            ) : (
+                                                <div className={styles.imagePlaceholder}>
+                                                    <span>URL không hợp lệ</span>
+                                                </div>
+                                            )}
                                             <div className={styles.uploadedImageOverlay}>
                                                 <span>Click để chèn</span>
                                             </div>
