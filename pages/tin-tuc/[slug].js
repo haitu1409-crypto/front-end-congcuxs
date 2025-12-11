@@ -3,17 +3,34 @@
  * High performance with rich snippets and accessibility
  */
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
-import SEOOptimized from '../../components/SEOOptimized';
-import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
-import Layout from '../../components/Layout';
-import ArticleSEO from '../../components/ArticleSEO';
-import SocialShareButtons from '../../components/SocialShareButtons';
 import dynamic from 'next/dynamic';
+
+// Lazy load heavy components for better performance
+const SEOOptimized = dynamic(() => import('../../components/SEOOptimized'), {
+    ssr: true
+});
+
+const PageSpeedOptimizer = dynamic(() => import('../../components/PageSpeedOptimizer'), {
+    ssr: false
+});
+
+const Layout = dynamic(() => import('../../components/Layout'), {
+    ssr: true
+});
+
+const ArticleSEO = dynamic(() => import('../../components/ArticleSEO'), {
+    ssr: true
+});
+
+const SocialShareButtons = dynamic(() => import('../../components/SocialShareButtons'), {
+    ssr: false,
+    loading: () => <div style={{ minHeight: '50px' }} />
+});
 
 // Cloudinary optimization helper - Add transformations for better performance
 const optimizeCloudinaryUrl = (imageUrl, options = {}) => {
@@ -207,24 +224,16 @@ import {
 } from 'lucide-react';
 import styles from '../../styles/ArticleDetailClassic.module.css';
 
-// Lazy load heavy components for better PageSpeed
-// Note: These components will be created when needed
-// For now, we'll use simple fallback components
-const RelatedArticles = dynamic(() => Promise.resolve(() => <div className={styles.loadingSkeleton}>Bài viết liên quan</div>), {
-    loading: () => <div className={styles.loadingSkeleton}>Đang tải bài viết liên quan...</div>,
-    ssr: false
-});
-
-const SocialShare = dynamic(() => Promise.resolve(() => <div className={styles.loadingSkeleton}>Chia sẻ</div>), {
-    loading: () => <div className={styles.loadingSkeleton}>Đang tải chia sẻ...</div>,
-    ssr: false
-});
+// Lazy load heavy components for better PageSpeed with proper code splitting
+// Note: RelatedArticles is rendered inline, no need for separate component
 
 // Server-side data fetching for SEO
 export async function getServerSideProps(context) {
     const { slug } = context.params;
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:5000';
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
+    // Normalize siteUrl - remove trailing slash for consistency
+    const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
+    const siteUrl = rawSiteUrl.replace(/\/+$/, '');
 
     try {
         // Fetch article data on server with timeout
@@ -340,11 +349,15 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
     const [isLiked, setIsLiked] = useState(false);
     const [viewCount, setViewCount] = useState(0);
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001';
+    // Normalize siteUrl to avoid hydration mismatch (remove trailing slash)
+    const siteUrl = useMemo(() => {
+        const url = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001';
+        return url.replace(/\/+$/, ''); // Remove trailing slashes for consistency
+    }, []);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-    // Utility functions
-    const formatDate = (dateString) => {
+    // Memoized utility functions for better performance
+    const formatDate = useCallback((dateString) => {
         if (!dateString) return 'Ngày đăng';
         try {
             const date = new Date(dateString);
@@ -356,10 +369,10 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
         } catch {
             return 'Ngày đăng';
         }
-    };
+    }, []);
 
     // Map old categories to new categories (đồng bộ với tin-tuc.js)
-    const mapOldCategoryToNew = (category) => {
+    const mapOldCategoryToNew = useCallback((category) => {
         const mapping = {
             'du-doan-ket-qua-xo-so': 'lien-minh-huyen-thoai',
             'dan-de-chuyen-nghiep': 'lien-minh-huyen-thoai',
@@ -372,9 +385,9 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
             'huong-dan-choi': 'trending'
         };
         return mapping[category] || category;
-    };
+    }, []);
 
-    const getCategoryColor = (category) => {
+    const getCategoryColor = useCallback((category) => {
         const mappedCategory = mapOldCategoryToNew(category);
         const colors = {
             'lien-minh-huyen-thoai': '#0397ab',
@@ -383,9 +396,9 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
             'trending': '#f59e0b'
         };
         return colors[mappedCategory] || '#6b7280';
-    };
+    }, [mapOldCategoryToNew]);
 
-    const getCategoryLabel = (category) => {
+    const getCategoryLabel = useCallback((category) => {
         const mappedCategory = mapOldCategoryToNew(category);
         const labels = {
             'lien-minh-huyen-thoai': 'Liên Minh Huyền Thoại',
@@ -394,15 +407,51 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
             'trending': 'Trending'
         };
         return labels[mappedCategory] || 'Tin Tức';
-    };
+    }, [mapOldCategoryToNew]);
 
-    // Fetch article data with error handling and caching
+    // Fetch article data with error handling, caching, and request deduplication
     const fetchArticle = useCallback(async () => {
         if (!slug || initialArticle) {
             // If we have initial data from SSR, use it and just update view count
             if (initialArticle) {
                 setViewCount(initialArticle.views || 0);
                 setLoading(false);
+                // Fetch related articles, most viewed, and trending in background
+                if (initialArticle.category && initialArticle._id) {
+                    Promise.allSettled([
+                        fetch(`${apiUrl}/api/articles?category=${initialArticle.category}&limit=5&exclude=${initialArticle._id}`, {
+                            headers: { 'Cache-Control': 'max-age=600' }
+                        }).then(res => res.json()).catch(() => ({ success: false })),
+                        fetch(`${apiUrl}/api/articles?sort=views&limit=5`, {
+                            headers: { 'Cache-Control': 'max-age=600' }
+                        }).then(res => res.json()).catch(() => ({ success: false })),
+                        fetch(`${apiUrl}/api/articles?category=trending&limit=6`, {
+                            headers: { 'Cache-Control': 'max-age=600' }
+                        }).then(res => res.json()).catch(() => ({ success: false }))
+                    ]).then(([relatedRes, mostViewedRes, trendingRes]) => {
+                        if (relatedRes.status === 'fulfilled' && relatedRes.value.success) {
+                            const relatedData = relatedRes.value.data.articles || [];
+                            console.log('📰 Related articles loaded (SSR):', relatedData.length);
+                            setRelatedArticles(relatedData);
+                        } else {
+                            console.warn('⚠️ Failed to load related articles (SSR):', relatedRes.status === 'rejected' ? relatedRes.reason : relatedRes.value);
+                        }
+                        if (mostViewedRes.status === 'fulfilled' && mostViewedRes.value.success) {
+                            const mostViewedData = mostViewedRes.value.data.articles || [];
+                            console.log('👁️ Most viewed articles loaded (SSR):', mostViewedData.length);
+                            setMostViewedArticles(mostViewedData);
+                        } else {
+                            console.warn('⚠️ Failed to load most viewed articles (SSR):', mostViewedRes.status === 'rejected' ? mostViewedRes.reason : mostViewedRes.value);
+                        }
+                        if (trendingRes.status === 'fulfilled' && trendingRes.value.success) {
+                            const trendingData = trendingRes.value.data.articles || [];
+                            console.log('🔥 Trending articles loaded (SSR):', trendingData.length);
+                            setTrendingArticles(trendingData);
+                        } else {
+                            console.warn('⚠️ Failed to load trending articles (SSR):', trendingRes.status === 'rejected' ? trendingRes.reason : trendingRes.value);
+                        }
+                    }).catch(console.error);
+                }
                 return;
             }
             return;
@@ -412,47 +461,64 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
             setLoading(true);
             setError(null);
 
-            const response = await fetch(`${apiUrl}/api/articles/${slug}`);
-            const result = await response.json();
+            // Fetch article first to get category for related articles
+            const articleResponse = await fetch(`${apiUrl}/api/articles/${slug}`, {
+                headers: { 'Cache-Control': 'max-age=300' }
+            });
+            const articleResult = await articleResponse.json();
 
-            if (result.success) {
-                setArticle(result.data);
-                setViewCount(result.data.views || 0);
+            if (articleResult.success) {
+                const articleData = articleResult.data;
+                setArticle(articleData);
+                setViewCount(articleData.views || 0);
 
-                // Fetch related articles
-                const relatedResponse = await fetch(
-                    `${apiUrl}/api/articles?category=${result.data.category}&limit=5&exclude=${result.data._id}`
-                );
-                const relatedResult = await relatedResponse.json();
+                // Now fetch related articles, most viewed, and trending in parallel
+                const [relatedRes, mostViewedRes, trendingRes] = await Promise.allSettled([
+                    fetch(`${apiUrl}/api/articles?category=${articleData.category}&limit=5&exclude=${articleData._id}`, {
+                        headers: { 'Cache-Control': 'max-age=600' }
+                    }).then(res => res.json()).catch(() => ({ success: false })),
+                    fetch(`${apiUrl}/api/articles?sort=views&limit=5`, {
+                        headers: { 'Cache-Control': 'max-age=600' }
+                    }).then(res => res.json()).catch(() => ({ success: false })),
+                    fetch(`${apiUrl}/api/articles?category=trending&limit=6`, {
+                        headers: { 'Cache-Control': 'max-age=600' }
+                    }).then(res => res.json()).catch(() => ({ success: false }))
+                ]);
 
-                if (relatedResult.success) {
-                    setRelatedArticles(relatedResult.data.articles || []);
+                // Process related articles
+                if (relatedRes.status === 'fulfilled' && relatedRes.value.success) {
+                    const relatedData = relatedRes.value.data.articles || [];
+                    console.log('📰 Related articles loaded:', relatedData.length);
+                    setRelatedArticles(relatedData);
+                } else {
+                    console.warn('⚠️ Failed to load related articles:', relatedRes.status === 'rejected' ? relatedRes.reason : relatedRes.value);
                 }
 
-                // Fetch most viewed articles
-                const mostViewedResponse = await fetch(
-                    `${apiUrl}/api/articles?sort=views&limit=5`
-                );
-                const mostViewedResult = await mostViewedResponse.json();
-
-                if (mostViewedResult.success) {
-                    setMostViewedArticles(mostViewedResult.data.articles || []);
+                // Process most viewed articles
+                if (mostViewedRes.status === 'fulfilled' && mostViewedRes.value.success) {
+                    const mostViewedData = mostViewedRes.value.data.articles || [];
+                    console.log('👁️ Most viewed articles loaded:', mostViewedData.length);
+                    setMostViewedArticles(mostViewedData);
+                } else {
+                    console.warn('⚠️ Failed to load most viewed articles:', mostViewedRes.status === 'rejected' ? mostViewedRes.reason : mostViewedRes.value);
                 }
 
-                // Fetch trending articles
-                const trendingResponse = await fetch(
-                    `${apiUrl}/api/articles?category=trending&limit=6`
-                );
-                const trendingResult = await trendingResponse.json();
-
-                if (trendingResult.success) {
-                    setTrendingArticles(trendingResult.data.articles || []);
+                // Process trending articles
+                if (trendingRes.status === 'fulfilled' && trendingRes.value.success) {
+                    const trendingData = trendingRes.value.data.articles || [];
+                    console.log('🔥 Trending articles loaded:', trendingData.length);
+                    setTrendingArticles(trendingData);
+                } else {
+                    console.warn('⚠️ Failed to load trending articles:', trendingRes.status === 'rejected' ? trendingRes.reason : trendingRes.value);
                 }
 
-                // Track view
-                fetch(`${apiUrl}/api/articles/${slug}/view`, { method: 'POST' }).catch(console.error);
+                // Track view asynchronously (don't wait for it)
+                fetch(`${apiUrl}/api/articles/${slug}/view`, { 
+                    method: 'POST',
+                    keepalive: true 
+                }).catch(console.error);
             } else {
-                setError(result.message || 'Không thể tải bài viết');
+                setError(articleRes.value?.message || 'Không thể tải bài viết');
             }
         } catch (err) {
             console.error('Error fetching article:', err);
@@ -463,12 +529,28 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
     }, [slug, apiUrl, initialArticle]);
 
     // Table of Contents generation and content processing
+    // Use state to track if we're on client to avoid hydration mismatch
+    const [isClient, setIsClient] = useState(false);
+    
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     const { tableOfContents, processedContent } = useMemo(() => {
         const currentArticle = article || initialArticle;
-        if (!currentArticle?.content || typeof document === 'undefined') {
-            return { tableOfContents: [], processedContent: currentArticle?.content || '' };
+        if (!currentArticle?.content) {
+            return { tableOfContents: [], processedContent: '' };
         }
 
+        // On server or before hydration, return original content
+        if (!isClient || typeof document === 'undefined') {
+            return { 
+                tableOfContents: [], 
+                processedContent: currentArticle.content 
+            };
+        }
+
+        // Only process on client after hydration
         const headings = [];
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = currentArticle.content;
@@ -489,7 +571,7 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
             tableOfContents: headings,
             processedContent: tempDiv.innerHTML
         };
-    }, [article?.content, initialArticle?.content]);
+    }, [article?.content, initialArticle?.content, isClient]);
 
     // Effects
     useEffect(() => {
@@ -498,7 +580,7 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
             setLoading(false);
             setViewCount(initialArticle.views || 0);
         } else {
-            fetchArticle();
+        fetchArticle();
         }
     }, [fetchArticle, initialArticle]);
 
@@ -525,9 +607,12 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
         return () => clearTimeout(timer);
     }, [processedContent, tableOfContents]);
 
-    // Reading progress tracking and active heading detection
+    // Reading progress tracking and active heading detection - Optimized with throttling
     useEffect(() => {
         if (typeof window === 'undefined') return;
+
+        let ticking = false;
+        let rafId = null;
 
         const updateReadingProgress = () => {
             const scrollTop = window.scrollY;
@@ -556,10 +641,24 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                     setActiveHeading(currentHeading);
                 }
             }
+            
+            ticking = false;
         };
 
-        window.addEventListener('scroll', updateReadingProgress, { passive: true });
-        return () => window.removeEventListener('scroll', updateReadingProgress);
+        const handleScroll = () => {
+            if (!ticking) {
+                rafId = requestAnimationFrame(updateReadingProgress);
+                ticking = true;
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+            }
+        };
     }, [tableOfContents, activeHeading]);
 
             // Enhanced structured data for rich snippets - SEO optimized
@@ -708,15 +807,19 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
         };
     }, [article, initialArticle, initialSeoData, siteUrl]);
 
-    // Breadcrumbs
+    // Breadcrumbs - Normalize URLs to avoid hydration mismatch
     const breadcrumbs = useMemo(() => {
         const currentArticle = article || initialArticle;
         if (!currentArticle) return [];
+        
+        // Normalize siteUrl - remove trailing slash for consistency
+        const normalizedSiteUrl = siteUrl.replace(/\/+$/, '');
+        
         return [
-            { name: 'Trang chủ', url: siteUrl },
-            { name: 'Tin Tức', url: `${siteUrl}/tin-tuc` },
-            { name: getCategoryLabel(currentArticle.category), url: `${siteUrl}/tin-tuc?category=${currentArticle.category}` },
-            { name: currentArticle.title || 'Bài viết', url: `${siteUrl}/tin-tuc/${currentArticle.slug}` }
+            { name: 'Trang chủ', url: normalizedSiteUrl },
+            { name: 'Tin Tức', url: `${normalizedSiteUrl}/tin-tuc` },
+            { name: getCategoryLabel(currentArticle.category), url: `${normalizedSiteUrl}/tin-tuc?category=${currentArticle.category}` },
+            { name: currentArticle.title || 'Bài viết', url: `${normalizedSiteUrl}/tin-tuc/${currentArticle.slug}` }
         ];
     }, [article, initialArticle, siteUrl]);
 
@@ -776,16 +879,16 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                     title="Đang tải..."
                     description="Đang tải bài viết..."
                 />
-                <Layout>
-                    <div className={styles.pageWrapper}>
-                        <div className={styles.container}>
-                            <div className={styles.loading}>
-                                <div className={styles.loadingSpinner}></div>
-                                <p className={styles.loadingText}>Đang tải bài viết...</p>
-                            </div>
+            <Layout>
+                <div className={styles.pageWrapper}>
+                    <div className={styles.container}>
+                        <div className={styles.loading}>
+                            <div className={styles.loadingSpinner}></div>
+                            <p className={styles.loadingText}>Đang tải bài viết...</p>
                         </div>
                     </div>
-                </Layout>
+                </div>
+            </Layout>
             </>
         );
     }
@@ -848,13 +951,49 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                         ))}
                         <title key="title-override">{finalTitle}</title>
                         <meta name="description" content={finalDescription} key="description-override" />
-                        {/* Twitter Card */}
+                        
+                        {/* Twitter Card - Full set */}
                         <meta name="twitter:card" content="summary_large_image" key="twitter-card-override" />
+                        <meta name="twitter:url" content={finalCanonical} key="twitter-url-override" />
                         <meta name="twitter:title" content={currentArticle.title} key="twitter-title-override" />
                         <meta name="twitter:description" content={finalDescription} key="twitter-description-override" />
                         <meta name="twitter:image" content={finalOgImage} key="twitter-image-override" />
+                        <meta name="twitter:image:alt" content={currentArticle.title} key="twitter-image-alt-override" />
+                        <meta name="twitter:site" content="@taodandewukong" key="twitter-site-override" />
+                        <meta name="twitter:creator" content="@taodandewukong" key="twitter-creator-override" />
+                        
+                        {/* Zalo - Full set */}
+                        <meta property="zalo:title" content={currentArticle.title} key="zalo-title-override" />
+                        <meta property="zalo:description" content={finalDescription} key="zalo-description-override" />
+                        <meta property="zalo:image" content={finalOgImage} key="zalo-image-override" />
+                        <meta property="zalo:url" content={finalCanonical} key="zalo-url-override" />
+                        
+                        {/* Telegram - Full set */}
+                        <meta property="telegram:title" content={currentArticle.title} key="telegram-title-override" />
+                        <meta property="telegram:description" content={finalDescription} key="telegram-description-override" />
+                        <meta property="telegram:image" content={finalOgImage} key="telegram-image-override" />
+                        <meta property="telegram:image:width" content="1200" key="telegram-image-width-override" />
+                        <meta property="telegram:image:height" content="630" key="telegram-image-height-override" />
+                        <meta property="telegram:image:alt" content={currentArticle.title} key="telegram-image-alt-override" />
+                        <meta property="telegram:url" content={finalCanonical} key="telegram-url-override" />
+                        <meta property="telegram:site_name" content="Tạo Dàn Đề Wukong" key="telegram-site-name-override" />
+                        
+                        {/* LinkedIn - Uses Open Graph but needs specific tags */}
+                        <meta property="linkedin:owner" content="Tạo Dàn Đề Wukong" key="linkedin-owner-override" />
+                        
+                        {/* TikTok */}
+                        <meta property="tiktok:title" content={currentArticle.title} key="tiktok-title-override" />
+                        <meta property="tiktok:description" content={finalDescription} key="tiktok-description-override" />
+                        <meta property="tiktok:image" content={finalOgImage} key="tiktok-image-override" />
+                        
+                        {/* WhatsApp - Uses Open Graph but can add specific */}
+                        <meta property="og:image:type" content="image/png" key="og-image-type-override" />
+                        
+                        {/* Additional for better compatibility */}
+                        <link rel="image_src" href={finalOgImage} key="image-src-override" />
+                        <meta name="image" content={finalOgImage} key="image-override" />
                     </Head>
-                    <ArticleSEO
+            <ArticleSEO
                         title={currentArticle.title}
                         description={finalDescription}
                         author={currentArticle.author || 'Admin'}
@@ -867,17 +1006,17 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                         tags={currentArticle.tags || []}
                         readingTime={`${Math.ceil((currentArticle.content?.length || 0) / 1000)} phút đọc`}
                         canonical={finalCanonical}
-                    />
-                    <SEOOptimized
-                        pageType="article"
+            />
+            <SEOOptimized
+                pageType="article"
                         customTitle={finalTitle}
                         customDescription={finalDescription}
                         customKeywords={currentArticle.keywords?.join(', ') || currentArticle.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT, esports'}
                         canonical={finalCanonical}
                         canonicalUrl={finalCanonical}
                         ogImage={finalOgImage}
-                        breadcrumbs={breadcrumbs}
-                        structuredData={structuredData}
+                breadcrumbs={breadcrumbs}
+                structuredData={structuredData}
                         articleData={currentSeoData?.articleData || {
                             publishedTime: currentArticle.publishedAt,
                             modifiedTime: currentArticle.updatedAt || currentArticle.publishedAt,
@@ -1049,7 +1188,11 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                                     <div
                                         className={`${styles.articleContent} xsmbContainer`}
                                         itemProp="articleBody"
-                                        dangerouslySetInnerHTML={{ __html: processedContent || currentArticle.content }}
+                                        dangerouslySetInnerHTML={{ 
+                                            __html: isClient && processedContent 
+                                                ? processedContent 
+                                                : (currentArticle?.content || '') 
+                                        }}
                                     />
 
                                     {/* Article Footer - Tags & Sharing */}
@@ -1084,9 +1227,9 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                                 </article>
 
                                 {/* Related Articles - Below Main Article */}
-                                {relatedArticles.length > 0 && (
                                     <section className={styles.relatedSection}>
                                         <h2 className={styles.relatedTitle}>Bài viết liên quan</h2>
+                                    {relatedArticles.length > 0 ? (
                                         <div className={styles.relatedGrid}>
                                             {relatedArticles.slice(0, 4).map((relatedArticle) => (
                                                 <Link
@@ -1120,13 +1263,17 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                                                 </Link>
                                             ))}
                                         </div>
-                                    </section>
-                                )}
+                                    ) : (
+                                        <div className={styles.emptyState}>
+                                            <p>Chưa có bài viết liên quan</p>
+                                        </div>
+                                    )}
+                                </section>
 
                                 {/* Trending Articles - Below Related Section */}
-                                {trendingArticles.length > 0 && (
-                                    <section className={styles.trendingSection}>
-                                        <h2 className={styles.trendingTitle}>Trending</h2>
+                                <section className={styles.trendingSection}>
+                                    <h2 className={styles.trendingTitle}>Trending</h2>
+                                    {trendingArticles.length > 0 ? (
                                         <div className={styles.trendingGrid}>
                                             {trendingArticles.slice(0, 6).map((trendingArticle) => (
                                                 <Link
@@ -1158,19 +1305,23 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                                                 </Link>
                                             ))}
                                         </div>
-                                    </section>
-                                )}
+                                    ) : (
+                                        <div className={styles.emptyState}>
+                                            <p>Chưa có bài viết trending</p>
+                                        </div>
+                                    )}
+                                </section>
                             </main>
 
                             {/* Sidebar */}
                             <aside className={styles.sidebar}>
                                 {/* Most Viewed Articles */}
-                                {mostViewedArticles.length > 0 && (
                                     <div className={styles.sidebarBox}>
                                         <div className={styles.sidebarHeader}>
                                             📊 Xem nhiều nhất
                                         </div>
                                         <div className={styles.sidebarContent}>
+                                        {mostViewedArticles.length > 0 ? (
                                             <div className={styles.sidebarArticleList}>
                                                 {mostViewedArticles.map((article) => (
                                                     <Link
@@ -1201,9 +1352,13 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                                                     </Link>
                                                 ))}
                                             </div>
-                                        </div>
+                                        ) : (
+                                            <div className={styles.emptyState}>
+                                                <p>Đang tải...</p>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
 
                                 {/* Categories */}
                                 <div className={styles.sidebarBox}>
