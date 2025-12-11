@@ -824,25 +824,35 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
             {currentArticle && (
                 <>
                     <Head>
-                        {/* Force override og:title and og:description */}
-                        <meta property="og:title" content={currentArticle.title} key="og-title" />
-                        <meta property="og:description" content={finalDescription} key="og-description" />
-                        <meta property="og:image" content={finalOgImage} key="og-image" />
-                        <meta property="og:image:secure_url" content={finalOgImage} key="og-image-secure" />
-                        <meta property="og:image:width" content="1200" key="og-image-width" />
-                        <meta property="og:image:height" content="630" key="og-image-height" />
-                        <meta property="og:image:alt" content={currentArticle.title} key="og-image-alt" />
-                        <meta property="og:url" content={finalCanonical} key="og-url" />
-                        <meta property="og:type" content="article" key="og-type" />
-                        <meta property="article:published_time" content={currentArticle.publishedAt} key="article-published" />
-                        <meta property="article:modified_time" content={currentArticle.updatedAt || currentArticle.publishedAt} key="article-modified" />
-                        <meta property="article:author" content={currentArticle.author || 'Admin'} key="article-author" />
-                        <meta property="article:section" content={getCategoryLabel(currentArticle.category)} key="article-section" />
+                        {/* Force override og:title and og:description - These MUST be set here to override _app.js */}
+                        <meta property="og:title" content={currentArticle.title} key="og-title-override" />
+                        <meta property="og:description" content={finalDescription} key="og-description-override" />
+                        <meta property="og:image" content={finalOgImage} key="og-image-override" />
+                        <meta property="og:image:secure_url" content={finalOgImage} key="og-image-secure-override" />
+                        <meta property="og:image:width" content="1200" key="og-image-width-override" />
+                        <meta property="og:image:height" content="630" key="og-image-height-override" />
+                        <meta property="og:image:alt" content={currentArticle.title} key="og-image-alt-override" />
+                        <meta property="og:url" content={finalCanonical} key="og-url-override" />
+                        <meta property="og:type" content="article" key="og-type-override" />
+                        <meta property="og:site_name" content="Tạo Dàn Đề Wukong" key="og-site-name-override" />
+                        <meta property="og:locale" content="vi_VN" key="og-locale-override" />
+                        {process.env.NEXT_PUBLIC_FB_APP_ID && (
+                            <meta property="fb:app_id" content={process.env.NEXT_PUBLIC_FB_APP_ID} key="fb-app-id" />
+                        )}
+                        <meta property="article:published_time" content={currentArticle.publishedAt} key="article-published-override" />
+                        <meta property="article:modified_time" content={currentArticle.updatedAt || currentArticle.publishedAt} key="article-modified-override" />
+                        <meta property="article:author" content={currentArticle.author || 'Admin'} key="article-author-override" />
+                        <meta property="article:section" content={getCategoryLabel(currentArticle.category)} key="article-section-override" />
                         {currentArticle.tags?.map((tag, index) => (
-                            <meta key={`article-tag-${index}`} property="article:tag" content={tag} />
+                            <meta key={`article-tag-override-${index}`} property="article:tag" content={tag} />
                         ))}
-                        <title key="title">{finalTitle}</title>
-                        <meta name="description" content={finalDescription} key="description" />
+                        <title key="title-override">{finalTitle}</title>
+                        <meta name="description" content={finalDescription} key="description-override" />
+                        {/* Twitter Card */}
+                        <meta name="twitter:card" content="summary_large_image" key="twitter-card-override" />
+                        <meta name="twitter:title" content={currentArticle.title} key="twitter-title-override" />
+                        <meta name="twitter:description" content={finalDescription} key="twitter-description-override" />
+                        <meta name="twitter:image" content={finalOgImage} key="twitter-image-override" />
                     </Head>
                     <ArticleSEO
                         title={currentArticle.title}
@@ -860,12 +870,12 @@ export default function ArticleDetailPage({ article: initialArticle, seoData: in
                     />
                     <SEOOptimized
                         pageType="article"
-                        title={finalTitle}
-                        description={finalDescription}
-                        keywords={currentArticle.keywords?.join(', ') || currentArticle.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT, esports'}
+                        customTitle={finalTitle}
+                        customDescription={finalDescription}
+                        customKeywords={currentArticle.keywords?.join(', ') || currentArticle.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT, esports'}
                         canonical={finalCanonical}
+                        canonicalUrl={finalCanonical}
                         ogImage={finalOgImage}
-                        ogType="article"
                         breadcrumbs={breadcrumbs}
                         structuredData={structuredData}
                         articleData={currentSeoData?.articleData || {
