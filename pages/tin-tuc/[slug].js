@@ -8,11 +8,177 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
+import SEOOptimized from '../../components/SEOOptimized';
 import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import Layout from '../../components/Layout';
 import ArticleSEO from '../../components/ArticleSEO';
 import SocialShareButtons from '../../components/SocialShareButtons';
 import dynamic from 'next/dynamic';
+
+// Cloudinary optimization helper - Add transformations for better performance
+const optimizeCloudinaryUrl = (imageUrl, options = {}) => {
+    if (!imageUrl) return null;
+
+    // Check if it's a Cloudinary URL
+    const isCloudinary = imageUrl.includes('res.cloudinary.com') || imageUrl.includes('cloudinary.com');
+    
+    if (!isCloudinary) {
+        return null; // Let caller handle non-Cloudinary URLs
+    }
+
+    // Parse Cloudinary URL
+    // Format: https://res.cloudinary.com/{cloud_name}/image/upload/{version}/{folder}/{public_id}.{format}
+    try {
+        const url = new URL(imageUrl);
+        const pathParts = url.pathname.split('/').filter(Boolean); // Remove empty strings
+
+        // Cloudinary URL structure: /{cloud_name}/image/upload/{...}
+        // pathParts[0] = cloud_name
+        // pathParts[1] = 'image'
+        // pathParts[2] = 'upload'
+        // pathParts[3+] = version/folders/transforms/public_id
+
+        if (pathParts.length < 4) return imageUrl; // Invalid URL structure
+        if (pathParts[1] !== 'image' || pathParts[2] !== 'upload') return imageUrl;
+
+        // Extract cloud_name (first part)
+        const cloudName = pathParts[0];
+        if (!cloudName) return imageUrl;
+
+        // Extract parts after 'upload' (index 2)
+        const afterUpload = pathParts.slice(3);
+        if (afterUpload.length === 0) return imageUrl;
+
+        // Find version and transformations
+        let versionIndex = -1;
+        let firstTransformIndex = -1;
+        
+        for (let i = 0; i < afterUpload.length; i++) {
+            const part = afterUpload[i];
+            // Check if it's a version (starts with 'v' followed by digits)
+            if (part.startsWith('v') && /^v\d+$/.test(part) && versionIndex === -1) {
+                versionIndex = i;
+            }
+            // Check if it's transformations (contains '_' or ',')
+            if ((part.includes('_') || part.includes(',')) && firstTransformIndex === -1) {
+                firstTransformIndex = i;
+            }
+        }
+
+        // Extract components
+        let version = null;
+        let existingTransforms = [];
+        let publicIdPath = []; // This includes folders + public_id
+        
+        if (versionIndex >= 0) {
+            // URL has version
+            version = afterUpload[versionIndex];
+            // Everything before version are transformations (if any)
+            if (versionIndex > 0) {
+                existingTransforms = afterUpload.slice(0, versionIndex);
+            }
+            // Everything after version (including folders and public_id)
+            publicIdPath = afterUpload.slice(versionIndex + 1);
+        } else if (firstTransformIndex >= 0) {
+            // URL has transformations but no version
+            // Find where transformations end
+            let transformEndIndex = firstTransformIndex;
+            for (let i = firstTransformIndex + 1; i < afterUpload.length; i++) {
+                if (!afterUpload[i].includes('_') && !afterUpload[i].includes(',')) {
+                    transformEndIndex = i - 1;
+                    break;
+                }
+                transformEndIndex = i;
+            }
+            existingTransforms = afterUpload.slice(0, transformEndIndex + 1);
+            // Everything after transformations
+            publicIdPath = afterUpload.slice(transformEndIndex + 1);
+        } else {
+            // No version, no transformations - everything is public_id path
+            publicIdPath = afterUpload;
+        }
+        
+        // publicIdPath now contains: [folders..., public_id.format]
+        // Join them to get the full public_id path (Cloudinary supports folder in public_id)
+        const publicIdWithFormat = publicIdPath.join('/');
+
+        // Build optimized transformations
+        const transforms = [];
+        
+        if (options.width) transforms.push(`w_${options.width}`);
+        if (options.height) transforms.push(`h_${options.height}`);
+        
+        if (options.crop) {
+            transforms.push(`c_${options.crop}`);
+        } else if (options.width || options.height) {
+            transforms.push('c_limit');
+        }
+
+        if (options.quality && options.quality !== 'auto') {
+            transforms.push(`q_${options.quality}`);
+        } else {
+            transforms.push('q_auto');
+        }
+
+        transforms.push('f_auto');
+
+        // Combine all parts in correct Cloudinary order:
+        // transformations -> version -> public_id (which may include folders)
+        const urlParts = [];
+        
+        // 1. Add transformations FIRST (combine existing and new)
+        const allTransforms = [];
+        if (existingTransforms.length > 0) {
+            existingTransforms.forEach(transform => {
+                // If transform contains commas, split and add individually
+                if (transform.includes(',')) {
+                    allTransforms.push(...transform.split(','));
+                } else {
+                    allTransforms.push(transform);
+                }
+            });
+        }
+        // Add new transforms
+        allTransforms.push(...transforms);
+        
+        // Join all transforms with comma
+        if (allTransforms.length > 0) {
+            urlParts.push(allTransforms.join(','));
+        }
+        
+        // 2. Add version if exists
+        if (version) {
+            urlParts.push(version);
+        }
+        
+        // 3. Add public_id path (which includes folders if any)
+        urlParts.push(publicIdWithFormat);
+        
+        // Build the path: /{cloud_name}/image/upload/{transformations}/{version}/{public_id_path}
+        const newPath = `/${cloudName}/image/upload/${urlParts.join('/')}`;
+        
+        return `${url.protocol}//${url.host}${newPath}`;
+    } catch (error) {
+        console.warn('Error optimizing Cloudinary URL:', error, 'Original URL:', imageUrl);
+        return imageUrl; // Return original on error
+    }
+};
+
+// Helper to get optimized image URL
+const getOptimizedImageUrl = (imageUrl, width, height) => {
+    if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined' || imageUrl === '') {
+        return '/imgs/wukong.png';
+    }
+    
+    // If it's Cloudinary, optimize it
+    if (imageUrl.includes('cloudinary.com')) {
+        const optimized = optimizeCloudinaryUrl(imageUrl, { width, height, quality: 'auto', crop: 'limit' });
+        return optimized || imageUrl; // Return original if optimization failed
+    }
+    
+    // For non-Cloudinary URLs, return as is
+    return imageUrl;
+};
 // ✅ Removed duplicate CSS import to reduce bundle size
 // import '../../styles/XoSoMienBac.module.css';
 import {
@@ -54,14 +220,14 @@ const SocialShare = dynamic(() => Promise.resolve(() => <div className={styles.l
     ssr: false
 });
 
-export default function ArticleDetailPage({ initialArticle, seoData: initialSeoData }) {
+export default function ArticleDetailPage() {
     const router = useRouter();
     const { slug } = router.query;
-    const [article, setArticle] = useState(initialArticle || null);
+    const [article, setArticle] = useState(null);
     const [relatedArticles, setRelatedArticles] = useState([]);
     const [mostViewedArticles, setMostViewedArticles] = useState([]);
     const [trendingArticles, setTrendingArticles] = useState([]);
-    const [loading, setLoading] = useState(!initialArticle);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [readingProgress, setReadingProgress] = useState(0);
     const [showTOC, setShowTOC] = useState(false);
@@ -213,11 +379,8 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
 
     // Effects
     useEffect(() => {
-        // Only fetch if we don't have initial data
-        if (!initialArticle) {
-            fetchArticle();
-        }
-    }, [fetchArticle, initialArticle]);
+        fetchArticle();
+    }, [fetchArticle]);
 
     // Ensure headings have IDs after content is rendered
     useEffect(() => {
@@ -384,34 +547,10 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
             : rawDescription;
 
         // Ensure ogImage is absolute URL for proper social sharing preview
-        // Prioritize Cloudinary URL for better compatibility with social media
         let ogImageUrl = `${siteUrl}/imgs/wukong.png`;
-        
-        // If we have publicId, build Cloudinary URL (best for social sharing)
-        if (article.featuredImage?.publicId) {
-            const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
-            // Build optimized Cloudinary URL for OG image (1200x630)
-            ogImageUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,w_1200,h_630,q_auto,f_auto/${article.featuredImage.publicId}`;
-        } 
-        // Otherwise, use URL if it's from Cloudinary
-        else if (article.featuredImage?.url) {
-            if (article.featuredImage.url.includes('res.cloudinary.com')) {
-                // It's already a Cloudinary URL, use it directly
+        if (article.featuredImage?.url) {
+            if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
                 ogImageUrl = article.featuredImage.url;
-            } else if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
-                // Check if it's from API backend - prefer Cloudinary if available
-                if (article.featuredImage.url.includes('api1.taodandewukong.pro') || article.featuredImage.url.includes('/uploads/')) {
-                    // This is from API backend, prefer Cloudinary if available
-                    if (article.featuredImage.publicId) {
-                        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
-                        ogImageUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,w_1200,h_630,q_auto,f_auto/${article.featuredImage.publicId}`;
-                    } else {
-                        // Fallback to API URL but it might not work for Facebook
-                        ogImageUrl = article.featuredImage.url;
-                    }
-                } else {
-                    ogImageUrl = article.featuredImage.url;
-                }
             } else if (article.featuredImage.url.startsWith('/')) {
                 ogImageUrl = `${siteUrl}${article.featuredImage.url}`;
             } else {
@@ -518,22 +657,32 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
     return (
         <>
             {/* Enhanced SEO with JSON-LD Schema */}
-            {article && (
-                <ArticleSEO
-                    title={article.title}
-                    description={initialSeoData?.description || seoData?.description || article.metaDescription || article.excerpt || article.title}
-                    author={article.author || 'Admin'}
-                    publishedTime={article.publishedAt}
-                    modifiedTime={article.updatedAt || article.publishedAt}
-                    image={initialSeoData?.image || seoData?.ogImage || `${siteUrl}/imgs/wukong.png`}
-                    url={`${siteUrl}/tin-tuc/${article.slug}`}
-                    keywords={article.keywords || article.tags || []}
-                    category={getCategoryLabel(article.category)}
-                    tags={article.tags || []}
-                    readingTime={`${Math.ceil((article.content?.length || 0) / 1000)} phút đọc`}
-                    canonical={`${siteUrl}/tin-tuc/${article.slug}`}
-                />
-            )}
+            <ArticleSEO
+                title={article.title}
+                description={seoData?.description || article.metaDescription || article.excerpt || article.title}
+                author={article.author || 'Admin'}
+                publishedTime={article.publishedAt}
+                modifiedTime={article.updatedAt || article.publishedAt}
+                image={seoData?.ogImage || article.featuredImage?.url || `${siteUrl}/imgs/wukong.png`}
+                url={`${siteUrl}/tin-tuc/${article.slug}`}
+                keywords={article.keywords || article.tags || []}
+                category={getCategoryLabel(article.category)}
+                tags={article.tags || []}
+                readingTime={`${Math.ceil((article.content?.length || 0) / 1000)} phút đọc`}
+                canonical={`${siteUrl}/tin-tuc/${article.slug}`}
+            />
+            <SEOOptimized
+                pageType="article"
+                title={seoData.title}
+                description={seoData.description}
+                keywords={seoData.keywords}
+                canonical={seoData.canonical}
+                ogImage={seoData.ogImage}
+                ogType={seoData.ogType}
+                breadcrumbs={breadcrumbs}
+                structuredData={structuredData}
+                articleData={seoData.articleData}
+            />
             <PageSpeedOptimizer />
 
             {/* Reading Progress Bar */}
@@ -739,10 +888,10 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
                                                     className={styles.relatedCard}
                                                 >
                                                     <Image
-                                                        src={relatedArticle.featuredImage?.url || '/images/default-news.jpg'}
+                                                        src={getOptimizedImageUrl(relatedArticle.featuredImage?.url, 300, 200) || '/imgs/wukong.png'}
                                                         alt={relatedArticle.title}
                                                         width={300}
-                                                        height={110}
+                                                        height={200}
                                                         className={styles.relatedCardImage}
                                                         style={{
                                                             width: '100%',
@@ -750,9 +899,11 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
                                                             objectFit: 'cover'
                                                         }}
                                                         loading="lazy"
-                                                        quality={60}
+                                                        quality={75}
                                                         placeholder="blur"
                                                         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                                        unoptimized={relatedArticle.featuredImage?.url?.includes('cloudinary.com')}
+                                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
                                                     />
                                                     <div className={styles.relatedCardContent}>
                                                         <h3 className={styles.relatedCardTitle}>
@@ -777,10 +928,10 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
                                                     className={styles.trendingCard}
                                                 >
                                                     <Image
-                                                        src={trendingArticle.featuredImage?.url || '/images/default-news.jpg'}
+                                                        src={getOptimizedImageUrl(trendingArticle.featuredImage?.url, 400, 250) || '/imgs/wukong.png'}
                                                         alt={trendingArticle.title}
-                                                        width={300}
-                                                        height={200}
+                                                        width={400}
+                                                        height={250}
                                                         className={styles.trendingCardImage}
                                                         style={{
                                                             width: '100%',
@@ -788,9 +939,11 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
                                                             objectFit: 'cover'
                                                         }}
                                                         loading="lazy"
-                                                        quality={60}
+                                                        quality={75}
                                                         placeholder="blur"
                                                         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                                        unoptimized={trendingArticle.featuredImage?.url?.includes('cloudinary.com')}
+                                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 300px"
                                                     />
                                                     <h3 className={styles.trendingCardTitle}>
                                                         {trendingArticle.title}
@@ -819,12 +972,15 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
                                                         className={styles.sidebarArticle}
                                                     >
                                                         <Image
-                                                            src={article.featuredImage?.url || '/imgs/wukong.png'}
+                                                            src={getOptimizedImageUrl(article.featuredImage?.url, 160, 120) || '/imgs/wukong.png'}
                                                             alt={article.title}
-                                                            width={80}
-                                                            height={60}
+                                                            width={160}
+                                                            height={120}
                                                             className={styles.sidebarArticleImage}
                                                             loading="lazy"
+                                                            quality={75}
+                                                            unoptimized={article.featuredImage?.url?.includes('cloudinary.com')}
+                                                            sizes="(max-width: 500px) 80px, 160px"
                                                         />
                                                         <div className={styles.sidebarArticleContent}>
                                                             <h4 className={styles.sidebarArticleTitle}>
@@ -902,103 +1058,4 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
             </Layout>
         </>
     );
-}
-
-// Server-side data fetching for SEO
-export async function getServerSideProps(context) {
-    const { slug } = context.params;
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:5000';
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
-
-    try {
-        // Use absolute URL for fetch in Node.js
-        const fetchUrl = `${apiUrl}/api/articles/${slug}`;
-        const response = await fetch(fetchUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; Next.js SSR)',
-            },
-        });
-        
-        if (!response.ok) {
-            return { notFound: true };
-        }
-        
-        const result = await response.json();
-
-        if (result.success && result.data) {
-            const article = result.data;
-            
-            // Prepare SEO data
-            let description = article.metaDescription || article.excerpt;
-            if (!description && article.content) {
-                // Remove HTML tags for description
-                description = article.content.replace(/<[^>]*>/g, '').substring(0, 160).trim();
-            }
-            if (!description) {
-                description = article.title;
-            }
-
-            // Prepare image URL - prioritize Cloudinary URL
-            let imageUrl = `${siteUrl}/imgs/wukong.png`;
-            
-            // If we have publicId, build Cloudinary URL (best for social sharing)
-            if (article.featuredImage?.publicId) {
-                const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
-                // Build optimized Cloudinary URL for OG image (1200x630)
-                imageUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,w_1200,h_630,q_auto,f_auto/${article.featuredImage.publicId}`;
-            } 
-            // Otherwise, use URL if it's from Cloudinary (contains res.cloudinary.com)
-            else if (article.featuredImage?.url) {
-                if (article.featuredImage.url.includes('res.cloudinary.com')) {
-                    // It's already a Cloudinary URL, use it directly
-                    imageUrl = article.featuredImage.url;
-                } else if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
-                    // Check if it's from API backend - if so, try to use Cloudinary if we have publicId
-                    if (article.featuredImage.url.includes('api1.taodandewukong.pro') || article.featuredImage.url.includes('/uploads/')) {
-                        // This is from API backend, prefer Cloudinary if available
-                        if (article.featuredImage.publicId) {
-                            const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
-                            imageUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,w_1200,h_630,q_auto,f_auto/${article.featuredImage.publicId}`;
-                        } else {
-                            // Fallback to API URL but it might not work for Facebook
-                            imageUrl = article.featuredImage.url;
-                        }
-                    } else {
-                        imageUrl = article.featuredImage.url;
-                    }
-                } else if (article.featuredImage.url.startsWith('/')) {
-                    imageUrl = `${siteUrl}${article.featuredImage.url}`;
-                } else {
-                    imageUrl = `${siteUrl}/${article.featuredImage.url}`;
-                }
-            }
-
-            return {
-                props: {
-                    initialArticle: article,
-                    seoData: {
-                        title: article.title,
-                        description: description,
-                        image: imageUrl,
-                        url: `${siteUrl}/tin-tuc/${slug}`,
-                        publishedTime: article.publishedAt,
-                        modifiedTime: article.updatedAt || article.publishedAt,
-                        author: article.author || 'Admin',
-                        category: article.category,
-                        tags: article.tags || []
-                    }
-                }
-            };
-        } else {
-            return {
-                notFound: true
-            };
-        }
-    } catch (error) {
-        console.error('Error fetching article:', error);
-        return {
-            notFound: true
-        };
-    }
 }

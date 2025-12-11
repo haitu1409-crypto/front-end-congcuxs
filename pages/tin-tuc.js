@@ -375,23 +375,208 @@ const formatDate = (dateString) => {
     }
 };
 
-// Enhanced image URL validation and fallback
-const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return '/imgs/wukong.png';
+// Cloudinary optimization helper - Add transformations for better performance
+const optimizeCloudinaryUrl = (imageUrl, options = {}) => {
+    if (!imageUrl) return null; // Return null instead of fallback, let getImageUrl handle it
 
-    // Check if it's a valid URL
+    // Check if it's a Cloudinary URL
+    const isCloudinary = imageUrl.includes('res.cloudinary.com') || imageUrl.includes('cloudinary.com');
+
+    if (!isCloudinary) {
+        // Not Cloudinary, return null to use original URL
+        return null;
+    }
+
+    // Parse Cloudinary URL
+    // Format: https://res.cloudinary.com/{cloud_name}/image/upload/{version}/{folder}/{public_id}.{format}
+    // Or: https://res.cloudinary.com/{cloud_name}/image/upload/{transformations}/{public_id}.{format}
     try {
         const url = new URL(imageUrl);
-        // If it's from our API, return as is
-        if (url.hostname === 'api.taodandewukong.pro' || url.hostname === 'localhost') {
-            return imageUrl;
+        const pathParts = url.pathname.split('/').filter(Boolean); // Remove empty strings
+
+        // Cloudinary URL structure: /{cloud_name}/image/upload/{...}
+        // pathParts[0] = cloud_name
+        // pathParts[1] = 'image'
+        // pathParts[2] = 'upload'
+        // pathParts[3+] = version/folders/transforms/public_id
+
+        if (pathParts.length < 4) return imageUrl; // Invalid URL structure
+        if (pathParts[1] !== 'image' || pathParts[2] !== 'upload') return imageUrl;
+
+        // Extract cloud_name (first part)
+        const cloudName = pathParts[0];
+        if (!cloudName) return imageUrl;
+
+        // Extract parts after 'upload' (index 2)
+        const afterUpload = pathParts.slice(3);
+        if (afterUpload.length === 0) return imageUrl;
+
+        // Cloudinary URL format examples:
+        // 1. With version: /{cloud_name}/image/upload/v{version}/{folder}/{public_id}.{format}
+        // 2. With transformations: /{cloud_name}/image/upload/{transformations}/{public_id}.{format}
+        // 3. With both: /{cloud_name}/image/upload/{transformations}/v{version}/{folder}/{public_id}.{format}
+
+        // Find version and transformations
+        let versionIndex = -1;
+        let firstTransformIndex = -1;
+
+        for (let i = 0; i < afterUpload.length; i++) {
+            const part = afterUpload[i];
+            // Check if it's a version (starts with 'v' followed by digits)
+            if (part.startsWith('v') && /^v\d+$/.test(part) && versionIndex === -1) {
+                versionIndex = i;
+            }
+            // Check if it's transformations (contains '_' or ',')
+            if ((part.includes('_') || part.includes(',')) && firstTransformIndex === -1) {
+                firstTransformIndex = i;
+            }
         }
-    } catch {
-        // Invalid URL, return fallback
+
+        // Extract components
+        let version = null;
+        let existingTransforms = [];
+        let publicIdPath = []; // This includes folders + public_id
+
+        if (versionIndex >= 0) {
+            // URL has version
+            version = afterUpload[versionIndex];
+            // Everything before version are transformations (if any)
+            if (versionIndex > 0) {
+                existingTransforms = afterUpload.slice(0, versionIndex);
+            }
+            // Everything after version (including folders and public_id)
+            publicIdPath = afterUpload.slice(versionIndex + 1);
+        } else if (firstTransformIndex >= 0) {
+            // URL has transformations but no version
+            // Find where transformations end
+            let transformEndIndex = firstTransformIndex;
+            for (let i = firstTransformIndex + 1; i < afterUpload.length; i++) {
+                if (!afterUpload[i].includes('_') && !afterUpload[i].includes(',')) {
+                    transformEndIndex = i - 1;
+                    break;
+                }
+                transformEndIndex = i;
+            }
+            existingTransforms = afterUpload.slice(0, transformEndIndex + 1);
+            // Everything after transformations
+            publicIdPath = afterUpload.slice(transformEndIndex + 1);
+        } else {
+            // No version, no transformations - everything is public_id path
+            publicIdPath = afterUpload;
+        }
+
+        // publicIdPath now contains: [folders..., public_id.format]
+        // Join them to get the full public_id path (Cloudinary supports folder in public_id)
+        const publicIdWithFormat = publicIdPath.join('/');
+
+        // Build optimized transformations
+        const transforms = [];
+
+        // Add width/height if specified
+        if (options.width) {
+            transforms.push(`w_${options.width}`);
+        }
+        if (options.height) {
+            transforms.push(`h_${options.height}`);
+        }
+
+        // Add crop mode
+        if (options.crop) {
+            transforms.push(`c_${options.crop}`);
+        } else if (options.width || options.height) {
+            transforms.push('c_limit'); // Default: limit crop to maintain aspect ratio
+        }
+
+        // Add quality optimization
+        if (options.quality && options.quality !== 'auto') {
+            transforms.push(`q_${options.quality}`);
+        } else {
+            transforms.push('q_auto'); // Auto quality for best performance
+        }
+
+        // Add format optimization (WebP if supported)
+        transforms.push('f_auto'); // Auto format (WebP, AVIF if supported)
+
+        // Combine all parts in correct Cloudinary order:
+        // transformations -> version -> public_id (which may include folders)
+        const urlParts = [];
+
+        // 1. Add transformations FIRST (combine existing and new)
+        const allTransforms = [];
+        if (existingTransforms.length > 0) {
+            existingTransforms.forEach(transform => {
+                // If transform contains commas, split and add individually
+                if (transform.includes(',')) {
+                    allTransforms.push(...transform.split(','));
+                } else {
+                    allTransforms.push(transform);
+                }
+            });
+        }
+        // Add new transforms
+        allTransforms.push(...transforms);
+
+        // Join all transforms with comma
+        if (allTransforms.length > 0) {
+            urlParts.push(allTransforms.join(','));
+        }
+
+        // 2. Add version if exists
+        if (version) {
+            urlParts.push(version);
+        }
+
+        // 3. Add public_id path (which includes folders if any)
+        urlParts.push(publicIdWithFormat);
+
+        // Build the path: /{cloud_name}/image/upload/{transformations}/{version}/{public_id_path}
+        const newPath = `/${cloudName}/image/upload/${urlParts.join('/')}`;
+
+        return `${url.protocol}//${url.host}${newPath}`;
+    } catch (error) {
+        console.warn('Error optimizing Cloudinary URL:', error, 'Original URL:', imageUrl);
+        return imageUrl; // Return original on error
+    }
+};
+
+// Enhanced image URL validation and fallback with Cloudinary optimization
+const getImageUrl = (imageUrl, options = {}) => {
+    // Return fallback only if imageUrl is truly empty/null/undefined
+    if (!imageUrl || imageUrl === '' || imageUrl === 'null' || imageUrl === 'undefined') {
         return '/imgs/wukong.png';
     }
 
-    return imageUrl;
+    // If it's already a relative path starting with /, return as is (for local images)
+    if (imageUrl.startsWith('/')) {
+        return imageUrl;
+    }
+
+    // Optimize Cloudinary URLs
+    if (imageUrl.includes('cloudinary.com') || imageUrl.includes('res.cloudinary.com')) {
+        const optimized = optimizeCloudinaryUrl(imageUrl, options);
+        // If optimization failed, return original URL
+        return optimized || imageUrl;
+    }
+
+    // Check if it's a valid absolute URL
+    try {
+        const url = new URL(imageUrl);
+        // Return any valid absolute URL (including Cloudinary, API URLs, etc.)
+        return imageUrl;
+    } catch {
+        // If it's not a valid URL but not empty, try to use it as relative path
+        // This handles cases where URL might be missing protocol
+        if (imageUrl.startsWith('//')) {
+            return `https:${imageUrl}`;
+        }
+        // If it looks like a path without leading slash, add it
+        if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/')) {
+            return `/${imageUrl}`;
+        }
+        // Last resort: return fallback
+        console.warn('Invalid image URL:', imageUrl);
+        return '/imgs/wukong.png';
+    }
 };
 
 // Enhanced image error handler
@@ -401,7 +586,7 @@ const handleImageError = (e, fallbackSrc = '/imgs/wukong.png') => {
     }
 };
 
-// Enhanced Image Component with better error handling and performance
+// Enhanced Image Component with Cloudinary optimization and better performance
 const OptimizedImage = memo(({
     src,
     alt,
@@ -416,7 +601,52 @@ const OptimizedImage = memo(({
     sizes,
     ...props
 }) => {
-    const [imageSrc, setImageSrc] = useState(() => getImageUrl(src));
+    // Optimize image URL with Cloudinary transformations
+    const optimizedSrc = useMemo(() => {
+        // Handle null/undefined/empty strings
+        if (!src || src === 'null' || src === 'undefined' || src === '' || src === null || src === undefined) {
+            return '/imgs/wukong.png';
+        }
+
+        // Convert to string if needed
+        const srcString = String(src).trim();
+        if (!srcString) {
+            return '/imgs/wukong.png';
+        }
+
+        // First check if it's Cloudinary and optimize
+        if (srcString.includes('cloudinary.com')) {
+            const optimized = optimizeCloudinaryUrl(srcString, {
+                width: width,
+                height: height,
+                quality: quality === 75 ? 'auto' : quality,
+                crop: 'limit'
+            });
+            // If optimization succeeded, use it; otherwise use original
+            if (optimized) {
+                return optimized;
+            }
+            // If optimization failed, return original Cloudinary URL
+            return srcString;
+        }
+
+        // For non-Cloudinary URLs, use getImageUrl
+        const result = getImageUrl(srcString, {
+            width: width,
+            height: height,
+            quality: quality === 75 ? 'auto' : quality,
+            crop: 'limit'
+        });
+
+        // Debug: log if we're falling back to default (only in development)
+        if (process.env.NODE_ENV === 'development' && result === '/imgs/wukong.png' && srcString && srcString !== '/imgs/wukong.png') {
+            console.warn('Image URL fallback triggered:', { original: srcString, result, type: typeof src });
+        }
+
+        return result;
+    }, [src, width, height, quality]);
+
+    const [imageSrc, setImageSrc] = useState(() => optimizedSrc);
     const [hasError, setHasError] = useState(false);
     const imgRef = useRef(null);
 
@@ -429,17 +659,21 @@ const OptimizedImage = memo(({
 
     // Reset error state when src changes
     useEffect(() => {
-        if (src !== imageSrc && !hasError) {
+        if (optimizedSrc !== imageSrc && !hasError) {
             setHasError(false);
-            setImageSrc(getImageUrl(src));
+            setImageSrc(optimizedSrc);
         }
-    }, [src, imageSrc, hasError]);
+    }, [optimizedSrc, imageSrc, hasError]);
 
     // Only use blur placeholder if blurDataURL is provided
     const finalPlaceholder = blurDataURL ? placeholder : 'empty';
 
     // Don't use loading="lazy" when priority is true
     const finalLoading = priority ? undefined : loading;
+
+    // For Cloudinary images, use unoptimized since Cloudinary handles optimization
+    const isCloudinary = imageSrc.includes('cloudinary.com');
+    const shouldUnoptimize = isCloudinary;
 
     return (
         <Image
@@ -451,12 +685,12 @@ const OptimizedImage = memo(({
             className={className}
             priority={priority}
             loading={finalLoading}
-            quality={quality}
+            quality={isCloudinary ? undefined : quality} // Cloudinary handles quality
             placeholder={finalPlaceholder}
             blurDataURL={blurDataURL}
             sizes={sizes}
             onError={handleError}
-            unoptimized={false}
+            unoptimized={shouldUnoptimize} // Let Cloudinary handle optimization
             {...props}
         />
     );
@@ -465,7 +699,9 @@ const OptimizedImage = memo(({
     return prevProps.src === nextProps.src &&
         prevProps.alt === nextProps.alt &&
         prevProps.className === nextProps.className &&
-        prevProps.priority === nextProps.priority;
+        prevProps.priority === nextProps.priority &&
+        prevProps.width === nextProps.width &&
+        prevProps.height === nextProps.height;
 });
 
 OptimizedImage.displayName = 'OptimizedImage';
@@ -563,6 +799,19 @@ const IMAGE_QUALITY = 75;
 const IMAGE_PLACEHOLDER = 'blur';
 const IMAGE_LOADING_STRATEGY = 'lazy';
 
+// Optimized sizes for responsive images
+const getResponsiveSizes = (type = 'default') => {
+    const sizes = {
+        hero: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px',
+        featured: '(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 300px',
+        card: '(max-width: 500px) 140px, (max-width: 800px) 150px, (max-width: 1000px) 180px, 240px',
+        sidebar: '(max-width: 500px) 140px, 160px',
+        category: '(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 300px',
+        default: '(max-width: 768px) 100vw, 1200px'
+    };
+    return sizes[type] || sizes.default;
+};
+
 
 const ErrorMessage = memo(({ message, onRetry }) => {
     const handleRetry = useCallback(() => {
@@ -600,12 +849,12 @@ const HeroArticle = memo(({ article }) => {
                 <OptimizedImage
                     src={article.featuredImage?.url}
                     alt={article.featuredImage?.alt || article.title}
-                    width={300}
-                    height={300}
+                    width={600}
+                    height={400}
                     className={styles.heroImage}
                     priority
                     blurDataURL={blurDataURL}
-                    sizes="(max-width: 768px) 100vw, 300px"
+                    sizes={getResponsiveSizes('hero')}
                 />
             </div>
             <div className={styles.heroContent}>
@@ -643,12 +892,12 @@ const FeaturedCard = memo(({ article, index }) => (
             <OptimizedImage
                 src={article.featuredImage?.url}
                 alt={article.featuredImage?.alt || article.title}
-                width={500}
-                height={500}
+                width={400}
+                height={400}
                 className={styles.featuredImage}
                 loading={index < 2 ? "eager" : "lazy"}
                 blurDataURL={blurDataURL}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 260px"
+                sizes={getResponsiveSizes('featured')}
             />
             <div className={styles.featuredOverlay}>
                 <h3 className={styles.featuredTitle}>{article.title}</h3>
@@ -820,12 +1069,12 @@ const ArticleCard = memo(({ article, index }) => {
                 <OptimizedImage
                     src={article.featuredImage?.url}
                     alt={article.featuredImage?.alt || article.title}
-                    width={240}
-                    height={135}
+                    width={300}
+                    height={200}
                     className={styles.articleListImage}
                     loading={index < 3 ? "eager" : "lazy"}
                     blurDataURL={blurDataURL}
-                    sizes="(max-width: 500px) 140px, (max-width: 800px) 150px, (max-width: 1000px) 180px, 240px"
+                    sizes={getResponsiveSizes('card')}
                 />
             </div>
             <div className={styles.articleListContent}>
@@ -872,12 +1121,12 @@ const SidebarItem = memo(({ article, index }) => {
                 <OptimizedImage
                     src={article.featuredImage?.url}
                     alt={article.featuredImage?.alt || article.title}
-                    width={160}
-                    height={100}
+                    width={200}
+                    height={150}
                     className={styles.sidebarItemImage}
                     loading="lazy"
                     blurDataURL={blurDataURL}
-                    sizes="(max-width: 500px) 140px, 160px"
+                    sizes={getResponsiveSizes('sidebar')}
                 />
             </div>
             <div className={styles.sidebarItemContent}>
@@ -982,12 +1231,12 @@ const CategoryGrid = memo(({ articles, activeCategory, onChangeCategory }) => {
                             <OptimizedImage
                                 src={article.featuredImage?.url}
                                 alt={article.featuredImage?.alt || article.title}
-                                width={320}
-                                height={180}
+                                width={400}
+                                height={250}
                                 className={styles.categoryGridImage}
                                 loading="lazy"
                                 blurDataURL={blurDataURL}
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 300px"
+                                sizes={getResponsiveSizes('category')}
                             />
                         </div>
                         <div className={styles.categoryGridContent}>
