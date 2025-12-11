@@ -173,27 +173,11 @@ export default function ArticleDetailPage() {
         }
     }, [slug, apiUrl]);
 
-    // Effects
-    useEffect(() => {
-        fetchArticle();
-    }, [fetchArticle]);
-
-    // Reading progress tracking
-    useEffect(() => {
-        const updateReadingProgress = () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercent = Math.min(100, (scrollTop / docHeight) * 100);
-            setReadingProgress(scrollPercent);
-        };
-
-        window.addEventListener('scroll', updateReadingProgress, { passive: true });
-        return () => window.removeEventListener('scroll', updateReadingProgress);
-    }, []);
-
-    // Table of Contents generation
-    const tableOfContents = useMemo(() => {
-        if (!article?.content) return [];
+    // Table of Contents generation and content processing
+    const { tableOfContents, processedContent } = useMemo(() => {
+        if (!article?.content || typeof document === 'undefined') {
+            return { tableOfContents: [], processedContent: article?.content || '' };
+        }
 
         const headings = [];
         const tempDiv = document.createElement('div');
@@ -210,8 +194,77 @@ export default function ArticleDetailPage() {
             });
         });
 
-        return headings;
+        // Return the processed HTML with IDs
+        return {
+            tableOfContents: headings,
+            processedContent: tempDiv.innerHTML
+        };
     }, [article?.content]);
+
+    // Effects
+    useEffect(() => {
+        fetchArticle();
+    }, [fetchArticle]);
+
+    // Ensure headings have IDs after content is rendered
+    useEffect(() => {
+        if (typeof window === 'undefined' || !processedContent || tableOfContents.length === 0) return;
+
+        // Wait for DOM to be ready
+        const timer = setTimeout(() => {
+            // Try multiple selectors to find the article content
+            const articleContent = document.querySelector('[itemprop="articleBody"]') || 
+                                   document.querySelector('.xsmbContainer');
+            if (!articleContent) return;
+
+            // Find all headings in the rendered content and add IDs
+            const headings = articleContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headings.forEach((heading, index) => {
+                if (index < tableOfContents.length && !heading.id) {
+                    heading.id = tableOfContents[index].id;
+                }
+            });
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, [processedContent, tableOfContents]);
+
+    // Reading progress tracking and active heading detection
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const updateReadingProgress = () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = Math.min(100, (scrollTop / docHeight) * 100);
+            setReadingProgress(scrollPercent);
+
+            // Update active heading based on scroll position
+            if (tableOfContents.length > 0) {
+                const offset = 100; // Offset for fixed headers
+                let currentHeading = '';
+
+                // Check each heading from bottom to top
+                for (let i = tableOfContents.length - 1; i >= 0; i--) {
+                    const element = document.getElementById(tableOfContents[i].id);
+                    if (element) {
+                        const rect = element.getBoundingClientRect();
+                        if (rect.top <= offset) {
+                            currentHeading = tableOfContents[i].id;
+                            break;
+                        }
+                    }
+                }
+
+                if (currentHeading !== activeHeading) {
+                    setActiveHeading(currentHeading);
+                }
+            }
+        };
+
+        window.addEventListener('scroll', updateReadingProgress, { passive: true });
+        return () => window.removeEventListener('scroll', updateReadingProgress);
+    }, [tableOfContents, activeHeading]);
 
             // Enhanced structured data for rich snippets - SEO optimized
     const structuredData = useMemo(() => {
@@ -530,13 +583,49 @@ export default function ArticleDetailPage() {
                                                                         style={{ paddingLeft: `${(heading.level - 1) * 15}px` }}
                                                                         onClick={(e) => {
                                                                             e.preventDefault();
-                                                                            const element = document.getElementById(heading.id);
-                                                                            if (element) {
-                                                                                element.scrollIntoView({
-                                                                                    behavior: 'smooth',
-                                                                                    block: 'start'
-                                                                                });
-                                                                            }
+                                                                            
+                                                                            // Try to find the element, with retry logic
+                                                                            const scrollToHeading = (retries = 3) => {
+                                                                                const element = document.getElementById(heading.id);
+                                                                                if (element) {
+                                                                                    const offset = 80; // Offset for fixed headers
+                                                                                    const elementPosition = element.getBoundingClientRect().top;
+                                                                                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+                                                                                    window.scrollTo({
+                                                                                        top: offsetPosition,
+                                                                                        behavior: 'smooth'
+                                                                                    });
+                                                                                    
+                                                                                    // Update active heading immediately
+                                                                                    setActiveHeading(heading.id);
+                                                                                } else if (retries > 0) {
+                                                                                    // If element not found, wait a bit and retry
+                                                                                    setTimeout(() => scrollToHeading(retries - 1), 50);
+                                                                                } else {
+                                                                                    // Fallback: try to find by text content
+                                                                                    const articleContent = document.querySelector('[itemprop="articleBody"]');
+                                                                                    if (articleContent) {
+                                                                                        const headings = articleContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                                                                                        const targetHeading = Array.from(headings).find(h => 
+                                                                                            h.textContent.trim() === heading.text.trim()
+                                                                                        );
+                                                                                        if (targetHeading) {
+                                                                                            targetHeading.id = heading.id;
+                                                                                            const offset = 80;
+                                                                                            const elementPosition = targetHeading.getBoundingClientRect().top;
+                                                                                            const offsetPosition = elementPosition + window.pageYOffset - offset;
+                                                                                            window.scrollTo({
+                                                                                                top: offsetPosition,
+                                                                                                behavior: 'smooth'
+                                                                                            });
+                                                                                            setActiveHeading(heading.id);
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            };
+                                                                            
+                                                                            scrollToHeading();
                                                                         }}
                                                                     >
                                                                         {heading.text}
@@ -554,7 +643,7 @@ export default function ArticleDetailPage() {
                                     <div
                                         className={`${styles.articleContent} xsmbContainer`}
                                         itemProp="articleBody"
-                                        dangerouslySetInnerHTML={{ __html: article.content }}
+                                        dangerouslySetInnerHTML={{ __html: processedContent || article.content }}
                                     />
 
                                     {/* Article Footer - Tags & Sharing */}
