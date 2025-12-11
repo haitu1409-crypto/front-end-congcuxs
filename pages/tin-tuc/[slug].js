@@ -384,10 +384,34 @@ export default function ArticleDetailPage({ initialArticle, seoData: initialSeoD
             : rawDescription;
 
         // Ensure ogImage is absolute URL for proper social sharing preview
+        // Prioritize Cloudinary URL for better compatibility with social media
         let ogImageUrl = `${siteUrl}/imgs/wukong.png`;
-        if (article.featuredImage?.url) {
-            if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
+        
+        // If we have publicId, build Cloudinary URL (best for social sharing)
+        if (article.featuredImage?.publicId) {
+            const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
+            // Build optimized Cloudinary URL for OG image (1200x630)
+            ogImageUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,w_1200,h_630,q_auto,f_auto/${article.featuredImage.publicId}`;
+        } 
+        // Otherwise, use URL if it's from Cloudinary
+        else if (article.featuredImage?.url) {
+            if (article.featuredImage.url.includes('res.cloudinary.com')) {
+                // It's already a Cloudinary URL, use it directly
                 ogImageUrl = article.featuredImage.url;
+            } else if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
+                // Check if it's from API backend - prefer Cloudinary if available
+                if (article.featuredImage.url.includes('api1.taodandewukong.pro') || article.featuredImage.url.includes('/uploads/')) {
+                    // This is from API backend, prefer Cloudinary if available
+                    if (article.featuredImage.publicId) {
+                        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
+                        ogImageUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,w_1200,h_630,q_auto,f_auto/${article.featuredImage.publicId}`;
+                    } else {
+                        // Fallback to API URL but it might not work for Facebook
+                        ogImageUrl = article.featuredImage.url;
+                    }
+                } else {
+                    ogImageUrl = article.featuredImage.url;
+                }
             } else if (article.featuredImage.url.startsWith('/')) {
                 ogImageUrl = `${siteUrl}${article.featuredImage.url}`;
             } else {
@@ -885,6 +909,7 @@ export async function getServerSideProps(context) {
     const { slug } = context.params;
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:5000';
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
 
     try {
         // Use absolute URL for fetch in Node.js
@@ -914,11 +939,34 @@ export async function getServerSideProps(context) {
                 description = article.title;
             }
 
-            // Prepare image URL
+            // Prepare image URL - prioritize Cloudinary URL
             let imageUrl = `${siteUrl}/imgs/wukong.png`;
-            if (article.featuredImage?.url) {
-                if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
+            
+            // If we have publicId, build Cloudinary URL (best for social sharing)
+            if (article.featuredImage?.publicId) {
+                const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
+                // Build optimized Cloudinary URL for OG image (1200x630)
+                imageUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,w_1200,h_630,q_auto,f_auto/${article.featuredImage.publicId}`;
+            } 
+            // Otherwise, use URL if it's from Cloudinary (contains res.cloudinary.com)
+            else if (article.featuredImage?.url) {
+                if (article.featuredImage.url.includes('res.cloudinary.com')) {
+                    // It's already a Cloudinary URL, use it directly
                     imageUrl = article.featuredImage.url;
+                } else if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
+                    // Check if it's from API backend - if so, try to use Cloudinary if we have publicId
+                    if (article.featuredImage.url.includes('api1.taodandewukong.pro') || article.featuredImage.url.includes('/uploads/')) {
+                        // This is from API backend, prefer Cloudinary if available
+                        if (article.featuredImage.publicId) {
+                            const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'db15lvbrw';
+                            imageUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,w_1200,h_630,q_auto,f_auto/${article.featuredImage.publicId}`;
+                        } else {
+                            // Fallback to API URL but it might not work for Facebook
+                            imageUrl = article.featuredImage.url;
+                        }
+                    } else {
+                        imageUrl = article.featuredImage.url;
+                    }
                 } else if (article.featuredImage.url.startsWith('/')) {
                     imageUrl = `${siteUrl}${article.featuredImage.url}`;
                 } else {
