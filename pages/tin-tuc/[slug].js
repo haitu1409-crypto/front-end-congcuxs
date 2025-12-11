@@ -220,10 +220,78 @@ const SocialShare = dynamic(() => Promise.resolve(() => <div className={styles.l
     ssr: false
 });
 
-export default function ArticleDetailPage() {
+// Server-side data fetching for SEO
+export async function getServerSideProps(context) {
+    const { slug } = context.params;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://taodandewukong.pro';
+
+    try {
+        // Fetch article data on server
+        const response = await fetch(`${apiUrl}/api/articles/${slug}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            const article = result.data;
+            
+            // Prepare SEO data
+            let ogImageUrl = `${siteUrl}/imgs/wukong.png`;
+            if (article.featuredImage?.url) {
+                if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
+                    ogImageUrl = article.featuredImage.url;
+                } else if (article.featuredImage.url.startsWith('/')) {
+                    ogImageUrl = `${siteUrl}${article.featuredImage.url}`;
+                } else {
+                    ogImageUrl = `${siteUrl}/${article.featuredImage.url}`;
+                }
+            }
+
+            // Prepare description
+            let description = article.metaDescription || article.excerpt;
+            if (!description && article.content) {
+                // Remove HTML tags and get first 150 chars
+                description = article.content.replace(/<[^>]*>/g, '').substring(0, 150).trim();
+            }
+            if (!description) {
+                description = article.title;
+            }
+            if (description.length > 160) {
+                description = description.substring(0, 157) + '...';
+            }
+
+            return {
+                props: {
+                    article: article,
+                    seoData: {
+                        title: article.title,
+                        description: description,
+                        image: ogImageUrl,
+                        url: `${siteUrl}/tin-tuc/${article.slug}`,
+                        publishedTime: article.publishedAt,
+                        modifiedTime: article.updatedAt || article.publishedAt,
+                        author: article.author || 'Admin',
+                        category: article.category,
+                        tags: article.tags || []
+                    }
+                }
+            };
+        } else {
+            return {
+                notFound: true
+            };
+        }
+    } catch (error) {
+        console.error('Error fetching article in getServerSideProps:', error);
+        return {
+            notFound: true
+        };
+    }
+}
+
+export default function ArticleDetailPage({ article: initialArticle, seoData: initialSeoData }) {
     const router = useRouter();
     const { slug } = router.query;
-    const [article, setArticle] = useState(null);
+    const [article, setArticle] = useState(initialArticle);
     const [relatedArticles, setRelatedArticles] = useState([]);
     const [mostViewedArticles, setMostViewedArticles] = useState([]);
     const [trendingArticles, setTrendingArticles] = useState([]);
@@ -293,7 +361,15 @@ export default function ArticleDetailPage() {
 
     // Fetch article data with error handling and caching
     const fetchArticle = useCallback(async () => {
-        if (!slug) return;
+        if (!slug || initialArticle) {
+            // If we have initial data from SSR, use it and just update view count
+            if (initialArticle) {
+                setViewCount(initialArticle.views || 0);
+                setLoading(false);
+                return;
+            }
+            return;
+        }
 
         try {
             setLoading(true);
@@ -347,17 +423,18 @@ export default function ArticleDetailPage() {
         } finally {
             setLoading(false);
         }
-    }, [slug, apiUrl]);
+    }, [slug, apiUrl, initialArticle]);
 
     // Table of Contents generation and content processing
     const { tableOfContents, processedContent } = useMemo(() => {
-        if (!article?.content || typeof document === 'undefined') {
-            return { tableOfContents: [], processedContent: article?.content || '' };
+        const currentArticle = article || initialArticle;
+        if (!currentArticle?.content || typeof document === 'undefined') {
+            return { tableOfContents: [], processedContent: currentArticle?.content || '' };
         }
 
         const headings = [];
         const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = article.content;
+        tempDiv.innerHTML = currentArticle.content;
 
         const headingElements = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
         headingElements.forEach((heading, index) => {
@@ -375,12 +452,18 @@ export default function ArticleDetailPage() {
             tableOfContents: headings,
             processedContent: tempDiv.innerHTML
         };
-    }, [article?.content]);
+    }, [article?.content, initialArticle?.content]);
 
     // Effects
     useEffect(() => {
-        fetchArticle();
-    }, [fetchArticle]);
+        // If we have initial data, just set loading to false
+        if (initialArticle) {
+            setLoading(false);
+            setViewCount(initialArticle.views || 0);
+        } else {
+            fetchArticle();
+        }
+    }, [fetchArticle, initialArticle]);
 
     // Ensure headings have IDs after content is rendered
     useEffect(() => {
@@ -444,31 +527,41 @@ export default function ArticleDetailPage() {
 
             // Enhanced structured data for rich snippets - SEO optimized
     const structuredData = useMemo(() => {
-        if (!article) return null;
+        const currentArticle = article || initialArticle;
+        if (!currentArticle) return null;
 
-        const readingTime = Math.max(1, Math.ceil((article.content?.length || 0) / 1000));
-        const wordCount = article.content?.split(/\s+/).length || 0;
-        const imageUrl = article.featuredImage?.url 
-            ? (article.featuredImage.url.startsWith('http') ? article.featuredImage.url : `${siteUrl}${article.featuredImage.url}`)
-            : `${siteUrl}/imgs/wukong.png`;
+        const readingTime = Math.max(1, Math.ceil((currentArticle.content?.length || 0) / 1000));
+        const wordCount = currentArticle.content?.split(/\s+/).length || 0;
+        
+        // Ensure image URL is absolute
+        let imageUrl = `${siteUrl}/imgs/wukong.png`;
+        if (currentArticle.featuredImage?.url) {
+            if (currentArticle.featuredImage.url.startsWith('http://') || currentArticle.featuredImage.url.startsWith('https://')) {
+                imageUrl = currentArticle.featuredImage.url;
+            } else if (currentArticle.featuredImage.url.startsWith('/')) {
+                imageUrl = `${siteUrl}${currentArticle.featuredImage.url}`;
+            } else {
+                imageUrl = `${siteUrl}/${currentArticle.featuredImage.url}`;
+            }
+        }
 
         return {
             '@context': 'https://schema.org',
             '@type': 'Article',
-            headline: article.title,
-            description: article.metaDescription || article.excerpt || article.title,
+            headline: currentArticle.title,
+            description: currentArticle.metaDescription || currentArticle.excerpt || currentArticle.title,
             image: {
                 '@type': 'ImageObject',
                 url: imageUrl,
                 width: 1200,
                 height: 630,
-                alt: article.featuredImage?.alt || article.title
+                alt: currentArticle.featuredImage?.alt || currentArticle.title
             },
-            datePublished: article.publishedAt,
-            dateModified: article.updatedAt || article.publishedAt,
+            datePublished: currentArticle.publishedAt,
+            dateModified: currentArticle.updatedAt || currentArticle.publishedAt,
             author: {
                 '@type': 'Person',
-                name: article.author || 'Admin',
+                name: currentArticle.author || 'Admin',
                 url: siteUrl
             },
             publisher: {
@@ -483,63 +576,64 @@ export default function ArticleDetailPage() {
             },
             mainEntityOfPage: {
                 '@type': 'WebPage',
-                '@id': `${siteUrl}/tin-tuc/${article.slug}`
+                '@id': `${siteUrl}/tin-tuc/${currentArticle.slug}`
             },
             interactionStatistic: [
                 {
                     '@type': 'InteractionCounter',
                     interactionType: 'https://schema.org/ReadAction',
-                    userInteractionCount: article.views || 0
+                    userInteractionCount: currentArticle.views || 0
                 },
                 {
                     '@type': 'InteractionCounter',
                     interactionType: 'https://schema.org/ShareAction',
-                    userInteractionCount: article.shares || Math.floor((article.views || 0) * 0.1)
+                    userInteractionCount: currentArticle.shares || Math.floor((currentArticle.views || 0) * 0.1)
                 }
             ],
             wordCount: wordCount,
             timeRequired: `PT${readingTime}M`,
-            articleSection: getCategoryLabel(article.category),
-            keywords: article.keywords?.join(', ') || article.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT',
+            articleSection: getCategoryLabel(currentArticle.category),
+            keywords: currentArticle.keywords?.join(', ') || currentArticle.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT',
             inLanguage: 'vi-VN',
             // Add category URL for better internal linking
             about: {
                 '@type': 'Thing',
-                name: getCategoryLabel(article.category),
-                url: `${siteUrl}/tin-tuc?category=${article.category}`
+                name: getCategoryLabel(currentArticle.category),
+                url: `${siteUrl}/tin-tuc?category=${currentArticle.category}`
             }
         };
-    }, [article, siteUrl]);
+    }, [article, initialArticle, siteUrl]);
 
-    // Enhanced SEO data with validation
+    // Enhanced SEO data with validation - use initial data if available
     const seoData = useMemo(() => {
-        if (!article) return null;
+        const currentArticle = article || initialArticle;
+        if (!currentArticle) return initialSeoData || null;
 
-        const readingTime = Math.max(1, Math.ceil((article.content?.length || 0) / 1000));
+        const readingTime = Math.max(1, Math.ceil((currentArticle.content?.length || 0) / 1000));
         
         // Optimize meta description length (150-160 chars for best SEO)
         // Use excerpt or first part of content as description
-        let rawDescription = article.metaDescription || article.excerpt;
+        let rawDescription = currentArticle.metaDescription || currentArticle.excerpt;
         
         // If no excerpt, extract from content (first 150 chars) - safe for SSR
-        if (!rawDescription && article.content && typeof document !== 'undefined') {
+        if (!rawDescription && currentArticle.content && typeof document !== 'undefined') {
             try {
                 const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = article.content;
+                tempDiv.innerHTML = currentArticle.content;
                 const textContent = tempDiv.textContent || tempDiv.innerText || '';
                 rawDescription = textContent.substring(0, 150).trim();
             } catch (e) {
                 // Fallback: remove HTML tags using regex (works on server)
-                rawDescription = article.content.replace(/<[^>]*>/g, '').substring(0, 150).trim();
+                rawDescription = currentArticle.content.replace(/<[^>]*>/g, '').substring(0, 150).trim();
             }
-        } else if (!rawDescription && article.content) {
+        } else if (!rawDescription && currentArticle.content) {
             // Server-side fallback: remove HTML tags using regex
-            rawDescription = article.content.replace(/<[^>]*>/g, '').substring(0, 150).trim();
+            rawDescription = currentArticle.content.replace(/<[^>]*>/g, '').substring(0, 150).trim();
         }
         
         // Fallback to title if still no description
         if (!rawDescription) {
-            rawDescription = article.title;
+            rawDescription = currentArticle.title;
         }
         
         const optimizedDescription = rawDescription.length > 160 
@@ -548,70 +642,84 @@ export default function ArticleDetailPage() {
 
         // Ensure ogImage is absolute URL for proper social sharing preview
         let ogImageUrl = `${siteUrl}/imgs/wukong.png`;
-        if (article.featuredImage?.url) {
-            if (article.featuredImage.url.startsWith('http://') || article.featuredImage.url.startsWith('https://')) {
-                ogImageUrl = article.featuredImage.url;
-            } else if (article.featuredImage.url.startsWith('/')) {
-                ogImageUrl = `${siteUrl}${article.featuredImage.url}`;
+        if (currentArticle.featuredImage?.url) {
+            if (currentArticle.featuredImage.url.startsWith('http://') || currentArticle.featuredImage.url.startsWith('https://')) {
+                ogImageUrl = currentArticle.featuredImage.url;
+            } else if (currentArticle.featuredImage.url.startsWith('/')) {
+                ogImageUrl = `${siteUrl}${currentArticle.featuredImage.url}`;
             } else {
-                ogImageUrl = `${siteUrl}/${article.featuredImage.url}`;
+                ogImageUrl = `${siteUrl}/${currentArticle.featuredImage.url}`;
             }
         }
 
         return {
-            title: `${article.title} | Tin Tức Game - LMHT, Liên Quân, TFT`,
+            title: `${currentArticle.title} | Tin Tức Game - LMHT, Liên Quân, TFT`,
             description: optimizedDescription,
-            keywords: article.keywords?.join(', ') || article.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT, esports',
-            canonical: `${siteUrl}/tin-tuc/${article.slug}`,
+            keywords: currentArticle.keywords?.join(', ') || currentArticle.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT, esports',
+            canonical: `${siteUrl}/tin-tuc/${currentArticle.slug}`,
             ogImage: ogImageUrl,
             ogType: 'article',
             articleData: {
-                publishedTime: article.publishedAt,
-                modifiedTime: article.updatedAt || article.publishedAt,
-                author: article.author || 'Admin',
-                section: getCategoryLabel(article.category),
-                tags: article.tags || [],
+                publishedTime: currentArticle.publishedAt,
+                modifiedTime: currentArticle.updatedAt || currentArticle.publishedAt,
+                author: currentArticle.author || 'Admin',
+                section: getCategoryLabel(currentArticle.category),
+                tags: currentArticle.tags || [],
                 readingTime: readingTime,
-                wordCount: article.content?.length || 0
+                wordCount: currentArticle.content?.length || 0
             }
         };
-    }, [article, siteUrl]);
+    }, [article, initialArticle, initialSeoData, siteUrl]);
 
     // Breadcrumbs
-    const breadcrumbs = useMemo(() => [
-        { name: 'Trang chủ', url: siteUrl },
-        { name: 'Tin Tức', url: `${siteUrl}/tin-tuc` },
-        { name: getCategoryLabel(article?.category), url: `${siteUrl}/tin-tuc?category=${article?.category}` },
-        { name: article?.title || 'Bài viết', url: `${siteUrl}/tin-tuc/${article?.slug}` }
-    ], [article, siteUrl]);
+    const breadcrumbs = useMemo(() => {
+        const currentArticle = article || initialArticle;
+        if (!currentArticle) return [];
+        return [
+            { name: 'Trang chủ', url: siteUrl },
+            { name: 'Tin Tức', url: `${siteUrl}/tin-tuc` },
+            { name: getCategoryLabel(currentArticle.category), url: `${siteUrl}/tin-tuc?category=${currentArticle.category}` },
+            { name: currentArticle.title || 'Bài viết', url: `${siteUrl}/tin-tuc/${currentArticle.slug}` }
+        ];
+    }, [article, initialArticle, siteUrl]);
 
     // Social sharing functions
     const shareToFacebook = () => {
-        const url = encodeURIComponent(`${siteUrl}/tin-tuc/${article.slug}`);
-        const title = encodeURIComponent(article.title);
+        const currentArticle = article || initialArticle;
+        if (!currentArticle) return;
+        const url = encodeURIComponent(`${siteUrl}/tin-tuc/${currentArticle.slug}`);
+        const title = encodeURIComponent(currentArticle.title);
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${title}`, '_blank', 'width=600,height=400');
     };
 
     const shareToTwitter = () => {
-        const url = encodeURIComponent(`${siteUrl}/tin-tuc/${article.slug}`);
-        const text = encodeURIComponent(article.title);
+        const currentArticle = article || initialArticle;
+        if (!currentArticle) return;
+        const url = encodeURIComponent(`${siteUrl}/tin-tuc/${currentArticle.slug}`);
+        const text = encodeURIComponent(currentArticle.title);
         window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
     };
 
     const shareToTelegram = () => {
-        const url = encodeURIComponent(`${siteUrl}/tin-tuc/${article.slug}`);
-        const text = encodeURIComponent(article.title);
+        const currentArticle = article || initialArticle;
+        if (!currentArticle) return;
+        const url = encodeURIComponent(`${siteUrl}/tin-tuc/${currentArticle.slug}`);
+        const text = encodeURIComponent(currentArticle.title);
         window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
     };
 
     const shareToZalo = () => {
-        const url = encodeURIComponent(`${siteUrl}/tin-tuc/${article.slug}`);
+        const currentArticle = article || initialArticle;
+        if (!currentArticle) return;
+        const url = encodeURIComponent(`${siteUrl}/tin-tuc/${currentArticle.slug}`);
         window.open(`https://zalo.me/share?url=${url}`, '_blank', 'width=600,height=400');
     };
 
     const copyLink = async () => {
+        const currentArticle = article || initialArticle;
+        if (!currentArticle) return;
         try {
-            await navigator.clipboard.writeText(`${siteUrl}/tin-tuc/${article.slug}`);
+            await navigator.clipboard.writeText(`${siteUrl}/tin-tuc/${currentArticle.slug}`);
             // Show toast notification here
         } catch (err) {
             console.error('Failed to copy link:', err);
@@ -635,7 +743,8 @@ export default function ArticleDetailPage() {
     }
 
     // Error state
-    if (error || !article) {
+    const currentArticle = article || initialArticle;
+    if (error || !currentArticle) {
         return (
             <Layout>
                 <div className={styles.pageWrapper}>
@@ -657,32 +766,48 @@ export default function ArticleDetailPage() {
     return (
         <>
             {/* Enhanced SEO with JSON-LD Schema */}
-            <ArticleSEO
-                title={article.title}
-                description={seoData?.description || article.metaDescription || article.excerpt || article.title}
-                author={article.author || 'Admin'}
-                publishedTime={article.publishedAt}
-                modifiedTime={article.updatedAt || article.publishedAt}
-                image={seoData?.ogImage || article.featuredImage?.url || `${siteUrl}/imgs/wukong.png`}
-                url={`${siteUrl}/tin-tuc/${article.slug}`}
-                keywords={article.keywords || article.tags || []}
-                category={getCategoryLabel(article.category)}
-                tags={article.tags || []}
-                readingTime={`${Math.ceil((article.content?.length || 0) / 1000)} phút đọc`}
-                canonical={`${siteUrl}/tin-tuc/${article.slug}`}
-            />
-            <SEOOptimized
-                pageType="article"
-                title={seoData.title}
-                description={seoData.description}
-                keywords={seoData.keywords}
-                canonical={seoData.canonical}
-                ogImage={seoData.ogImage}
-                ogType={seoData.ogType}
-                breadcrumbs={breadcrumbs}
-                structuredData={structuredData}
-                articleData={seoData.articleData}
-            />
+            {currentArticle && (
+                <>
+                    <ArticleSEO
+                        title={currentArticle.title}
+                        description={seoData?.description || currentArticle.metaDescription || currentArticle.excerpt || currentArticle.title}
+                        author={currentArticle.author || 'Admin'}
+                        publishedTime={currentArticle.publishedAt}
+                        modifiedTime={currentArticle.updatedAt || currentArticle.publishedAt}
+                        image={seoData?.ogImage || (currentArticle.featuredImage?.url ? 
+                            (currentArticle.featuredImage.url.startsWith('http') ? currentArticle.featuredImage.url : `${siteUrl}${currentArticle.featuredImage.url.startsWith('/') ? currentArticle.featuredImage.url : '/' + currentArticle.featuredImage.url}`)
+                            : `${siteUrl}/imgs/wukong.png`)}
+                        url={`${siteUrl}/tin-tuc/${currentArticle.slug}`}
+                        keywords={currentArticle.keywords || currentArticle.tags || []}
+                        category={getCategoryLabel(currentArticle.category)}
+                        tags={currentArticle.tags || []}
+                        readingTime={`${Math.ceil((currentArticle.content?.length || 0) / 1000)} phút đọc`}
+                        canonical={`${siteUrl}/tin-tuc/${currentArticle.slug}`}
+                    />
+                    <SEOOptimized
+                        pageType="article"
+                        title={seoData?.title || `${currentArticle.title} | Tin Tức Game - LMHT, Liên Quân, TFT`}
+                        description={seoData?.description || currentArticle.metaDescription || currentArticle.excerpt || currentArticle.title}
+                        keywords={seoData?.keywords || currentArticle.keywords?.join(', ') || currentArticle.tags?.join(', ') || 'tin tức game, LMHT, Liên Quân Mobile, TFT, esports'}
+                        canonical={seoData?.canonical || `${siteUrl}/tin-tuc/${currentArticle.slug}`}
+                        ogImage={seoData?.ogImage || (currentArticle.featuredImage?.url ? 
+                            (currentArticle.featuredImage.url.startsWith('http') ? currentArticle.featuredImage.url : `${siteUrl}${currentArticle.featuredImage.url.startsWith('/') ? currentArticle.featuredImage.url : '/' + currentArticle.featuredImage.url}`)
+                            : `${siteUrl}/imgs/wukong.png`)}
+                        ogType="article"
+                        breadcrumbs={breadcrumbs}
+                        structuredData={structuredData}
+                        articleData={seoData?.articleData || {
+                            publishedTime: currentArticle.publishedAt,
+                            modifiedTime: currentArticle.updatedAt || currentArticle.publishedAt,
+                            author: currentArticle.author || 'Admin',
+                            section: getCategoryLabel(currentArticle.category),
+                            tags: currentArticle.tags || [],
+                            readingTime: Math.ceil((currentArticle.content?.length || 0) / 1000),
+                            wordCount: currentArticle.content?.length || 0
+                        }}
+                    />
+                </>
+            )}
             <PageSpeedOptimizer />
 
             {/* Reading Progress Bar */}
@@ -721,32 +846,32 @@ export default function ArticleDetailPage() {
                                     <header className={styles.articleHeader}>
                                         <span
                                             className={styles.categoryBadge}
-                                            style={{ background: getCategoryColor(article.category) }}
+                                            style={{ background: getCategoryColor(currentArticle.category) }}
                                         >
-                                            {getCategoryLabel(article.category)}
+                                            {getCategoryLabel(currentArticle.category)}
                                         </span>
 
                                         <h1 className={styles.articleTitle} itemProp="headline">
-                                            {article.title}
+                                            {currentArticle.title}
                                         </h1>
 
-                                        {article.excerpt && (
+                                        {currentArticle.excerpt && (
                                             <p className={styles.articleSummary}>
-                                                {article.excerpt}
+                                                {currentArticle.excerpt}
                                             </p>
                                         )}
 
                                         <div className={styles.articleMeta}>
                                             <div className={styles.metaItem}>
                                                 <Calendar size={14} className={styles.metaIcon} />
-                                                <time dateTime={article.publishedAt} itemProp="datePublished">
-                                                    {formatDate(article.publishedAt)}
+                                                <time dateTime={currentArticle.publishedAt} itemProp="datePublished">
+                                                    {formatDate(currentArticle.publishedAt)}
                                                 </time>
                                             </div>
                                             <div className={styles.metaItem}>
                                                 <Tag size={14} className={styles.metaIcon} />
                                                 <span className={styles.author} itemProp="author" itemScope itemType="https://schema.org/Person">
-                                                    <span itemProp="name">{article.author || 'Admin'}</span>
+                                                    <span itemProp="name">{currentArticle.author || 'Admin'}</span>
                                                 </span>
                                             </div>
                                             <div className={styles.metaItem}>
@@ -755,7 +880,7 @@ export default function ArticleDetailPage() {
                                             </div>
                                             <div className={styles.metaItem}>
                                                 <Clock size={14} className={styles.metaIcon} />
-                                                <span>{Math.ceil((article.content?.length || 0) / 1000)} phút đọc</span>
+                                                <span>{Math.ceil((currentArticle.content?.length || 0) / 1000)} phút đọc</span>
                                             </div>
                                         </div>
                                     </header>
@@ -842,17 +967,17 @@ export default function ArticleDetailPage() {
                                     <div
                                         className={`${styles.articleContent} xsmbContainer`}
                                         itemProp="articleBody"
-                                        dangerouslySetInnerHTML={{ __html: processedContent || article.content }}
+                                        dangerouslySetInnerHTML={{ __html: processedContent || currentArticle.content }}
                                     />
 
                                     {/* Article Footer - Tags & Sharing */}
                                     <footer className={styles.articleFooter}>
                                         {/* Tags */}
-                                        {article.tags && article.tags.length > 0 && (
+                                        {currentArticle.tags && currentArticle.tags.length > 0 && (
                                             <div className={styles.articleTags}>
                                                 <h3 className={styles.tagsTitle}>Từ khóa:</h3>
                                                 <div className={styles.tagsList}>
-                                                    {article.tags.map((tag, index) => (
+                                                    {currentArticle.tags.map((tag, index) => (
                                                         <Link
                                                             key={index}
                                                             href={`/tin-tuc?tag=${tag}`}
@@ -867,11 +992,11 @@ export default function ArticleDetailPage() {
 
                                         {/* Enhanced Social Sharing */}
                                         <SocialShareButtons
-                                            url={`${siteUrl}/tin-tuc/${article.slug}`}
-                                            title={article.title}
-                                            description={article.summary || article.metaDescription}
-                                            image={article.featuredImage?.url}
-                                            hashtags={article.tags || []}
+                                            url={`${siteUrl}/tin-tuc/${currentArticle.slug}`}
+                                            title={currentArticle.title}
+                                            description={currentArticle.summary || currentArticle.metaDescription}
+                                            image={currentArticle.featuredImage?.url}
+                                            hashtags={currentArticle.tags || []}
                                         />
                                     </footer>
                                 </article>

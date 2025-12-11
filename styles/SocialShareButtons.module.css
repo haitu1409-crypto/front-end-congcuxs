@@ -235,13 +235,6 @@
 
     .shareButtons {
         display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        gap: 6px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        padding-bottom: 5px;
     }
 
     .shareButtons::-webkit-scrollbar {
