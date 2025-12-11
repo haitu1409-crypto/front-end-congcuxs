@@ -61,6 +61,7 @@ export default function ArticleDetailPage() {
     const [article, setArticle] = useState(null);
     const [relatedArticles, setRelatedArticles] = useState([]);
     const [mostViewedArticles, setMostViewedArticles] = useState([]);
+    const [trendingArticles, setTrendingArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [readingProgress, setReadingProgress] = useState(0);
@@ -158,6 +159,16 @@ export default function ArticleDetailPage() {
 
                 if (mostViewedResult.success) {
                     setMostViewedArticles(mostViewedResult.data.articles || []);
+                }
+
+                // Fetch trending articles
+                const trendingResponse = await fetch(
+                    `${apiUrl}/api/articles?category=trending&limit=6`
+                );
+                const trendingResult = await trendingResponse.json();
+
+                if (trendingResult.success) {
+                    setTrendingArticles(trendingResult.data.articles || []);
                 }
 
                 // Track view
@@ -342,7 +353,30 @@ export default function ArticleDetailPage() {
         const readingTime = Math.max(1, Math.ceil((article.content?.length || 0) / 1000));
         
         // Optimize meta description length (150-160 chars for best SEO)
-        const rawDescription = article.metaDescription || article.excerpt || `Đọc bài viết "${article.title}" về xổ số và lô số. ${article.excerpt}`;
+        // Use excerpt or first part of content as description
+        let rawDescription = article.metaDescription || article.excerpt;
+        
+        // If no excerpt, extract from content (first 150 chars) - safe for SSR
+        if (!rawDescription && article.content && typeof document !== 'undefined') {
+            try {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = article.content;
+                const textContent = tempDiv.textContent || tempDiv.innerText || '';
+                rawDescription = textContent.substring(0, 150).trim();
+            } catch (e) {
+                // Fallback: remove HTML tags using regex (works on server)
+                rawDescription = article.content.replace(/<[^>]*>/g, '').substring(0, 150).trim();
+            }
+        } else if (!rawDescription && article.content) {
+            // Server-side fallback: remove HTML tags using regex
+            rawDescription = article.content.replace(/<[^>]*>/g, '').substring(0, 150).trim();
+        }
+        
+        // Fallback to title if still no description
+        if (!rawDescription) {
+            rawDescription = article.title;
+        }
+        
         const optimizedDescription = rawDescription.length > 160 
             ? rawDescription.substring(0, 157) + '...' 
             : rawDescription;
@@ -460,11 +494,11 @@ export default function ArticleDetailPage() {
             {/* Enhanced SEO with JSON-LD Schema */}
             <ArticleSEO
                 title={article.title}
-                description={seoData?.description || article.metaDescription || article.excerpt}
+                description={seoData?.description || article.metaDescription || article.excerpt || article.title}
                 author={article.author || 'Admin'}
                 publishedTime={article.publishedAt}
                 modifiedTime={article.updatedAt || article.publishedAt}
-                image={seoData?.ogImage || `${siteUrl}/imgs/wukong.png`}
+                image={seoData?.ogImage || article.featuredImage?.url || `${siteUrl}/imgs/wukong.png`}
                 url={`${siteUrl}/tin-tuc/${article.slug}`}
                 keywords={article.keywords || article.tags || []}
                 category={getCategoryLabel(article.category)}
@@ -682,7 +716,7 @@ export default function ArticleDetailPage() {
                                     <section className={styles.relatedSection}>
                                         <h2 className={styles.relatedTitle}>Bài viết liên quan</h2>
                                         <div className={styles.relatedGrid}>
-                                            {relatedArticles.slice(0, 3).map((relatedArticle) => (
+                                            {relatedArticles.slice(0, 4).map((relatedArticle) => (
                                                 <Link
                                                     key={relatedArticle._id}
                                                     href={`/tin-tuc/${relatedArticle.slug}`}
@@ -692,11 +726,11 @@ export default function ArticleDetailPage() {
                                                         src={relatedArticle.featuredImage?.url || '/images/default-news.jpg'}
                                                         alt={relatedArticle.title}
                                                         width={300}
-                                                        height={160}
+                                                        height={110}
                                                         className={styles.relatedCardImage}
                                                         style={{
                                                             width: '100%',
-                                                            height: '160px',
+                                                            height: '110px',
                                                             objectFit: 'cover'
                                                         }}
                                                         loading="lazy"
@@ -708,12 +742,43 @@ export default function ArticleDetailPage() {
                                                         <h3 className={styles.relatedCardTitle}>
                                                             {relatedArticle.title}
                                                         </h3>
-                                                        <div className={styles.relatedCardMeta}>
-                                                            <span>{formatDate(relatedArticle.publishedAt)}</span>
-                                                            <span>•</span>
-                                                            <span>{relatedArticle.views || 0} lượt xem</span>
-                                                        </div>
                                                     </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </section>
+                                )}
+
+                                {/* Trending Articles - Below Related Section */}
+                                {trendingArticles.length > 0 && (
+                                    <section className={styles.trendingSection}>
+                                        <h2 className={styles.trendingTitle}>Trending</h2>
+                                        <div className={styles.trendingGrid}>
+                                            {trendingArticles.slice(0, 6).map((trendingArticle) => (
+                                                <Link
+                                                    key={trendingArticle._id}
+                                                    href={`/tin-tuc/${trendingArticle.slug}`}
+                                                    className={styles.trendingCard}
+                                                >
+                                                    <Image
+                                                        src={trendingArticle.featuredImage?.url || '/images/default-news.jpg'}
+                                                        alt={trendingArticle.title}
+                                                        width={300}
+                                                        height={200}
+                                                        className={styles.trendingCardImage}
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '140px',
+                                                            objectFit: 'cover'
+                                                        }}
+                                                        loading="lazy"
+                                                        quality={60}
+                                                        placeholder="blur"
+                                                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                                    />
+                                                    <h3 className={styles.trendingCardTitle}>
+                                                        {trendingArticle.title}
+                                                    </h3>
                                                 </Link>
                                             ))}
                                         </div>

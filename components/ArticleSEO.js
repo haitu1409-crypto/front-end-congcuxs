@@ -34,6 +34,18 @@ const ArticleSEO = ({
         imageUrl = `${siteUrl}/imgs/wukong.png`;
     }
     
+    // Determine image type from URL extension
+    const getImageType = (url) => {
+        const lowerUrl = url.toLowerCase();
+        if (lowerUrl.includes('.jpg') || lowerUrl.includes('.jpeg')) return 'image/jpeg';
+        if (lowerUrl.includes('.png')) return 'image/png';
+        if (lowerUrl.includes('.webp')) return 'image/webp';
+        if (lowerUrl.includes('.gif')) return 'image/gif';
+        return 'image/jpeg'; // Default to jpeg
+    };
+    
+    const imageType = getImageType(imageUrl);
+    
     // Format dates for schema
     const formattedPublishedTime = publishedTime ? new Date(publishedTime).toISOString() : new Date().toISOString();
     const formattedModifiedTime = modifiedTime ? new Date(modifiedTime).toISOString() : formattedPublishedTime;
@@ -131,7 +143,7 @@ const ArticleSEO = ({
             <meta property="og:image:width" content="1200" />
             <meta property="og:image:height" content="630" />
             <meta property="og:image:alt" content={title} />
-            <meta property="og:image:type" content="image/png" />
+            <meta property="og:image:type" content={imageType} />
             <meta property="og:site_name" content={siteName} />
             <meta property="og:locale" content={locale} />
             <meta property="article:published_time" content={formattedPublishedTime} />
