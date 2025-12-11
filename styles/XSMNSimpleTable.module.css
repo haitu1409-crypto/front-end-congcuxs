@@ -104,8 +104,9 @@
 
 .tableXS th {
     background-color: #007bff21;
-    font-size: 18px;
+    font-size: 16px;
     padding: 8px 0;
+    text-align: center;
     font-weight: 600;
     color: #2d3483;
 }
@@ -239,11 +240,11 @@
     border: 2px solid #ccc;
 }
 
-.optionInput input[type='radio']:checked + label::before {
+.optionInput input[type='radio']:checked+label::before {
     border: 2px solid #000;
 }
 
-.optionInput input[type='radio']:checked + label::after {
+.optionInput input[type='radio']:checked+label::after {
     content: '';
     position: absolute;
     display: inline-block;
@@ -336,8 +337,16 @@
 }
 
 /* Màu sắc cho loto đầu */
-.dau_0, .dau_1, .dau_2, .dau_3, .dau_4,
-.dau_5, .dau_6, .dau_7, .dau_8, .dau_9 {
+.dau_0,
+.dau_1,
+.dau_2,
+.dau_3,
+.dau_4,
+.dau_5,
+.dau_6,
+.dau_7,
+.dau_8,
+.dau_9 {
     background: #ffffff !important;
 }
 
@@ -422,8 +431,16 @@
 }
 
 /* Màu sắc cho loto đuôi */
-.dit_0, .dit_1, .dit_2, .dit_3, .dit_4,
-.dit_5, .dit_6, .dit_7, .dit_8, .dit_9 {
+.dit_0,
+.dit_1,
+.dit_2,
+.dit_3,
+.dit_4,
+.dit_5,
+.dit_6,
+.dit_7,
+.dit_8,
+.dit_9 {
     background: #ffffff !important;
 }
 
@@ -548,7 +565,8 @@
 
     .sideTablesContainer {
         display: flex !important;
-        flex-direction: column; /* Mobile: xếp dọc để mỗi bảng nằm riêng một dòng */
+        flex-direction: column;
+        /* Mobile: xếp dọc để mỗi bảng nằm riêng một dòng */
         justify-content: flex-start !important;
         align-items: stretch;
         flex-wrap: nowrap;
@@ -681,7 +699,7 @@
         margin: 0 auto;
     }
 
-    .optionInput input[type='radio']:checked + label::after {
+    .optionInput input[type='radio']:checked+label::after {
         content: '';
         position: absolute;
         display: inline-block;
