@@ -8,7 +8,6 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
-import SEOOptimized from '../../components/SEOOptimized';
 import PageSpeedOptimizer from '../../components/PageSpeedOptimizer';
 import Layout from '../../components/Layout';
 import ArticleSEO from '../../components/ArticleSEO';
@@ -498,25 +497,13 @@ export default function ArticleDetailPage() {
                 author={article.author || 'Admin'}
                 publishedTime={article.publishedAt}
                 modifiedTime={article.updatedAt || article.publishedAt}
-                image={seoData?.ogImage || article.featuredImage?.url || `${siteUrl}/imgs/wukong.png`}
+                image={seoData?.ogImage || `${siteUrl}/imgs/wukong.png`}
                 url={`${siteUrl}/tin-tuc/${article.slug}`}
                 keywords={article.keywords || article.tags || []}
                 category={getCategoryLabel(article.category)}
                 tags={article.tags || []}
                 readingTime={`${Math.ceil((article.content?.length || 0) / 1000)} phút đọc`}
                 canonical={`${siteUrl}/tin-tuc/${article.slug}`}
-            />
-            <SEOOptimized
-                pageType="article"
-                title={seoData.title}
-                description={seoData.description}
-                keywords={seoData.keywords}
-                canonical={seoData.canonical}
-                ogImage={seoData.ogImage}
-                ogType={seoData.ogType}
-                breadcrumbs={breadcrumbs}
-                structuredData={structuredData}
-                articleData={seoData.articleData}
             />
             <PageSpeedOptimizer />
 

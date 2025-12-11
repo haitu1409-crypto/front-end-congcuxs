@@ -126,7 +126,7 @@ const ArticleSEO = ({
             {/* Primary Meta Tags */}
             <title>{title} | {siteName}</title>
             <meta name="title" content={`${title} | ${siteName}`} />
-            <meta name="description" content={description} />
+            <meta name="description" content={description || title} />
             <meta name="keywords" content={keywords.join(', ')} />
             <meta name="author" content={author} />
             
@@ -137,7 +137,7 @@ const ArticleSEO = ({
             <meta property="og:type" content={type} />
             <meta property="og:url" content={fullUrl} />
             <meta property="og:title" content={title} />
-            <meta property="og:description" content={description} />
+            <meta property="og:description" content={description || title} />
             <meta property="og:image" content={imageUrl} />
             <meta property="og:image:secure_url" content={imageUrl.replace('http://', 'https://')} />
             <meta property="og:image:width" content="1200" />
