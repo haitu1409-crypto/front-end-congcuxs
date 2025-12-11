@@ -238,11 +238,11 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
     }, []);
 
     // Fallback fetch latest via REST khi không có dữ liệu (trường hợp socket chưa trả về)
-    // ✅ FIX: Filter theo ngày hiện tại giống XSMB để đảm bảo chỉ lấy dữ liệu hôm nay
+    // ✅ FIX: Đơn giản hóa giống XSMB - tin tưởng backend đã filter đúng
     useEffect(() => {
         if (liveData && liveData.length > 0) return;
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const url = `${apiUrl}/api/xsmn/results/latest10?page=1&limit=1`;
+        const url = `${apiUrl}/api/xsmn/results/latest10?page=1&limit=10`;
         let aborted = false;
         (async () => {
             try {
@@ -252,21 +252,10 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
                 if (!json || !json.data || !Array.isArray(json.data)) return;
                 if (aborted) return;
                 
-                // ✅ FIX: Filter chỉ lấy dữ liệu của ngày hiện tại (giống XSMB)
-                const todayStr = today; // Format: DD-MM-YYYY
-                const todayDate = new Date(todayStr.split('-').reverse().join('-'));
-                todayDate.setHours(0, 0, 0, 0);
-                
-                const todayData = json.data.filter(item => {
-                    if (!item.drawDate) return false;
-                    const itemDate = new Date(item.drawDate);
-                    itemDate.setHours(0, 0, 0, 0);
-                    return itemDate.getTime() === todayDate.getTime();
-                });
-                
-                // Chỉ set nếu có dữ liệu của ngày hôm nay
-                if (todayData.length > 0) {
-                    setLiveData(todayData);
+                // ✅ FIX: Giống XSMB - không filter phức tạp, tin tưởng backend đã trả về đúng
+                // Backend đã query với $gte: today nên chỉ cần lấy data đầu tiên
+                if (json.data.length > 0) {
+                    setLiveData(json.data);
                     setIsLoading(false);
                     setError(null);
                 }
@@ -350,31 +339,109 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
         // Listen to events
         const handleLatest = (data) => {
             if (!mountedRef.current) return;
-            const normalized = normalizeToArray(data);
-            if (normalized.length > 0) {
-                setLiveData(normalized);
-                setIsComplete(normalized.every(item => item.isComplete));
-            } else if (data && data.tinh) {
-                // Single province update dạng object
+            // ✅ FIX: Merge data thay vì replace để giữ lại các tỉnh khác
+            if (data && typeof data === 'object') {
                 setLiveData(prev => {
-                    const updated = prev.map(item => 
-                        item.tinh === data.tinh ? { ...item, ...data } : item
-                    );
-                    setIsComplete(updated.every(item => item.isComplete));
-                    return updated;
+                    // ✅ OPTIMIZATION: Dùng Map để tối ưu lookup O(1) thay vì find() O(n)
+                    const prevMap = new Map();
+                    if (prev && prev.length > 0) {
+                        prev.forEach(item => prevMap.set(item.tinh, item));
+                    }
+                    
+                    // ✅ FIX: Luôn dùng emptyResult làm base để đảm bảo có đủ tất cả tỉnh theo ngày
+                    const base = emptyResult.map(emptyItem => {
+                        return prevMap.get(emptyItem.tinh) || emptyItem; // O(1) lookup
+                    });
+                    
+                    // Nếu data là object map (key = tinh), merge vào base
+                    if (!Array.isArray(data) && !data.tinh) {
+                        // Object map: { 'tinh1': {...}, 'tinh2': {...} }
+                        const updated = base.map(item => {
+                            const tinh = item.tinh;
+                            if (data[tinh]) {
+                                return { ...item, ...data[tinh] };
+                            }
+                            return item; // Giữ nguyên tỉnh chưa có data
+                        });
+                        setIsComplete(updated.every(item => item.isComplete));
+                        return updated;
+                    } else if (data.tinh) {
+                        // Single province update dạng object
+                        const updated = base.map(item => 
+                            item.tinh === data.tinh ? { ...item, ...data } : item
+                        );
+                        setIsComplete(updated.every(item => item.isComplete));
+                        return updated;
+                    } else {
+                        // Array - merge từng tỉnh
+                        const normalized = normalizeToArray(data);
+                        if (normalized.length > 0) {
+                            // ✅ OPTIMIZATION: Dùng Map cho normalized data
+                            const normalizedMap = new Map();
+                            normalized.forEach(item => normalizedMap.set(item.tinh, item));
+                            
+                            const updated = base.map(item => {
+                                const found = normalizedMap.get(item.tinh);
+                                return found ? { ...item, ...found } : item;
+                            });
+                            setIsComplete(updated.every(item => item.isComplete));
+                            return updated;
+                        }
+                        return base;
+                    }
                 });
+                setIsLoading(false);
+                setError(null);
             }
-            setIsLoading(false);
-            setError(null);
         };
 
         // Server emit khi không truyền specificTinh (map theo tỉnh)
         const handleLatestAll = (data) => {
             if (!mountedRef.current) return;
-            const normalized = normalizeToArray(data);
-            if (normalized.length > 0) {
-                setLiveData(normalized);
-                setIsComplete(normalized.every(item => item.isComplete));
+            // ✅ FIX: Merge data thay vì replace toàn bộ để giữ lại các tỉnh chưa có data
+            if (data && typeof data === 'object') {
+                setLiveData(prev => {
+                    // ✅ OPTIMIZATION: Dùng Map để tối ưu lookup O(1) thay vì find() O(n)
+                    const prevMap = new Map();
+                    if (prev && prev.length > 0) {
+                        prev.forEach(item => prevMap.set(item.tinh, item));
+                    }
+                    
+                    // ✅ FIX: Luôn dùng emptyResult làm base để đảm bảo có đủ tất cả tỉnh theo ngày
+                    const base = emptyResult.map(emptyItem => {
+                        return prevMap.get(emptyItem.tinh) || emptyItem; // O(1) lookup
+                    });
+                    
+                    // Nếu data là object map (key = tinh), merge vào base
+                    if (!Array.isArray(data) && !data.tinh) {
+                        // Object map: { 'tinh1': {...}, 'tinh2': {...} }
+                        const updated = base.map(item => {
+                            const tinh = item.tinh;
+                            if (data[tinh]) {
+                                return { ...item, ...data[tinh] };
+                            }
+                            return item; // Giữ nguyên tỉnh chưa có data
+                        });
+                        setIsComplete(updated.every(item => item.isComplete));
+                        return updated;
+                    } else {
+                        // Array hoặc single object - normalize và merge
+                        const normalized = normalizeToArray(data);
+                        if (normalized.length > 0) {
+                            // ✅ OPTIMIZATION: Dùng Map cho normalized data
+                            const normalizedMap = new Map();
+                            normalized.forEach(item => normalizedMap.set(item.tinh, item));
+                            
+                            const updated = base.map(item => {
+                                const found = normalizedMap.get(item.tinh);
+                                return found ? { ...item, ...found } : item;
+                            });
+                            setIsComplete(updated.every(item => item.isComplete));
+                            return updated;
+                        }
+                        return base;
+                    }
+                });
                 setIsLoading(false);
                 setError(null);
             }
@@ -397,7 +464,17 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
                 
                 // Update value ngay (không delay thêm) để giảm độ trễ và re-render thừa
                 setLiveData(prev => {
-                    const base = (prev && prev.length > 0) ? prev : emptyResult;
+                    // ✅ OPTIMIZATION: Dùng Map để tối ưu lookup O(1) thay vì find() O(n)
+                    const prevMap = new Map();
+                    if (prev && prev.length > 0) {
+                        prev.forEach(item => prevMap.set(item.tinh, item));
+                    }
+                    
+                    // ✅ FIX: Luôn dùng emptyResult làm base để đảm bảo có đủ tất cả tỉnh theo ngày
+                    const base = emptyResult.map(emptyItem => {
+                        return prevMap.get(emptyItem.tinh) || emptyItem; // O(1) lookup
+                    });
+                    
                     return base.map(item => {
                         if (item.tinh === data.tinh) {
                             return { ...item, [data.prizeType]: data.prizeData, lastUpdated: data.timestamp };
@@ -414,38 +491,93 @@ const LiveResultXSMN = ({ station = 'xsmn', isModal = false, showChatPreview = f
         const handleComplete = (data) => {
             if (!mountedRef.current) return;
             if (data && Array.isArray(data)) {
-                setLiveData(data);
+                // ✅ FIX: Merge array vào emptyResult thay vì replace
+                setLiveData(prev => {
+                    // ✅ OPTIMIZATION: Dùng Map để tối ưu lookup
+                    const prevMap = new Map();
+                    if (prev && prev.length > 0) {
+                        prev.forEach(item => prevMap.set(item.tinh, item));
+                    }
+                    const dataMap = new Map();
+                    data.forEach(item => dataMap.set(item.tinh, item));
+                    
+                    const base = emptyResult.map(emptyItem => {
+                        return prevMap.get(emptyItem.tinh) || emptyItem;
+                    });
+                    const updated = base.map(item => {
+                        const found = dataMap.get(item.tinh);
+                        return found ? { ...item, ...found, isComplete: true } : item;
+                    });
+                    setIsComplete(updated.every(item => item.isComplete));
+                    return updated;
+                });
             } else if (data) {
                 setLiveData(prev => {
-                    const updated = prev.map(item => 
+                    // ✅ OPTIMIZATION: Dùng Map để tối ưu lookup
+                    const prevMap = new Map();
+                    if (prev && prev.length > 0) {
+                        prev.forEach(item => prevMap.set(item.tinh, item));
+                    }
+                    
+                    // ✅ FIX: Luôn dùng emptyResult làm base
+                    const base = emptyResult.map(emptyItem => {
+                        return prevMap.get(emptyItem.tinh) || emptyItem;
+                    });
+                    const updated = base.map(item => 
                         item.tinh === data.tinh ? { ...item, ...data, isComplete: true } : item
                     );
                     setIsComplete(updated.every(item => item.isComplete));
                     return updated;
                 });
             }
-            setIsComplete(true);
             setIsLoading(false);
             setError(null);
         };
 
         const handleFullUpdate = (data) => {
             if (!mountedRef.current) return;
-            const normalized = normalizeToArray(data);
-            if (normalized.length > 0) {
-                setLiveData(normalized);
-                setIsComplete(normalized.every(item => item.isComplete));
-            } else if (data && data.tinh) {
+            // ✅ FIX: Merge data thay vì replace để giữ lại các tỉnh khác
+            if (data && typeof data === 'object') {
                 setLiveData(prev => {
-                    const updated = prev.map(item => 
-                        item.tinh === data.tinh ? { ...item, ...data } : item
-                    );
-                    setIsComplete(updated.every(item => item.isComplete));
-                    return updated;
+                    // ✅ OPTIMIZATION: Dùng Map để tối ưu lookup O(1) thay vì find() O(n)
+                    const prevMap = new Map();
+                    if (prev && prev.length > 0) {
+                        prev.forEach(item => prevMap.set(item.tinh, item));
+                    }
+                    
+                    // ✅ FIX: Luôn dùng emptyResult làm base để đảm bảo có đủ tất cả tỉnh theo ngày
+                    const base = emptyResult.map(emptyItem => {
+                        return prevMap.get(emptyItem.tinh) || emptyItem; // O(1) lookup
+                    });
+                    
+                    if (data.tinh) {
+                        // Single province update
+                        const updated = base.map(item => 
+                            item.tinh === data.tinh ? { ...item, ...data } : item
+                        );
+                        setIsComplete(updated.every(item => item.isComplete));
+                        return updated;
+                    } else {
+                        // Array hoặc object map - merge
+                        const normalized = normalizeToArray(data);
+                        if (normalized.length > 0) {
+                            // ✅ OPTIMIZATION: Dùng Map cho normalized data
+                            const normalizedMap = new Map();
+                            normalized.forEach(item => normalizedMap.set(item.tinh, item));
+                            
+                            const updated = base.map(item => {
+                                const found = normalizedMap.get(item.tinh);
+                                return found ? { ...item, ...found } : item;
+                            });
+                            setIsComplete(updated.every(item => item.isComplete));
+                            return updated;
+                        }
+                        return base;
+                    }
                 });
+                setIsLoading(false);
+                setError(null);
             }
-            setIsLoading(false);
-            setError(null);
         };
 
         const handleError = (error) => {
