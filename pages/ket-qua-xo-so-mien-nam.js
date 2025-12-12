@@ -175,7 +175,7 @@ const KQXSMNPage = memo(function KQXSMNPage() {
                 title={pageTitle}
                 description={pageDescription}
                 keywords={seoConfig.keywords.join(', ')}
-                canonical={`${seoConfig.canonical}`}
+                canonical={`${siteUrl}/ket-qua-xo-so-mien-nam`}
                 ogImage={`${siteUrl}/imgs/xsmn.png`}
                 structuredData={structuredData}
             />

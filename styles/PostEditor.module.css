@@ -926,6 +926,146 @@
     border-color: #4B5563;
 }
 
+/* Improved Toolbar Buttons */
+.toolbarButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 12px;
+    min-width: 50px;
+    background: white;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.toolbarButton:hover {
+    background: #F3F4F6;
+    border-color: #3B82F6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toolbarButton.active {
+    background: #3B82F6;
+    color: white;
+    border-color: #3B82F6;
+}
+
+.toolbarIcon {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.toolbarLabel {
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.toolbarButton.active .toolbarLabel {
+    opacity: 1;
+}
+
+/* Template Dropdown */
+.templateDropdown {
+    position: relative;
+}
+
+.templateMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: white;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 200ms ease;
+    z-index: 100;
+}
+
+.templateDropdown:hover .templateMenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.templateItem {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    text-align: left;
+    background: white;
+    border: none;
+    border-bottom: 1px solid #F3F4F6;
+    cursor: pointer;
+    transition: background 150ms ease;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.templateItem:last-child {
+    border-bottom: none;
+}
+
+.templateItem:hover {
+    background: #F9FAFB;
+}
+
+/* Floating Toolbar */
+.floatingToolbar {
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    background: white;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideDown 200ms ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.floatingButton {
+    padding: 6px 10px;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 150ms ease;
+    min-width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floatingButton:hover {
+    background: #3B82F6;
+    color: white;
+    border-color: #3B82F6;
+    transform: scale(1.05);
+}
+
 .editorContainer {
     position: relative;
 }
@@ -1018,10 +1158,35 @@
         padding-right: 8px;
     }
 
-    .toolbarGroup button {
+    .toolbarGroup button,
+    .toolbarButton {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+        min-width: 40px;
+    }
+
+    .toolbarLabel {
+        display: none;
+    }
+
+    .toolbarIcon {
+        font-size: 0.875rem;
+    }
+
+    .floatingToolbar {
+        flex-wrap: wrap;
+        max-width: 200px;
+    }
+
+    .floatingButton {
         padding: 4px 8px;
         font-size: 0.75rem;
-        min-width: 28px;
+        min-width: 32px;
+    }
+
+    .templateMenu {
+        right: 0;
+        left: auto;
     }
 }
 

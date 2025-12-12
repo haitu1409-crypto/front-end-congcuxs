@@ -15,7 +15,7 @@ import { getAllKeywordsForPage } from '../config/keywordVariations';
 // ✅ Optimized: Import all icons at once (better than 10 dynamic imports)
 import { Dice6, Target, BarChart3, Star, Zap, CheckCircle, Heart, Smartphone, Sparkles, Calendar, Activity, TrendingUp, Award, Percent } from 'lucide-react';
 
-// ✅ Lazy load LatestXSMBResults to avoid hydration mismatch
+// ✅ Lazy load LatestXSMBResults with SSR enabled for SEO
 const LatestXSMBResults = dynamic(() => import('../components/LatestXSMBResults'), {
     loading: () => (
         <div style={{ 
@@ -42,13 +42,13 @@ const LatestXSMBResults = dynamic(() => import('../components/LatestXSMBResults'
             </div>
         </div>
     ),
-    ssr: false
+    ssr: true  // ✅ SỬA: Enable SSR để Googlebot thấy được nội dung
 });
 
-// ✅ Lazy load SEO components for better performance with CLS fixes
+// ✅ Lazy load SEO components with SSR enabled for SEO
 const AuthorBio = dynamic(() => import('../components/SEO/AuthorBio'), {
     loading: () => <div style={{ minHeight: '200px', contain: 'layout style' }}></div>,
-    ssr: false
+    ssr: true  // ✅ SỬA: Enable SSR để Googlebot thấy được nội dung về tác giả (E-E-A-T)
 });
 
 const Testimonials = dynamic(() => import('../components/SEO/Testimonials'), {
@@ -72,7 +72,7 @@ const TableSnippet = dynamic(() =>
 );
 
 const ThongKeNhanh = dynamic(() => import('../components/ThongKeNhanh'), {
-    ssr: false,
+    ssr: true,  // ✅ SỬA: Enable SSR để Googlebot thấy được thống kê
     loading: () => <div style={{ minHeight: '140px', background: '#fff', border: '1px solid #C4D2E3', margin: '10px 0', contain: 'layout style' }}></div>
 });
 

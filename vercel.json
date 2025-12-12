@@ -141,26 +141,6 @@
       "permanent": true
     },
     {
-      "source": "/kqxs",
-      "destination": "/ket-qua-xo-so-mien-bac",
-      "permanent": true
-    },
-    {
-      "source": "/soicau-bayesian",
-      "destination": "/soi-cau-mien-bac-ai",
-      "permanent": true
-    },
-    {
-      "source": "/soi-cau-vi-tri",
-      "destination": "/soi-cau-dac-biet-mien-bac",
-      "permanent": true
-    },
-    {
-      "source": "/soi-cau-loto",
-      "destination": "/soi-cau-loto-mien-bac",
-      "permanent": true
-    },
-    {
       "source": "/thongke/tan-suat-lo-cap",
       "destination": "/thongke/tan-suat-locap",
       "permanent": true

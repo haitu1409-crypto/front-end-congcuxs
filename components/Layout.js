@@ -148,7 +148,7 @@ export default function Layout({ children, className = '' }) {
         href: '/ket-qua-xo-so-mien-bac', // Click vào item chính vẫn mở XSMB
         submenu: [
             { href: '/ket-qua-xo-so-mien-bac', label: 'Xổ Số Miền Bắc', icon: Calendar },
-            { href: '/kqxs-xsmn', label: 'Xổ Số Miền Nam', icon: Calendar }
+            { href: '/ket-qua-xo-so-mien-nam', label: 'Xổ Số Miền Nam', icon: Calendar }
         ]
     };
 
@@ -218,7 +218,7 @@ export default function Layout({ children, className = '' }) {
                                     // ✅ Check both pathname and asPath to handle rewrites/redirects
                                     const isActive = router.pathname === link.href || 
                                                    router.asPath === link.href ||
-                                                   (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/kqxs');
+                                                   (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/ket-qua-xo-so-mien-bac');
                                     return (
                                         <Link
                                             key={link.href}
@@ -286,10 +286,10 @@ export default function Layout({ children, className = '' }) {
                                                     if (!subItem.href) return false;
                                                     // Special handling for XSMB/XSMN routes
                                                     if (subItem.href === '/ket-qua-xo-so-mien-bac') {
-                                                        return router.pathname === '/kqxs' || router.pathname === subItem.href || router.asPath === subItem.href;
+                                                        return router.pathname === '/ket-qua-xo-so-mien-bac' || router.pathname === subItem.href || router.asPath === subItem.href;
                                                     }
-                                                    if (subItem.href === '/kqxs-xsmn') {
-                                                        return router.pathname === '/kqxs-xsmn' || router.asPath === subItem.href;
+                                                    if (subItem.href === '/ket-qua-xo-so-mien-nam') {
+                                                        return router.pathname === '/ket-qua-xo-so-mien-nam' || router.asPath === subItem.href;
                                                     }
                                                     return router.pathname === subItem.href || router.asPath === subItem.href;
                                                 });
@@ -297,7 +297,7 @@ export default function Layout({ children, className = '' }) {
                                                 const isParentActive = link.href && !hasActiveSubItem && (
                                                     router.pathname === link.href || 
                                                     router.asPath === link.href ||
-                                                    (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/kqxs')
+                                                    (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/ket-qua-xo-so-mien-bac')
                                                 );
                                                 return (
                                                     <div key={`mobile-dropdown-${index}`}>
@@ -347,9 +347,9 @@ export default function Layout({ children, className = '' }) {
                                                                     // Special handling for XSMB/XSMN routes
                                                                     let isSubItemActive = false;
                                                                     if (subItem.href === '/ket-qua-xo-so-mien-bac') {
-                                                                        isSubItemActive = router.pathname === '/kqxs' || router.pathname === subItem.href || router.asPath === subItem.href;
-                                                                    } else if (subItem.href === '/kqxs-xsmn') {
-                                                                        isSubItemActive = router.pathname === '/kqxs-xsmn' || router.asPath === subItem.href;
+                                                                        isSubItemActive = router.pathname === '/ket-qua-xo-so-mien-bac' || router.pathname === subItem.href || router.asPath === subItem.href;
+                                                                    } else if (subItem.href === '/ket-qua-xo-so-mien-nam') {
+                                                                        isSubItemActive = router.pathname === '/ket-qua-xo-so-mien-nam' || router.asPath === subItem.href;
                                                                     } else {
                                                                         isSubItemActive = router.pathname === subItem.href || router.asPath === subItem.href;
                                                                     }
@@ -380,7 +380,7 @@ export default function Layout({ children, className = '' }) {
                                             // ✅ Check both pathname and asPath to handle rewrites/redirects
                                             const isActive = router.pathname === link.href || 
                                                            router.asPath === link.href ||
-                                                           (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/kqxs');
+                                                           (link.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/ket-qua-xo-so-mien-bac');
                                             return (
                                                 <Link
                                                     key={link.href}

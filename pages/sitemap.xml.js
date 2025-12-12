@@ -195,7 +195,7 @@ function generateSiteMap(articles) {
     </url>
     
     <url>
-        <loc>${SITE_URL_BASE}/kqxs-xsmn</loc>
+        <loc>${SITE_URL_BASE}/ket-qua-xo-so-mien-nam</loc>
         <changefreq>daily</changefreq>
         <priority>0.90</priority>
         <lastmod>${lastmod}</lastmod>
@@ -471,7 +471,7 @@ export async function getServerSideProps({ res }) {
     </url>
     
     <url>
-        <loc>${SITE_URL_BASE}/kqxs-xsmn</loc>
+        <loc>${SITE_URL_BASE}/ket-qua-xo-so-mien-nam</loc>
         <changefreq>daily</changefreq>
         <priority>0.90</priority>
         <lastmod>${lastmod}</lastmod>
@@ -524,7 +524,7 @@ export async function getServerSideProps({ res }) {
     </url>
     
     <url>
-        <loc>${SITE_URL_BASE}/kqxs-xsmn</loc>
+        <loc>${SITE_URL_BASE}/ket-qua-xo-so-mien-nam</loc>
         <changefreq>daily</changefreq>
         <priority>0.90</priority>
         <lastmod>${lastmod}</lastmod>

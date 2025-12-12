@@ -63,15 +63,15 @@ export default function DropdownMenu({ items }) {
         
         // Special handling for XSMB/XSMN routes
         if (item.href === '/ket-qua-xo-so-mien-bac') {
-            // Match /kqxs or /ket-qua-xo-so-mien-bac
-            if (router.pathname === '/kqxs' || normalizedCurrent === normalizedItem) {
+            // Match /ket-qua-xo-so-mien-bac
+            if (normalizedCurrent === normalizedItem) {
                 return true;
             }
         }
         
-        if (item.href === '/kqxs-xsmn') {
-            // Match /kqxs-xsmn
-            if (router.pathname === '/kqxs-xsmn' || normalizedCurrent === normalizedItem) {
+        if (item.href === '/ket-qua-xo-so-mien-nam') {
+            // Match /ket-qua-xo-so-mien-nam
+            if (router.pathname === '/ket-qua-xo-so-mien-nam' || normalizedCurrent === normalizedItem) {
                 return true;
             }
         }
@@ -111,7 +111,7 @@ export default function DropdownMenu({ items }) {
     const isParentActive = hasParentHref && (
         router.pathname === parentItem.href || 
         router.asPath === parentItem.href ||
-        (parentItem.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/kqxs')
+                        (parentItem.href === '/ket-qua-xo-so-mien-bac' && router.pathname === '/ket-qua-xo-so-mien-bac')
     );
 
     const handleMouseEnter = () => {
@@ -192,11 +192,11 @@ export default function DropdownMenu({ items }) {
                         let isActive = false;
                         
                         if (item.href === '/ket-qua-xo-so-mien-bac') {
-                            // Match /kqxs or /ket-qua-xo-so-mien-bac
-                            isActive = router.pathname === '/kqxs' || normalizedCurrent === normalizedItem;
-                        } else if (item.href === '/kqxs-xsmn') {
-                            // Match /kqxs-xsmn
-                            isActive = router.pathname === '/kqxs-xsmn' || normalizedCurrent === normalizedItem;
+                            // Match /ket-qua-xo-so-mien-bac
+                            isActive = normalizedCurrent === normalizedItem;
+                        } else if (item.href === '/ket-qua-xo-so-mien-nam') {
+                            // Match /ket-qua-xo-so-mien-nam
+                            isActive = router.pathname === '/ket-qua-xo-so-mien-nam' || normalizedCurrent === normalizedItem;
                         } else {
                             // Check exact match
                             isActive = normalizedCurrent === normalizedItem;

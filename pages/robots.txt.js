@@ -81,3 +81,7 @@ Disallow: /*.json$`;
 
 export default Robots;
 
+
+
+
+

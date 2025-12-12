@@ -3,7 +3,7 @@
  * Responsive design with accessibility features
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -145,7 +145,7 @@ const uploadImage = async (file) => {
     // Only prepend apiUrl if the URL is relative (starts with /)
     if (result.success && result.data.url) {
         let imageUrl = result.data.url;
-        
+
         // Fix malformed URLs where apiUrl was incorrectly prepended to absolute URLs
         // Example: "http://localhost:5000https://res.cloudinary.com/..."
         const malformedPattern = /^(https?:\/\/[^\/]+)(https?:\/\/.+)$/;
@@ -155,7 +155,7 @@ const uploadImage = async (file) => {
             imageUrl = malformedMatch[2];
             console.warn('Fixed malformed URL in uploadImage:', result.data.url, '->', imageUrl);
         }
-        
+
         // Only prepend apiUrl if URL is relative (starts with /) and not already absolute
         if (imageUrl.startsWith('/') && !imageUrl.startsWith('//')) {
             // Relative path - prepend apiUrl
@@ -180,12 +180,12 @@ const validateImageUrl = (url) => {
     if (!url || url === 'null' || url === 'undefined' || url === '') {
         return null;
     }
-    
+
     let urlString = String(url).trim();
     if (!urlString) {
         return null;
     }
-    
+
     // Fix malformed URLs where apiUrl was incorrectly prepended to absolute URLs
     const malformedPattern = /^(https?:\/\/[^\/]+)(https?:\/\/.+)$/;
     const malformedMatch = urlString.match(malformedPattern);
@@ -193,7 +193,7 @@ const validateImageUrl = (url) => {
         urlString = malformedMatch[2];
         console.warn('Fixed malformed URL:', url, '->', urlString);
     }
-    
+
     // Validate URL format
     try {
         // Try to create URL object to validate
@@ -616,13 +616,13 @@ const ImageUploadDialog = ({ isOpen, onClose, onInsertImage, uploadImage }) => {
     };
 
     const handleUpdateCaption = (index, newCaption) => {
-        setUploadedImages(prev => prev.map((img, i) => 
+        setUploadedImages(prev => prev.map((img, i) =>
             i === index ? { ...img, caption: newCaption } : img
         ));
     };
 
     const handleUpdateAlt = (index, newAlt) => {
-        setUploadedImages(prev => prev.map((img, i) => 
+        setUploadedImages(prev => prev.map((img, i) =>
             i === index ? { ...img, alt: newAlt } : img
         ));
     };
@@ -839,63 +839,302 @@ const ImageUploadDialog = ({ isOpen, onClose, onInsertImage, uploadImage }) => {
 const RichTextEditor = ({ value, onChange, error }) => {
     const [showPreview, setShowPreview] = useState(false);
     const [showImageDialog, setShowImageDialog] = useState(false);
+    const [selectedText, setSelectedText] = useState('');
+    const [selectionStart, setSelectionStart] = useState(0);
+    const [selectionEnd, setSelectionEnd] = useState(0);
+    const [showFloatingToolbar, setShowFloatingToolbar] = useState(false);
+    const [floatingToolbarPosition, setFloatingToolbarPosition] = useState({ top: 0, left: 0 });
+    const textareaRef = useRef(null);
 
-    const insertHTML = (tag, placeholder = '') => {
-        const textarea = document.querySelector(`textarea[name="content"]`);
+    // Get textarea element
+    const getTextarea = () => {
+        return textareaRef.current || document.querySelector(`textarea[name="content"]`);
+    };
+
+    // Update selection info
+    const updateSelection = () => {
+        const textarea = getTextarea();
         if (!textarea) return;
 
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
-        const selectedText = value.substring(start, end);
-        const replacement = placeholder || selectedText;
+        const selected = value.substring(start, end);
+
+        setSelectionStart(start);
+        setSelectionEnd(end);
+        setSelectedText(selected);
+
+        // Show floating toolbar if text is selected
+        if (selected.length > 0 && start !== end) {
+            const rect = textarea.getBoundingClientRect();
+            const scrollTop = textarea.scrollTop;
+            const scrollLeft = textarea.scrollLeft;
+
+            // Calculate position for floating toolbar
+            const textBeforeSelection = value.substring(0, start);
+            const lines = textBeforeSelection.split('\n');
+            const lineNumber = lines.length - 1;
+            const lineHeight = 20; // Approximate line height
+
+            setFloatingToolbarPosition({
+                top: rect.top + (lineNumber * lineHeight) - 50 + scrollTop,
+                left: rect.left + scrollLeft + 20
+            });
+            setShowFloatingToolbar(true);
+        } else {
+            setShowFloatingToolbar(false);
+        }
+    };
+
+    // Insert HTML with better cursor positioning
+    const insertHTML = (tag, placeholder = '', wrapSelected = true) => {
+        const textarea = getTextarea();
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selected = value.substring(start, end);
 
         let html;
-        switch (tag) {
-            case 'h1':
-                html = `<h1>${replacement}</h1>`;
-                break;
-            case 'h2':
-                html = `<h2>${replacement}</h2>`;
-                break;
-            case 'h3':
-                html = `<h3>${replacement}</h3>`;
-                break;
-            case 'p':
-                html = `<p>${replacement}</p>`;
-                break;
-            case 'strong':
-                html = `<strong>${replacement}</strong>`;
-                break;
-            case 'em':
-                html = `<em>${replacement}</em>`;
-                break;
-            case 'ul':
-                html = `<ul>\n<li>${replacement}</li>\n</ul>`;
-                break;
-            case 'ol':
-                html = `<ol>\n<li>${replacement}</li>\n</ol>`;
-                break;
-            case 'blockquote':
-                html = `<blockquote>${replacement}</blockquote>`;
-                break;
-            case 'hr':
-                html = '<hr>';
-                break;
-            case 'br':
-                html = '<br>';
-                break;
-            default:
-                html = replacement;
+        let newCursorPos = start;
+
+        if (wrapSelected && selected.length > 0) {
+            // Wrap selected text
+            switch (tag) {
+                case 'h1':
+                    html = `<h1>${selected}</h1>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'h2':
+                    html = `<h2>${selected}</h2>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'h3':
+                    html = `<h3>${selected}</h3>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'p':
+                    html = `<p>${selected}</p>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'strong':
+                    html = `<strong>${selected}</strong>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'em':
+                    html = `<em>${selected}</em>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'ul':
+                    html = `<ul>\n<li>${selected}</li>\n</ul>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'ol':
+                    html = `<ol>\n<li>${selected}</li>\n</ol>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'blockquote':
+                    html = `<blockquote>${selected}</blockquote>`;
+                    newCursorPos = start + html.length;
+                    break;
+                default:
+                    html = selected;
+                    newCursorPos = start + html.length;
+            }
+        } else {
+            // Insert new element
+            const replacement = placeholder || selected;
+            switch (tag) {
+                case 'h1':
+                    html = `<h1>${replacement}</h1>\n`;
+                    newCursorPos = start + html.length - 1;
+                    break;
+                case 'h2':
+                    html = `<h2>${replacement}</h2>\n`;
+                    newCursorPos = start + html.length - 1;
+                    break;
+                case 'h3':
+                    html = `<h3>${replacement}</h3>\n`;
+                    newCursorPos = start + html.length - 1;
+                    break;
+                case 'p':
+                    html = `<p>${replacement}</p>\n`;
+                    newCursorPos = start + html.length - 1;
+                    break;
+                case 'strong':
+                    html = `<strong>${replacement}</strong>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'em':
+                    html = `<em>${replacement}</em>`;
+                    newCursorPos = start + html.length;
+                    break;
+                case 'ul':
+                    html = `<ul>\n<li>${replacement}</li>\n</ul>\n`;
+                    newCursorPos = start + html.length - 1;
+                    break;
+                case 'ol':
+                    html = `<ol>\n<li>${replacement}</li>\n</ol>\n`;
+                    newCursorPos = start + html.length - 1;
+                    break;
+                case 'blockquote':
+                    html = `<blockquote>${replacement}</blockquote>\n`;
+                    newCursorPos = start + html.length - 1;
+                    break;
+                case 'hr':
+                    html = '<hr>\n';
+                    newCursorPos = start + html.length;
+                    break;
+                case 'br':
+                    html = '<br>';
+                    newCursorPos = start + html.length;
+                    break;
+                default:
+                    html = replacement;
+                    newCursorPos = start + html.length;
+            }
         }
 
         const newValue = value.substring(0, start) + html + value.substring(end);
         onChange(newValue);
 
-        // Focus back to textarea
+        // Focus back to textarea and set cursor position
         setTimeout(() => {
             textarea.focus();
-            textarea.setSelectionRange(start + html.length, start + html.length);
+            textarea.setSelectionRange(newCursorPos, newCursorPos);
+            updateSelection();
         }, 0);
+    };
+
+    // Quick insert templates
+    const insertTemplate = (templateType) => {
+        const textarea = getTextarea();
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        let template = '';
+
+        switch (templateType) {
+            case 'article-structure':
+                template = `<h1>Tiêu đề chính</h1>
+
+<p>Đoạn giới thiệu ngắn gọn về chủ đề...</p>
+
+<h2>Tiêu đề phụ 1</h2>
+
+<p>Nội dung chi tiết cho phần này...</p>
+
+<ul>
+<li>Điểm 1</li>
+<li>Điểm 2</li>
+<li>Điểm 3</li>
+</ul>
+
+<h2>Tiêu đề phụ 2</h2>
+
+<p>Nội dung tiếp theo...</p>
+
+<h3>Tiêu đề nhỏ</h3>
+
+<p>Nội dung chi tiết hơn...</p>`;
+                break;
+            case 'list-template':
+                template = `<ul>
+<li>Mục 1</li>
+<li>Mục 2</li>
+<li>Mục 3</li>
+</ul>`;
+                break;
+            case 'numbered-list':
+                template = `<ol>
+<li>Bước 1</li>
+<li>Bước 2</li>
+<li>Bước 3</li>
+</ol>`;
+                break;
+            case 'section':
+                template = `<h2>Tiêu đề phần</h2>
+
+<p>Nội dung của phần này...</p>`;
+                break;
+            default:
+                template = '';
+        }
+
+        const newValue = value.substring(0, start) + template + value.substring(start);
+        onChange(newValue);
+
+        setTimeout(() => {
+            textarea.focus();
+            const newPos = start + template.length;
+            textarea.setSelectionRange(newPos, newPos);
+            updateSelection();
+        }, 0);
+    };
+
+    // Handle keyboard shortcuts
+    const handleKeyDown = (e) => {
+        // Handle markdown shortcuts first
+        if (handleMarkdownShortcut(e)) {
+            return;
+        }
+
+        // Don't interfere with default browser shortcuts when Ctrl/Cmd is pressed
+        if (e.ctrlKey || e.metaKey) {
+            switch (e.key.toLowerCase()) {
+                case 'b':
+                    e.preventDefault();
+                    insertHTML('strong', '', true);
+                    break;
+                case 'i':
+                    e.preventDefault();
+                    insertHTML('em', '', true);
+                    break;
+                case '1':
+                    e.preventDefault();
+                    insertHTML('h1', '', true);
+                    break;
+                case '2':
+                    e.preventDefault();
+                    insertHTML('h2', '', true);
+                    break;
+                case '3':
+                    e.preventDefault();
+                    insertHTML('h3', '', true);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Update selection on any key press
+        setTimeout(updateSelection, 0);
+    };
+
+    // Handle markdown shortcuts in keydown
+    const handleMarkdownShortcut = (e) => {
+        const textarea = e.target;
+        const cursorPos = textarea.selectionStart;
+        const textBeforeCursor = value.substring(0, cursorPos);
+        const lastLine = textBeforeCursor.split('\n').pop() || '';
+
+        // Markdown shortcuts: ## + Space for H2, ### + Space for H3
+        if (e.key === ' ' && (lastLine.match(/^##\s*$/) || lastLine.match(/^###\s*$/))) {
+            e.preventDefault();
+            const level = lastLine.trim().length;
+            const newValue = value.substring(0, cursorPos - lastLine.length) +
+                `<h${level}></h${level}>` +
+                value.substring(cursorPos);
+            onChange(newValue);
+            setTimeout(() => {
+                textarea.focus();
+                const newPos = cursorPos - lastLine.length + `<h${level}></h${level}>`.length - 1;
+                textarea.setSelectionRange(newPos, newPos);
+                updateSelection();
+            }, 0);
+            return true;
+        }
+        return false;
     };
 
     const insertImage = (imageUrl, alt = '', caption = '') => {
@@ -904,7 +1143,7 @@ const RichTextEditor = ({ value, onChange, error }) => {
 
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
-        
+
         // Tạo HTML cho ảnh với style responsive và caption
         const imageHTML = `\n<div style="text-align: center; margin: 20px 0;">
     <img src="${imageUrl}" alt="${alt || caption || 'Hình ảnh'}" style="max-width: 100%; height: auto; border-radius: 8px;" />
@@ -925,49 +1164,114 @@ const RichTextEditor = ({ value, onChange, error }) => {
 
     return (
         <div className={styles.formGroup}>
-            <label className={styles.formLabel}>Nội dung bài viết</label>
+            <label className={styles.formLabel}>
+                Nội dung bài viết
+                <span className={styles.helpText}>
+                    (Phím tắt: Ctrl+B = Đậm, Ctrl+I = Nghiêng, Ctrl+1/2/3 = H1/H2/H3)
+                </span>
+            </label>
 
-            {/* Toolbar */}
+            {/* Main Toolbar */}
             <div className={styles.editorToolbar}>
                 <div className={styles.toolbarGroup}>
-                    <button type="button" onClick={() => insertHTML('h1', 'Tiêu đề chính')} title="Tiêu đề chính">
-                        H1
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('h1', 'Tiêu đề chính', false)}
+                        title="Tiêu đề chính (Ctrl+1)"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}>H1</span>
+                        <span className={styles.toolbarLabel}>H1</span>
                     </button>
-                    <button type="button" onClick={() => insertHTML('h2', 'Tiêu đề phụ')} title="Tiêu đề phụ">
-                        H2
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('h2', 'Tiêu đề phụ', false)}
+                        title="Tiêu đề phụ (Ctrl+2)"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}>H2</span>
+                        <span className={styles.toolbarLabel}>H2</span>
                     </button>
-                    <button type="button" onClick={() => insertHTML('h3', 'Tiêu đề nhỏ')} title="Tiêu đề nhỏ">
-                        H3
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('h3', 'Tiêu đề nhỏ', false)}
+                        title="Tiêu đề nhỏ (Ctrl+3)"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}>H3</span>
+                        <span className={styles.toolbarLabel}>H3</span>
                     </button>
-                    <button type="button" onClick={() => insertHTML('p', 'Đoạn văn')} title="Đoạn văn">
-                        P
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('p', 'Đoạn văn', false)}
+                        title="Đoạn văn"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}>P</span>
+                        <span className={styles.toolbarLabel}>P</span>
                     </button>
                 </div>
 
                 <div className={styles.toolbarGroup}>
-                    <button type="button" onClick={() => insertHTML('strong', 'Văn bản đậm')} title="Đậm">
-                        <strong>B</strong>
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('strong', '', true)}
+                        title="Đậm (Ctrl+B)"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}><strong>B</strong></span>
+                        <span className={styles.toolbarLabel}>Đậm</span>
                     </button>
-                    <button type="button" onClick={() => insertHTML('em', 'Văn bản nghiêng')} title="Nghiêng">
-                        <em>I</em>
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('em', '', true)}
+                        title="Nghiêng (Ctrl+I)"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}><em>I</em></span>
+                        <span className={styles.toolbarLabel}>Nghiêng</span>
                     </button>
                 </div>
 
                 <div className={styles.toolbarGroup}>
-                    <button type="button" onClick={() => insertHTML('ul', 'Danh sách không thứ tự')} title="Danh sách">
-                        UL
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('ul', 'Mục danh sách', false)}
+                        title="Danh sách không thứ tự"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}>•</span>
+                        <span className={styles.toolbarLabel}>Danh sách</span>
                     </button>
-                    <button type="button" onClick={() => insertHTML('ol', 'Danh sách có thứ tự')} title="Danh sách số">
-                        OL
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('ol', 'Mục danh sách', false)}
+                        title="Danh sách có thứ tự"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}>1.</span>
+                        <span className={styles.toolbarLabel}>Số thứ tự</span>
                     </button>
                 </div>
 
                 <div className={styles.toolbarGroup}>
-                    <button type="button" onClick={() => insertHTML('blockquote', 'Trích dẫn')} title="Trích dẫn">
-                        Quote
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('blockquote', 'Trích dẫn', false)}
+                        title="Trích dẫn"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}>"</span>
+                        <span className={styles.toolbarLabel}>Trích dẫn</span>
                     </button>
-                    <button type="button" onClick={() => insertHTML('hr')} title="Đường kẻ ngang">
-                        HR
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('hr', '', false)}
+                        title="Đường kẻ ngang"
+                        className={styles.toolbarButton}
+                    >
+                        <span className={styles.toolbarIcon}>─</span>
+                        <span className={styles.toolbarLabel}>Kẻ ngang</span>
                     </button>
                 </div>
 
@@ -976,19 +1280,120 @@ const RichTextEditor = ({ value, onChange, error }) => {
                         type="button"
                         onClick={() => setShowImageDialog(true)}
                         title="Chèn hình ảnh"
+                        className={styles.toolbarButton}
                     >
-                        🖼️
+                        <span className={styles.toolbarIcon}>🖼️</span>
+                        <span className={styles.toolbarLabel}>Ảnh</span>
                     </button>
                     <button
                         type="button"
                         onClick={() => setShowPreview(!showPreview)}
-                        className={showPreview ? styles.active : ''}
+                        className={`${styles.toolbarButton} ${showPreview ? styles.active : ''}`}
                         title="Xem trước"
                     >
-                        👁️
+                        <span className={styles.toolbarIcon}>👁️</span>
+                        <span className={styles.toolbarLabel}>Xem trước</span>
                     </button>
                 </div>
+
+                {/* Quick Templates Dropdown */}
+                <div className={styles.toolbarGroup}>
+                    <div className={styles.templateDropdown}>
+                        <button
+                            type="button"
+                            className={styles.toolbarButton}
+                            title="Mẫu nhanh"
+                        >
+                            <span className={styles.toolbarIcon}>📋</span>
+                            <span className={styles.toolbarLabel}>Mẫu</span>
+                        </button>
+                        <div className={styles.templateMenu}>
+                            <button
+                                type="button"
+                                onClick={() => insertTemplate('article-structure')}
+                                className={styles.templateItem}
+                            >
+                                📄 Cấu trúc bài viết
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => insertTemplate('list-template')}
+                                className={styles.templateItem}
+                            >
+                                • Danh sách
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => insertTemplate('numbered-list')}
+                                className={styles.templateItem}
+                            >
+                                1. Danh sách số
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => insertTemplate('section')}
+                                className={styles.templateItem}
+                            >
+                                📑 Phần mới
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            {/* Floating Toolbar (appears when text is selected) */}
+            {showFloatingToolbar && selectedText.length > 0 && (
+                <div
+                    className={styles.floatingToolbar}
+                    style={{
+                        position: 'fixed',
+                        top: `${floatingToolbarPosition.top}px`,
+                        left: `${floatingToolbarPosition.left}px`,
+                        zIndex: 1000
+                    }}
+                >
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('strong', '', true)}
+                        title="Đậm (Ctrl+B)"
+                        className={styles.floatingButton}
+                    >
+                        <strong>B</strong>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('em', '', true)}
+                        title="Nghiêng (Ctrl+I)"
+                        className={styles.floatingButton}
+                    >
+                        <em>I</em>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('h1', '', true)}
+                        title="H1"
+                        className={styles.floatingButton}
+                    >
+                        H1
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('h2', '', true)}
+                        title="H2"
+                        className={styles.floatingButton}
+                    >
+                        H2
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => insertHTML('h3', '', true)}
+                        title="H3"
+                        className={styles.floatingButton}
+                    >
+                        H3
+                    </button>
+                </div>
+            )}
 
             {/* Image Upload Dialog */}
             <ImageUploadDialog
@@ -1002,11 +1407,27 @@ const RichTextEditor = ({ value, onChange, error }) => {
             <div className={styles.editorContainer}>
                 {!showPreview ? (
                     <textarea
+                        ref={textareaRef}
                         name="content"
                         value={value}
-                        onChange={(e) => onChange(e.target.value)}
+                        onChange={(e) => {
+                            onChange(e.target.value);
+                            setTimeout(updateSelection, 0);
+                        }}
+                        onKeyDown={handleKeyDown}
+                        onSelect={updateSelection}
+                        onMouseUp={updateSelection}
+                        onKeyUp={updateSelection}
+                        onClick={updateSelection}
                         className={`${styles.formTextarea} ${styles.large} ${styles.htmlEditor} ${error ? styles.error : ''}`}
-                        placeholder="Nhập nội dung bài viết... Bạn có thể sử dụng HTML hoặc các nút trên để format text."
+                        placeholder="Nhập nội dung bài viết... 
+
+💡 Mẹo sử dụng nhanh:
+• Chọn text → Ctrl+B (đậm) hoặc Ctrl+I (nghiêng)
+• Chọn text → Ctrl+1/2/3 để tạo H1/H2/H3
+• Gõ ## + Space để tạo H2, ### + Space để tạo H3
+• Chọn text để hiện floating toolbar
+• Click nút Mẫu để chèn cấu trúc có sẵn"
                         rows={20}
                     />
                 ) : (
@@ -1131,7 +1552,7 @@ export default function PostEditor() {
                     // Extract alt text nếu có
                     const altMatch = value.match(/<img[^>]+alt=["']([^"']*)["']/i);
                     const altText = altMatch ? altMatch[1] : '';
-                    
+
                     setFormData(prev => ({
                         ...prev,
                         featuredImage: {
