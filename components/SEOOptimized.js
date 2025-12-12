@@ -215,16 +215,32 @@ export default function SEOOptimized({
             <meta name="description" content={description} />
             <meta name="keywords" content={keywords} />
             <meta name="author" content={siteName} />
-            <meta name="robots" content={noindex ? "noindex,nofollow" : "index,follow"} />
-            <meta name="googlebot" content="index,follow" />
-            <meta name="bingbot" content="index,follow" />
-            <meta name="coccocbot" content="index,follow" />
+            <meta name="robots" content={noindex ? "noindex,nofollow" : "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"} />
+            <meta name="googlebot" content={noindex ? "noindex,nofollow" : "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"} />
+            <meta name="bingbot" content={noindex ? "noindex,nofollow" : "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"} />
+            <meta name="coccocbot" content={noindex ? "noindex,nofollow" : "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"} />
 
             {/* ===== SEARCH ENGINE VERIFICATION ===== */}
             <meta name="google-site-verification" content="OniUNDUrgOZ4Fou_Thz9y9_TgDX4INuKAklFmpG-a6k" />
             <meta name="msvalidate.01" content="" />
             <meta name="yandex-verification" content="" />
             <meta name="baidu-site-verification" content="" />
+
+            {/* ===== REVISIT-AFTER (Từ dự án cũ - Index nhanh) ===== */}
+            {!noindex && <meta name="revisit-after" content="1 days" />}
+            
+            {/* ===== ADDITIONAL SEO TAGS (Từ dự án cũ) ===== */}
+            {!noindex && (
+                <>
+                    <meta name="rating" content="general" />
+                    <meta name="distribution" content="global" />
+                    <meta name="language" content="Vietnamese" />
+                    <meta name="geo.region" content="VN" />
+                    <meta name="geo.placename" content="Vietnam" />
+                    <meta name="copyright" content={siteName} />
+                    <meta name="generator" content="Next.js" />
+                </>
+            )}
 
             {/* ===== CANONICAL URL ===== */}
             <link rel="canonical" href={fullUrl} />
